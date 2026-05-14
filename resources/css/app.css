@@ -1,0 +1,134 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+@theme {
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+/* Custom Flatpickr Modern Styles */
+.flatpickr-calendar {
+    border-radius: 1.2rem !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+    border: none !important;
+    padding: 16px 12px !important;
+    margin-top: 15px !important;
+    font-family: inherit !important;
+    background: #ffffff !important;
+    animation: fpFadeInDown 300ms cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+
+@keyframes fpFadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 640px) {
+    .flatpickr-calendar {
+        width: auto !important;
+        max-width: 90vw !important;
+        left: 0 !important;
+        right: 0 !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+
+    /* Kurangi sedikit ukuran bulatannya di HP agar ada sisa ruang untuk gap */
+    .flatpickr-day, .flatpickr-weekday {
+        width: 30px !important;
+        max-width: 30px !important;
+        height: 30px !important;
+    }
+
+    /* First month */
+    .flatpickr-month:nth-child(2) { grid-row: 1; position: relative; } 
+    .flatpickr-weekdaycontainer:nth-child(1) { grid-row: 2; width: 100% !important; display: grid !important; grid-template-columns: repeat(7, 1fr) !important; justify-items: center; padding: 0 !important; margin: 0 0 8px 0 !important; column-gap: 18px !important; }
+    .dayContainer:nth-child(1) { grid-row: 3; border-bottom: 1px solid #eee; padding-bottom: 15px !important; margin-bottom: 15px !important; width: 100% !important; display: grid !important; grid-template-columns: repeat(7, 1fr) !important; justify-items: center; padding: 0 !important; row-gap: 8px !important; column-gap: 18px !important; }
+    
+    /* Second month */
+    .flatpickr-month:nth-child(3) { grid-row: 4; position: relative; margin-top: 5px; } 
+    .flatpickr-weekdaycontainer:nth-child(2) { grid-row: 5; width: 100% !important; display: grid !important; grid-template-columns: repeat(7, 1fr) !important; justify-items: center; padding: 0 !important; margin: 0 0 8px 0 !important; column-gap: 18px !important; }
+    .dayContainer:nth-child(2) { grid-row: 6; width: 100% !important; display: grid !important; grid-template-columns: repeat(7, 1fr) !important; justify-items: center; padding: 0 !important; row-gap: 8px !important; column-gap: 18px !important; box-shadow: none !important; border-left: none !important; }
+}
+
+/* Vertically stack 2 months on tablet/mobile using CSS Grid display: contents trick */
+@media (max-width: 1023px) {
+    .flatpickr-calendar.multiMonth {
+        display: grid !important;
+        grid-template-columns: 1fr;
+    }
+    
+    .flatpickr-months, 
+    .flatpickr-innerContainer, 
+    .flatpickr-rContainer, 
+    .flatpickr-days,
+    .flatpickr-weekdays {
+        display: contents !important;
+    }
+    
+    /* Ensure grid items don't squish, made smaller for more gap on mobile */
+    .flatpickr-day, .flatpickr-weekday {
+        width: 34px !important;
+        max-width: 34px !important;
+        height: 34px !important;
+        flex-basis: auto !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        margin: 0 auto !important;
+        padding: 0 !important;
+    }
+    
+    /* First month */
+    .flatpickr-month:nth-child(2) { grid-row: 1; position: relative; } 
+    .flatpickr-weekdaycontainer:nth-child(1) { grid-row: 2; width: 100% !important; display: grid !important; grid-template-columns: repeat(7, 1fr) !important; justify-items: center; padding: 0 !important; margin: 0 0 8px 0 !important; }
+    .dayContainer:nth-child(1) { grid-row: 3; border-bottom: 1px solid #eee; padding-bottom: 15px !important; margin-bottom: 15px !important; width: 100% !important; display: grid !important; grid-template-columns: repeat(7, 1fr) !important; justify-items: center; padding: 0 !important; row-gap: 8px !important; }
+    
+    /* Second month */
+    .flatpickr-month:nth-child(3) { grid-row: 4; position: relative; margin-top: 5px; } 
+    .flatpickr-weekdaycontainer:nth-child(2) { grid-row: 5; width: 100% !important; display: grid !important; grid-template-columns: repeat(7, 1fr) !important; justify-items: center; padding: 0 !important; margin: 0 0 8px 0 !important; }
+    .dayContainer:nth-child(2) { grid-row: 6; width: 100% !important; display: grid !important; grid-template-columns: repeat(7, 1fr) !important; justify-items: center; padding: 0 !important; row-gap: 8px !important; box-shadow: none !important; border-left: none !important; }
+    
+    /* Arrows */
+    .flatpickr-prev-month { grid-row: 1; z-index: 10; }
+    .flatpickr-next-month { grid-row: 1; z-index: 10; }
+    
+    /* Hide native flatpickr separator */
+    .flatpickr-calendar .flatpickr-days { border-left: none !important; }
+}
+
+/* Desktop/Tablet Adjustments to prevent cutoff */
+@media (min-width: 1024px) {
+    .flatpickr-calendar.multiMonth {
+        width: max-content !important; /* Biar ngga kepotong */
+        max-width: 95vw !important;
+    }
+    /* Hapus bayangan/border default pemisah bulan dari flatpickr */
+    .flatpickr-calendar .dayContainer:nth-child(2) {
+        border-left: 1px solid #eee !important;
+        box-shadow: none !important;
+    }
+}
+
+.flatpickr-months .flatpickr-month {
+    border-radius: 1.2rem 1.2rem 0 0 !important;
+}
+
+.flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange, .flatpickr-day.selected.inRange, .flatpickr-day.startRange.inRange, .flatpickr-day.endRange.inRange, .flatpickr-day.selected:focus, .flatpickr-day.startRange:focus, .flatpickr-day.endRange:focus, .flatpickr-day.selected:hover, .flatpickr-day.startRange:hover, .flatpickr-day.endRange:hover, .flatpickr-day.selected.prevMonthDay, .flatpickr-day.startRange.prevMonthDay, .flatpickr-day.endRange.prevMonthDay, .flatpickr-day.selected.nextMonthDay, .flatpickr-day.startRange.nextMonthDay, .flatpickr-day.endRange.nextMonthDay {
+    background: #3b82f6 !important;
+    border-color: #3b82f6 !important;
+}
+
+.flatpickr-day {
+    border-radius: 9999px !important; /* fully rounded */
+}

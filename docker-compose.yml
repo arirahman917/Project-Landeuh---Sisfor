@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: landeuh_app
+    ports:
+      - "8000:80"
+      - "5173:5173" # For Vite (npm run dev)
+    volumes:
+      - .:/var/www/html
+    environment:
+      - APACHE_RUN_USER=www-data
+      - APACHE_RUN_GROUP=www-data
+    command: >
+      bash -c "cp -n .env.example .env || true &&
+               composer install --no-interaction &&
+               npm install &&
+               npm run build &&
+               php artisan key:generate &&
+               chown -R www-data:www-data storage bootstrap/cache &&
+               apache2-foreground"
