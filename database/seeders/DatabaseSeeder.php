@@ -17,9 +17,27 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
+        User::where('email', 'admin1@gmail.com')->delete();
         User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+            'name' => 'Admin 1',
+            'email' => 'admin1@gmail.com',
+            'phone' => '081234567890',
+            'password' => bcrypt('admin1'),
+            'role' => 'admin',
         ]);
+
+        User::where('email', 'admin2@gmail.com')->delete();
+        User::factory()->create([
+            'name' => 'Admin 2',
+            'email' => 'admin2@gmail.com',
+            'phone' => '081234567890',
+            'password' => bcrypt('admin2'),
+            'role' => 'admin',
+        ]);
+
+        // $this->call([
+        //     AccommodationSeeder::class,
+        //     BookingSeeder::class,
+        // ]);
     }
 }

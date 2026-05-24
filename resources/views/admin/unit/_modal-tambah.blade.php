@@ -144,7 +144,8 @@
                 {{-- Upload Gambar --}}
                 <div class="md:col-span-2">
                     <label class="block text-xs font-semibold text-stone-600 mb-1.5 tracking-wider uppercase">Upload Gambar Akomodasi</label>
-                    <input type="file" id="tambah_gambar" multiple accept="image/*"
+                    <div id="tambah_gambar_preview_container" class="flex flex-wrap gap-3 mb-3"></div>
+                    <input type="file" id="tambah_gambar" multiple accept="image/*" onchange="handleTambahGambarChange(event)"
                         class="w-full px-4 py-2.5 rounded-xl border border-stone-200 bg-white/80 text-stone-800 text-sm
                                file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold
                                file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100 transition
@@ -188,11 +189,64 @@
 </style>
 
 <script>
+    window.tambahKamarFiles = [];
+
     window.openModalTambah = function() {
         document.getElementById('modalTambahKamar').classList.remove('hidden');
+        window.tambahKamarFiles = [];
+        renderTambahImagePreviews();
     };
     window.closeModalTambah = function() {
         document.getElementById('modalTambahKamar').classList.add('hidden');
+    };
+
+    window.handleTambahGambarChange = function(event) {
+        const files = Array.from(event.target.files);
+        window.tambahKamarFiles = window.tambahKamarFiles.concat(files);
+        event.target.value = ''; // Reset input so user can select same file again if they want
+        renderTambahImagePreviews();
+    };
+
+    window.renderTambahImagePreviews = function() {
+        const container = document.getElementById('tambah_gambar_preview_container');
+        container.innerHTML = '';
+        if(window.tambahKamarFiles.length === 0) {
+            container.innerHTML = '<span class="text-xs text-stone-400">Belum ada gambar yang dipilih.</span>';
+            return;
+        }
+
+        window.tambahKamarFiles.forEach((file, index) => {
+            const div = document.createElement('div');
+            div.className = 'relative group w-24 h-24 rounded-xl overflow-hidden border border-stone-200 bg-white shadow-sm flex-shrink-0';
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const image = document.createElement('img');
+                image.src = e.target.result;
+                image.className = 'w-full h-full object-cover pointer-events-none';
+                div.insertBefore(image, div.firstChild);
+            };
+            reader.readAsDataURL(file);
+            
+            const removeBtn = document.createElement('button');
+            removeBtn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>';
+            removeBtn.className = 'absolute top-1 right-1 w-6 h-6 bg-red-500/90 text-white rounded-full flex items-center justify-center font-bold opacity-0 group-hover:opacity-100 transition-opacity z-10 shadow';
+            removeBtn.onclick = (e) => {
+                e.preventDefault();
+                window.tambahKamarFiles.splice(index, 1);
+                renderTambahImagePreviews();
+            };
+
+            const badge = document.createElement('div');
+            if (index === 0) {
+                badge.innerHTML = 'Depan';
+                badge.className = 'absolute bottom-0 left-0 right-0 bg-amber-500/90 text-white text-[9px] text-center font-bold py-0.5 z-10';
+                div.appendChild(badge);
+            }
+
+            div.appendChild(removeBtn);
+            container.appendChild(div);
+        });
     };
     window.submitTambahKamar = function() {
         // ── Ambil nilai dari form ──────────────────────────────
@@ -213,41 +267,49 @@
             return;
         }
 
-        const newUnit = {
-            id          : Date.now(),
-            judul       : nama,
-            jenis       : jenis,
-            kasur       : kasur,
-            merokok     : merokok,
-            fasilitas   : fasilitasRaw.split(',').map(s=>s.trim()).filter(Boolean),
-            makanan     : makananRaw.split(',').map(s=>s.trim()).filter(Boolean),
-            maxOrang    : maxOrang,
-            catatan     : [
-                "Anak di bawah umur 5 tahun <strong>Free</strong>, maksimal 2 anak.",
-                "Tambahan anak di atas 5 tahun <strong>75k/orang</strong>",
-                "Tambahan dewasa di atas 17 tahun <strong>100k/orang</strong>"
-            ],
-            slot        : slot,
-            hargaWeekday: hwkd,
-            hargaWeekend: hwknd,
-            hargaHighseason: hhs,
-            gambar      : 'cabin1',
-            bookedDates : [],
-        };
+        const formData = new FormData();
+        formData.append('judul', nama);
+        formData.append('jenis', jenis);
+        formData.append('kasur', kasur);
+        formData.append('merokok', merokok ? '1' : '0');
+        formData.append('fasilitas', fasilitasRaw);
+        formData.append('makanan', makananRaw);
+        formData.append('max_orang', maxOrang);
+        formData.append('slot', slot);
+        formData.append('harga_weekday', hwkd);
+        formData.append('harga_weekend', hwknd);
+        formData.append('harga_highseason', hhs);
 
-        // Push ke AKOMODASI_DATA dan re-render
-        if (typeof AKOMODASI_DATA !== 'undefined') {
-            AKOMODASI_DATA.push(newUnit);
-            if (typeof renderUnitTable === 'function') renderUnitTable();
-        }
+        window.tambahKamarFiles.forEach((file) => {
+            formData.append('gambar[]', file);
+        });
 
-        closeModalTambah();
+        const submitBtn = document.querySelector('#modalTambahKamar button[onclick="submitTambahKamar()"]');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = 'Menyimpan...';
 
-        // ── Ganti bagian ini dengan fetch() ke API/route Laravel ──
-        // fetch('/admin/unit', {
-        //     method : 'POST',
-        //     headers: { 'Content-Type':'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
-        //     body   : JSON.stringify(newUnit),
-        // }).then(r=>r.json()).then(data => { if(data.success) renderUnitTable(); });
+        fetch('/admin/unit', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                window.location.reload();
+            } else {
+                alert('Terjadi kesalahan saat menyimpan data.');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<iconify-icon icon="lucide:plus-circle" class="text-base"></iconify-icon> Tambah Kamar';
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert('Terjadi kesalahan jaringan.');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<iconify-icon icon="lucide:plus-circle" class="text-base"></iconify-icon> Tambah Kamar';
+        });
     };
 </script>

@@ -120,20 +120,10 @@
 </head>
 <body class="bg-[#f5eed9] min-h-screen font-sans">
 
-    {{-- Auth Guard (frontend-only) --}}
-    <script>
-        (function(){
-            const loggedIn = sessionStorage.getItem('admin_logged_in');
-            const expiry   = parseInt(sessionStorage.getItem('admin_expiry') || '0');
-            if (loggedIn !== 'true' || Date.now() > expiry) {
-                sessionStorage.removeItem('admin_logged_in');
-                sessionStorage.removeItem('admin_email');
-                sessionStorage.removeItem('admin_name');
-                sessionStorage.removeItem('admin_expiry');
-                window.location.href = '/admin/login';
-            }
-        })();
-    </script>
+    {{-- Auth Guard (server-side) --}}
+    @if(!Auth::guard('admin')->check() || Auth::guard('admin')->user()->role !== 'admin')
+        <script>window.location.href = '/admin/login';</script>
+    @endif
 
     {{-- Sidebar --}}
     @include('admin.components.sidebar')

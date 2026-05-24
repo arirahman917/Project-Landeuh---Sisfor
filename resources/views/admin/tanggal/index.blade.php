@@ -109,22 +109,20 @@
 @push('scripts')
 <script>
 (function(){
-    // ── Data (frontend-only) ───────────────────────────────────
+    // ── Data (dari backend) ───────────────────────────────────
     const TANGGAL_DATA = {
         weekday: {
             label: 'Weekday',
-            dates: 'Minggu, Senin, Selasa, Rabu, Kamis'
+            dates: `{!! addslashes($weekday ? $weekday->dates : 'Minggu, Senin, Selasa, Rabu, Kamis') !!}`
         },
         weekend: {
             label: 'Weekend',
-            dates: "Jum'at, Sabtu, 2026-01-01, 2026-01-16, 2026-02-16, 2026-02-17, 2026-03-18, 2026-03-19, 2026-03-20, 2026-03-21, 2026-03-22, 2026-03-23, 2026-03-24, 2026-04-03, 2026-04-05, 2026-05-01, 2026-05-12, 2026-05-14, 2026-05-15, 2026-05-27, 2026-06-01, 2026-06-16, 2026-08-17, 2026-08-25, 2026-12-25"
+            dates: `{!! addslashes($weekend ? $weekend->dates : '') !!}`
         },
         highseason: [
-            { name: 'Tahun Baru & Semester Ganjil', dates: '2026-01-01, 2026-01-02, 2026-01-03, 2026-01-04' },
-            { name: 'Lebaran Idul Fitri', dates: '2026-03-16, 2026-03-17, 2026-03-18, 2026-03-19, 2026-03-20, 2026-03-21, 2026-03-22, 2026-03-23, 2026-03-24, 2026-03-25, 2026-03-26, 2026-03-27, 2026-03-28, 2026-03-29' },
-            { name: 'Lebaran Idul Adha', dates: '2026-05-27, 2026-05-28, 2026-05-29, 2026-05-30, 2026-05-31' },
-            { name: 'Kenaikan Kelas (Semester Genap)', dates: '2026-06-22, 2026-06-23, 2026-06-24, 2026-06-25, 2026-06-26, 2026-06-27, 2026-06-28, 2026-06-29, 2026-06-30, 2026-07-01, 2026-07-02, 2026-07-03, 2026-07-04, 2026-07-05, 2026-07-06, 2026-07-07, 2026-07-08, 2026-07-09, 2026-07-10, 2026-07-11' },
-            { name: 'Natal & Semester Ganjil', dates: '2026-12-21, 2026-12-22, 2026-12-23, 2026-12-24, 2026-12-25, 2026-12-26, 2026-12-27, 2026-12-28, 2026-12-29, 2026-12-30, 2026-12-31' },
+            @foreach($highseason as $hs)
+            { name: `{!! addslashes($hs->name) !!}`, dates: `{!! addslashes($hs->dates) !!}` },
+            @endforeach
         ]
     };
 
@@ -177,11 +175,18 @@
             nameWrap.classList.add('hidden');
             datesInput.value = TANGGAL_DATA.weekend.dates;
         } else {
-            const h = TANGGAL_DATA.highseason[idx];
-            title.textContent = 'Edit Highseason';
-            nameWrap.classList.remove('hidden');
-            nameInput.value = h.name;
-            datesInput.value = h.dates;
+            if (idx === 'new') {
+                title.textContent = 'Tambah Highseason';
+                nameWrap.classList.remove('hidden');
+                nameInput.value = 'Periode Baru';
+                datesInput.value = '';
+            } else {
+                const h = TANGGAL_DATA.highseason[idx];
+                title.textContent = 'Edit Highseason';
+                nameWrap.classList.remove('hidden');
+                nameInput.value = h.name;
+                datesInput.value = h.dates;
+            }
         }
         document.getElementById('modalEditTanggal').classList.remove('hidden');
     };
@@ -201,25 +206,51 @@
             TANGGAL_DATA.weekend.dates = dates;
         } else {
             const name = document.getElementById('editTgl_name').value.trim();
-            TANGGAL_DATA.highseason[parseInt(idx)] = { name, dates };
+            if (idx === 'new') {
+                TANGGAL_DATA.highseason.push({ name, dates });
+            } else {
+                TANGGAL_DATA.highseason[parseInt(idx)] = { name, dates };
+            }
         }
-        renderAll();
-        closeModalTanggal();
-        if (typeof showToast === 'function') showToast('Tanggal berhasil diperbarui.');
+        
+        // Save to backend
+        fetch('/admin/tanggal', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify(TANGGAL_DATA)
+        }).then(res => res.json()).then(data => {
+            renderAll();
+            closeModalTanggal();
+            if (typeof showToast === 'function') showToast('Tanggal berhasil diperbarui.');
+        }).catch(err => {
+            console.error(err);
+            alert('Gagal menyimpan data.');
+        });
     };
 
     window.addHighseason = function() {
-        TANGGAL_DATA.highseason.push({ name: 'Periode Baru', dates: '' });
-        renderHighseason();
-        // Auto-open modal for the new entry
-        openEditTanggal('highseason', TANGGAL_DATA.highseason.length - 1);
+        openEditTanggal('highseason', 'new');
     };
 
     window.deleteHighseason = function(idx) {
         if (!confirm('Yakin ingin menghapus periode ini?')) return;
         TANGGAL_DATA.highseason.splice(idx, 1);
-        renderHighseason();
-        if (typeof showToast === 'function') showToast('Periode berhasil dihapus.', 'lucide:trash-2', 'text-red-400');
+        
+        // Save to backend
+        fetch('/admin/tanggal', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify(TANGGAL_DATA)
+        }).then(res => res.json()).then(data => {
+            renderHighseason();
+            if (typeof showToast === 'function') showToast('Periode berhasil dihapus.', 'lucide:trash-2', 'text-red-400');
+        });
     };
 
     // ── Init ───────────────────────────────────────────────────

@@ -10,6 +10,10 @@
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
 
+[x-cloak] {
+    display: none !important;
+}
+
 /* Custom Flatpickr Modern Styles */
 .flatpickr-calendar {
     border-radius: 1.2rem !important;

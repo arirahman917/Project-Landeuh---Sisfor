@@ -134,7 +134,10 @@
 
 @push('scripts')
 <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
-<script src="{{ asset('js/akomodasi-data.js') }}"></script>
+<script>
+    const AKOMODASI_DATA = @json($accommodations);
+    const DATE_SETTINGS = @json($dateSettings);
+</script>
 <script>
 (function(){
     const PER_PAGE = 15;
@@ -144,9 +147,11 @@
     let lbImages=[], lbIdx=0;
 
     // Lightbox
-    window.openLightbox=function(gambar){
-        const imgs=['a.png','b.png','c.png','d.png'];
-        lbImages=imgs.map(i=>`${basePath}/${gambar}/${i}`);
+    window.openLightbox=function(id){
+        const item = AKOMODASI_DATA.find(d => d.id === id);
+        const images = Array.isArray(item.gambar) ? item.gambar : (item.gambar ? [item.gambar] : []);
+        lbImages = images.map(g => '/' + g);
+        if(lbImages.length===0) lbImages=['/images/akomodasi/cabin1/a.png'];
         lbIdx=0;
         showLbImg();
         document.getElementById('lightbox').classList.remove('hidden');
@@ -161,8 +166,91 @@
     window.lbNext=function(){lbIdx=(lbIdx+1)%lbImages.length;showLbImg();};
     function showLbImg(){document.getElementById('lbImg').src=lbImages[lbIdx];}
 
-    function fmt(n){return 'IDR&nbsp;'+n.toLocaleString('id-ID')}
+    function fmt(n){
+        return 'IDR ' + Number(n).toLocaleString('id-ID', {minimumFractionDigits: 0, maximumFractionDigits: 0});
+    }
     
+    // Helper to get date type
+    function getDateType(dateObj) {
+        const year = dateObj.getFullYear();
+        const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+        const day = String(dateObj.getDate()).padStart(2, '0');
+        const dateString = `${year}-${month}-${day}`;
+        
+        const daysIndo = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', "Jum'at", 'Sabtu'];
+        const dayName = daysIndo[dateObj.getDay()];
+
+        // 1. Check Highseason
+        const hsSettings = DATE_SETTINGS.filter(d => d.type === 'highseason');
+        for (let hs of hsSettings) {
+            if (hs.dates && hs.dates.includes(dateString)) return 'highseason';
+        }
+
+        // 2. Check Weekend
+        const weSetting = DATE_SETTINGS.find(d => d.type === 'weekend');
+        if (weSetting && weSetting.dates) {
+            if (weSetting.dates.includes(dateString) || weSetting.dates.includes(dayName)) return 'weekend';
+        }
+
+        return 'weekday';
+    }
+
+    function calculateDynamicTotal(item, nights) {
+        let startDate = new Date();
+        const fp = document.getElementById('dateRangePicker')?._flatpickr;
+        if (fp && fp.selectedDates && fp.selectedDates.length > 0) {
+            startDate = new Date(fp.selectedDates[0]);
+        }
+        
+        let total = 0;
+        let currentDate = new Date(startDate);
+        for (let i = 0; i < nights; i++) {
+            const type = getDateType(currentDate);
+            if (type === 'highseason') total += Number(item.hargaHighseason);
+            else if (type === 'weekend') total += Number(item.hargaWeekend);
+            else total += Number(item.hargaWeekday);
+            
+            currentDate.setDate(currentDate.getDate() + 1);
+        }
+        return total;
+    }
+
+    // Get the active rate for check-in date (for display purposes)
+    function getActiveRate(item) {
+        let startDate = new Date();
+        const fp = document.getElementById('dateRangePicker')?._flatpickr;
+        if (fp && fp.selectedDates && fp.selectedDates.length > 0) {
+            startDate = new Date(fp.selectedDates[0]);
+        }
+        const type = getDateType(startDate);
+        if (type === 'highseason') return { price: Number(item.hargaHighseason), label: 'Highseason', color: '#8b0000' };
+        if (type === 'weekend') return { price: Number(item.hargaWeekend), label: 'Weekend', color: '#b8860b' };
+        return { price: Number(item.hargaWeekday), label: 'Weekday', color: '#3a523a' };
+    }
+
+    // Update all visible price elements without full re-render
+    function updateAllPrices() {
+        filteredData.forEach(item => {
+            const nights = window.akoMalamState[item.id] || 1;
+            const priceEl = document.getElementById(`price-val-${item.id}`);
+            const rateLabel = document.getElementById(`rate-label-${item.id}`);
+            const rateBadge = document.getElementById(`rate-badge-${item.id}`);
+            if (priceEl) {
+                const total = calculateDynamicTotal(item, nights);
+                priceEl.innerHTML = fmt(total);
+            }
+            if (rateLabel) {
+                const rate = getActiveRate(item);
+                rateLabel.innerHTML = `${fmt(rate.price)} <span class="text-[9px] font-normal text-gray-400">/malam</span>`;
+            }
+            if (rateBadge) {
+                const rate = getActiveRate(item);
+                rateBadge.textContent = rate.label;
+                rateBadge.style.backgroundColor = rate.color;
+            }
+        });
+    }
+
     // Global state for nights
     window.akoMalamState = window.akoMalamState || {};
 
@@ -182,7 +270,7 @@
         if(priceEl) {
             const item = AKOMODASI_DATA.find(d => d.id == id);
             if(item) {
-                const total = item.hargaWeekday * n;
+                const total = calculateDynamicTotal(item, n);
                 priceEl.innerHTML = fmt(total);
             }
         }
@@ -204,12 +292,12 @@
 
         return `
         <div class="ako-card flex flex-col md:flex-row" data-id="${item.id}">
-            <div class="img-grid" onclick="openLightbox('${item.gambar}')">
-                <div class="img-main"><img src="${basePath}/${item.gambar}/${imgs[0]}" alt="${item.judul}" loading="lazy"></div>
-                <div class="img-thumb"><img src="${basePath}/${item.gambar}/${imgs[1]}" alt="" loading="lazy"></div>
-                <div class="img-thumb"><img src="${basePath}/${item.gambar}/${imgs[2]}" alt="" loading="lazy"></div>
+            <div class="img-grid" onclick="openLightbox(${item.id})">
+                <div class="img-main"><img src="/${Array.isArray(item.gambar) && item.gambar.length > 0 ? item.gambar[0] : item.gambar}" alt="${item.judul}" loading="lazy"></div>
+                <div class="img-thumb"><img src="/${Array.isArray(item.gambar) && item.gambar.length > 1 ? item.gambar[1] : (Array.isArray(item.gambar) && item.gambar.length > 0 ? item.gambar[0] : item.gambar)}" alt="" loading="lazy"></div>
+                <div class="img-thumb"><img src="/${Array.isArray(item.gambar) && item.gambar.length > 2 ? item.gambar[2] : (Array.isArray(item.gambar) && item.gambar.length > 0 ? item.gambar[0] : item.gambar)}" alt="" loading="lazy"></div>
                 <div class="img-thumb" style="position:relative">
-                    <img src="${basePath}/${item.gambar}/${imgs[3]}" alt="" loading="lazy">
+                    <img src="/${Array.isArray(item.gambar) && item.gambar.length > 3 ? item.gambar[3] : (Array.isArray(item.gambar) && item.gambar.length > 0 ? item.gambar[0] : item.gambar)}" alt="" loading="lazy">
                     <div class="overlay-label"><span>Lihat foto</span></div>
                 </div>
             </div>
@@ -257,7 +345,12 @@
                                         <div class="text-[10px] text-gray-400 mt-2 text-right italic">/kamar/malam</div>
                                     </div>
                                     <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 md:w-4 md:h-4 text-gray-400 cursor-pointer shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
-                                    <div id="price-val-${item.id}" class="${item.hargaWeekday.toString().length >= 7 ? 'text-base md:text-xl' : 'text-lg md:text-2xl'} font-extrabold text-[#e53e3e] whitespace-nowrap">${fmt(item.hargaWeekday * (window.akoMalamState[item.id] || 1))}</div>
+                                    <div class="flex flex-col items-end">
+                                        <div class="flex items-center gap-1.5 mb-0.5">
+                                            <span id="rate-badge-${item.id}" class="text-[9px] font-bold text-white px-1.5 py-0.5 rounded" style="background-color:${getActiveRate(item).color}">${getActiveRate(item).label}</span>
+                                        </div>
+                                        <div id="price-val-${item.id}" class="${item.hargaWeekday.toString().length >= 7 ? 'text-base md:text-xl' : 'text-lg md:text-2xl'} font-extrabold text-[#e53e3e] whitespace-nowrap">${fmt(calculateDynamicTotal(item, window.akoMalamState[item.id] || 1))}</div>
+                                    </div>
                                 </div>
                                 <div class="text-[9px] md:text-[10px] text-gray-400 italic">Total Harga</div>
                             </div>
@@ -385,8 +478,21 @@
 
         const datePickerEl = document.getElementById('dateRangePicker');
         let fpDates = null;
+        let diffNights = null;
         if (datePickerEl && datePickerEl._flatpickr) {
             fpDates = datePickerEl._flatpickr.selectedDates;
+            if (fpDates && fpDates.length === 2) {
+                const diffTime = Math.abs(fpDates[1] - fpDates[0]);
+                diffNights = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                if (diffNights < 1) diffNights = 1;
+            }
+        }
+
+        // Auto-sync global night state if date range is selected
+        if (diffNights !== null) {
+            AKOMODASI_DATA.forEach(d => {
+                window.akoMalamState[d.id] = diffNights;
+            });
         }
 
         filteredData = AKOMODASI_DATA.filter(d => {
@@ -457,6 +563,22 @@
         altFormat: "d M Y",
         locale: "id",
         minDate: "today",
+        onChange: function(selectedDates, dateStr, instance) {
+            // Auto-update prices immediately when dates change
+            if (selectedDates.length >= 1) {
+                // If range is complete (2 dates), sync nights
+                if (selectedDates.length === 2) {
+                    const diffTime = Math.abs(selectedDates[1] - selectedDates[0]);
+                    const diffNights = Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
+                    AKOMODASI_DATA.forEach(d => {
+                        window.akoMalamState[d.id] = diffNights;
+                        const lbl = document.getElementById(`lbl-malam-${d.id}`);
+                        if (lbl) lbl.innerText = `${diffNights} Malam`;
+                    });
+                }
+                updateAllPrices();
+            }
+        }
     });
 
     // Parse URL parameters
@@ -489,7 +611,7 @@
 
     // ── Pilih Kamar — auth gate ──────────────────────────────────
     window.handlePilihKamar = function(itemId, malam) {
-        const isLoggedIn = sessionStorage.getItem('user_logged_in') === 'true';
+        const isLoggedIn = {{ Auth::check() ? 'true' : 'false' }};
         const targetUrl = '/reservasi/overview/' + itemId + '?malam=' + (malam || 1);
 
         if (isLoggedIn) {

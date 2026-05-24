@@ -94,40 +94,8 @@
 @push('scripts')
 <script>
 (function(){
-    // ── Dummy Data ─────────────────────────────────────────────
-    const PESANAN_DATA = [];
-    const akomNames = ['Cabin 1','Cabin 2','Cabin 3','Rumah Industrial 1','Glamping VIP'];
-    const akomCap   = ['(4 pax)','(4 pax)','(6 pax)','(4 pax)','(2 pax)'];
-    const tamNames  = ['M. Akbar R.','Budi S.','Citra D.','Dian P.','Eka W.'];
-    const payMethods= ['Virtual Account BCA','Virtual Account Mandiri','QRIS','Minimarket','ATM Transfer'];
-
-    for (let i = 0; i < 100; i++) {
-        const checkin  = new Date(2026, 3, 29 + (i % 5));
-        const nights   = 1 + (i % 3);
-        const checkout = new Date(checkin.getTime() + nights * 86400000);
-        const fmtDate  = (d) => d.toLocaleDateString('id-ID',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
-        const aIdx     = i % akomNames.length;
-
-        PESANAN_DATA.push({
-            id           : i + 1,
-            noPesanan    : 'X'.repeat(12),
-            pemesanNama  : 'Ari Rahman',
-            pemesanTelp  : '081234567890',
-            pemesanEmail : 'arirahman@gmail.com',
-            namaTamu     : tamNames[i % tamNames.length],
-            akomodasi    : akomNames[aIdx],
-            akomodasiCap : akomCap[aIdx],
-            malam        : nights,
-            checkin      : fmtDate(checkin),
-            checkout     : fmtDate(checkout),
-            tambahanAnak : 2,
-            tambahanAnakUsia: 'di atas 5 tahun',
-            tambahanDewasa: 1,
-            tambahanDewasaUsia: 'di atas 17 tahun',
-            total        : 1200000,
-            metode       : payMethods[i % payMethods.length],
-        });
-    }
+    // ── Data dari Database ─────────────────────────────────────
+    const PESANAN_DATA = @json($formattedBookings);
 
     const PER_PAGE = 10;
     let currentPage = 1;

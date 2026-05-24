@@ -152,24 +152,28 @@
 </style>
 
 <script>
-    // ── User info ──────────────────────────────────────────────
+    // ── User info (dari session server) ────────────────────────
     (function(){
-        const name  = sessionStorage.getItem('admin_name')  || 'Jhon Doe';
-        const email = sessionStorage.getItem('admin_email') || 'admin@gmail.com';
+        const name  = '{{ Auth::guard("admin")->check() ? Auth::guard("admin")->user()->name : "Admin" }}';
+        const email = '{{ Auth::guard("admin")->check() ? Auth::guard("admin")->user()->email : "admin@example.com" }}';
         const el = (id) => document.getElementById(id);
-        if (el('topbarAvatar')) el('topbarAvatar').textContent = email.charAt(0).toUpperCase();
+        if (el('topbarAvatar')) el('topbarAvatar').textContent = name.charAt(0).toUpperCase();
         if (el('topbarName'))   el('topbarName').textContent   = name;
         if (el('dropdownName')) el('dropdownName').textContent  = name;
         if (el('dropdownEmail'))el('dropdownEmail').textContent = email;
     })();
 
-    // ── Logout ─────────────────────────────────────────────────
+    // ── Logout (POST ke Laravel) ────────────────────────────────
     function adminLogout() {
-        sessionStorage.removeItem('admin_logged_in');
-        sessionStorage.removeItem('admin_email');
-        sessionStorage.removeItem('admin_name');
-        sessionStorage.removeItem('admin_expiry');
-        window.location.href = '/admin/login';
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+        fetch('/admin/logout', {
+            method: 'POST',
+            headers: { 'X-CSRF-TOKEN': csrfToken, 'Content-Type': 'application/json' }
+        }).then(() => {
+            window.location.href = '/admin/login';
+        }).catch(() => {
+            window.location.href = '/admin/login';
+        });
     }
 
     // ── User menu dropdown ─────────────────────────────────────

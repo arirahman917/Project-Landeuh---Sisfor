@@ -161,7 +161,9 @@
 
 @push('scripts')
 <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
-<script src="{{ asset('js/akomodasi-data.js') }}"></script>
+<script>
+    const AKOMODASI_DATA = @json($accommodations);
+</script>
 <script>
 (function () {
     const PER_PAGE  = 5;
@@ -226,11 +228,11 @@
                 : '<span style="color:#dc2626;font-weight:600">Tidak</span>'],
             ['Fasilitas Kamar',    item.fasilitas.join(', ')],
             ['Makanan & Minuman',  item.makanan.join(', ')],
-            ['Untuk berapa orang', `Maks ${item.maxOrang} Dewasa`],
+            ['Untuk berapa orang', `Maks ${item.max_orang} Dewasa`],
             ['Slot',               item.slot],
-            ['Harga Weekday',      `[${fmt(item.hargaWeekday)}, "Tanpa Breakfast"]`],
-            ['Harga Weekend',      `[${fmt(item.hargaWeekend)}, "Free Breakfast 4 pax"]`],
-            ['Harga Highseason',   `[${fmt(item.hargaHighseason)}, "Free Breakfast 4 pax"]`],
+            ['Harga Weekday',      `[${fmt(item.harga_weekday)}, "Tanpa Breakfast"]`],
+            ['Harga Weekend',      `[${fmt(item.harga_weekend)}, "Free Breakfast 4 pax"]`],
+            ['Harga Highseason',   `[${fmt(item.harga_highseason)}, "Free Breakfast 4 pax"]`],
         ].map(([label, val]) => `
             <tr class="border-b border-stone-100 last:border-0">
                 <td class="py-2 pr-3 text-xs font-semibold text-stone-600 whitespace-nowrap align-top">${label}</td>
@@ -246,12 +248,12 @@
             </div>
 
             {{-- Image grid --}}
-            <div class="unit-img-grid" onclick="openLightbox('${item.gambar}', ${item.id})">
-                <div class="img-main"><img src="${item.customImgs && item.customImgs[0] ? item.customImgs[0] : basePath+'/'+item.gambar+'/'+imgs[0]}" alt="${item.judul}" loading="lazy"></div>
-                <div class="img-thumb"><img src="${item.customImgs && item.customImgs[1] ? item.customImgs[1] : basePath+'/'+item.gambar+'/'+imgs[1]}" alt="" loading="lazy"></div>
-                <div class="img-thumb"><img src="${item.customImgs && item.customImgs[2] ? item.customImgs[2] : basePath+'/'+item.gambar+'/'+imgs[2]}" alt="" loading="lazy"></div>
+            <div class="unit-img-grid" onclick="openLightbox(${item.id})">
+                <div class="img-main"><img src="${'/' + (Array.isArray(item.gambar) && item.gambar.length > 0 ? item.gambar[0] : item.gambar)}" alt="${item.judul}" loading="lazy"></div>
+                <div class="img-thumb"><img src="${'/' + (Array.isArray(item.gambar) && item.gambar.length > 1 ? item.gambar[1] : (Array.isArray(item.gambar) && item.gambar.length > 0 ? item.gambar[0] : item.gambar))}" alt="" loading="lazy"></div>
+                <div class="img-thumb"><img src="${'/' + (Array.isArray(item.gambar) && item.gambar.length > 2 ? item.gambar[2] : (Array.isArray(item.gambar) && item.gambar.length > 0 ? item.gambar[0] : item.gambar))}" alt="" loading="lazy"></div>
                 <div class="img-thumb" style="position:relative">
-                    <img src="${item.customImgs && item.customImgs[3] ? item.customImgs[3] : basePath+'/'+item.gambar+'/'+imgs[3]}" alt="" loading="lazy">
+                    <img src="${'/' + (Array.isArray(item.gambar) && item.gambar.length > 3 ? item.gambar[3] : (Array.isArray(item.gambar) && item.gambar.length > 0 ? item.gambar[0] : item.gambar))}" alt="" loading="lazy">
                     <div class="overlay-label"><span>Lihat foto</span></div>
                 </div>
             </div>
@@ -311,18 +313,27 @@
 
     // ── Hapus unit ─────────────────────────────────────────────
     window.hapusKamar = function(id) {
-        if (!confirm('Yakin ingin menghapus unit ini?')) return;
-        const idx = AKOMODASI_DATA.findIndex(d => d.id === id);
-        if (idx !== -1) {
-            AKOMODASI_DATA.splice(idx, 1);
-            applyFilter();
-            showToast('Unit berhasil dihapus.', 'lucide:trash-2', 'text-red-400');
-        }
-        // ── Ganti dengan fetch DELETE ke route Laravel ──
-        // fetch(`/admin/unit/${id}`, {
-        //     method:'DELETE',
-        //     headers:{'X-CSRF-TOKEN':document.querySelector('meta[name="csrf-token"]').content}
-        // });
+        if(!confirm('Apakah Anda yakin ingin menghapus kamar ini? Data akan dihapus permanen dari database.')) return;
+        
+        fetch(`/admin/unit/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Accept': 'application/json'
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                window.location.reload();
+            } else {
+                alert('Terjadi kesalahan saat menghapus data.');
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert('Terjadi kesalahan jaringan.');
+        });
     };
 
     // ── Render halaman ─────────────────────────────────────────
@@ -391,8 +402,8 @@
 
         // Sort
         filteredData.sort((a, b) => sortAsc
-            ? a.hargaWeekday - b.hargaWeekday
-            : b.hargaWeekday - a.hargaWeekday);
+            ? a.harga_weekday - b.harga_weekday
+            : b.harga_weekday - a.harga_weekday);
 
         currentPage = 1;
         renderUnitTable();
@@ -411,9 +422,11 @@
 
     // ── Lightbox ───────────────────────────────────────────────
     let lbImages = [], lbIdx = 0;
-    window.openLightbox = function(gambar, id) {
+    window.openLightbox = function(id) {
         const item = AKOMODASI_DATA.find(d => d.id === id);
-        lbImages = item && item.customImgs ? [...item.customImgs] : imgs.map(i => `${basePath}/${gambar}/${i}`);
+        const images = Array.isArray(item.gambar) ? item.gambar : (item.gambar ? [item.gambar] : []);
+        lbImages = images.map(g => '/' + g);
+        if (lbImages.length === 0) lbImages = ['/images/akomodasi/cabin1/a.png'];
         lbIdx = 0; showLbImg();
         const lb = document.getElementById('lightbox');
         lb.classList.remove('hidden'); lb.classList.add('flex');

@@ -148,7 +148,7 @@
                     <div id="edit_gambar_preview_container" class="flex flex-wrap gap-3 mb-3">
                         <!-- Preview images injected by JS -->
                     </div>
-                    <input type="file" id="edit_gambar" multiple accept="image/*"
+                    <input type="file" id="edit_gambar" multiple accept="image/*" onchange="handleEditGambarChange(event)"
                         class="w-full px-4 py-2.5 rounded-xl border border-stone-200 bg-white/80 text-stone-800 text-sm
                                file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold
                                file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100 transition
@@ -202,15 +202,34 @@
         document.getElementById('edit_hargaWeekend').value = item.hargaWeekend;
         document.getElementById('edit_hargaHighseason').value = item.hargaHighseason;
 
-        const basePath = "{{ asset('images/akomodasi') }}";
-        const imgs = ['a.png','b.png','c.png','d.png'];
-        window.currentEditImages = item.customImgs 
-            ? [...item.customImgs] 
-            : imgs.map(i => `${basePath}/${item.gambar}/${i}`);
+        const existingImages = Array.isArray(item.gambar) ? item.gambar : (item.gambar ? [item.gambar] : []);
+        window.currentEditImages = existingImages.map(url => ({
+            type: 'existing',
+            url: url.startsWith('/') ? url : '/' + url
+        }));
             
         renderEditImagePreviews();
 
         document.getElementById('modalEditKamar').classList.remove('hidden');
+    };
+
+    window.handleEditGambarChange = function(event) {
+        const files = Array.from(event.target.files);
+        let loaded = 0;
+        files.forEach(file => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                window.currentEditImages.push({
+                    type: 'new',
+                    file: file,
+                    url: e.target.result
+                });
+                loaded++;
+                if (loaded === files.length) renderEditImagePreviews();
+            };
+            reader.readAsDataURL(file);
+        });
+        event.target.value = '';
     };
 
     window.renderEditImagePreviews = function() {
@@ -221,7 +240,7 @@
             return;
         }
 
-        window.currentEditImages.forEach((imgUrl, index) => {
+        window.currentEditImages.forEach((imgObj, index) => {
             const div = document.createElement('div');
             div.className = 'relative group w-24 h-24 rounded-xl overflow-hidden border border-stone-200 cursor-move bg-white shadow-sm flex-shrink-0';
             div.draggable = true;
@@ -234,7 +253,7 @@
             div.addEventListener('dragleave', handleDragLeave);
 
             const image = document.createElement('img');
-            image.src = imgUrl;
+            image.src = imgObj.url;
             image.className = 'w-full h-full object-cover pointer-events-none';
             
             const removeBtn = document.createElement('button');
@@ -312,27 +331,54 @@
         const idx      = AKOMODASI_DATA.findIndex(d => d.id === id);
         if (idx === -1) return;
 
-        AKOMODASI_DATA[idx].judul           = document.getElementById('edit_nama').value.trim();
-        AKOMODASI_DATA[idx].jenis           = document.getElementById('edit_jenis').value;
-        AKOMODASI_DATA[idx].kasur           = document.getElementById('edit_kasur').value.trim();
-        AKOMODASI_DATA[idx].merokok         = document.getElementById('edit_merokok').value === '1';
-        AKOMODASI_DATA[idx].fasilitas       = document.getElementById('edit_fasilitas').value.split(',').map(s=>s.trim()).filter(Boolean);
-        AKOMODASI_DATA[idx].makanan         = document.getElementById('edit_makanan').value.split(',').map(s=>s.trim()).filter(Boolean);
-        AKOMODASI_DATA[idx].maxOrang        = parseInt(document.getElementById('edit_maxOrang').value) || 4;
-        AKOMODASI_DATA[idx].slot            = parseInt(document.getElementById('edit_slot').value) || 1;
-        AKOMODASI_DATA[idx].hargaWeekday    = parseInt(document.getElementById('edit_hargaWeekday').value) || 0;
-        AKOMODASI_DATA[idx].hargaWeekend    = parseInt(document.getElementById('edit_hargaWeekend').value) || 0;
-        AKOMODASI_DATA[idx].hargaHighseason = parseInt(document.getElementById('edit_hargaHighseason').value) || 0;
-        AKOMODASI_DATA[idx].customImgs      = window.currentEditImages ? [...window.currentEditImages] : null;
+        const formData = new FormData();
+        formData.append('_method', 'PUT'); // Laravel method spoofing
+        formData.append('judul', document.getElementById('edit_nama').value.trim());
+        formData.append('jenis', document.getElementById('edit_jenis').value);
+        formData.append('kasur', document.getElementById('edit_kasur').value.trim());
+        formData.append('merokok', document.getElementById('edit_merokok').value === '1' ? '1' : '0');
+        formData.append('fasilitas', document.getElementById('edit_fasilitas').value);
+        formData.append('makanan', document.getElementById('edit_makanan').value);
+        formData.append('max_orang', document.getElementById('edit_maxOrang').value);
+        formData.append('slot', document.getElementById('edit_slot').value);
+        formData.append('harga_weekday', document.getElementById('edit_hargaWeekday').value);
+        formData.append('harga_weekend', document.getElementById('edit_hargaWeekend').value);
+        formData.append('harga_highseason', document.getElementById('edit_hargaHighseason').value);
 
-        if (typeof renderUnitTable === 'function') renderUnitTable();
-        closeModalEdit();
+        window.currentEditImages.forEach(imgObj => {
+            if (imgObj.type === 'existing') {
+                formData.append('existing_gambar[]', imgObj.url);
+            } else if (imgObj.type === 'new') {
+                formData.append('gambar[]', imgObj.file);
+            }
+        });
 
-        // ── Ganti dengan fetch() ke route Laravel PUT/PATCH ──
-        // fetch(`/admin/unit/${id}`, {
-        //     method : 'PUT',
-        //     headers: { 'Content-Type':'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
-        //     body   : JSON.stringify(AKOMODASI_DATA[idx]),
-        // });
+        const submitBtn = document.querySelector('#modalEditKamar button[onclick="submitEditKamar()"]');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = 'Menyimpan...';
+
+        fetch(`/admin/unit/${id}`, {
+            method: 'POST', // POST for FormData, but _method is PUT
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                window.location.reload();
+            } else {
+                alert('Terjadi kesalahan saat menyimpan data.');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<iconify-icon icon="lucide:save" class="text-base"></iconify-icon> Simpan Perubahan';
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert('Terjadi kesalahan jaringan.');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<iconify-icon icon="lucide:save" class="text-base"></iconify-icon> Simpan Perubahan';
+        });
     };
 </script>

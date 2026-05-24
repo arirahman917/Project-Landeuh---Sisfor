@@ -15,6 +15,7 @@
             </nav>
 
             <!-- Auth Buttons (Desktop/Tablet) -->
+            @guest
             <div class="hidden sm:flex items-center gap-3" id="desktopAuthButtons">
                 <button type="button" onclick="openLoginModal()" class="flex items-center gap-2 bg-[#789e3a] hover:bg-[#688a32] text-white px-3 lg:px-4 py-2 rounded-lg font-semibold transition shadow-sm text-xs lg:text-sm">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
@@ -29,15 +30,21 @@
                     Daftar
                 </button>
             </div>
+            @endguest
             
             <!-- Logged in State (Desktop) -->
-            <div class="hidden items-center gap-3" id="desktopUserMenu">
+            @auth
+            <div class="hidden sm:flex items-center gap-3" id="desktopUserMenu">
                 <div class="flex items-center gap-2 bg-white/60 px-4 py-2 rounded-lg shadow-sm border border-white/50">
-                    <div class="w-6 h-6 rounded-full bg-[#789e3a] text-white flex items-center justify-center text-xs font-bold" id="desktopUserInitial">A</div>
-                    <span class="font-semibold text-gray-800 text-sm" id="desktopUserName">User</span>
+                    <div class="w-6 h-6 rounded-full bg-[#789e3a] text-white flex items-center justify-center text-xs font-bold" id="desktopUserInitial">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</div>
+                    <span class="font-semibold text-gray-800 text-sm" id="desktopUserName">{{ Auth::user()->name }}</span>
                 </div>
-                <button type="button" onclick="logoutMock()" class="text-red-500 hover:text-red-700 font-semibold text-xs lg:text-sm transition">Keluar</button>
+                <form action="{{ route('logout') }}" method="POST" class="inline">
+                    @csrf
+                    <button type="submit" class="text-red-500 hover:text-red-700 font-semibold text-xs lg:text-sm transition cursor-pointer">Keluar</button>
+                </form>
             </div>
+            @endauth
 
             <!-- Mobile Hamburger -->
             <button id="mobileMenuBtn" class="md:hidden p-2 text-gray-800 hover:bg-white/50 rounded-lg transition" aria-label="Menu">
@@ -55,6 +62,7 @@
         <a href="/pesanan" class="text-center font-semibold text-gray-800 text-base py-3 hover:text-green-800 transition">Pesanan</a>
         
         <div class="mt-4 flex flex-col gap-3">
+            @guest
             <div class="flex flex-col gap-3" id="mobileAuthButtons">
                 <button type="button" onclick="openLoginModal()" class="w-full flex items-center justify-center gap-2 bg-[#6b8e23] hover:bg-[#55711c] text-white py-3.5 rounded-2xl font-bold shadow-sm transition text-sm">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
@@ -69,15 +77,21 @@
                     Daftar
                 </button>
             </div>
+            @endguest
             
             <!-- Logged in State (Mobile) -->
-            <div class="hidden flex-col gap-3 border-t border-white/50 pt-3" id="mobileUserMenu">
+            @auth
+            <div class="flex flex-col gap-3 border-t border-white/50 pt-3" id="mobileUserMenu">
                 <div class="flex items-center gap-3 px-2">
-                    <div class="w-8 h-8 rounded-full bg-[#789e3a] text-white flex items-center justify-center text-sm font-bold" id="mobileUserInitial">A</div>
-                    <span class="font-semibold text-gray-800 text-base" id="mobileUserName">User</span>
+                    <div class="w-8 h-8 rounded-full bg-[#789e3a] text-white flex items-center justify-center text-sm font-bold" id="mobileUserInitial">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</div>
+                    <span class="font-semibold text-gray-800 text-base" id="mobileUserName">{{ Auth::user()->name }}</span>
                 </div>
-                <button type="button" onclick="logoutMock()" class="w-full text-center py-2 text-red-500 hover:text-red-700 font-semibold text-sm transition">Keluar</button>
+                <form action="{{ route('logout') }}" method="POST" class="w-full">
+                    @csrf
+                    <button type="submit" class="w-full text-center py-2 text-red-500 hover:text-red-700 font-semibold text-sm transition">Keluar</button>
+                </form>
             </div>
+            @endauth
         </div>
     </div>
 </header>

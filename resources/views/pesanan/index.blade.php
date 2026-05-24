@@ -32,7 +32,7 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    const isLoggedIn = sessionStorage.getItem('user_logged_in') === 'true';
+    const isLoggedIn = {{ Auth::check() ? 'true' : 'false' }};
     const container = document.getElementById('pesananContent');
 
     if (!isLoggedIn) {

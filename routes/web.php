@@ -1,14 +1,11 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\LandingController;
 
-Route::get('/', function () {
-    return view('landing.index');
-});
+Route::get('/', [LandingController::class, 'index'])->name('home');
 
-Route::get('/akomodasi', function () {
-    return view('akomodasi.akomodasi_detail');
-})->name('akomodasi.index');
+Route::get('/akomodasi', [LandingController::class, 'akomodasi'])->name('akomodasi.index');
 
 Route::get('/pesanan', function () {
     return view('pesanan.index');
@@ -43,25 +40,49 @@ Route::get('/reservasi/konfirmasi', function () {
 })->name('reservasi.konfirmasi');
 
 // ══════════════════════════════════════════════════════════════
+// USER AUTH
+// ══════════════════════════════════════════════════════════════
+use App\Http\Controllers\AuthController;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+
+Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+Route::post('/register', [AuthController::class, 'register'])->name('register.post');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+Route::get('/auth/google', [AuthController::class, 'redirectToGoogle'])->name('auth.google');
+Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');
+
+Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    $request->fulfill();
+    return redirect('/')->with('success', 'Email berhasil diverifikasi.');
+})->middleware(['auth', 'signed'])->name('verification.verify');
+
+// ══════════════════════════════════════════════════════════════
 // ADMIN — Frontend-only auth (sessionStorage)
 // ══════════════════════════════════════════════════════════════
+use App\Http\Controllers\Admin\UnitController;
+use App\Http\Controllers\Admin\PesananController;
+
 Route::prefix('admin')->group(function () {
 
     Route::get('/login', function () {
+        if (Auth::guard('admin')->check() && Auth::guard('admin')->user()->role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        }
         return view('admin.auth.login');
     })->name('admin.login');
 
-    Route::get('/dashboard', function () {
-        return view('admin.unit.index');
-    })->name('admin.dashboard');
+    Route::post('/login', [AuthController::class, 'adminLogin'])->name('admin.login.post');
+    Route::post('/logout', [AuthController::class, 'adminLogout'])->name('admin.logout.post');
 
-    Route::get('/unit', function () {
-        return view('admin.unit.index');
-    })->name('admin.unit.index');
+    Route::get('/dashboard', [UnitController::class, 'index'])->name('admin.dashboard');
 
-    Route::get('/pesanan', function () {
-        return view('admin.pesanan.index');
-    })->name('admin.pesanan.index');
+    Route::get('/unit', [UnitController::class, 'index'])->name('admin.unit.index');
+    Route::post('/unit', [UnitController::class, 'store'])->name('admin.unit.store');
+    Route::put('/unit/{id}', [UnitController::class, 'update'])->name('admin.unit.update');
+    Route::delete('/unit/{id}', [UnitController::class, 'destroy'])->name('admin.unit.destroy');
+
+    Route::get('/pesanan', [PesananController::class, 'index'])->name('admin.pesanan.index');
 
     Route::get('/pengembalian', function () {
         return view('admin.pesanan.pengembalian');
@@ -71,8 +92,7 @@ Route::prefix('admin')->group(function () {
         return view('admin.pelanggan.index');
     })->name('admin.pelanggan.index');
 
-    Route::get('/tanggal', function () {
-        return view('admin.tanggal.index');
-    })->name('admin.tanggal.index');
+    Route::get('/tanggal', [App\Http\Controllers\Admin\TanggalController::class, 'index'])->name('admin.tanggal.index');
+    Route::post('/tanggal', [App\Http\Controllers\Admin\TanggalController::class, 'updateAll'])->name('admin.tanggal.updateAll');
 });
 

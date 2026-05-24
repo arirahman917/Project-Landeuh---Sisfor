@@ -24,7 +24,7 @@
         <h2 class="text-2xl font-bold text-center text-gray-800 mb-8 relative z-10">Daftar</h2>
 
         <div class="space-y-4 relative z-10">
-            <button class="w-full flex items-center justify-center gap-3 bg-white hover:bg-gray-50 text-gray-700 py-3 rounded-full font-semibold shadow-sm border border-gray-200 transition">
+            <a href="{{ route('auth.google') }}" class="w-full flex items-center justify-center gap-3 bg-white hover:bg-gray-50 text-gray-700 py-3 rounded-full font-semibold shadow-sm border border-gray-200 transition">
                 <svg class="w-5 h-5" viewBox="0 0 24 24">
                     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
                     <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
@@ -32,7 +32,7 @@
                     <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
                 </svg>
                 Google
-            </button>
+            </a>
             
             <div class="text-center mt-6">
                 <button onclick="showManualForm()" class="text-blue-500 font-semibold hover:text-blue-700 transition">Metode lain</button>
@@ -234,29 +234,48 @@
     }
 
     // Handle form submit
-    function handleRegisterSubmit(e) {
+    async function handleRegisterSubmit(e) {
         e.preventDefault();
         const name = document.getElementById('regName').value;
         const email = document.getElementById('regEmail').value;
+        const phone = document.getElementById('regPhone').value;
         const password = document.getElementById('regPassword').value;
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
-        // Mock validation or simulated failure
-        // For demonstration, if password is 'gagal', we show Failed Modal.
-        if (password === 'gagal') {
+        const formData = new FormData();
+        formData.append('name', name);
+        formData.append('email', email);
+        formData.append('phone', phone);
+        formData.append('password', password);
+
+        try {
+            const response = await fetch("{{ route('register.post') }}", {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken || '',
+                    'Accept': 'application/json'
+                },
+                body: formData
+            });
+
+            if (response.ok) {
+                registeredName = name;
+                document.getElementById('verifEmailDisplay').textContent = email;
+                
+                // Show verification modal
+                hideAllModals();
+                modalVerification.classList.remove('hidden');
+                setTimeout(() => {
+                    modalVerification.classList.remove('scale-95');
+                    modalVerification.classList.add('scale-100');
+                }, 10);
+            } else {
+                showFailedModal();
+            }
+        } catch (error) {
+            console.error(error);
             showFailedModal();
-            return;
         }
-
-        registeredName = name;
-        document.getElementById('verifEmailDisplay').textContent = email;
-        
-        // Show verification modal
-        hideAllModals();
-        modalVerification.classList.remove('hidden');
-        setTimeout(() => {
-            modalVerification.classList.remove('scale-95');
-            modalVerification.classList.add('scale-100');
-        }, 10);
     }
 
     function showFailedModal() {
@@ -277,89 +296,9 @@
             modalSuccess.classList.add('scale-100');
         }, 10);
 
-        // After 2 seconds, close modal and login user
-        const regEmail = document.getElementById('regEmail')?.value || '';
-        const regPhone = document.getElementById('regPhone')?.value || '';
+        // After 1.5 seconds, close modal and reload page
         setTimeout(() => {
-            closeRegisterModal();
-            loginMockUser(registeredName, regEmail, regPhone);
-        }, 2000);
+            window.location.reload();
+        }, 1500);
     }
-
-    function loginMockUser(name, email, phone) {
-        if(!name) name = "User";
-        const initial = name.charAt(0).toUpperCase();
-
-        // Persist user data to sessionStorage
-        sessionStorage.setItem('user_logged_in', 'true');
-        sessionStorage.setItem('user_name', name);
-        sessionStorage.setItem('user_email', email || '');
-        sessionStorage.setItem('user_phone', phone || '');
-
-        // Update Desktop Navbar
-        if(desktopAuthBtns) desktopAuthBtns.classList.add('hidden');
-        if(desktopAuthBtns) desktopAuthBtns.classList.remove('sm:flex');
-        
-        if(desktopUserMenu) {
-            desktopUserMenu.classList.remove('hidden');
-            desktopUserMenu.classList.add('flex');
-            desktopUserName.textContent = name;
-            desktopUserInitial.textContent = initial;
-        }
-
-        // Update Mobile Navbar
-        if(mobileAuthBtns) mobileAuthBtns.classList.add('hidden');
-        
-        if(mobileUserMenu) {
-            mobileUserMenu.classList.remove('hidden');
-            mobileUserMenu.classList.add('flex');
-            mobileUserName.textContent = name;
-            mobileUserInitial.textContent = initial;
-        }
-
-        // If there's a pending redirect (from Pilih Kamar), go there
-        const pendingUrl = sessionStorage.getItem('pending_redirect');
-        if (pendingUrl) {
-            sessionStorage.removeItem('pending_redirect');
-            setTimeout(() => { window.location.href = pendingUrl; }, 500);
-        }
-    }
-
-    function logoutMock() {
-        // Clear sessionStorage
-        sessionStorage.removeItem('user_logged_in');
-        sessionStorage.removeItem('user_name');
-        sessionStorage.removeItem('user_email');
-        sessionStorage.removeItem('user_phone');
-
-        // Revert Desktop Navbar
-        if(desktopAuthBtns) {
-            desktopAuthBtns.classList.remove('hidden');
-            desktopAuthBtns.classList.add('sm:flex');
-        }
-        
-        if(desktopUserMenu) {
-            desktopUserMenu.classList.add('hidden');
-            desktopUserMenu.classList.remove('flex');
-        }
-
-        // Revert Mobile Navbar
-        if(mobileAuthBtns) {
-            mobileAuthBtns.classList.remove('hidden');
-        }
-        
-        if(mobileUserMenu) {
-            mobileUserMenu.classList.add('hidden');
-            mobileUserMenu.classList.remove('flex');
-        }
-    }
-
-    // ── Restore login state on page load ──────────────────────
-    (function restoreLoginState() {
-        const isLoggedIn = sessionStorage.getItem('user_logged_in') === 'true';
-        const userName = sessionStorage.getItem('user_name');
-        if (isLoggedIn && userName) {
-            loginMockUser(userName, sessionStorage.getItem('user_email'), sessionStorage.getItem('user_phone'));
-        }
-    })();
 </script>
