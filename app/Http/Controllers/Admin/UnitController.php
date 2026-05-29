@@ -10,14 +10,11 @@ class UnitController extends Controller
 {
     public function index()
     {
-        // Fetch all accommodations with their bookings to calculate availability
-        $accommodations = Accommodation::with('bookings')->get();
+        // Fetch all accommodations with their active bookings to calculate availability
+        $accommodations = Accommodation::with(['bookings' => function($query) {
+            $query->whereNotIn('status', ['failed', 'refunded']);
+        }])->get();
 
-        // Optional: Transform the data to match exactly what the frontend JS expects, 
-        // or just let the frontend adapt to Eloquent's JSON structure.
-        // We will adapt the JS to Eloquent's structure (e.g. max_orang instead of maxOrang)
-        // But we need to calculate bookedDates for the frontend logic.
-        
         $accommodations->transform(function ($item) {
             $bookedDates = $item->bookings->map(function ($booking) {
                 return $booking->check_in_date->format('Y-m-d') . ' -> ' . $booking->check_out_date->format('Y-m-d');

@@ -178,6 +178,23 @@
         return 'IDR ' + Number(n).toLocaleString('id-ID');
     }
 
+    // Helper to parse date strictly in local time (00:00:00) to prevent timezone/hour shifting bugs
+    function parseToLocalDate(dateInput) {
+        if (!dateInput) return null;
+        let str = "";
+        if (typeof dateInput === 'string') {
+            str = dateInput.split(/[T ]/)[0]; // Ambil bagian tanggal saja, misal "2026-05-29"
+        } else {
+            const d = new Date(dateInput);
+            const y = d.getFullYear();
+            const m = String(d.getMonth() + 1).padStart(2, '0');
+            const r = String(d.getDate()).padStart(2, '0');
+            str = `${y}-${m}-${r}`;
+        }
+        const [year, month, day] = str.split('-').map(Number);
+        return new Date(year, month - 1, day, 0, 0, 0, 0);
+    }
+
     // ── Toast ──────────────────────────────────────────────────
     function showToast(msg, icon = 'lucide:check-circle', color = 'text-green-400') {
         const t = document.getElementById('adminToast');
@@ -192,30 +209,47 @@
     }
     window.showToast = showToast;
 
-    // ── Render single card ─────────────────────────────────────
     function renderCard(item, no) {
-        const tersedia  = !item.bookedDates || item.bookedDates.length === 0;
-        const booked    = item.bookedDates || [];
+        const today = parseToLocalDate(new Date());
+        const todayTime = today.getTime();
+
+        const activeBookingsToday = (item.bookings || []).filter(b => {
+            if (b.status === 'failed' || b.status === 'refunded') return false;
+            const bIn = parseToLocalDate(b.check_in_date);
+            const bOut = parseToLocalDate(b.check_out_date);
+            return todayTime >= bIn.getTime() && todayTime < bOut.getTime();
+        });
+
+        const countBookedToday = activeBookingsToday.length;
+        const countTersediaToday = Math.max(0, item.slot - countBookedToday);
+
+        // Filter booked dates to show only active current & future bookings (check_out >= today)
+        const currentAndFutureBookings = (item.bookings || []).filter(b => {
+            if (b.status === 'failed' || b.status === 'refunded') return false;
+            const bOut = parseToLocalDate(b.check_out_date);
+            return bOut.getTime() >= todayTime;
+        });
+
         const slotLabel = item.jenis === 'Glamping'
             ? `Sisa ${item.slot} Unit Tenda`
             : `Sisa ${item.slot} Unit`;
 
-        // Booked date badges
+        // Booked date badges showing date range and guest name
         let bookedBadgesHtml = '';
-        if (booked.length > 0) {
-            bookedBadgesHtml = booked.map(dateStr => {
-                let displayStr = dateStr;
-                if (dateStr.includes('->')) {
-                    displayStr = dateStr.split('->').map(s => {
-                        let d = s.trim();
-                        let p = d.split('-');
-                        return p.length === 3 ? `${p[2]}-${p[1]}-${p[0]}` : d;
-                    }).join(' &rarr; ');
-                } else {
-                    let p = dateStr.split('-');
-                    displayStr = p.length === 3 ? `${p[2]}-${p[1]}-${p[0]}` : dateStr;
-                }
-                return `<span class="booked-badge bg-[#fff1f2] border-red-200 text-red-500 font-semibold px-2 py-1 rounded-lg shadow-sm text-[10px] whitespace-nowrap">${displayStr}</span>`;
+        if (currentAndFutureBookings.length > 0) {
+            bookedBadgesHtml = currentAndFutureBookings.map(b => {
+                const bIn = parseToLocalDate(b.check_in_date);
+                const bOut = parseToLocalDate(b.check_out_date);
+                
+                const fmtDate = (d) => {
+                    const dd = String(d.getDate()).padStart(2, '0');
+                    const mm = String(d.getMonth() + 1).padStart(2, '0');
+                    const yyyy = d.getFullYear();
+                    return `${dd}-${mm}-${yyyy}`;
+                };
+                
+                const displayStr = `${fmtDate(bIn)} &rarr; ${fmtDate(bOut)} (${b.pemesan_nama || 'Tamu'})`;
+                return `<span class="booked-badge bg-[#fff1f2] border border-red-200 text-red-500 font-semibold px-2 py-1 rounded-lg shadow-sm text-[10px] whitespace-nowrap">${displayStr}</span>`;
             }).join('');
         }
 
@@ -277,14 +311,14 @@
                     <div class="flex flex-wrap items-center gap-2">
                         <div class="available-badge">
                             <iconify-icon icon="lucide:check-circle" class="text-xs"></iconify-icon>
-                            Tersedia : ${tersedia ? item.slot : 0}
+                            Tersedia Malam Ini : ${countTersediaToday}
                         </div>
                         <div class="booked-badge">
                             <iconify-icon icon="lucide:calendar-x" class="text-xs"></iconify-icon>
-                            Booked : ${booked.length}
+                            Terisi Malam Ini : ${countBookedToday}
                         </div>
                     </div>
-                    ${booked.length > 0 ? `<div class="flex flex-wrap gap-1.5">${bookedBadgesHtml}</div>` : ''}
+                    ${currentAndFutureBookings.length > 0 ? `<div class="flex flex-wrap gap-1.5">${bookedBadgesHtml}</div>` : ''}
                 </div>
 
                 {{-- Detail table --}}
@@ -346,9 +380,28 @@
                 : '<div class="text-center py-20 text-stone-400"><iconify-icon icon="lucide:search-x" class="text-5xl mb-3"></iconify-icon><p class="text-sm">Tidak ada unit yang ditemukan.</p></div>';
 
         // Stats
-        document.getElementById('statJumlahUnit').textContent = AKOMODASI_DATA.length;
-        const tersedia = AKOMODASI_DATA.filter(d => !d.bookedDates || d.bookedDates.length === 0).length;
-        document.getElementById('statTersedia').textContent   = tersedia;
+        let totalSlots = 0;
+        let totalTersediaToday = 0;
+
+        AKOMODASI_DATA.forEach(item => {
+            totalSlots += parseInt(item.slot || 0);
+
+            const today = parseToLocalDate(new Date());
+            const todayTime = today.getTime();
+
+            const activeBookingsToday = (item.bookings || []).filter(b => {
+                if (b.status === 'failed' || b.status === 'refunded') return false;
+                const bIn = parseToLocalDate(b.check_in_date);
+                const bOut = parseToLocalDate(b.check_out_date);
+                return todayTime >= bIn.getTime() && todayTime < bOut.getTime();
+            });
+
+            const countBookedToday = activeBookingsToday.length;
+            totalTersediaToday += Math.max(0, item.slot - countBookedToday);
+        });
+
+        document.getElementById('statJumlahUnit').textContent = totalSlots;
+        document.getElementById('statTersedia').textContent   = totalTersediaToday;
 
         renderPagination();
     };
