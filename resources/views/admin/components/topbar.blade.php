@@ -2,6 +2,51 @@
      TOPBAR — Admin Dashboard Landeuh Village Riverside
      ============================================================ --}}
 
+@php
+    $recentBookings = \App\Models\Booking::with('accommodation')
+        ->where(function($query) {
+            $query->where(function($q) {
+                $q->where('status', 'success')
+                  ->where('created_at', '>=', now()->subDays(5));
+            })->orWhere(function($q) {
+                $q->where('status', 'refund_pending')
+                  ->where('updated_at', '>=', now()->subDays(5));
+            });
+        })
+        ->get();
+
+    // Sort descending by updated_at for refund_pending, and created_at for success
+    $sortedBookings = $recentBookings->sortByDesc(function ($booking) {
+        return $booking->status === 'refund_pending' ? $booking->updated_at : $booking->created_at;
+    })->take(10);
+
+    $notifListRaw = $sortedBookings->map(function ($booking) {
+        $type = $booking->status === 'refund_pending' ? 'cancel' : 'order';
+        $title = $booking->status === 'refund_pending' ? 'Pengajuan Pembatalan' : 'Pesanan Baru Masuk';
+        
+        $accTitle = $booking->accommodation ? $booking->accommodation->judul : 'Akomodasi';
+        $desc = $booking->status === 'refund_pending'
+            ? "{$booking->pemesan_nama} mengajukan pembatalan pesanan #{$booking->no_pesanan}."
+            : "{$booking->pemesan_nama} memesan {$accTitle} untuk {$booking->malam} malam.";
+            
+        $timeStr = $booking->status === 'refund_pending'
+            ? $booking->updated_at->diffForHumans()
+            : $booking->created_at->diffForHumans();
+
+        return [
+            'type' => $type,
+            'title' => $title,
+            'desc' => $desc,
+            'time' => $timeStr,
+            'read' => false,
+            'noPesanan' => $booking->no_pesanan,
+            'active_time' => $booking->status === 'refund_pending'
+                ? $booking->updated_at->toIso8601String()
+                : $booking->created_at->toIso8601String(),
+        ];
+    })->values()->toArray();
+@endphp
+
 <header class="sticky top-0 z-30 flex items-center gap-4 px-4 sm:px-6 py-3
                bg-[#fdf6e3]/90 backdrop-blur-md border-b border-amber-200/60 shadow-sm"
 >
@@ -184,11 +229,18 @@
     });
 
     // ── Notification Panel ─────────────────────────────────────
-    const NOTIF_DATA = [
-        { type:'order',  title:'Pesanan Baru Masuk', desc:'M. Akbar R. memesan Cabin 1 untuk 2 malam.', time:'2 menit lalu', read:false },
-        { type:'cancel', title:'Pengajuan Pembatalan', desc:'Budi S. mengajukan pembatalan pesanan #LDH-482A3.', time:'15 menit lalu', read:false },
-        { type:'order',  title:'Pesanan Baru Masuk', desc:'Citra D. memesan Cabin 3 untuk 1 malam.', time:'1 jam lalu', read:false },
-    ];
+    const NOTIF_DATA = @json($notifListRaw);
+
+    // Sync read states from localStorage using key: "{noPesanan}_{type}"
+    (function() {
+        const readKeys = JSON.parse(localStorage.getItem('read_notif_keys') || '[]').filter(Boolean);
+        NOTIF_DATA.forEach(n => {
+            const key = n.noPesanan ? `${n.noPesanan}_${n.type}` : '';
+            if (key && readKeys.includes(key)) {
+                n.read = true;
+            }
+        });
+    })();
 
     function renderNotifList() {
         const list = document.getElementById('notifList');
@@ -224,18 +276,102 @@
     }
 
     function markAllRead() {
-        NOTIF_DATA.forEach(n => n.read = true);
+        const readKeys = JSON.parse(localStorage.getItem('read_notif_keys') || '[]').filter(Boolean);
+        NOTIF_DATA.forEach(n => {
+            n.read = true;
+            const key = n.noPesanan ? `${n.noPesanan}_${n.type}` : '';
+            if (key && !readKeys.includes(key)) {
+                readKeys.push(key);
+            }
+        });
+        localStorage.setItem('read_notif_keys', JSON.stringify(readKeys));
         renderNotifList();
     }
 
     function clickNotif(idx) {
-        NOTIF_DATA[idx].read = true;
+        const item = NOTIF_DATA[idx];
+        if (!item) return;
+        item.read = true;
+        
+        const readKeys = JSON.parse(localStorage.getItem('read_notif_keys') || '[]').filter(Boolean);
+        const key = item.noPesanan ? `${item.noPesanan}_${item.type}` : '';
+        if (key && !readKeys.includes(key)) {
+            readKeys.push(key);
+            localStorage.setItem('read_notif_keys', JSON.stringify(readKeys));
+        }
+        
         renderNotifList();
-        const target = NOTIF_DATA[idx].type === 'cancel' ? '/admin/pengembalian' : '/admin/pesanan';
+        const target = item.type === 'cancel' ? '/admin/pengembalian' : '/admin/pesanan';
         window.location.href = target;
     }
 
     renderNotifList();
+
+    // ── Real-time Notification Polling ─────────────────────────
+    async function pollNotifications() {
+        try {
+            const response = await fetch('/admin/api/notifications');
+            if (!response.ok) return;
+            const freshNotifs = await response.json();
+            
+            const readKeys = JSON.parse(localStorage.getItem('read_notif_keys') || '[]').filter(Boolean);
+            let hasNew = false;
+            
+            // Loop in reverse (oldest to newest of fresh) so we show popup toast in correct chronological order
+            for (let i = freshNotifs.length - 1; i >= 0; i--) {
+                const fresh = freshNotifs[i];
+                const freshKey = fresh.noPesanan ? `${fresh.noPesanan}_${fresh.type}` : '';
+                if (!freshKey) continue;
+                
+                const existingIndex = NOTIF_DATA.findIndex(n => n.noPesanan === fresh.noPesanan && n.type === fresh.type);
+                
+                if (existingIndex === -1) {
+                    // Brand new notification!
+                    fresh.read = readKeys.includes(freshKey);
+                    
+                    // Unshift into NOTIF_DATA
+                    NOTIF_DATA.unshift(fresh);
+                    hasNew = true;
+                    
+                    if (!fresh.read) {
+                        showPushNotif(fresh.type, fresh.title, fresh.desc);
+                    }
+                } else {
+                    // Already exists in NOTIF_DATA. Update dynamic time and description.
+                    const existing = NOTIF_DATA[existingIndex];
+                    existing.time = fresh.time;
+                    existing.desc = fresh.desc;
+                    existing.title = fresh.title;
+                    
+                    // If local state is unread, but localStorage has it, sync it
+                    if (readKeys.includes(freshKey)) {
+                        existing.read = true;
+                    }
+                }
+            }
+            
+            if (hasNew) {
+                // Sort NOTIF_DATA descending by active_time
+                NOTIF_DATA.sort((a, b) => {
+                    const timeA = new Date(a.active_time || 0);
+                    const timeB = new Date(b.active_time || 0);
+                    return timeB - timeA;
+                });
+                
+                // Keep max 10
+                if (NOTIF_DATA.length > 10) {
+                    NOTIF_DATA.length = 10;
+                }
+                
+                renderNotifList();
+            }
+        } catch (err) {
+            console.error('Failed to poll notifications:', err);
+        }
+    }
+
+    // Poll every 15 seconds
+    setInterval(pollNotifications, 15000);
 
     // ── Close on outside click ─────────────────────────────────
     document.addEventListener('click', () => {
@@ -282,18 +418,4 @@
         toast.classList.remove('show');
         setTimeout(() => toast.remove(), 500);
     }
-
-    // ── Demo: fire push notifications after page load ──────────
-    setTimeout(() => {
-        showPushNotif('order', 'Pesanan Baru Masuk', 'Eka W. memesan Glamping VIP untuk 2 malam.');
-        // Add to notification list
-        NOTIF_DATA.unshift({ type:'order', title:'Pesanan Baru Masuk', desc:'Eka W. memesan Glamping VIP untuk 2 malam.', time:'Baru saja', read:false });
-        renderNotifList();
-    }, 3000);
-
-    setTimeout(() => {
-        showPushNotif('cancel', 'Pengajuan Pembatalan Masuk', 'Dian P. mengajukan pembatalan pesanan #LDH-7F3B1.');
-        NOTIF_DATA.unshift({ type:'cancel', title:'Pengajuan Pembatalan', desc:'Dian P. mengajukan pembatalan pesanan #LDH-7F3B1.', time:'Baru saja', read:false });
-        renderNotifList();
-    }, 8000);
 </script>

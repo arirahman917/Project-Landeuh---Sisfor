@@ -23,6 +23,7 @@ class Booking extends Model
         'tambahan_dewasa',
         'total',
         'metode_pembayaran',
+        'status',
     ];
 
     protected $casts = [

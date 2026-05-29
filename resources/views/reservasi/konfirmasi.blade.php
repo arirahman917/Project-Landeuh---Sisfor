@@ -574,6 +574,25 @@
 <script src="{{ asset('js/akomodasi-data.js') }}"></script>
 <script>
 (function () {
+    @if(isset($booking))
+        // Populate sessionStorage with the database booking data
+        sessionStorage.setItem('res_booking_no', '{{ $booking->no_pesanan }}');
+        sessionStorage.setItem('res_nama', '{{ $booking->pemesan_nama }}');
+        sessionStorage.setItem('res_hp', '{{ $booking->pemesan_telp }}');
+        sessionStorage.setItem('res_email', '{{ $booking->pemesan_email }}');
+        sessionStorage.setItem('res_tamu', '{{ $booking->nama_tamu }}');
+        sessionStorage.setItem('res_guest', '{{ $booking->accommodation->max_orang }} Dewasa');
+        
+        @php
+            $formattedTotal = number_format($booking->total, 0, ',', '.');
+        @endphp
+        
+        sessionStorage.setItem('res_total', '{{ $formattedTotal }}');
+        sessionStorage.setItem('res_akoId', '{{ $booking->accommodation_id }}');
+        sessionStorage.setItem('res_payment_status', '{{ $booking->status }}');
+        sessionStorage.setItem('res_payment_method', '{{ $booking->metode_pembayaran }}');
+    @endif
+
     // ── Baca sessionStorage ───────────────────────────────────────────────
     const status   = sessionStorage.getItem('res_payment_status') || 'success'; // 'success' | 'failed'
     const dNama    = sessionStorage.getItem('res_nama')    || 'Ari Rahman';
@@ -584,6 +603,38 @@
     const dTotal   = sessionStorage.getItem('res_total')   || '1.475.000';
     const dBooking = sessionStorage.getItem('res_booking_no') || 'XXXXXXXXXX';
     const akoId    = parseInt(sessionStorage.getItem('res_akoId')) || 1;
+    
+    // Parse URL query parameters to check if accessed from My Bookings history page
+    const urlParams = new URLSearchParams(window.location.search);
+    const fromPesanan = urlParams.get('from') === 'pesanan';
+
+    // Kirim update status ke database MySQL secara real-time
+    const selectedMethod = sessionStorage.getItem('res_va') 
+                        || sessionStorage.getItem('res_payment_method') 
+                        || sessionStorage.getItem('res_minimarket') 
+                        || 'Virtual Account';
+
+    if (dBooking && dBooking !== 'XXXXXXXXXX') {
+        fetch('/reservasi/update-status', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({
+                no_pesanan: dBooking,
+                status: status === 'success' ? 'success' : 'failed',
+                metode_pembayaran: selectedMethod
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Status updated in MySQL:', data);
+        })
+        .catch(err => {
+            console.error('Failed to update status in MySQL:', err);
+        });
+    }
 
     // ── Booking number ────────────────────────────────────────────────────
     document.getElementById('dynBookingNo').textContent = dBooking;
@@ -622,7 +673,12 @@
         amountEl.classList.add('amount-success');
 
         document.getElementById('btnUnduhPdf').style.display = 'flex';
-        bannerText.innerHTML = `Cek emailmu (<strong><span id="dynEmailInBanner">${dEmail}</span></strong>) sekarang untuk konfirmasi pembayaran.`;
+        
+        if (fromPesanan) {
+            bannerText.innerHTML = `E-Ticket resmi Anda telah dikirimkan ke <strong><span id="dynEmailInBanner">${dEmail}</span></strong>.`;
+        } else {
+            bannerText.innerHTML = `Cek emailmu (<strong><span id="dynEmailInBanner">${dEmail}</span></strong>) sekarang untuk konfirmasi pembayaran.`;
+        }
 
         // Activate continuous pulse after entrance finishes
         setTimeout(() => iconWrap.classList.add('pulse'), 700);
@@ -645,7 +701,11 @@
         setTimeout(() => iconWrap.classList.add('pulse'), 800);
 
         // Banner text untuk gagal
-        bannerText.innerHTML = `Cek emailmu (<strong>${dEmail}</strong>) sekarang untuk detail cara bayar.`;
+        if (fromPesanan) {
+            bannerText.innerHTML = `Pemesanan ini berstatus gagal/dibatalkan.`;
+        } else {
+            bannerText.innerHTML = `Cek emailmu (<strong>${dEmail}</strong>) sekarang untuk detail cara bayar.`;
+        }
     }
 
     // ── Accommodation data ────────────────────────────────────────────────

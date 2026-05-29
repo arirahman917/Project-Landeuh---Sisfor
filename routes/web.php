@@ -2,21 +2,80 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LandingController;
+use App\Http\Controllers\ReservasiController;
 
 Route::get('/', [LandingController::class, 'index'])->name('home');
 
 Route::get('/akomodasi', [LandingController::class, 'akomodasi'])->name('akomodasi.index');
 
 Route::get('/pesanan', function () {
-    return view('pesanan.index');
+    $bookings = [];
+    if (Auth::check()) {
+        $bookings = \App\Models\Booking::where('pemesan_email', Auth::user()->email)
+            ->with('accommodation')
+            ->orderBy('created_at', 'desc')
+            ->get();
+    }
+    return view('pesanan.index', compact('bookings'));
 })->name('pesanan.index');
 
-Route::get('/reservasi/overview/{id}', function ($id) {
-    return view('reservasi.overview', ['id' => $id]);
+Route::get('/reservasi/overview/{id}', function (Illuminate\Http\Request $request, $id) {
+    $accommodation = \App\Models\Accommodation::findOrFail($id);
+    
+    $checkinParam = $request->query('checkin');
+    $malam = intval($request->query('malam') ?? 1);
+    
+    try {
+        $checkInDate = $checkinParam ? \Carbon\Carbon::parse($checkinParam) : \Carbon\Carbon::now();
+    } catch (\Exception $e) {
+        $checkInDate = \Carbon\Carbon::now();
+    }
+    
+    $checkOutDate = $checkInDate->copy()->addDays($malam);
+    
+    // Calculate the maximum bookings on any single night in this range
+    $maxBookedCount = 0;
+    for ($d = $checkInDate->copy(); $d->lt($checkOutDate); $d->addDay()) {
+        $currentDate = $d->format('Y-m-d');
+        
+        $count = \App\Models\Booking::where('accommodation_id', $id)
+            ->whereNotIn('status', ['failed', 'refunded'])
+            ->where(function($query) use ($currentDate) {
+                $query->where('check_in_date', '<=', $currentDate)
+                      ->where('check_out_date', '>', $currentDate);
+            })
+            ->count();
+            
+        if ($count > $maxBookedCount) {
+            $maxBookedCount = $count;
+        }
+    }
+    
+    $remainingSlots = max(0, $accommodation->slot - $maxBookedCount);
+    
+    // Fetch all DateSettings from database
+    $dateSettings = \App\Models\DateSetting::all();
+
+    return view('reservasi.overview', [
+        'id' => $id,
+        'accommodation' => $accommodation,
+        'dateSettings' => $dateSettings,
+        'remainingSlots' => $remainingSlots,
+        'totalSlots' => $accommodation->slot
+    ]);
 })->name('reservasi.overview');
 
-Route::get('/reservasi/metode-pembayaran/{id}', function ($id) {
-    return view('reservasi.metode', ['id' => $id]);
+Route::post('/reservasi/store', [ReservasiController::class, 'store'])->name('reservasi.store');
+Route::post('/reservasi/get-snap-token', [ReservasiController::class, 'getSnapToken'])->name('reservasi.snap-token');
+Route::post('/reservasi/update-status', [ReservasiController::class, 'updateStatus'])->name('reservasi.update-status');
+
+Route::get('/reservasi/metode-pembayaran/{id}', function (Illuminate\Http\Request $request, $id) {
+    $booking = null;
+    $bookingNo = $request->query('booking_no') ?? $request->query('order_id');
+    if ($bookingNo) {
+        $booking = \App\Models\Booking::where('no_pesanan', $bookingNo)->with('accommodation')->first();
+    }
+    return view('reservasi.metode', ['id' => $id, 'booking' => $booking]);
 })->name('reservasi.metode');
 
 Route::get('/payment/virtual-account', function () {
@@ -35,8 +94,13 @@ Route::get('/payment/qris', function () {
     return view('payment.qris');
 })->name('payment.qris');
 
-Route::get('/reservasi/konfirmasi', function () {
-    return view('reservasi.konfirmasi');
+Route::get('/reservasi/konfirmasi', function (Illuminate\Http\Request $request) {
+    $booking = null;
+    $bookingNo = $request->query('booking_no') ?? $request->query('order_id');
+    if ($bookingNo) {
+        $booking = \App\Models\Booking::where('no_pesanan', $bookingNo)->with('accommodation')->first();
+    }
+    return view('reservasi.konfirmasi', compact('booking'));
 })->name('reservasi.konfirmasi');
 
 // ══════════════════════════════════════════════════════════════
@@ -62,6 +126,7 @@ Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $requ
 // ══════════════════════════════════════════════════════════════
 use App\Http\Controllers\Admin\UnitController;
 use App\Http\Controllers\Admin\PesananController;
+use App\Http\Controllers\Admin\PelangganController;
 
 Route::prefix('admin')->group(function () {
 
@@ -85,14 +150,94 @@ Route::prefix('admin')->group(function () {
     Route::get('/pesanan', [PesananController::class, 'index'])->name('admin.pesanan.index');
 
     Route::get('/pengembalian', function () {
-        return view('admin.pesanan.pengembalian');
+        // Fetch bookings that are related to refunds (pending, refunded, or rejected)
+        $bookings = \App\Models\Booking::with('accommodation')
+            ->whereIn('status', ['refund_pending', 'refunded', 'refund_rejected'])
+            ->orderBy('updated_at', 'desc')
+            ->get();
+            
+        $formattedBookings = $bookings->map(function ($booking) {
+            $statusMap = [
+                'refund_pending' => 'pending',
+                'refunded' => 'accepted',
+                'refund_rejected' => 'rejected'
+            ];
+            return [
+                'id' => $booking->id,
+                'noPesanan' => $booking->no_pesanan,
+                'pemesanNama' => $booking->pemesan_nama,
+                'pemesanTelp' => $booking->pemesan_telp,
+                'pemesanEmail' => $booking->pemesan_email,
+                'namaTamu' => $booking->nama_tamu,
+                'akomodasi' => $booking->accommodation->judul,
+                'akomodasiCap' => '(' . $booking->accommodation->max_orang . ' pax)',
+                'malam' => $booking->malam,
+                'checkin' => $booking->check_in_date->locale('id')->isoFormat('ddd, D MMM YYYY'),
+                'checkout' => $booking->check_out_date->locale('id')->isoFormat('ddd, D MMM YYYY'),
+                'total' => $booking->total,
+                'metode' => $booking->metode_pembayaran,
+                'status' => $statusMap[$booking->status] ?? 'pending',
+                'tanggalAjuan' => $booking->updated_at->locale('id')->isoFormat('D MMM YYYY'),
+            ];
+        });
+        
+        return view('admin.pesanan.pengembalian', compact('formattedBookings'));
     })->name('admin.pengembalian.index');
 
-    Route::get('/pelanggan', function () {
-        return view('admin.pelanggan.index');
-    })->name('admin.pelanggan.index');
+    Route::get('/pelanggan', [PelangganController::class, 'index'])->name('admin.pelanggan.index');
+    Route::put('/pelanggan/{id}', [PelangganController::class, 'update'])->name('admin.pelanggan.update');
+    Route::delete('/pelanggan/{id}', [PelangganController::class, 'destroy'])->name('admin.pelanggan.destroy');
 
     Route::get('/tanggal', [App\Http\Controllers\Admin\TanggalController::class, 'index'])->name('admin.tanggal.index');
     Route::post('/tanggal', [App\Http\Controllers\Admin\TanggalController::class, 'updateAll'])->name('admin.tanggal.updateAll');
+
+    // API endpoint for notifications (AJAX Polling)
+    Route::get('/api/notifications', function () {
+        if (!Auth::guard('admin')->check()) {
+            return response()->json([], 401);
+        }
+
+        $recentBookings = \App\Models\Booking::with('accommodation')
+            ->where(function($query) {
+                $query->where(function($q) {
+                    $q->where('status', 'success')
+                      ->where('created_at', '>=', now()->subDays(5));
+                })->orWhere(function($q) {
+                    $q->where('status', 'refund_pending')
+                      ->where('updated_at', '>=', now()->subDays(5));
+                });
+            })
+            ->get();
+
+        $notifications = $recentBookings->map(function ($booking) {
+            $type = $booking->status === 'refund_pending' ? 'cancel' : 'order';
+            $title = $booking->status === 'refund_pending' ? 'Pengajuan Pembatalan' : 'Pesanan Baru Masuk';
+            
+            $accTitle = $booking->accommodation ? $booking->accommodation->judul : 'Akomodasi';
+            $desc = $booking->status === 'refund_pending'
+                ? "{$booking->pemesan_nama} mengajukan pembatalan pesanan #{$booking->no_pesanan}."
+                : "{$booking->pemesan_nama} memesan {$accTitle} untuk {$booking->malam} malam.";
+                
+            $timeStr = $booking->status === 'refund_pending'
+                ? $booking->updated_at->diffForHumans()
+                : $booking->created_at->diffForHumans();
+
+            return [
+                'type' => $type,
+                'title' => $title,
+                'desc' => $desc,
+                'time' => $timeStr,
+                'read' => false,
+                'noPesanan' => $booking->no_pesanan,
+                'active_time' => $booking->status === 'refund_pending' 
+                    ? $booking->updated_at->toIso8601String() 
+                    : $booking->created_at->toIso8601String(),
+            ];
+        });
+
+        $sortedNotifications = $notifications->sortByDesc('active_time')->values()->take(10)->toArray();
+
+        return response()->json($sortedNotifications);
+    })->name('admin.api.notifications');
 });
 

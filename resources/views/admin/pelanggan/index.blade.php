@@ -80,18 +80,8 @@
 @push('scripts')
 <script>
 (function(){
-    // ── Dummy Data ─────────────────────────────────────────────
-    const PELANGGAN_DATA = [];
-    const names  = ['Ari Rahman','Budi Santoso','Citra Dewi','Dian Purnama','Eka Wijaya','Fajar Hidayat','Gita Sari','Hadi Kurniawan','Indah Permata','Joko Susilo','Kartika Sari','Lukman Hakim','Mega Putri','Nanda Pratama','Oka Mahendra','Putri Amelia','Rizky Aditya','Sinta Maharani','Taufik Ismail','Umar Farid','Vera Anggraini','Wahyu Saputra','Xena Olivia','Yusuf Ramadhan','Zahra Aulia'];
-    const emails = names.map(n => n.toLowerCase().replace(/\s+/g,'') + '@gmail.com');
-    for (let i = 0; i < 25; i++) {
-        PELANGGAN_DATA.push({
-            id    : i + 1,
-            nama  : names[i % names.length],
-            email : emails[i % emails.length],
-            telp  : '0812345678' + String(i).padStart(2, '0'),
-        });
-    }
+    // ── Real Database Data ─────────────────────────────────────
+    const PELANGGAN_DATA = @json($pelanggans);
 
     const PER_PAGE = 18;
     let currentPage = 1;
@@ -126,7 +116,7 @@
         `).join('');
 
         document.getElementById('statPelanggan').textContent = PELANGGAN_DATA.length;
-        document.getElementById('pelangganInfo').textContent = `Terdiri dari ${filteredData.length} pesanan`;
+        document.getElementById('pelangganInfo').textContent = `Terdiri dari ${filteredData.length} pelanggan`;
         renderPagination();
     }
 
@@ -169,14 +159,36 @@
         render();
     });
 
-    // ── Hapus ──────────────────────────────────────────────────
+    // ── Hapus (AJAX Backend) ───────────────────────────────────
     window.hapusPelanggan = function(id) {
-        if (!confirm('Yakin ingin menghapus pelanggan ini?')) return;
-        const idx = PELANGGAN_DATA.findIndex(p => p.id === id);
-        if (idx !== -1) PELANGGAN_DATA.splice(idx, 1);
-        filteredData = filteredData.filter(p => p.id !== id);
-        render();
-        showToast('Pelanggan berhasil dihapus.', 'lucide:trash-2', 'text-red-400');
+        if (!confirm('Yakin ingin menghapus pelanggan ini dari sistem?')) return;
+        
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+        
+        fetch(`/admin/pelanggan/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                const idx = PELANGGAN_DATA.findIndex(p => p.id === id);
+                if (idx !== -1) PELANGGAN_DATA.splice(idx, 1);
+                filteredData = filteredData.filter(p => p.id !== id);
+                render();
+                showToast('Pelanggan berhasil dihapus.', 'lucide:trash-2', 'text-red-400');
+            } else {
+                alert('Gagal menghapus pelanggan: ' + (data.message || 'Terjadi kesalahan'));
+            }
+        })
+        .catch(err => {
+            console.error('Error:', err);
+            alert('Terjadi kesalahan koneksi saat menghapus pelanggan.');
+        });
     };
 
     // ── Toast ──────────────────────────────────────────────────

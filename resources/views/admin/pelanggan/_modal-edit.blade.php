@@ -92,14 +92,55 @@
     };
 
     window.submitEditPelanggan = function() {
-        const id   = parseInt(document.getElementById('editPlg_id').value);
-        const item = window.PELANGGAN_DATA?.find(p => p.id === id);
-        if (!item) return;
-        item.nama  = document.getElementById('editPlg_nama').value.trim();
-        item.email = document.getElementById('editPlg_email').value.trim();
-        item.telp  = document.getElementById('editPlg_telp').value.trim();
-        if (typeof window.renderPelangganTable === 'function') window.renderPelangganTable();
-        closeModalEditPelanggan();
-        if (typeof showToast === 'function') showToast('Data pelanggan berhasil diperbarui.');
+        const id = parseInt(document.getElementById('editPlg_id').value);
+        const nameInput = document.getElementById('editPlg_nama').value.trim();
+        const emailInput = document.getElementById('editPlg_email').value.trim();
+        const telpInput = document.getElementById('editPlg_telp').value.trim();
+
+        if (!nameInput || !emailInput) {
+            alert('Nama Lengkap dan Email wajib diisi.');
+            return;
+        }
+
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+
+        fetch(`/admin/pelanggan/${id}`, {
+            method: 'PUT',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+                nama: nameInput,
+                email: emailInput,
+                telp: telpInput
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                const item = window.PELANGGAN_DATA?.find(p => p.id === id);
+                if (item) {
+                    item.nama = data.user.nama;
+                    item.email = data.user.email;
+                    item.telp = data.user.telp;
+                }
+                
+                if (typeof window.renderPelangganTable === 'function') {
+                    window.renderPelangganTable();
+                }
+                closeModalEditPelanggan();
+                if (typeof showToast === 'function') {
+                    showToast('Data pelanggan berhasil diperbarui.');
+                }
+            } else {
+                alert('Gagal memperbarui data: ' + (data.message || 'Terjadi kesalahan'));
+            }
+        })
+        .catch(err => {
+            console.error('Error:', err);
+            alert('Terjadi kesalahan koneksi saat memperbarui data pelanggan.');
+        });
     };
 </script>

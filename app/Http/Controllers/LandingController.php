@@ -17,7 +17,9 @@ class LandingController extends Controller
 
     public function akomodasi()
     {
-        $accommodations = Accommodation::with('bookings')->get();
+        $accommodations = Accommodation::with(['bookings' => function($query) {
+            $query->where('status', '!=', 'failed');
+        }])->get();
         $dateSettings = \App\Models\DateSetting::all();
         
         $accommodations->transform(function ($item) {

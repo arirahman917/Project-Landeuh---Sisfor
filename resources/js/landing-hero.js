@@ -1,4 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Only run this script on the landing/home page (where the hero carousel exists)
+    if (!document.getElementById('hero-carousel')) {
+        return;
+    }
+
     // 1. Carousel Logic
     const slides = document.querySelectorAll('.slide-item');
     if (slides.length > 0) {
@@ -134,7 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 4. Guest & Room Picker Logic
+    // 4. Guest Picker Logic
     const guestPickerContainer = document.getElementById('guestPickerContainer');
     const guestPickerTrigger = document.getElementById('guestPickerTrigger');
     const guestPickerDropdown = document.getElementById('guestPickerDropdown');
@@ -145,28 +150,22 @@ document.addEventListener('DOMContentLoaded', () => {
     if (guestPickerTrigger && guestPickerDropdown && guestPickerContainer) {
         // State
         let dewasa = 2; 
-        let kamar = 1;
 
         const valDewasa = document.getElementById('valDewasa');
-        const valKamar = document.getElementById('valKamar');
         
         // Ensure UI matches state on load
         if(valDewasa) valDewasa.textContent = dewasa;
-        if(valKamar) valKamar.textContent = kamar;
         
         const btnDecDewasa = document.getElementById('btnDecDewasa');
         const btnIncDewasa = document.getElementById('btnIncDewasa');
-        const btnDecKamar = document.getElementById('btnDecKamar');
-        const btnIncKamar = document.getElementById('btnIncKamar');
 
         const updateLabel = () => {
-            // Format: X Dewasa, Z Kamar
-            let labelText = `${dewasa} Dewasa, ${kamar} Kamar`;
-            guestPickerLabel.textContent = labelText;
+            // Format: X Tamu
+            let labelText = `${dewasa} Tamu`;
+            if (guestPickerLabel) guestPickerLabel.textContent = labelText;
             
             // Handle disabled states
-            btnDecDewasa.disabled = dewasa <= 1;
-            btnDecKamar.disabled = kamar <= 1;
+            if (btnDecDewasa) btnDecDewasa.disabled = dewasa <= 1;
         };
 
         // Toggle Dropdown Smoothly
@@ -174,27 +173,30 @@ document.addEventListener('DOMContentLoaded', () => {
             guestPickerDropdown.classList.toggle('opacity-0');
             guestPickerDropdown.classList.toggle('invisible');
             guestPickerDropdown.classList.toggle('translate-y-[-10px]');
-            guestPickerChevron.classList.toggle('rotate-180');
+            if (guestPickerChevron) guestPickerChevron.classList.toggle('rotate-180');
         });
 
         // Event Listeners for Counters
-        btnIncDewasa.addEventListener('click', (e) => { e.stopPropagation(); dewasa++; valDewasa.textContent = dewasa; updateLabel(); });
-        btnDecDewasa.addEventListener('click', (e) => { e.stopPropagation(); if(dewasa > 1) { dewasa--; valDewasa.textContent = dewasa; updateLabel(); } });
-        
-        btnIncKamar.addEventListener('click', (e) => { e.stopPropagation(); kamar++; valKamar.textContent = kamar; updateLabel(); });
-        btnDecKamar.addEventListener('click', (e) => { e.stopPropagation(); if(kamar > 1) { kamar--; valKamar.textContent = kamar; updateLabel(); } });
+        if (btnIncDewasa && valDewasa) {
+            btnIncDewasa.addEventListener('click', (e) => { e.stopPropagation(); dewasa++; valDewasa.textContent = dewasa; updateLabel(); });
+        }
+        if (btnDecDewasa && valDewasa) {
+            btnDecDewasa.addEventListener('click', (e) => { e.stopPropagation(); if(dewasa > 1) { dewasa--; valDewasa.textContent = dewasa; updateLabel(); } });
+        }
 
         // Close on "Selesai"
-        btnSelesaiGuest.addEventListener('click', () => {
-            guestPickerDropdown.classList.add('opacity-0', 'invisible', 'translate-y-[-10px]');
-            guestPickerChevron.classList.remove('rotate-180');
-        });
+        if (btnSelesaiGuest) {
+            btnSelesaiGuest.addEventListener('click', () => {
+                guestPickerDropdown.classList.add('opacity-0', 'invisible', 'translate-y-[-10px]');
+                if (guestPickerChevron) guestPickerChevron.classList.remove('rotate-180');
+            });
+        }
 
         // Close when clicking outside
         document.addEventListener('click', (e) => {
             if (!guestPickerContainer.contains(e.target)) {
                 guestPickerDropdown.classList.add('opacity-0', 'invisible', 'translate-y-[-10px]');
-                guestPickerChevron.classList.remove('rotate-180');
+                if (guestPickerChevron) guestPickerChevron.classList.remove('rotate-180');
             }
         });
 

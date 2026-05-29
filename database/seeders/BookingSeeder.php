@@ -38,6 +38,7 @@ class BookingSeeder extends Seeder
                 'tambahan_dewasa' => rand(0, 1),
                 'total' => $akom->harga_weekday * $nights,
                 'metode_pembayaran' => $payMethods[$i % count($payMethods)],
+                'status' => 'success',
             ]);
         }
     }

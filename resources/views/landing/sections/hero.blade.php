@@ -77,9 +77,9 @@
                     </div>
                 </div>
 
-                <!-- Tamu dan Kamar -->
+                <!-- Tamu -->
                 <div class="flex-1 w-full px-5 py-4 bg-white md:bg-transparent rounded-2xl md:rounded-none shadow-md md:shadow-none border border-gray-100 md:border-0 relative" id="guestPickerContainer">
-                    <label class="block text-xs md:text-sm font-semibold text-gray-800 mb-1">Tamu dan Kamar</label>
+                    <label class="block text-xs md:text-sm font-semibold text-gray-800 mb-1">Jumlah Tamu</label>
                     <div class="relative cursor-pointer" id="guestPickerTrigger">
                         <div class="absolute inset-y-0 left-0 flex items-center pointer-events-none text-gray-600">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
@@ -87,17 +87,17 @@
                             </svg>
                         </div>
                         <div class="w-full pl-8 pr-8 py-1 md:py-2 text-sm md:text-base text-gray-600 select-none" id="guestPickerLabel">
-                            2 Dewasa, 1 Kamar
+                            2 Tamu
                         </div>
                     </div>
 
                     <!-- Guest Picker Dropdown -->
                     <div class="absolute top-[calc(100%+0.5rem)] left-0 md:right-0 mt-2 w-[calc(100vw-2rem)] max-w-[320px] bg-white rounded-2xl shadow-[0_15px_40px_-10px_rgba(0,0,0,0.2)] border border-gray-100 p-5 opacity-0 invisible translate-y-[-10px] transition-all duration-300 ease-out z-50 transform md:left-auto" id="guestPickerDropdown">
-                        <!-- Dewasa -->
-                        <div class="flex items-center justify-between mb-5">
+                        <!-- Tamu -->
+                        <div class="flex items-center justify-between mb-2">
                             <div class="flex items-center gap-3 text-gray-800 font-semibold text-md">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
-                                Dewasa
+                                Tamu
                             </div>
                             <div class="flex items-center gap-4">
                                 <button type="button" class="w-10 h-10 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center hover:bg-blue-100 disabled:opacity-40 disabled:cursor-not-allowed transition" id="btnDecDewasa">
@@ -105,24 +105,6 @@
                                 </button>
                                 <span class="w-5 text-center font-bold text-gray-800 text-md" id="valDewasa">2</span>
                                 <button type="button" class="w-10 h-10 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center hover:bg-blue-100 transition" id="btnIncDewasa">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
-                                </button>
-                            </div>
-                        </div>
-                        <!-- Kamar -->
-                        <div class="flex items-center justify-between mb-2">
-                            <div class="flex items-center gap-3 text-gray-800 font-semibold text-md">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 4.5v15M21 12v7.5M3 16.5h18M7.5 12V9a1.5 1.5 0 0 1 1.5-1.5h3a1.5 1.5 0 0 1 1.5 1.5v3M13.5 12h5.25a2.25 2.25 0 0 1 2.25 2.25v2.25" />
-                                </svg>
-                                Kamar
-                            </div>
-                            <div class="flex items-center gap-4">
-                                <button type="button" class="w-10 h-10 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center hover:bg-blue-100 disabled:opacity-40 disabled:cursor-not-allowed transition" id="btnDecKamar">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15" /></svg>
-                                </button>
-                                <span class="w-5 text-center font-bold text-gray-800 text-md" id="valKamar">1</span>
-                                <button type="button" class="w-10 h-10 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center hover:bg-blue-100 transition" id="btnIncKamar">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
                                 </button>
                             </div>
@@ -159,12 +141,25 @@
                 const jenisInput = document.getElementById('jenisAkomodasiInput');
                 const tglInput = document.getElementById('dateRangePicker');
                 const dewasaVal = document.getElementById('valDewasa');
-                const kamarVal = document.getElementById('valKamar');
 
                 const jenis = jenisInput ? jenisInput.value : 'Semua Akomodasi';
-                const tgl = tglInput ? tglInput.value : '';
+                
+                // Get standard YYYY-MM-DD formatted date range from Flatpickr
+                let tgl = '';
+                const fp = tglInput ? tglInput._flatpickr : null;
+                if (fp && fp.selectedDates && fp.selectedDates.length > 0) {
+                    tgl = fp.selectedDates.map(d => {
+                        const year = d.getFullYear();
+                        const month = String(d.getMonth() + 1).padStart(2, '0');
+                        const day = String(d.getDate()).padStart(2, '0');
+                        return `${year}-${month}-${day}`;
+                    }).join(' to ');
+                } else {
+                    tgl = tglInput ? tglInput.value : '';
+                }
+
                 const dewasa = dewasaVal ? dewasaVal.innerText : '2';
-                const kamar = kamarVal ? kamarVal.innerText : '1';
+                const kamar = '1';
                 
                 const url = `/akomodasi?jenis=${encodeURIComponent(jenis)}&tgl=${encodeURIComponent(tgl)}&dewasa=${encodeURIComponent(dewasa)}&kamar=${encodeURIComponent(kamar)}`;
                 window.location.href = url;

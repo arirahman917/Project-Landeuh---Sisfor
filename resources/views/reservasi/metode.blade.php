@@ -93,7 +93,7 @@
     </div>
 
     <div class="max-w-7xl mx-auto px-4 py-2 relative z-10">
-        <div class="pay-back" onclick="window.history.back()">← Kembali</div>
+        <div class="pay-back" onclick="window.location.href = '/pesanan'">← Kembali</div>
         <div class="pay-timer-bar">Harga sudah kami amankan. Selesaikan pembayaran dalam <span class="timer" id="countdownTimer">00:30:00</span></div>
 
         <div class="pay-grid" style="display:flex;gap:1.5rem;align-items:flex-start">
@@ -287,6 +287,7 @@
 @push('scripts')
 <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
 <script src="{{ asset('js/akomodasi-data.js') }}"></script>
+<script type="text/javascript" src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('services.midtrans.client_key') }}"></script>
 <script>
 function toggleAccordion(key) {
     const row = document.getElementById('row-' + key);
@@ -322,6 +323,97 @@ function processPayment() {
     const akoId = parseInt(urlParts[urlParts.length - 1]) || 1;
     sessionStorage.setItem('res_akoId', akoId);
 
+    // Ambil No Pesanan yang tersimpan dari database MySQL
+    const bookingNo = sessionStorage.getItem('res_booking_no');
+
+    if (bookingNo) {
+        // Tampilkan loading indicator
+        const payBtn = document.querySelector('.pay-btn');
+        const origText = payBtn.innerHTML;
+        payBtn.disabled = true;
+        payBtn.innerHTML = 'Memproses Pembayaran...';
+
+        // Panggil backend untuk mendapatkan Snap Token khusus metode yang dipilih
+        fetch('/reservasi/get-snap-token', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({
+                no_pesanan: bookingNo,
+                metode_pembayaran: method
+            })
+        })
+        .then(response => {
+            if(!response.ok) {
+                throw new Error('Gagal memuat token');
+            }
+            return response.json();
+        })
+        .then(data => {
+            payBtn.disabled = false;
+            payBtn.innerHTML = origText;
+
+            if (data.success && data.snap_token) {
+                // Tampilkan pop-up Snap Midtrans khusus metode tersebut
+                snap.pay(data.snap_token, {
+                    onSuccess: function(result) {
+                        sessionStorage.setItem('res_payment_status', 'success');
+                        
+                        let actualMethod = method; // Default ke pilihan UI (misal: 'Mandiri Virtual Account')
+                        if (result.va_numbers && result.va_numbers.length > 0) {
+                            const bankName = result.va_numbers[0].bank.toUpperCase();
+                            actualMethod = bankName + ' Virtual Account';
+                        } else if (result.payment_type === 'qris' || result.payment_type === 'gopay' || result.payment_type === 'shopeepay') {
+                            actualMethod = result.payment_type.toUpperCase();
+                        }
+                        
+                        sessionStorage.setItem('res_payment_method', actualMethod);
+                        window.location.href = '/reservasi/konfirmasi';
+                    },
+                    onPending: function(result) {
+                        sessionStorage.setItem('res_payment_status', 'pending');
+                        
+                        let actualMethod = method;
+                        if (result.va_numbers && result.va_numbers.length > 0) {
+                            const bankName = result.va_numbers[0].bank.toUpperCase();
+                            actualMethod = bankName + ' Virtual Account';
+                        } else if (result.payment_type === 'qris' || result.payment_type === 'gopay' || result.payment_type === 'shopeepay') {
+                            actualMethod = result.payment_type.toUpperCase();
+                        }
+                        
+                        sessionStorage.setItem('res_payment_method', actualMethod);
+                        window.location.href = '/reservasi/konfirmasi';
+                    },
+                    onError: function(result) {
+                        sessionStorage.setItem('res_payment_status', 'failed');
+                        window.location.href = '/reservasi/konfirmasi';
+                    },
+                    onClose: function() {
+                        alert('Anda menutup popup pembayaran sebelum menyelesaikan transaksi.');
+                    }
+                });
+            } else {
+                // FALLBACK JIKA CREDENTIALS MIDTRANS BELUM DISET (Mockup Mode)
+                console.log('Menggunakan Fallback Mockup Payment karena Midtrans Key belum terpasang.');
+                useFallbackPayment(method, akoId);
+            }
+        })
+        .catch(err => {
+            console.error('Error fetching snap token:', err);
+            payBtn.disabled = false;
+            payBtn.innerHTML = origText;
+            // FALLBACK JIKA ERROR (Mockup Mode)
+            useFallbackPayment(method, akoId);
+        });
+    } else {
+        useFallbackPayment(method, akoId);
+    }
+}
+
+// Fungsi Helper untuk Fallback Pembayaran Mockup Bawaan
+function useFallbackPayment(method, akoId) {
     // Redirect ke halaman VA jika user memilih Virtual Account
     if(method.toLowerCase().includes('virtual account') || method.toLowerCase().includes('va')) {
         sessionStorage.setItem('res_va', method);
@@ -348,15 +440,82 @@ function processPayment() {
 }
 // Countdown timer
 (function(){
-    let seconds=30*60;
-    const el=document.getElementById('countdownTimer');
-    setInterval(()=>{
-        if(seconds<=0)return;
+    @if(isset($booking))
+        // Populate sessionStorage with the database booking data
+        sessionStorage.setItem('res_booking_no', '{{ $booking->no_pesanan }}');
+        sessionStorage.setItem('res_judul', '{{ $booking->accommodation->judul }}');
+        sessionStorage.setItem('res_nama', '{{ $booking->pemesan_nama }}');
+        sessionStorage.setItem('res_hp', '{{ $booking->pemesan_telp }}');
+        sessionStorage.setItem('res_email', '{{ $booking->pemesan_email }}');
+        sessionStorage.setItem('res_tamu', '{{ $booking->nama_tamu }}');
+        sessionStorage.setItem('res_guest', '{{ $booking->accommodation->max_orang }} Dewasa');
+        sessionStorage.setItem('res_malam', '{{ $booking->malam }}');
+        
+        @php
+            $days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+            $mNames = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+            
+            $ci = $booking->check_in_date;
+            $ciDay = $days[$ci->dayOfWeek] ?? 'Minggu';
+            $ciMonth = $mNames[$ci->month - 1] ?? 'Januari';
+            $ciStr = "{$ciDay}, {$ci->day} {$ciMonth} {$ci->year}";
+            
+            $co = $booking->check_out_date;
+            $coDay = $days[$co->dayOfWeek] ?? 'Senin';
+            $coMonth = $mNames[$co->month - 1] ?? 'Januari';
+            $coStr = "{$coDay}, {$co->day} {$coMonth} {$co->year}";
+            
+            $formattedTotal = 'IDR ' . number_format($booking->total, 0, ',', '.');
+        @endphp
+        
+        sessionStorage.setItem('res_checkin', '{{ $ciStr }}');
+        sessionStorage.setItem('res_checkout', '{{ $coStr }}');
+        sessionStorage.setItem('res_total', '{{ $formattedTotal }}');
+        sessionStorage.setItem('res_akoId', '{{ $booking->accommodation_id }}');
+        sessionStorage.setItem('res_created_at', '{{ $booking->created_at->toIso8601String() }}');
+    @endif
+
+    let seconds = 30 * 60;
+    const createdAtStr = sessionStorage.getItem('res_created_at');
+    if (createdAtStr) {
+        const createdTime = new Date(createdAtStr).getTime();
+        const expireTime = createdTime + 30 * 60 * 1000;
+        const now = new Date().getTime();
+        seconds = Math.max(0, Math.floor((expireTime - now) / 1000));
+    }
+
+    const el = document.getElementById('countdownTimer');
+    const interval = setInterval(() => {
+        if (seconds <= 0) {
+            el.textContent = '00:00:00';
+            clearInterval(interval);
+
+            // Automatically mark as failed/expired in the database
+            const bookingNo = sessionStorage.getItem('res_booking_no');
+            if (bookingNo) {
+                fetch('/reservasi/update-status', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({
+                        no_pesanan: bookingNo,
+                        status: 'failed'
+                    })
+                })
+                .then(() => {
+                    alert('Waktu pembayaran Anda telah habis. Pesanan dibatalkan.');
+                    window.location.href = '/pesanan';
+                });
+            }
+            return;
+        }
         seconds--;
-        const m=String(Math.floor(seconds/60)).padStart(2,'0');
-        const s=String(seconds%60).padStart(2,'0');
-        el.textContent='00:'+m+':'+s;
-    },1000);
+        const m = String(Math.floor(seconds / 60)).padStart(2, '0');
+        const s = String(seconds % 60).padStart(2, '0');
+        el.textContent = '00:' + m + ':' + s;
+    }, 1000);
     
     // Parse accommodation ID from URL
     const urlParts = window.location.pathname.split('/');

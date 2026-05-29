@@ -10,8 +10,11 @@ class PesananController extends Controller
 {
     public function index()
     {
-        // Fetch all bookings with their related accommodation
-        $bookings = Booking::with('accommodation')->orderBy('created_at', 'desc')->get();
+        // Fetch successful and refund_rejected bookings with their related accommodation
+        $bookings = Booking::with('accommodation')
+            ->whereIn('status', ['success', 'refund_rejected'])
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         // Format for the frontend JS
         $formattedBookings = $bookings->map(function ($booking) {
@@ -31,6 +34,7 @@ class PesananController extends Controller
                 'tambahanDewasa' => $booking->tambahan_dewasa,
                 'total' => $booking->total,
                 'metode' => $booking->metode_pembayaran,
+                'status' => $booking->status,
             ];
         });
 

@@ -110,39 +110,8 @@
 @push('scripts')
 <script>
 (function(){
-    // ── Dummy Data ─────────────────────────────────────────────
-    const AJUAN_DATA = [];
-    const akomNames = ['Cabin 1','Cabin 2','Cabin 3','Rumah Industrial 1','Glamping VIP'];
-    const akomCap   = ['(4 pax)','(4 pax)','(6 pax)','(4 pax)','(2 pax)'];
-    const tamNames  = ['M. Akbar R.','Budi S.','Citra D.','Dian P.','Eka W.'];
-    const statuses  = ['pending','pending','accepted','rejected','pending'];
-    const payMethods= ['Virtual Account BCA','Virtual Account Mandiri','QRIS','Minimarket','ATM Transfer'];
-
-    for (let i = 0; i < 12; i++) {
-        const checkin  = new Date(2026, 3, 29 + (i % 5));
-        const nights   = 1 + (i % 3);
-        const checkout = new Date(checkin.getTime() + nights * 86400000);
-        const fmtDate  = (d) => d.toLocaleDateString('id-ID',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
-        const aIdx     = i % akomNames.length;
-
-        AJUAN_DATA.push({
-            id           : i + 1,
-            noPesanan    : 'LDH-' + String(Date.now()).slice(-6) + String(i).padStart(3,'0'),
-            pemesanNama  : 'Ari Rahman',
-            pemesanTelp  : '081234567890',
-            pemesanEmail : 'arirahman@gmail.com',
-            namaTamu     : tamNames[i % tamNames.length],
-            akomodasi    : akomNames[aIdx],
-            akomodasiCap : akomCap[aIdx],
-            malam        : nights,
-            checkin      : fmtDate(checkin),
-            checkout     : fmtDate(checkout),
-            total        : 1200000,
-            metode       : payMethods[i % payMethods.length],
-            status       : statuses[i % statuses.length],
-            tanggalAjuan : new Date(2026, 4, 10 + i).toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'}),
-        });
-    }
+    // ── Database Data ───────────────────────────────────────────
+    const AJUAN_DATA = @json($formattedBookings);
 
     const PER_PAGE = 10;
     let currentPage = 1;
@@ -270,15 +239,63 @@
 
     // ── Accept / Reject ────────────────────────────────────────
     window.acceptAjuan = function(idx) {
-        AJUAN_DATA[idx].status = 'accepted';
-        const q = document.getElementById('searchAjuan').value.toLowerCase();
-        applyFilters(q);
+        const item = AJUAN_DATA[idx];
+        if (confirm(`Apakah Anda yakin ingin MENERIMA pengajuan pembatalan untuk pesanan ${item.noPesanan}?`)) {
+            fetch('/reservasi/update-status', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({
+                    no_pesanan: item.noPesanan,
+                    status: 'refunded'
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Pengajuan pembatalan berhasil DITERIMA. Status pesanan diubah menjadi Dibatalkan.');
+                    location.reload();
+                } else {
+                    alert('Gagal memperbarui status: ' + data.message);
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert('Terjadi kesalahan koneksi.');
+            });
+        }
     };
 
     window.rejectAjuan = function(idx) {
-        AJUAN_DATA[idx].status = 'rejected';
-        const q = document.getElementById('searchAjuan').value.toLowerCase();
-        applyFilters(q);
+        const item = AJUAN_DATA[idx];
+        if (confirm(`Apakah Anda yakin ingin MENOLAK pengajuan pembatalan untuk pesanan ${item.noPesanan}?`)) {
+            fetch('/reservasi/update-status', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({
+                    no_pesanan: item.noPesanan,
+                    status: 'refund_rejected'
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Pengajuan pembatalan DITOLAK. Status pesanan kembali menjadi Lunas/Aktif.');
+                    location.reload();
+                } else {
+                    alert('Gagal memperbarui status: ' + data.message);
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert('Terjadi kesalahan koneksi.');
+            });
+        }
     };
 
     // ── Detail Modal ───────────────────────────────────────────

@@ -35,9 +35,10 @@ class DatabaseSeeder extends Seeder
             'role' => 'admin',
         ]);
 
-        // $this->call([
-        //     AccommodationSeeder::class,
-        //     BookingSeeder::class,
-        // ]);
+        $this->call([
+            DateSettingSeeder::class,
+            AccommodationSeeder::class,
+            // BookingSeeder::class,
+        ]);
     }
 }

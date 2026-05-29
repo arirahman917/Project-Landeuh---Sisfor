@@ -37,14 +37,14 @@
             <div class="flex-1 bg-gray-50 rounded-xl px-4 py-2.5 border border-gray-200 relative" id="guestPickerContainer">
                 <div class="flex items-center gap-2 cursor-pointer h-full" id="guestPickerTrigger">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
-                    <span class="text-sm text-gray-700" id="guestPickerLabel">2 Dewasa, 1 Kamar</span>
+                    <span class="text-sm text-gray-700" id="guestPickerLabel">2 Tamu</span>
                 </div>
                 <!-- Dropdown -->
                 <div class="absolute top-[calc(100%+0.5rem)] right-0 mt-2 w-[calc(100vw-2rem)] md:w-72 bg-white rounded-2xl shadow-[0_15px_40px_-10px_rgba(0,0,0,0.2)] border border-gray-100 p-5 hidden z-50 transform" id="guestPickerDropdown">
-                    <div class="flex items-center justify-between mb-5">
+                    <div class="flex items-center justify-between mb-2">
                         <div class="flex items-center gap-3 text-gray-800 font-semibold text-md">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
-                            Dewasa
+                            Tamu
                         </div>
                         <div class="flex items-center gap-4">
                             <button type="button" class="w-8 h-8 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center hover:bg-blue-100" id="btnDecDewasa">
@@ -52,23 +52,6 @@
                             </button>
                             <span class="w-5 text-center font-bold text-gray-800" id="valDewasa">2</span>
                             <button type="button" class="w-8 h-8 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center hover:bg-blue-100" id="btnIncDewasa">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="flex items-center justify-between mb-2">
-                        <div class="flex items-center gap-3 text-gray-800 font-semibold text-md">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 4.5v15M21 12v7.5M3 16.5h18M7.5 12V9a1.5 1.5 0 0 1 1.5-1.5h3a1.5 1.5 0 0 1 1.5 1.5v3M13.5 12h5.25a2.25 2.25 0 0 1 2.25 2.25v2.25" />
-                            </svg>
-                            Kamar
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <button type="button" class="w-8 h-8 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center hover:bg-blue-100" id="btnDecKamar">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15" /></svg>
-                            </button>
-                            <span class="w-5 text-center font-bold text-gray-800" id="valKamar">1</span>
-                            <button type="button" class="w-8 h-8 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center hover:bg-blue-100" id="btnIncKamar">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
                             </button>
                         </div>
@@ -363,11 +346,6 @@
     }
 
     function render(){
-        // Ensure Cabin and Rumah Industrial always have stock 1
-        AKOMODASI_DATA.forEach(d => {
-            if(d.jenis === 'Cabin' || d.jenis === 'Rumah Industrial') d.slot = 1;
-        });
-
         const start=(currentPage-1)*PER_PAGE;
         const pageData=filteredData.slice(start,start+PER_PAGE);
         document.getElementById('akomodasiList').innerHTML=pageData.map(renderCard).join('');
@@ -412,11 +390,17 @@
     };
 
     // Guest Picker Logic
-    let valDewasa = 2;
-    let valKamar = 1;
+    const params = new URLSearchParams(window.location.search);
+    let valDewasa = parseInt(params.get('dewasa')) || 2;
+
     const trigger = document.getElementById('guestPickerTrigger');
     const dropdown = document.getElementById('guestPickerDropdown');
     const label = document.getElementById('guestPickerLabel');
+
+    // Sync UI value on load
+    if (document.getElementById('valDewasa')) {
+        document.getElementById('valDewasa').innerText = valDewasa;
+    }
 
     trigger.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -434,7 +418,7 @@
     });
 
     function updateGuestLabel() {
-        label.innerText = `${valDewasa} Dewasa, ${valKamar} Kamar`;
+        label.innerText = `${valDewasa} Tamu`;
     }
 
     document.getElementById('btnDecDewasa').addEventListener('click', () => {
@@ -443,38 +427,66 @@
     document.getElementById('btnIncDewasa').addEventListener('click', () => {
         valDewasa++; document.getElementById('valDewasa').innerText = valDewasa; updateGuestLabel();
     });
-    document.getElementById('btnDecKamar').addEventListener('click', () => {
-        if(valKamar > 1) { valKamar--; document.getElementById('valKamar').innerText = valKamar; updateGuestLabel(); }
-    });
-    document.getElementById('btnIncKamar').addEventListener('click', () => {
-        valKamar++; document.getElementById('valKamar').innerText = valKamar; updateGuestLabel();
-    });
 
-    function isBooked(akomodasi, flatpickrDates) {
-        if (!akomodasi.bookedDates || akomodasi.bookedDates.length === 0) return false;
+    // Call on load to initialize label
+    updateGuestLabel();
+
+    function isBooked(akomodasi, flatpickrDates, targetKamar = 1) {
         if (!flatpickrDates || flatpickrDates.length === 0) return false;
 
         let start = new Date(flatpickrDates[0]);
-        let end = flatpickrDates.length > 1 ? new Date(flatpickrDates[1]) : new Date(start);
+        // Set hours to 12:00 to avoid timezone shifts
+        start.setHours(12, 0, 0, 0);
 
-        for (let dt = new Date(start); dt <= end; dt.setDate(dt.getDate() + 1)) {
-            // Convert to YYYY-MM-DD in local time
-            const year = dt.getFullYear();
-            const month = String(dt.getMonth() + 1).padStart(2, '0');
-            const day = String(dt.getDate()).padStart(2, '0');
-            const dateString = `${year}-${month}-${day}`;
-            
-            if (akomodasi.bookedDates.includes(dateString)) {
-                return true;
+        let end;
+        if (flatpickrDates.length > 1) {
+            end = new Date(flatpickrDates[1]);
+            end.setHours(12, 0, 0, 0);
+        } else {
+            end = new Date(start);
+            end.setDate(end.getDate() + 1);
+        }
+
+        // If start equals end (same day), assume at least 1 night
+        if (start.getTime() === end.getTime()) {
+            end.setDate(end.getDate() + 1);
+        }
+
+        // Loop through each night of the stay (from check-in up to check-out - 1 day)
+        for (let dt = new Date(start); dt < end; dt.setDate(dt.getDate() + 1)) {
+            const checkTime = dt.getTime();
+
+            // Count active bookings on this specific night
+            let activeBookingsCount = 0;
+            if (akomodasi.bookings && akomodasi.bookings.length > 0) {
+                akomodasi.bookings.forEach(b => {
+                    if (b.status !== 'failed' && b.status !== 'refunded') {
+                        let bIn = new Date(b.check_in_date);
+                        bIn.setHours(12, 0, 0, 0);
+                        let bOut = new Date(b.check_out_date);
+                        bOut.setHours(12, 0, 0, 0);
+
+                        // A booking occupies the night if: check_in <= night < check_out
+                        if (checkTime >= bIn.getTime() && checkTime < bOut.getTime()) {
+                            activeBookingsCount++;
+                        }
+                    }
+                });
+            }
+
+            // If active bookings on this night + requested rooms exceeds total slot capacity
+            if (activeBookingsCount + targetKamar > akomodasi.slot) {
+                return true; // Fully booked for this date range
             }
         }
-        return false;
+
+        return false; // Available
     }
 
     function doFilter() {
         const j = document.getElementById('filterJenis').value;
         const targetDewasa = parseInt(document.getElementById('valDewasa').innerText);
-        const targetKamar = parseInt(document.getElementById('valKamar').innerText);
+        const targetKamar = 1; // Default to 1 room
 
         const datePickerEl = document.getElementById('dateRangePicker');
         let fpDates = null;
@@ -501,14 +513,13 @@
             if (j && j !== 'Semua Akomodasi' && j !== 'Cabin / Glamping') {
                 matchJenis = (d.jenis === j);
             }
-            // Tamu & Kamar
-            const totalKapasitas = d.maxOrang * targetKamar;
-            let matchTamu = (totalKapasitas >= targetDewasa) && (d.slot >= targetKamar);
+            // Tamu (Kapasitas Akomodasi >= Jumlah Tamu)
+            let matchTamu = (d.maxOrang >= targetDewasa);
             
             // Tanggal
             let matchTgl = true;
             if (fpDates && fpDates.length > 0) {
-                if (isBooked(d, fpDates)) {
+                if (isBooked(d, fpDates, targetKamar)) {
                     matchTgl = false;
                 }
             }
@@ -560,9 +571,11 @@
         mode: "range",
         dateFormat: "Y-m-d",
         altInput: true,
-        altFormat: "d M Y",
+        altFormat: "D, d M Y", // Match home page format (e.g., Kam, 28 Mei 2026)
         locale: "id",
         minDate: "today",
+        showMonths: 2, // Show 2 months side-by-side
+        closeOnSelect: false, // Smooth auto-close transition
         onChange: function(selectedDates, dateStr, instance) {
             // Auto-update prices immediately when dates change
             if (selectedDates.length >= 1) {
@@ -575,6 +588,13 @@
                         const lbl = document.getElementById(`lbl-malam-${d.id}`);
                         if (lbl) lbl.innerText = `${diffNights} Malam`;
                     });
+
+                    // Smooth auto-close after 290ms
+                    setTimeout(() => {
+                        if (instance.selectedDates.length === 2 && instance.isOpen) {
+                            instance.close();
+                        }
+                    }, 290);
                 }
                 updateAllPrices();
             }
@@ -593,15 +613,12 @@
         if(akoLabel) akoLabel.innerText = paramJenis;
     }
     if (paramTgl) {
-        fpInstance.setDate(paramTgl.split(' to '));
+        fpInstance.setDate(paramTgl.split(' to '), true);
     }
     if (paramDewasa) {
         valDewasa = parseInt(paramDewasa) || 2;
-        document.getElementById('valDewasa').innerText = valDewasa;
-    }
-    if (paramKamar) {
-        valKamar = parseInt(paramKamar) || 1;
-        document.getElementById('valKamar').innerText = valKamar;
+        const valDewasaEl = document.getElementById('valDewasa');
+        if (valDewasaEl) valDewasaEl.innerText = valDewasa;
     }
     updateGuestLabel();
     
@@ -612,7 +629,18 @@
     // ── Pilih Kamar — auth gate ──────────────────────────────────
     window.handlePilihKamar = function(itemId, malam) {
         const isLoggedIn = {{ Auth::check() ? 'true' : 'false' }};
-        const targetUrl = '/reservasi/overview/' + itemId + '?malam=' + (malam || 1);
+        
+        const fp = document.getElementById('dateRangePicker')?._flatpickr;
+        let tglParam = '';
+        if (fp && fp.selectedDates && fp.selectedDates.length > 0) {
+            const d = fp.selectedDates[0];
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            tglParam = `&checkin=${year}-${month}-${day}`;
+        }
+        
+        const targetUrl = '/reservasi/overview/' + itemId + '?malam=' + (malam || 1) + tglParam;
 
         if (isLoggedIn) {
             window.location.href = targetUrl;

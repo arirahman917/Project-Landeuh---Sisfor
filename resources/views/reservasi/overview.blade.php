@@ -111,7 +111,11 @@
 
     <div class="max-w-7xl mx-auto px-4 py-2 relative z-10">
         <div class="ov-back" onclick="window.history.back()">← Kembali</div>
-        <div class="ov-login-bar" id="dynLoginBar">Log-in sebagai <strong>Ari Rahman (Google)</strong></div>
+        @auth
+            <div class="ov-login-bar" id="dynLoginBar">Log-in sebagai <strong>{{ Auth::user()->name }} ({{ Auth::user()->email }})</strong></div>
+        @else
+            <div class="ov-login-bar" id="dynLoginBar">Kamu belum log-in. <a href="/" style="color:#fff;font-weight:700;text-decoration:underline">Daftar / Masuk disini</a></div>
+        @endauth
 
         <div class="ov-main-grid" style="display:flex;gap:1.5rem;align-items:flex-start">
             {{-- LEFT: All Content in Single Container --}}
@@ -125,18 +129,18 @@
 
                     <div class="ov-form-group">
                         <label>Nama Lengkap<span class="req">*</span></label>
-                        <input type="text" id="namaLengkap" placeholder="">
+                        <input type="text" id="namaLengkap" placeholder="" value="{{ Auth::check() ? Auth::user()->name : '' }}">
                         <div class="hint">Sesuai KTP/paspor/SIM (tanpa tanda baca atau gelar)</div>
                     </div>
                     <div class="ov-form-row">
                         <div class="ov-form-group">
                             <label>Nomor Handphone<span class="req">*</span></label>
-                            <input type="text" id="noHp" placeholder="">
+                            <input type="text" id="noHp" placeholder="" value="{{ Auth::check() ? Auth::user()->phone : '' }}">
                             <div class="hint">Contoh: 08xxxxxxxxxx</div>
                         </div>
                         <div class="ov-form-group">
                             <label>Email<span class="req">*</span></label>
-                            <input type="email" id="email" placeholder="">
+                            <input type="email" id="email" placeholder="" value="{{ Auth::check() ? Auth::user()->email : '' }}" {{ Auth::check() ? 'readonly style=background-color:rgba(0,0,0,0.05);cursor:not-allowed;' : '' }}>
                             <div class="hint">Contoh: email@example.com</div>
                         </div>
                     </div>
@@ -188,7 +192,6 @@
                         Setujui kebijakan reservasi
                         <a onclick="document.getElementById('modalKebijakan').classList.add('show')">klik baca kebijakan</a>
                     </label>
-                    <button class="ov-btn-simpan" id="btnSimpan" type="button">Simpan</button>
                 </div>
             </div>
 
@@ -199,7 +202,7 @@
                     {{-- Red Ribbon --}}
                     <div class="ov-ribbon">
                         <iconify-icon icon="lucide:alert-triangle"></iconify-icon>
-                        Jangan sampai kehabisan! Tersisa <strong id="sisaKamar">3</strong> kamar lagi
+                        Jangan sampai kehabisan! Tersisa <strong id="sisaKamar">{{ $remainingSlots ?? 3 }}</strong> kamar lagi
                     </div>
                     <div class="ov-card-inner">
                         <h3>
@@ -275,23 +278,108 @@
     const params = new URLSearchParams(window.location.search);
     const malam = parseInt(params.get('malam')) || 1;
 
-    // Ensure Cabin and Rumah Industrial have stock 1
-    AKOMODASI_DATA.forEach(d => {
-        if(d.jenis === 'Cabin' || d.jenis === 'Rumah Industrial') d.slot = 1;
+    // Parse checkin date parameter (menghindari pergeseran timezone UTC)
+    const checkinParam = params.get('checkin');
+    if (checkinParam) {
+        const dateParts = checkinParam.split('-');
+        if (dateParts.length === 3) {
+            const d = new Date(parseInt(dateParts[0]), parseInt(dateParts[1]) - 1, parseInt(dateParts[2]));
+            const days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+            const mNames = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+            if (!isNaN(d.getTime())) {
+                const formatted = `${days[d.getDay()]}, ${d.getDate()} ${mNames[d.getMonth()]} ${d.getFullYear()}`;
+                document.getElementById('dynCheckin').textContent = formatted;
+            }
+        }
+    }
+
+    // Find the selected accommodation from database variables passed from controller
+    const accommodationRaw = @json($accommodation);
+    const akoItem = {
+        id: accommodationRaw.id,
+        judul: accommodationRaw.judul,
+        maxOrang: accommodationRaw.max_orang,
+        hargaWeekday: parseFloat(accommodationRaw.harga_weekday),
+        hargaWeekend: parseFloat(accommodationRaw.harga_weekend),
+        hargaHighseason: parseFloat(accommodationRaw.harga_highseason),
+        catatan: typeof accommodationRaw.catatan === 'string' ? JSON.parse(accommodationRaw.catatan) : accommodationRaw.catatan
+    };
+
+    const dateSettings = @json($dateSettings ?? []);
+
+    const weekdayDates = dateSettings.find(s => s.type === 'weekday')?.dates?.split(',').map(s => s.trim()) || [];
+    const weekendDates = dateSettings.find(s => s.type === 'weekend')?.dates?.split(',').map(s => s.trim()) || [];
+    
+    const highseasonDates = [];
+    dateSettings.forEach(s => {
+        if (s.type === 'highseason' && s.dates) {
+            s.dates.split(',').forEach(dStr => {
+                const trimmed = dStr.trim();
+                if (trimmed && !highseasonDates.includes(trimmed)) {
+                    highseasonDates.push(trimmed);
+                }
+            });
+        }
     });
 
-    // Find the selected accommodation
-    const akoItem = AKOMODASI_DATA.find(d => d.id === akoId) || AKOMODASI_DATA[0];
-    const basePrice = akoItem.hargaWeekday;
     const anakPrice = 75000;
     const dewasaPrice = 100000;
     const maxOrang = akoItem.maxOrang;
 
+    // Calculate dynamic stay dates & night-by-night pricing
+    const datesOfStay = [];
+    if (checkinParam) {
+        const parts = checkinParam.split('-');
+        if (parts.length === 3) {
+            const year = parseInt(parts[0]);
+            const month = parseInt(parts[1]) - 1;
+            const day = parseInt(parts[2]);
+            for (let i = 0; i < malam; i++) {
+                const d = new Date(year, month, day + i);
+                const yyyy = d.getFullYear();
+                const mm = String(d.getMonth() + 1).padStart(2, '0');
+                const dd = String(d.getDate()).padStart(2, '0');
+                datesOfStay.push(`${yyyy}-${mm}-${dd}`);
+            }
+        }
+    }
+
+    let totalBasePrice = 0;
+    const priceBreakdownDetails = [];
+    
+    datesOfStay.forEach(dateStr => {
+        let price = akoItem.hargaWeekday;
+        let typeLabel = 'Weekday';
+        
+        if (highseasonDates.includes(dateStr)) {
+            price = akoItem.hargaHighseason;
+            typeLabel = 'Highseason';
+        } else if (weekendDates.includes(dateStr)) {
+            price = akoItem.hargaWeekend;
+            typeLabel = 'Weekend';
+        } else if (weekdayDates.includes(dateStr)) {
+            price = akoItem.hargaWeekday;
+            typeLabel = 'Weekday';
+        } else {
+            // Day of week fallback
+            const parts = dateStr.split('-');
+            const d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+            const dayOfWeek = d.getDay();
+            if (dayOfWeek === 5 || dayOfWeek === 6) { // Friday or Saturday
+                price = akoItem.hargaWeekend;
+                typeLabel = 'Weekend';
+            } else {
+                price = akoItem.hargaWeekday;
+                typeLabel = 'Weekday';
+            }
+        }
+        
+        totalBasePrice += price;
+        priceBreakdownDetails.push({ date: dateStr, price: price, label: typeLabel });
+    });
+
     // Update header title with dynamic data
     document.getElementById('headerTitle').textContent = `${akoItem.judul} (${maxOrang} pax)`;
-
-    // Update sidebar sisa kamar
-    document.getElementById('sisaKamar').textContent = akoItem.slot;
 
     // Update guest info
     document.getElementById('guestInfoText').textContent = `${maxOrang} Dewasa`;
@@ -319,8 +407,8 @@
     // Update price labels
     function fmt(n){ return 'IDR ' + n.toLocaleString('id-ID'); }
     document.getElementById('priceLabel').textContent = `Harga kamar ${akoItem.judul} - ${maxOrang} pax (${malam} malam)`;
-    document.getElementById('priceValue').textContent = fmt(basePrice * malam);
-    document.getElementById('totalHarga').textContent = fmt(basePrice * malam);
+    document.getElementById('priceValue').textContent = fmt(totalBasePrice);
+    document.getElementById('totalHarga').textContent = fmt(totalBasePrice);
 
     // Update catatan from data
     if(akoItem.catatan && akoItem.catatan.length > 0){
@@ -333,34 +421,26 @@
     let anak=0, dewasa=0;
 
     window.adj=function(type,delta){
-        if(type==='anak'){anak=Math.max(0,Math.min(5,anak+delta));document.getElementById('valAnak').textContent=anak;}
-        else{dewasa=Math.max(0,Math.min(5,dewasa+delta));document.getElementById('valDewasaTambahan').textContent=dewasa;}
+        if(type==='anak'){
+            anak=Math.max(0,Math.min(5,anak+delta));
+            document.getElementById('valAnak').textContent=anak;
+        } else {
+            dewasa=Math.max(0,Math.min(5,dewasa+delta));
+            document.getElementById('valDewasaTambahan').textContent=dewasa;
+        }
+        updateHarga();
     };
 
-    // Get login data
-    const isLoggedIn = sessionStorage.getItem('user_logged_in') === 'true';
-    const userName   = sessionStorage.getItem('user_name') || 'User';
-    const userEmail  = sessionStorage.getItem('user_email') || '';
-    const userPhone  = sessionStorage.getItem('user_phone') || '';
-
-    // Update logged in bar
-    const loginBar = document.getElementById('dynLoginBar');
-    if (isLoggedIn) {
-        loginBar.innerHTML = `Log-in sebagai <strong>${userName}</strong>`;
-        
-        // Auto-fill form
-        document.getElementById('namaLengkap').value = userName;
-        document.getElementById('email').value = userEmail;
-        document.getElementById('noHp').value = userPhone;
+    // Automatically set up chkUntukSaya behavior if logged in via backend
+    const isLoggedInBackend = {{ Auth::check() ? 'true' : 'false' }};
+    if (isLoggedInBackend) {
         document.getElementById('chkUntukSaya').checked = true;
-        
-        // Trigger UI updates
         document.getElementById('untukSiapaSection').style.display = 'none';
         const stmt = document.getElementById('untukSayaStatement');
-        stmt.style.display = 'block';
-        stmt.textContent = 'Pesanan untuk: ' + userName;
-    } else {
-        loginBar.innerHTML = `Kamu belum log-in. <a href="/" style="color:#3a523a;font-weight:700">Daftar / Masuk disini</a>`;
+        if (stmt) {
+            stmt.style.display = 'block';
+            stmt.textContent = 'Pesanan untuk: ' + '{{ Auth::check() ? Auth::user()->name : "" }}';
+        }
     }
 
     // Interactive UI
@@ -386,7 +466,13 @@
 
     document.getElementById('chkTambahan').addEventListener('change',function(){
         document.getElementById('tambahanSection').style.display=this.checked?'block':'none';
-        if(!this.checked){anak=0;dewasa=0;document.getElementById('valAnak').textContent='0';document.getElementById('valDewasaTambahan').textContent='0';}
+        if(!this.checked){
+            anak=0;
+            dewasa=0;
+            document.getElementById('valAnak').textContent='0';
+            document.getElementById('valDewasaTambahan').textContent='0';
+        }
+        updateHarga();
     });
 
     // Fungsi update harga
@@ -396,18 +482,27 @@
         if(dewasa>0)info+=` + ${dewasa} Dewasa (di atas 17 tahun)`;
         document.getElementById('guestInfoText').textContent=info;
 
-        let breakdown=`<div class="ov-price-row"><span>Harga kamar ${akoItem.judul} - ${maxOrang} pax (${malam} malam)</span><span>${fmt(basePrice * malam)}</span></div>`;
-        let total = basePrice * malam;
+        let breakdown = `<div class="ov-price-row font-bold"><span>Harga kamar ${akoItem.judul} - ${maxOrang} pax (${malam} malam)</span><span>${fmt(totalBasePrice)}</span></div>`;
+        
+        // Detailed night breakdown
+        priceBreakdownDetails.forEach((night, index) => {
+            const parts = night.date.split('-');
+            const d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+            const days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+            const formattedNight = `${days[d.getDay()]}, ${d.getDate()}/${d.getMonth()+1}`;
+            
+            breakdown += `<div class="ov-price-row text-xs text-stone-500 pl-4 py-0.5 border-l-2 border-amber-200/40">
+                <span>Malam ${index + 1} (${formattedNight} - ${night.label})</span>
+                <span>${fmt(night.price)}</span>
+            </div>`;
+        });
+
+        let total = totalBasePrice;
         if(anak>0){total += anak * anakPrice * malam; breakdown += `<div class="ov-price-row"><span>Tambahan anak (di atas 5 tahun) ${anak} orang x ${malam} malam</span><span>${fmt(anak*anakPrice*malam)}</span></div>`;}
         if(dewasa>0){total += dewasa * dewasaPrice * malam; breakdown += `<div class="ov-price-row"><span>Tambahan dewasa (di atas 17 tahun) ${dewasa} orang x ${malam} malam</span><span>${fmt(dewasa*dewasaPrice*malam)}</span></div>`;}
         document.getElementById('priceBreakdown').innerHTML=breakdown;
         document.getElementById('totalHarga').textContent=fmt(total);
     }
-
-    document.getElementById('btnSimpan').addEventListener('click',function(){
-        updateHarga();
-        alert('Data berhasil disimpan! Anda bisa klik Lanjutkan.');
-    });
 
     document.getElementById('btnLanjutkan').addEventListener('click',function(){
         const nama = document.getElementById('namaLengkap').value.trim();
@@ -429,21 +524,87 @@
         const modal=document.getElementById('modalLoading');
         modal.classList.add('show');
         
-        // Simpan data ke sessionStorage agar dinamis di halaman metode
+        // Bersihkan data pembayaran lama agar tidak ada kebocoran cache browser
+        sessionStorage.removeItem('res_va');
+        sessionStorage.removeItem('res_payment_method');
+        sessionStorage.removeItem('res_minimarket');
+        sessionStorage.removeItem('res_payment_status');
+        sessionStorage.removeItem('res_snap_token');
+        sessionStorage.removeItem('res_booking_no');
+        
         const guestName = chkSaya ? nama : untukSiapa;
-        
-        sessionStorage.setItem('res_judul', akoItem.judul);
-        sessionStorage.setItem('res_nama', nama || 'Ari Rahman');
-        sessionStorage.setItem('res_hp', hp || '081512345678');
-        sessionStorage.setItem('res_email', em || 'arirahman@gmail.com');
-        sessionStorage.setItem('res_tamu', guestName || 'M. Akbar R.');
-        sessionStorage.setItem('res_guest', document.getElementById('guestInfoText').textContent);
-        sessionStorage.setItem('res_malam', malam);
-        sessionStorage.setItem('res_checkin', document.getElementById('dynCheckin').textContent);
-        sessionStorage.setItem('res_checkout', document.getElementById('dynCheckout').textContent);
-        sessionStorage.setItem('res_total', document.getElementById('totalHarga').textContent);
-        
-        setTimeout(()=>{window.location.href='/reservasi/metode-pembayaran/'+akoId;},2000);
+
+        // Siapkan data untuk dikirim ke backend MySQL
+        const payload = {
+            accommodation_id: akoId,
+            pemesan_nama: nama,
+            pemesan_telp: hp,
+            pemesan_email: em,
+            nama_tamu: guestName,
+            check_in_date: document.getElementById('dynCheckin').textContent,
+            malam: malam,
+            tambahan_anak: anak,
+            tambahan_dewasa: dewasa,
+            total: document.getElementById('totalHarga').textContent,
+            metode_pembayaran: 'pending'
+        };
+
+        // Kirim data via AJAX POST ke database
+        fetch('/reservasi/store', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify(payload)
+        })
+        .then(response => {
+            if(!response.ok) {
+                return response.json().then(err => { throw err; });
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                // Simpan data ke sessionStorage untuk dibaca di halaman pembayaran mockup
+                sessionStorage.setItem('res_judul', akoItem.judul);
+                sessionStorage.setItem('res_nama', nama);
+                sessionStorage.setItem('res_hp', hp);
+                sessionStorage.setItem('res_email', em);
+                sessionStorage.setItem('res_tamu', guestName);
+                sessionStorage.setItem('res_guest', document.getElementById('guestInfoText').textContent);
+                sessionStorage.setItem('res_malam', malam);
+                sessionStorage.setItem('res_checkin', document.getElementById('dynCheckin').textContent);
+                sessionStorage.setItem('res_checkout', document.getElementById('dynCheckout').textContent);
+                sessionStorage.setItem('res_total', document.getElementById('totalHarga').textContent);
+                sessionStorage.setItem('res_akoId', akoId);
+                
+                // Simpan nomor pesanan resmi hasil generate MySQL
+                sessionStorage.setItem('res_booking_no', data.booking.no_pesanan);
+                sessionStorage.setItem('res_snap_token', data.booking.snap_token);
+                sessionStorage.setItem('res_created_at', data.booking.created_at);
+
+                setTimeout(() => {
+                    window.location.href = '/reservasi/metode-pembayaran/' + akoId;
+                }, 1000);
+            } else {
+                alert('Gagal: ' + data.message);
+                modal.classList.remove('show');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Terjadi kesalahan: ' + (error.message || 'Koneksi gagal'));
+            modal.classList.remove('show');
+        });
+    });
+
+    // Hide the loading modal if the user came back via history (back button)
+    window.addEventListener('pageshow', function(event) {
+        const loadingModal = document.getElementById('modalLoading');
+        if (loadingModal) {
+            loadingModal.classList.remove('show');
+        }
     });
 })();
 </script>

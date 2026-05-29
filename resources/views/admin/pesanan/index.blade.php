@@ -74,6 +74,7 @@
                     <th class="px-3 py-3.5 text-left font-bold text-stone-700 text-xs uppercase tracking-wider">Check-in dan Check-out</th>
                     <th class="px-3 py-3.5 text-left font-bold text-stone-700 text-xs uppercase tracking-wider">Tambahan Orang</th>
                     <th class="px-3 py-3.5 text-right font-bold text-stone-700 text-xs uppercase tracking-wider">Pembayaran</th>
+                    <th class="px-3 py-3.5 text-center font-bold text-stone-700 text-xs uppercase tracking-wider w-[130px]">Status</th>
                 </tr>
             </thead>
             <tbody id="pesananBody"></tbody>
@@ -104,6 +105,11 @@
 
     function fmt(n) { return Number(n).toLocaleString('id-ID'); }
 
+    function statusBadge(s) {
+        if (s === 'refund_rejected') return '<span class="inline-block px-2.5 py-1 rounded-full text-[11px] font-bold bg-red-100 text-red-600">Refund Ditolak</span>';
+        return '<span class="inline-block px-2.5 py-1 rounded-full text-[11px] font-bold bg-green-100 text-green-700">Sukses / Lunas</span>';
+    }
+
     // ── Render ─────────────────────────────────────────────────
     function render() {
         const start = (currentPage - 1) * PER_PAGE;
@@ -129,6 +135,7 @@
                 <td class="px-3 py-3 text-right text-stone-800 font-semibold text-xs whitespace-nowrap">
                     ${fmt(p.total)}<br><span class="text-stone-400 font-normal">(${p.metode})</span>
                 </td>
+                <td class="px-3 py-3 text-center">${statusBadge(p.status)}</td>
             </tr>
         `).join('');
 
@@ -197,15 +204,17 @@
 
     // ── PDF ────────────────────────────────────────────────────
     window.cetakLaporanPesanan = function() {
-        const rows = PESANAN_DATA.map((p,i) =>
-            `<tr>
+        const rows = PESANAN_DATA.map((p,i) => {
+            const displayStatus = p.status === 'refund_rejected' ? 'Refund Ditolak' : 'Sukses / Lunas';
+            return `<tr>
                 <td>${i+1}</td><td>${p.noPesanan}</td>
                 <td>${p.pemesanNama}<br>${p.pemesanTelp}</td>
                 <td>${p.namaTamu}</td><td>${p.akomodasi}</td>
                 <td>${p.malam} mlm</td><td>${p.checkin} — ${p.checkout}</td>
                 <td>${fmt(p.total)}</td><td>${p.metode}</td>
-            </tr>`
-        ).join('');
+                <td>${displayStatus}</td>
+            </tr>`;
+        }).join('');
         const w = window.open('','_blank');
         w.document.write(`<html><head><title>Laporan Pesanan</title>
         <style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:Arial,sans-serif;padding:1.5rem}
@@ -215,7 +224,7 @@
         th{background:#3a523a;color:#fff}tr:nth-child(even){background:#f9f3e8}
         @media print{body{padding:0.5rem}}</style></head>
         <body><h1>Laporan Data Pesanan — Landeuh Village</h1>
-        <table><thead><tr><th>No</th><th>No. Pesanan</th><th>Pemesan</th><th>Tamu</th><th>Akomodasi</th><th>Malam</th><th>Tanggal</th><th>Total</th><th>Metode</th></tr></thead>
+        <table><thead><tr><th>No</th><th>No. Pesanan</th><th>Pemesan</th><th>Tamu</th><th>Akomodasi</th><th>Malam</th><th>Tanggal</th><th>Total</th><th>Metode</th><th>Status</th></tr></thead>
         <tbody>${rows}</tbody></table></body></html>`);
         w.document.close();
         w.print();

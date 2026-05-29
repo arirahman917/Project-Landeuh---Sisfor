@@ -26,6 +26,7 @@ return new class extends Migration
             $table->integer('tambahan_dewasa')->default(0);
             $table->decimal('total', 12, 2);
             $table->string('metode_pembayaran');
+            $table->string('status')->default('pending');
             $table->timestamps();
         });
     }
