@@ -98,22 +98,23 @@ class AuthController extends Controller
     public function handleGoogleCallback()
     {
         try {
-            $googleUser = Socialite::driver('google')->user();
+            // Use stateless() to avoid session state mismatch behind reverse proxies
+            $googleUser = Socialite::driver('google')->stateless()->user();
+
+            \Log::info('Google OAuth callback - email: ' . $googleUser->getEmail());
 
             $user = User::where('email', $googleUser->getEmail())->first();
 
             if ($user) {
-                // Link Google ID if not already linked
                 if (!$user->google_id) {
                     $user->update(['google_id' => $googleUser->getId()]);
                 }
-                // Ensure email is marked as verified
                 if (!$user->email_verified_at) {
                     $user->update(['email_verified_at' => now()]);
                 }
                 Auth::login($user);
+                \Log::info('Google OAuth - existing user logged in: ' . $user->id);
             } else {
-                // Create a new user — email already verified by Google
                 $newUser = User::create([
                     'name'              => $googleUser->getName(),
                     'email'             => $googleUser->getEmail(),
@@ -123,12 +124,14 @@ class AuthController extends Controller
                 ]);
 
                 Auth::login($newUser);
+                \Log::info('Google OAuth - new user created: ' . $newUser->id);
             }
 
             request()->session()->regenerate();
 
             return redirect()->intended('/');
         } catch (\Exception $e) {
+            \Log::error('Google OAuth error: ' . $e->getMessage() . ' | Trace: ' . $e->getTraceAsString());
             return redirect('/')->with('error', 'Google login failed: ' . $e->getMessage());
         }
     }
