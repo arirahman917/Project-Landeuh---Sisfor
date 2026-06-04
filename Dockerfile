@@ -14,23 +14,25 @@ RUN apt-get update && apt-get install -y \
     unzip \
     default-mysql-client
 
-# Clear cache
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
-
 # Install PHP extensions
 RUN docker-php-ext-install pdo pdo_mysql mbstring exif pcntl bcmath gd
 
-# Enable Apache mod_rewrite and strictly enforce mpm_prefork
-RUN a2enmod rewrite \
-    && rm -f /etc/apache2/mods-enabled/mpm_*.load \
-    && rm -f /etc/apache2/mods-enabled/mpm_*.conf \
-    && a2enmod mpm_prefork
-# Install Node.js & npm (for Vite/frontend assets if needed inside container)
+# Install Node.js & npm (for Vite/frontend assets)
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y nodejs
 
+# Clear apt cache
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+
 # Get latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Fix Apache MPM: remove ALL mpm modules, then enable only mpm_prefork + rewrite
+# This MUST be after all apt-get installs to prevent them from re-enabling mpm_event
+RUN rm -f /etc/apache2/mods-enabled/mpm_*.load \
+    && rm -f /etc/apache2/mods-enabled/mpm_*.conf \
+    && a2enmod mpm_prefork \
+    && a2enmod rewrite
 
 # Change document root for Apache to Laravel's public directory
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
