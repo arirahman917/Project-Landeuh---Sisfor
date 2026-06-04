@@ -21,7 +21,7 @@ SET @@SESSION.SQL_LOG_BIN= 0;
 -- GTID state at the beginning of the backup 
 --
 
-SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ '3111679e-fd81-11f0-8b19-9b064f7973d2:1-1493';
+-- SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ '3111679e-fd81-11f0-8b19-9b064f7973d2:1-1493';
 
 --
 -- Table structure for table `accommodations`
