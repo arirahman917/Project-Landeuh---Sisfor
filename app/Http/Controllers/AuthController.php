@@ -107,22 +107,29 @@ class AuthController extends Controller
                 if (!$user->google_id) {
                     $user->update(['google_id' => $googleUser->getId()]);
                 }
+                // Ensure email is marked as verified
+                if (!$user->email_verified_at) {
+                    $user->update(['email_verified_at' => now()]);
+                }
                 Auth::login($user);
             } else {
-                // Create a new user
+                // Create a new user — email already verified by Google
                 $newUser = User::create([
-                    'name' => $googleUser->getName(),
-                    'email' => $googleUser->getEmail(),
-                    'google_id' => $googleUser->getId(),
-                    'password' => null, 
+                    'name'              => $googleUser->getName(),
+                    'email'             => $googleUser->getEmail(),
+                    'google_id'         => $googleUser->getId(),
+                    'password'          => null,
+                    'email_verified_at' => now(),
                 ]);
 
                 Auth::login($newUser);
             }
 
+            request()->session()->regenerate();
+
             return redirect()->intended('/');
         } catch (\Exception $e) {
-            return redirect('/')->with('error', 'Google login failed. Please try again.');
+            return redirect('/')->with('error', 'Google login failed: ' . $e->getMessage());
         }
     }
 }
