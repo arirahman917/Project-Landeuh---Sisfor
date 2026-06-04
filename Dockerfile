@@ -20,10 +20,11 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 # Install PHP extensions
 RUN docker-php-ext-install pdo pdo_mysql mbstring exif pcntl bcmath gd
 
-# Enable Apache mod_rewrite and fix MPM configuration
-RUN a2enmod rewrite && a2dismod mpm_event mpm_worker || true && a2enmod mpm_prefork
-
-
+# Enable Apache mod_rewrite and strictly enforce mpm_prefork
+RUN a2enmod rewrite \
+    && rm -f /etc/apache2/mods-enabled/mpm_*.load \
+    && rm -f /etc/apache2/mods-enabled/mpm_*.conf \
+    && a2enmod mpm_prefork
 # Install Node.js & npm (for Vite/frontend assets if needed inside container)
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y nodejs
