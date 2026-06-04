@@ -36,6 +36,17 @@ ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
-# We won't copy the whole code right now because we use docker-compose volume mapping
-# But we ensure www-data has correct permissions
-RUN chown -R www-data:www-data /var/www/html
+# Copy application source code
+COPY . /var/www/html
+
+# Install PHP dependencies
+RUN composer install --no-interaction --optimize-autoloader --no-dev
+
+# Install NPM dependencies and build frontend assets
+RUN npm install && npm run build
+
+# Ensure correct permissions for Laravel directories
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+
+# Startup command to run migrations and start Apache
+CMD php artisan migrate --force && apache2-foreground
