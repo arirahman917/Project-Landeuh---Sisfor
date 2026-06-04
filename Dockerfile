@@ -27,12 +27,8 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 # Get latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Fix Apache MPM: remove ALL mpm modules, then enable only mpm_prefork + rewrite
-# This MUST be after all apt-get installs to prevent them from re-enabling mpm_event
-RUN rm -f /etc/apache2/mods-enabled/mpm_*.load \
-    && rm -f /etc/apache2/mods-enabled/mpm_*.conf \
-    && a2enmod mpm_prefork \
-    && a2enmod rewrite
+# Enable mod_rewrite
+RUN a2enmod rewrite
 
 # Change document root for Apache to Laravel's public directory
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
@@ -43,6 +39,9 @@ RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf
 # Copy application source code
 COPY . /var/www/html
 
+# Make entrypoint script executable
+RUN chmod +x /var/www/html/docker-entrypoint.sh
+
 # Install PHP dependencies
 RUN composer install --no-interaction --optimize-autoloader --no-dev
 
@@ -52,5 +51,5 @@ RUN npm install && npm run build
 # Ensure correct permissions for Laravel directories
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Startup command to run migrations and start Apache
-CMD php artisan migrate --force && apache2-foreground
+# Use custom entrypoint that fixes MPM at runtime before starting Apache
+CMD ["/var/www/html/docker-entrypoint.sh"]
