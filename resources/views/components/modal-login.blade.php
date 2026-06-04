@@ -132,6 +132,9 @@
 </div>
 
 <script>
+if (typeof window.loginModalInitialized === 'undefined') {
+    window.loginModalInitialized = true;
+
     // Elements for Login
     const loginOverlay = document.getElementById('loginModalOverlay');
     const modalLoginMain = document.getElementById('modalLoginMain');
@@ -154,7 +157,7 @@
         }, 10);
     }
 
-    function closeLoginModal() {
+    window.closeLoginModal = function() {
         loginOverlay.classList.add('opacity-0', 'invisible');
         
         const activeModal = loginOverlay.querySelector('.scale-100');
@@ -169,7 +172,7 @@
         }, 300);
     }
 
-    function hideAllLoginModals() {
+    window.hideAllLoginModals = function() {
         const modals = [modalLoginMain, modalLoginManual, modalLoginSuccess, modalLoginFailed];
         modals.forEach(m => {
             m.classList.add('hidden', 'scale-95');
@@ -177,7 +180,7 @@
         });
     }
 
-    function showLoginManualForm() {
+    window.showLoginManualForm = function() {
         hideAllLoginModals();
         modalLoginManual.classList.remove('hidden');
         setTimeout(() => {
@@ -186,7 +189,7 @@
         }, 10);
     }
 
-    function showMainLogin() {
+    window.showMainLogin = function() {
         hideAllLoginModals();
         modalLoginMain.classList.remove('hidden');
         setTimeout(() => {
@@ -196,7 +199,7 @@
     }
 
     // Handle login submit
-    async function handleLoginSubmit(e) {
+    window.handleLoginSubmit = async function(e) {
         e.preventDefault();
         const email = document.getElementById('logEmail').value;
         const password = document.getElementById('logPassword').value;
@@ -238,7 +241,7 @@
         }
     }
 
-    function showLoginFailedModal() {
+    window.showLoginFailedModal = function() {
         hideAllLoginModals();
         modalLoginFailed.classList.remove('hidden');
         setTimeout(() => {
@@ -246,4 +249,5 @@
             modalLoginFailed.classList.add('scale-100');
         }, 10);
     }
+}
 </script>

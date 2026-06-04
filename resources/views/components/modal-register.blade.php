@@ -152,6 +152,9 @@
 </div>
 
 <script>
+if (typeof window.registerModalInitialized === 'undefined') {
+    window.registerModalInitialized = true;
+
     // Elements
     const overlay = document.getElementById('registerModalOverlay');
     const modalMain = document.getElementById('modalRegisterMain');
@@ -173,16 +176,14 @@
 
     let registeredName = '';
 
-    // Mock Login open function just to prevent errors if clicked (Removed, implemented in modal-login.blade.php)
-
     // Opens the main register modal
-    function openRegisterModal() {
+    window.openRegisterModal = function() {
         overlay.classList.remove('hidden');
         // small delay to allow display:block to apply before animating opacity
         setTimeout(() => {
             overlay.classList.remove('opacity-0', 'invisible');
             
-            hideAllModals();
+            window.hideAllModals();
             modalMain.classList.remove('hidden');
             setTimeout(() => {
                 modalMain.classList.remove('scale-95');
@@ -191,7 +192,7 @@
         }, 10);
     }
 
-    function closeRegisterModal() {
+    window.closeRegisterModal = function() {
         overlay.classList.add('opacity-0', 'invisible');
         
         // Scale down the active modal
@@ -203,11 +204,11 @@
 
         setTimeout(() => {
             overlay.classList.add('hidden');
-            hideAllModals();
+            window.hideAllModals();
         }, 300);
     }
 
-    function hideAllModals() {
+    window.hideAllModals = function() {
         const modals = [modalMain, modalManual, modalVerification, modalSuccess, modalFailed];
         modals.forEach(m => {
             m.classList.add('hidden', 'scale-95');
@@ -215,8 +216,8 @@
         });
     }
 
-    function showManualForm() {
-        hideAllModals();
+    window.showManualForm = function() {
+        window.hideAllModals();
         modalManual.classList.remove('hidden');
         setTimeout(() => {
             modalManual.classList.remove('scale-95');
@@ -224,8 +225,8 @@
         }, 10);
     }
 
-    function showMainRegister() {
-        hideAllModals();
+    window.showMainRegister = function() {
+        window.hideAllModals();
         modalMain.classList.remove('hidden');
         setTimeout(() => {
             modalMain.classList.remove('scale-95');
@@ -234,7 +235,7 @@
     }
 
     // Handle form submit
-    async function handleRegisterSubmit(e) {
+    window.handleRegisterSubmit = async function(e) {
         e.preventDefault();
         const name = document.getElementById('regName').value;
         const email = document.getElementById('regEmail').value;
@@ -263,23 +264,23 @@
                 document.getElementById('verifEmailDisplay').textContent = email;
                 
                 // Show verification modal
-                hideAllModals();
+                window.hideAllModals();
                 modalVerification.classList.remove('hidden');
                 setTimeout(() => {
                     modalVerification.classList.remove('scale-95');
                     modalVerification.classList.add('scale-100');
                 }, 10);
             } else {
-                showFailedModal();
+                window.showFailedModal();
             }
         } catch (error) {
             console.error(error);
-            showFailedModal();
+            window.showFailedModal();
         }
     }
 
-    function showFailedModal() {
-        hideAllModals();
+    window.showFailedModal = function() {
+        window.hideAllModals();
         modalFailed.classList.remove('hidden');
         setTimeout(() => {
             modalFailed.classList.remove('scale-95');
@@ -287,9 +288,9 @@
         }, 10);
     }
 
-    function finishVerification() {
+    window.finishVerification = function() {
         // Show success modal
-        hideAllModals();
+        window.hideAllModals();
         modalSuccess.classList.remove('hidden');
         setTimeout(() => {
             modalSuccess.classList.remove('scale-95');
@@ -301,4 +302,5 @@
             window.location.reload();
         }, 1500);
     }
+}
 </script>
