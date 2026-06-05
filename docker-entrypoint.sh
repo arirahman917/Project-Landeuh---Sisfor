@@ -28,5 +28,8 @@ php artisan view:clear
 # Run Laravel migrations
 php artisan migrate --force
 
+# Start queue worker in background to process emails without freezing the UI
+php artisan queue:work --tries=3 --timeout=90 &
+
 # Start Apache in foreground
 exec apache2-foreground
