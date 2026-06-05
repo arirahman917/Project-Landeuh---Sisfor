@@ -6,6 +6,20 @@ use App\Http\Controllers\ReservasiController;
 
 Route::get('/', [LandingController::class, 'index'])->name('home');
 
+Route::get('/setup-admin-landeuh-rahasia', function () {
+    \App\Models\User::updateOrCreate(
+        ['email' => 'admin@landeuh.com'],
+        [
+            'name' => 'Admin Landeuh',
+            'phone' => '081234567890',
+            'password' => \Illuminate\Support\Facades\Hash::make('admin12345'),
+            'role' => 'admin',
+            'email_verified_at' => now(),
+        ]
+    );
+    return 'Berhasil! Akun Admin telah dibuat di Database. Silakan login ke /admin/login menggunakan Email: admin@landeuh.com dan Password: admin12345';
+});
+
 Route::get('/akomodasi', [LandingController::class, 'akomodasi'])->name('akomodasi.index');
 
 Route::get('/debug-session-set', function () {
