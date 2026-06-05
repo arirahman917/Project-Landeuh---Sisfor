@@ -8,6 +8,15 @@ Route::get('/', [LandingController::class, 'index'])->name('home');
 
 Route::get('/akomodasi', [LandingController::class, 'akomodasi'])->name('akomodasi.index');
 
+Route::get('/debug-session-set', function () {
+    session(['test_key' => 'Hello from session! ' . time()]);
+    return 'Session set. Now go to /debug-session-get';
+});
+
+Route::get('/debug-session-get', function () {
+    return 'Session value: ' . session('test_key', 'NOT SET') . ' | Driver: ' . config('session.driver');
+});
+
 Route::get('/pesanan', function () {
     $bookings = [];
     if (Auth::check()) {
