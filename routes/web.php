@@ -152,8 +152,14 @@ Route::post('/email/verification-notification', function (Illuminate\Http\Reques
     if ($request->user()->hasVerifiedEmail()) {
         return response()->json(['message' => 'Email sudah diverifikasi.'], 200);
     }
-    $request->user()->sendEmailVerificationNotification();
-    return response()->json(['message' => 'Link verifikasi telah dikirim ulang!'], 200);
+    app()->terminating(function () use ($request) {
+        try {
+            $request->user()->sendEmailVerificationNotification();
+        } catch (\Exception $e) {
+            \Log::error('Failed to resend verification email: ' . $e->getMessage());
+        }
+    });
+    return response()->json(['message' => 'Proses pengiriman email di latar belakang telah dimulai!'], 200);
 })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
 // ══════════════════════════════════════════════════════════════

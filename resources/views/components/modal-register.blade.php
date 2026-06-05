@@ -93,8 +93,12 @@
             </div>
 
             <div class="pt-4">
-                <button type="submit" class="w-full bg-[#2f4f4f] hover:bg-[#233b3b] text-white font-bold py-3.5 rounded-full transition shadow-md">
-                    Daftar
+                <button type="submit" id="regSubmitBtn" class="w-full flex items-center justify-center gap-2 bg-[#2f4f4f] hover:bg-[#233b3b] text-white font-bold py-3.5 rounded-full transition shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed">
+                    <span id="regBtnText">Daftar</span>
+                    <svg id="regBtnSpinner" class="animate-spin h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
                 </button>
             </div>
             
@@ -260,6 +264,15 @@ if (typeof window.registerModalInitialized === 'undefined') {
     // Handle form submit
     window.handleRegisterSubmit = async function(e) {
         e.preventDefault();
+
+        const btn = document.getElementById('regSubmitBtn');
+        const btnText = document.getElementById('regBtnText');
+        const spinner = document.getElementById('regBtnSpinner');
+        
+        btn.disabled = true;
+        btnText.textContent = 'Memproses...';
+        spinner.classList.remove('hidden');
+
         const name = document.getElementById('regName').value;
         const email = document.getElementById('regEmail').value;
         const phone = document.getElementById('regPhone').value;
@@ -300,6 +313,10 @@ if (typeof window.registerModalInitialized === 'undefined') {
         } catch (error) {
             console.error(error);
             window.showFailedModal();
+        } finally {
+            btn.disabled = false;
+            btnText.textContent = 'Daftar';
+            spinner.classList.add('hidden');
         }
     }
 
