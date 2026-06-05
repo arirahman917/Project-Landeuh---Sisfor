@@ -35,6 +35,18 @@ Route::get('/debug-check', function () {
     }
 });
 
+Route::get('/debug-email', function () {
+    try {
+        \Illuminate\Support\Facades\Mail::raw('This is a test email from Landeuh Sisfor.', function ($message) {
+            $message->to(config('mail.from.address'))
+                    ->subject('SMTP Test');
+        });
+        return 'SUCCESS: Email sent successfully! Check the inbox of ' . config('mail.from.address');
+    } catch (\Exception $e) {
+        return 'ERROR: ' . $e->getMessage() . '<br><br>Trace:<br>' . nl2br($e->getTraceAsString());
+    }
+});
+
 Route::get('/pesanan', function () {
     $bookings = [];
     if (Auth::check()) {
