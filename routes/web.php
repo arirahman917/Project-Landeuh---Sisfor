@@ -17,6 +17,24 @@ Route::get('/debug-session-get', function () {
     return 'Session value: ' . session('test_key', 'NOT SET') . ' | Driver: ' . config('session.driver');
 });
 
+Route::get('/debug-login', function () {
+    $user = \App\Models\User::first();
+    if (!$user) {
+        return 'No users in database. Please register first.';
+    }
+    Auth::login($user);
+    // Don't regenerate session here just to see if regenerate() is the culprit
+    return 'Logged in as ' . $user->email . '. Now go to /debug-check';
+});
+
+Route::get('/debug-check', function () {
+    if (Auth::check()) {
+        return 'LOGGED IN: ' . Auth::user()->email;
+    } else {
+        return 'NOT LOGGED IN. Session data: ' . json_encode(session()->all());
+    }
+});
+
 Route::get('/pesanan', function () {
     $bookings = [];
     if (Auth::check()) {
