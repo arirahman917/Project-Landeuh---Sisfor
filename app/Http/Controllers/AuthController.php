@@ -27,7 +27,11 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        event(new Registered($user));
+        try {
+            event(new Registered($user));
+        } catch (\Exception $e) {
+            \Log::error('Failed to send verification email during registration: ' . $e->getMessage());
+        }
 
         Auth::login($user);
 
