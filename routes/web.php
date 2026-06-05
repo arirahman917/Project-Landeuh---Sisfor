@@ -148,6 +148,14 @@ Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $requ
     return redirect('/')->with('success', 'Email berhasil diverifikasi.');
 })->middleware(['auth', 'signed'])->name('verification.verify');
 
+Route::post('/email/verification-notification', function (Illuminate\Http\Request $request) {
+    if ($request->user()->hasVerifiedEmail()) {
+        return response()->json(['message' => 'Email sudah diverifikasi.'], 200);
+    }
+    $request->user()->sendEmailVerificationNotification();
+    return response()->json(['message' => 'Link verifikasi telah dikirim ulang!'], 200);
+})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
+
 // ══════════════════════════════════════════════════════════════
 // ADMIN — Frontend-only auth (sessionStorage)
 // ══════════════════════════════════════════════════════════════

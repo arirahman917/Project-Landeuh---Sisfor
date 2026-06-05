@@ -113,13 +113,34 @@
     </div>
     
     <!-- Modal 3: Verification -->
-    <div id="modalVerification" class="relative w-full max-w-sm bg-white rounded-2xl shadow-2xl p-8 transform scale-95 transition-all duration-300 hidden text-center">
-        <h2 class="text-xl font-bold text-gray-800 mb-4">Verifikasi</h2>
-        <p class="text-sm text-gray-600 leading-relaxed mb-6">
-            Kami telah mengirimkan email verifikasi ke <br>
-            <span id="verifEmailDisplay" class="text-blue-500">xxxxxx@gmail.com</span>. Silakan periksa email Anda dan lakukan konfirmasi.
-        </p>
-        <button onclick="finishVerification()" class="text-blue-500 font-bold hover:text-blue-700 transition">OK, Mengerti</button>
+    <div id="modalVerification" class="relative w-full max-w-sm bg-[#F8EDD8] rounded-2xl shadow-2xl p-8 transform scale-95 transition-all duration-300 hidden text-center border border-white/50">
+        <!-- SVG Batik Decoration Top Left -->
+        <svg class="absolute top-0 left-0 w-24 h-24 opacity-30 pointer-events-none" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10,40 Q20,20 40,30 T70,10 T90,30 T70,50 T40,40 T10,60" fill="none" stroke="#d4a373" stroke-width="2"/>
+        </svg>
+
+        <h2 class="text-xl font-bold text-gray-800 mb-4 relative z-10">Cek Email Anda</h2>
+        <div class="mb-6 relative z-10">
+            <div class="w-16 h-16 mx-auto bg-blue-100 rounded-full flex items-center justify-center mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-500 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+            </div>
+            <p class="text-sm text-gray-600 leading-relaxed" id="verifStatusText">
+                Email verifikasi sedang dikirim ke <br>
+                <span id="verifEmailDisplay" class="text-blue-600 font-bold">xxxxxx@gmail.com</span>
+            </p>
+            <p class="text-xs text-gray-500 mt-2">Silakan periksa kotak masuk atau folder spam Anda.</p>
+        </div>
+        
+        <div class="flex flex-col gap-3 relative z-10">
+            <button onclick="window.finishVerification()" class="w-full bg-[#2f4f4f] hover:bg-[#233b3b] text-white font-bold py-2.5 rounded-full transition shadow-md text-sm">
+                OK, Mengerti
+            </button>
+            <button id="resendVerifBtn" onclick="window.resendVerification()" disabled class="w-full text-blue-500 font-semibold hover:text-blue-700 transition text-sm disabled:text-gray-400 disabled:cursor-not-allowed">
+                Kirim Ulang (60s)
+            </button>
+        </div>
     </div>
 
     <!-- Modal 4: Success -->
@@ -175,6 +196,8 @@ if (typeof window.registerModalInitialized === 'undefined') {
     const mobileUserInitial = document.getElementById('mobileUserInitial');
 
     let registeredName = '';
+    let resendTimer = null;
+    let resendSeconds = 60;
 
     // Opens the main register modal
     window.openRegisterModal = function() {
@@ -269,6 +292,7 @@ if (typeof window.registerModalInitialized === 'undefined') {
                 setTimeout(() => {
                     modalVerification.classList.remove('scale-95');
                     modalVerification.classList.add('scale-100');
+                    window.startResendCountdown();
                 }, 10);
             } else {
                 window.showFailedModal();
@@ -286,6 +310,66 @@ if (typeof window.registerModalInitialized === 'undefined') {
             modalFailed.classList.remove('scale-95');
             modalFailed.classList.add('scale-100');
         }, 10);
+    }
+
+    window.startResendCountdown = function() {
+        const btn = document.getElementById('resendVerifBtn');
+        const statusText = document.getElementById('verifStatusText');
+        
+        // Update text slightly after a delay to simulate sending
+        setTimeout(() => {
+            if(statusText) {
+                statusText.innerHTML = `Tautan verifikasi telah dikirim ke <br><span class="text-blue-600 font-bold">${document.getElementById('verifEmailDisplay').textContent}</span>`;
+            }
+        }, 3000);
+
+        if(resendTimer) clearInterval(resendTimer);
+        resendSeconds = 60;
+        btn.disabled = true;
+        btn.textContent = `Kirim Ulang (${resendSeconds}s)`;
+        
+        resendTimer = setInterval(() => {
+            resendSeconds--;
+            if(resendSeconds <= 0) {
+                clearInterval(resendTimer);
+                btn.disabled = false;
+                btn.textContent = 'Kirim Ulang Email';
+            } else {
+                btn.textContent = `Kirim Ulang (${resendSeconds}s)`;
+            }
+        }, 1000);
+    }
+
+    window.resendVerification = async function() {
+        const btn = document.getElementById('resendVerifBtn');
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+        
+        btn.disabled = true;
+        btn.textContent = 'Mengirim...';
+
+        try {
+            const response = await fetch("{{ route('verification.send') }}", {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken || '',
+                    'Accept': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                window.startResendCountdown();
+                alert('Email verifikasi berhasil dikirim ulang! Silakan periksa folder Inbox atau Spam Anda.');
+            } else {
+                alert('Gagal mengirim ulang email. Silakan coba lagi nanti.');
+                btn.disabled = false;
+                btn.textContent = 'Kirim Ulang Email';
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Terjadi kesalahan koneksi.');
+            btn.disabled = false;
+            btn.textContent = 'Kirim Ulang Email';
+        }
     }
 
     window.finishVerification = function() {
