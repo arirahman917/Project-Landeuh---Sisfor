@@ -151,6 +151,12 @@ use Illuminate\Foundation\Auth\EmailVerificationRequest;
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::post('/register', [AuthController::class, 'register'])->name('register.post');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])->name('password.email');
+Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
+
+Route::get('/reset-password/{token}', function ($token, Illuminate\Http\Request $request) {
+    return view('auth.reset-password', ['token' => $token, 'email' => $request->email]);
+})->name('password.reset');
 
 Route::get('/auth/google', [AuthController::class, 'redirectToGoogle'])->name('auth.google');
 Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');

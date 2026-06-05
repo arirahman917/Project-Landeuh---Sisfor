@@ -77,8 +77,24 @@
                     <input type="email" id="logEmail" required class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:outline-none focus:border-[#3a523a] focus:ring-1 focus:ring-[#3a523a] text-sm" placeholder="Masukkan Email">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-gray-800 mb-1">Password</label>
-                    <input type="password" id="logPassword" required class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:outline-none focus:border-[#3a523a] focus:ring-1 focus:ring-[#3a523a] text-sm" placeholder="Masukkan Password">
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="block text-xs font-bold text-gray-800">Password</label>
+                        <button type="button" onclick="closeLoginModal(); setTimeout(() => openForgotPasswordModal(), 300)" class="text-[10px] text-blue-500 hover:text-blue-700 hover:underline">Lupa Password?</button>
+                    </div>
+                    <div class="relative">
+                        <input type="password" id="logPassword" required class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:outline-none focus:border-[#3a523a] focus:ring-1 focus:ring-[#3a523a] text-sm pr-10" placeholder="Masukkan Password">
+                        <button type="button" onclick="togglePasswordVisibility('logPassword')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700">
+                            <!-- Eye icon -->
+                            <svg id="logPassword-eye" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                            <!-- Eye slash icon (hidden) -->
+                            <svg id="logPassword-eye-slash" class="h-5 w-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                            </svg>
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -129,6 +145,38 @@
         <button onclick="showLoginManualForm()" class="text-blue-500 font-bold hover:text-blue-700 transition text-sm">Coba Lagi</button>
     </div>
 
+    <!-- Modal 5: Forgot Password -->
+    <div id="modalForgotPassword" class="relative w-full max-w-lg bg-[#F8EDD8] rounded-[1.5rem] shadow-2xl p-6 md:p-8 transform scale-95 transition-all duration-300 hidden">
+        <div class="text-center mb-4">
+            <h2 class="text-2xl font-bold text-gray-800">Lupa Password</h2>
+            <p class="text-sm text-gray-600 mt-2">Masukkan email Anda untuk menerima tautan reset password.</p>
+        </div>
+        
+        <form id="formForgotPassword" onsubmit="handleForgotPasswordSubmit(event)" class="space-y-4">
+            <div>
+                <label class="block text-xs font-bold text-gray-800 mb-1">Email</label>
+                <input type="email" id="forgotEmail" required class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:outline-none focus:border-[#3a523a] focus:ring-1 focus:ring-[#3a523a] text-sm" placeholder="Masukkan Email Anda">
+            </div>
+
+            <!-- Message Alert Container -->
+            <div id="forgotMessageContainer" class="hidden rounded p-3 text-sm font-semibold text-center mt-2"></div>
+
+            <div class="pt-2">
+                <button type="submit" id="btnForgotSubmit" class="w-full flex justify-center items-center gap-2 bg-[#2f4f4f] hover:bg-[#233b3b] text-white font-bold py-3.5 rounded-full transition shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed">
+                    <span id="btnForgotText">Kirim Tautan Reset</span>
+                    <svg id="btnForgotSpinner" class="animate-spin h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="text-center mt-2">
+                <button type="button" onclick="showLoginManualForm()" class="text-blue-500 font-semibold hover:text-blue-700 transition">Kembali ke Log In</button>
+            </div>
+        </form>
+    </div>
+
 </div>
 
 <script>
@@ -141,19 +189,18 @@ if (typeof window.loginModalInitialized === 'undefined') {
     const modalLoginManual = document.getElementById('modalLoginManual');
     const modalLoginSuccess = document.getElementById('modalLoginSuccess');
     const modalLoginFailed = document.getElementById('modalLoginFailed');
+    const modalForgotPassword = document.getElementById('modalForgotPassword');
     
     // Override the mock function in modal-register.blade.php
     window.openLoginModal = function() {
         loginOverlay.classList.remove('hidden');
+        loginOverlay.classList.remove('opacity-0', 'invisible');
+        
+        hideAllLoginModals();
+        modalLoginMain.classList.remove('hidden');
         setTimeout(() => {
-            loginOverlay.classList.remove('opacity-0', 'invisible');
-            
-            hideAllLoginModals();
-            modalLoginMain.classList.remove('hidden');
-            setTimeout(() => {
-                modalLoginMain.classList.remove('scale-95');
-                modalLoginMain.classList.add('scale-100');
-            }, 10);
+            modalLoginMain.classList.remove('scale-95');
+            modalLoginMain.classList.add('scale-100');
         }, 10);
     }
 
@@ -173,11 +220,33 @@ if (typeof window.loginModalInitialized === 'undefined') {
     }
 
     window.hideAllLoginModals = function() {
-        const modals = [modalLoginMain, modalLoginManual, modalLoginSuccess, modalLoginFailed];
+        const modals = [modalLoginMain, modalLoginManual, modalLoginSuccess, modalLoginFailed, modalForgotPassword];
         modals.forEach(m => {
             m.classList.add('hidden', 'scale-95');
             m.classList.remove('scale-100');
         });
+    }
+
+    window.openForgotPasswordModal = function() {
+        hideAllLoginModals();
+        
+        // Reset form messages
+        const msgContainer = document.getElementById('forgotMessageContainer');
+        msgContainer.className = 'hidden rounded p-3 text-sm font-semibold text-center mt-2';
+        msgContainer.innerText = '';
+        document.getElementById('forgotEmail').value = '';
+
+        modalForgotPassword.classList.remove('hidden');
+        setTimeout(() => {
+            modalForgotPassword.classList.remove('scale-95');
+            modalForgotPassword.classList.add('scale-100');
+        }, 10);
+        
+        // If the user clicked "Lupa Password" from the home page but login modal wasn't open yet:
+        if (loginOverlay.classList.contains('hidden')) {
+            loginOverlay.classList.remove('hidden');
+            loginOverlay.classList.remove('opacity-0', 'invisible');
+        }
     }
 
     window.showLoginManualForm = function() {
@@ -248,6 +317,73 @@ if (typeof window.loginModalInitialized === 'undefined') {
             modalLoginFailed.classList.remove('scale-95');
             modalLoginFailed.classList.add('scale-100');
         }, 10);
+    }
+
+    window.togglePasswordVisibility = function(inputId) {
+        const input = document.getElementById(inputId);
+        const eyeIcon = document.getElementById(inputId + '-eye');
+        const eyeSlashIcon = document.getElementById(inputId + '-eye-slash');
+        
+        if (input.type === 'password') {
+            input.type = 'text';
+            eyeIcon.classList.add('hidden');
+            eyeSlashIcon.classList.remove('hidden');
+        } else {
+            input.type = 'password';
+            eyeIcon.classList.remove('hidden');
+            eyeSlashIcon.classList.add('hidden');
+        }
+    }
+    window.handleForgotPasswordSubmit = async function(e) {
+        e.preventDefault();
+        const email = document.getElementById('forgotEmail').value;
+        const btnSubmit = document.getElementById('btnForgotSubmit');
+        const btnText = document.getElementById('btnForgotText');
+        const btnSpinner = document.getElementById('btnForgotSpinner');
+        const msgContainer = document.getElementById('forgotMessageContainer');
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+        // Loading state
+        btnSubmit.disabled = true;
+        btnText.innerText = 'Mengirim...';
+        btnSpinner.classList.remove('hidden');
+        msgContainer.classList.add('hidden');
+
+        try {
+            const formData = new FormData();
+            formData.append('email', email);
+
+            const response = await fetch("{{ route('password.email') }}", {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken || '',
+                    'Accept': 'application/json'
+                },
+                body: formData
+            });
+
+            const data = await response.json();
+
+            msgContainer.classList.remove('hidden', 'bg-red-100', 'text-red-700', 'bg-green-100', 'text-green-700');
+            if (response.ok) {
+                msgContainer.classList.add('bg-green-100', 'text-green-700');
+                msgContainer.innerText = data.message || 'Link reset password telah dikirim ke email Anda.';
+                document.getElementById('forgotEmail').value = '';
+            } else {
+                msgContainer.classList.add('bg-red-100', 'text-red-700');
+                msgContainer.innerText = data.message || 'Gagal mengirim email reset password.';
+            }
+        } catch (error) {
+            console.error(error);
+            msgContainer.classList.remove('hidden');
+            msgContainer.classList.add('bg-red-100', 'text-red-700');
+            msgContainer.innerText = 'Terjadi kesalahan sistem.';
+        } finally {
+            // Restore state
+            btnSubmit.disabled = false;
+            btnText.innerText = 'Kirim Tautan Reset';
+            btnSpinner.classList.add('hidden');
+        }
     }
 }
 </script>

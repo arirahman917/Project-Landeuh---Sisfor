@@ -79,11 +79,11 @@
                 <h3 class="footer-col-title">Navigasi</h3>
                 <ul class="mt-3 lg:mt-5 space-y-2 lg:space-y-3">
                     @foreach([
-                        ['label'=>'Beranda',   'href'=>'#hero'],
-                        ['label'=>'Tentang',   'href'=>'#tentang'],
-                        ['label'=>'Akomodasi', 'href'=>'#akomodasi'],
-                        ['label'=>'Fasilitas', 'href'=>'#fasilitas'],
-                        ['label'=>'FAQ',       'href'=>'#faq'],
+                        ['label'=>'Beranda',   'href'=> url('/') . '#hero'],
+                        ['label'=>'Tentang',   'href'=> url('/') . '#tentang'],
+                        ['label'=>'Akomodasi', 'href'=> url('/') . '#akomodasi'],
+                        ['label'=>'Fasilitas', 'href'=> url('/') . '#fasilitas'],
+                        ['label'=>'FAQ',       'href'=> url('/') . '#faq'],
                     ] as $nav)
                     <li>
                         <a href="{{ $nav['href'] }}" class="footer-nav-link group flex items-center gap-1.5 text-[11px] lg:text-[13.6px]">

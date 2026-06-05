@@ -1,9 +1,5 @@
 <header class="sticky top-0 z-50 w-full bg-white/40 backdrop-blur-xl border-b border-white/30 shadow-sm transition-all" id="mainHeader">
-    @if(session('error'))
-        <div class="bg-red-500 text-white text-center py-2 px-4 font-bold text-sm w-full z-50">
-            ERROR: {{ session('error') }}
-        </div>
-    @endif
+
     <div class="w-full px-4 sm:px-6 py-2.5 flex justify-between items-center max-w-7xl mx-auto relative">
         <!-- Left Side: Logo -->
         <a href="{{ url('/') }}" class="flex items-center z-50">
