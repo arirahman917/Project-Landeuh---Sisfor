@@ -42,7 +42,6 @@ class AuthController extends Controller
         ]);
 
         if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
             return response()->json(['message' => 'Login successful', 'user' => Auth::user()], 200);
         }
 
@@ -72,7 +71,6 @@ class AuthController extends Controller
 
             // Pastikan user memiliki role admin
             if ($user->role === 'admin') {
-                $request->session()->regenerate();
                 return response()->json(['message' => 'Admin login successful'], 200);
             }
 
@@ -126,8 +124,6 @@ class AuthController extends Controller
                 Auth::login($newUser);
                 \Log::info('Google OAuth - new user created: ' . $newUser->id);
             }
-
-            request()->session()->regenerate();
 
             return redirect()->intended('/');
         } catch (\Exception $e) {
