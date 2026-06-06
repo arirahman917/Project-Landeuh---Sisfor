@@ -9,6 +9,7 @@
 
 @include('admin.unit._modal-tambah')
 @include('admin.unit._modal-edit')
+@include('admin.unit._modal-delete')
 
 {{-- ── STAT CARDS ────────────────────────────────────────────── --}}
 <div class="grid grid-cols-2 gap-4 mb-6">
@@ -342,7 +343,7 @@
                         <iconify-icon icon="lucide:pencil" class="text-sm"></iconify-icon>
                         Edit Info
                     </button>
-                    <button onclick="hapusKamar(${item.id})"
+                    <button onclick="openDeleteModal(${item.id}, '${item.judul.replace(/'/g, "\\'")}')"
                         class="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold
                                text-white bg-red-500 hover:bg-red-600 transition shadow-sm active:scale-[0.97]">
                         <iconify-icon icon="lucide:trash-2" class="text-sm"></iconify-icon>
@@ -354,9 +355,7 @@
     }
 
     // ── Hapus unit ─────────────────────────────────────────────
-    window.hapusKamar = function(id) {
-        if(!confirm('Apakah Anda yakin ingin menghapus kamar ini? Data akan dihapus permanen dari database.')) return;
-        
+    window.performDelete = function(id) {
         // Tampilkan toast loading
         showToast('Sedang menghapus, mohon tunggu...', 'lucide:loader', 'text-amber-400');
 
