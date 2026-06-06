@@ -215,20 +215,28 @@
 
     window.handleEditGambarChange = function(event) {
         const files = Array.from(event.target.files);
-        let loaded = 0;
-        files.forEach(file => {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                window.currentEditImages.push({
-                    type: 'new',
-                    file: file,
-                    url: e.target.result
-                });
-                loaded++;
-                if (loaded === files.length) renderEditImagePreviews();
-            };
-            reader.readAsDataURL(file);
+        // Sort files by name a to z
+        files.sort((a, b) => a.name.localeCompare(b.name));
+        
+        const promises = files.map(file => {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    resolve({
+                        type: 'new',
+                        file: file,
+                        url: e.target.result
+                    });
+                };
+                reader.readAsDataURL(file);
+            });
         });
+
+        Promise.all(promises).then(results => {
+            window.currentEditImages = window.currentEditImages.concat(results);
+            renderEditImagePreviews();
+        });
+        
         event.target.value = '';
     };
 
@@ -327,6 +335,8 @@
     };
 
     window.submitEditKamar = function() {
+        if (window.isSubmittingEdit) return;
+
         const id       = parseInt(document.getElementById('edit_id').value);
         const idx      = AKOMODASI_DATA.findIndex(d => d.id === id);
         if (idx === -1) return;
@@ -353,9 +363,10 @@
             }
         });
 
+        window.isSubmittingEdit = true;
         const submitBtn = document.querySelector('#modalEditKamar button[onclick="submitEditKamar()"]');
         submitBtn.disabled = true;
-        submitBtn.innerHTML = 'Menyimpan...';
+        submitBtn.innerHTML = '<iconify-icon icon="lucide:loader" class="text-base animate-spin"></iconify-icon> Mengupload & Menyimpan... Mohon Tunggu';
 
         fetch(`/admin/unit/${id}`, {
             method: 'POST', // POST for FormData, but _method is PUT
@@ -368,9 +379,13 @@
         .then(res => res.json())
         .then(data => {
             if (data.success) {
+                // Get current hash page
+                const hashPage = window.location.hash.replace('#page=', '');
+                window.location.href = window.location.pathname + '#page=' + (hashPage || '1');
                 window.location.reload();
             } else {
                 alert('Terjadi kesalahan saat menyimpan data.');
+                window.isSubmittingEdit = false;
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = '<iconify-icon icon="lucide:save" class="text-base"></iconify-icon> Simpan Perubahan';
             }
@@ -378,6 +393,7 @@
         .catch(err => {
             console.error(err);
             alert('Terjadi kesalahan jaringan.');
+            window.isSubmittingEdit = false;
             submitBtn.disabled = false;
             submitBtn.innerHTML = '<iconify-icon icon="lucide:save" class="text-base"></iconify-icon> Simpan Perubahan';
         });

@@ -167,7 +167,8 @@
 <script>
 (function () {
     const PER_PAGE  = 5;
-    let currentPage = 1;
+    let hashPage    = parseInt(window.location.hash.replace('#page=', ''));
+    let currentPage = hashPage ? hashPage : 1;
     let filteredData = [];
     let sortAsc      = true;
     const basePath   = "{{ asset('images/akomodasi') }}";
@@ -356,6 +357,9 @@
     window.hapusKamar = function(id) {
         if(!confirm('Apakah Anda yakin ingin menghapus kamar ini? Data akan dihapus permanen dari database.')) return;
         
+        // Tampilkan toast loading
+        showToast('Sedang menghapus, mohon tunggu...', 'lucide:loader', 'text-amber-400');
+
         fetch(`/admin/unit/${id}`, {
             method: 'DELETE',
             headers: {
@@ -366,6 +370,7 @@
         .then(res => res.json())
         .then(data => {
             if (data.success) {
+                window.location.href = window.location.pathname + '#page=' + currentPage;
                 window.location.reload();
             } else {
                 alert('Terjadi kesalahan saat menghapus data.');
@@ -445,12 +450,13 @@
         const totalPages = Math.ceil(filteredData.length / PER_PAGE);
         if (page < 1 || page > totalPages) return;
         currentPage = page;
+        window.location.hash = 'page=' + currentPage;
         renderUnitTable();
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     // ── Filter + Search ────────────────────────────────────────
-    window.applyFilter = function() {
+    window.applyFilter = function(keepPage) {
         const search = document.getElementById('searchInput').value.toLowerCase();
         const jenis  = document.getElementById('filterJenisAdmin').value;
 
@@ -465,7 +471,7 @@
             ? a.harga_weekday - b.harga_weekday
             : b.harga_weekday - a.harga_weekday);
 
-        currentPage = 1;
+        if (!keepPage) currentPage = 1;
         renderUnitTable();
     };
 
@@ -501,7 +507,7 @@
     function showLbImg() { document.getElementById('lbImg').src = lbImages[lbIdx]; }
 
     // ── Init ───────────────────────────────────────────────────
-    applyFilter();
+    applyFilter(true); // true = keep page from URL hash on first load
 })();
 </script>
 

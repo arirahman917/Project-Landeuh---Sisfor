@@ -202,6 +202,8 @@
 
     window.handleTambahGambarChange = function(event) {
         const files = Array.from(event.target.files);
+        // Sort files by name a to z
+        files.sort((a, b) => a.name.localeCompare(b.name));
         window.tambahKamarFiles = window.tambahKamarFiles.concat(files);
         event.target.value = ''; // Reset input so user can select same file again if they want
         renderTambahImagePreviews();
@@ -249,6 +251,8 @@
         });
     };
     window.submitTambahKamar = function() {
+        if (window.isSubmittingTambah) return;
+
         // ── Ambil nilai dari form ──────────────────────────────
         const nama        = document.getElementById('tambah_nama').value.trim();
         const jenis       = document.getElementById('tambah_jenis').value;
@@ -284,9 +288,10 @@
             formData.append('gambar[]', file);
         });
 
+        window.isSubmittingTambah = true;
         const submitBtn = document.querySelector('#modalTambahKamar button[onclick="submitTambahKamar()"]');
         submitBtn.disabled = true;
-        submitBtn.innerHTML = 'Menyimpan...';
+        submitBtn.innerHTML = '<iconify-icon icon="lucide:loader" class="text-base animate-spin"></iconify-icon> Mengupload...';
 
         fetch('/admin/unit', {
             method: 'POST',
@@ -299,9 +304,13 @@
         .then(res => res.json())
         .then(data => {
             if (data.success) {
+                // Get current hash page
+                const hashPage = window.location.hash.replace('#page=', '');
+                window.location.href = window.location.pathname + '#page=' + (hashPage || '1');
                 window.location.reload();
             } else {
                 alert('Terjadi kesalahan saat menyimpan data.');
+                window.isSubmittingTambah = false;
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = '<iconify-icon icon="lucide:plus-circle" class="text-base"></iconify-icon> Tambah Kamar';
             }
@@ -309,6 +318,7 @@
         .catch(err => {
             console.error(err);
             alert('Terjadi kesalahan jaringan.');
+            window.isSubmittingTambah = false;
             submitBtn.disabled = false;
             submitBtn.innerHTML = '<iconify-icon icon="lucide:plus-circle" class="text-base"></iconify-icon> Tambah Kamar';
         });

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="id" class="overflow-x-clip w-full max-w-[100vw]">
 <head>
+    <link rel="icon" type="image/png" href="{{ asset('images/logo-landeuh.png') }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="csrf-token" content="{{ csrf_token() }}">
