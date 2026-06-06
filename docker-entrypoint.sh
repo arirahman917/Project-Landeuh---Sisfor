@@ -29,10 +29,10 @@ php artisan view:clear
 echo "Wiping database and running fresh migrations..."
 php artisan migrate:fresh --force
 
-# Force import seed data from backup
+# Force import seed data from backup (with error handling so it doesn't crash)
 echo "Force importing seed data from local backup..."
-mysql -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USERNAME" -p"$DB_PASSWORD" "$DB_DATABASE" < /var/www/html/database/project_landeuh_backup.sql
-echo "Seed data imported successfully!"
+mysql -h "${DB_HOST:-127.0.0.1}" -P "${DB_PORT:-3306}" -u "${DB_USERNAME:-root}" -p"${DB_PASSWORD}" "${DB_DATABASE}" < /var/www/html/database/project_landeuh_backup.sql || echo "WARNING: Seed data import encountered an error, but server will continue starting."
+echo "Seed data import attempt finished!"
 
 # Start queue worker in background to process emails without freezing the UI
 php artisan queue:work --tries=3 --timeout=90 &
