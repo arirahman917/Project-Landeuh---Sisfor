@@ -61,15 +61,25 @@
         </span>
     </div>
 
-    {{-- Sort Harga --}}
-    <button id="btnSortHarga"
-        class="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-stone-200 bg-white/80 text-stone-700
-               text-sm font-medium hover:bg-amber-50 hover:border-amber-300 transition"
-        data-asc="true"
-    >
-        <iconify-icon icon="lucide:arrow-up-down" class="text-base"></iconify-icon>
-        Harga
-    </button>
+    {{-- Sort Dropdown --}}
+    <div class="relative">
+        <select id="sortSelect"
+            class="appearance-none pl-9 pr-8 py-2.5 rounded-xl border border-stone-200 bg-white/80 text-stone-700
+                   text-sm font-medium hover:bg-amber-50 hover:border-amber-300 transition
+                   focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent cursor-pointer">
+            <option value="terbaru">Terbaru</option>
+            <option value="nama-az">Nama A → Z</option>
+            <option value="nama-za">Nama Z → A</option>
+            <option value="harga-asc">Harga Terendah</option>
+            <option value="harga-desc">Harga Tertinggi</option>
+        </select>
+        <span class="absolute inset-y-0 left-3 flex items-center text-stone-400 pointer-events-none">
+            <iconify-icon icon="lucide:arrow-up-down" class="text-sm"></iconify-icon>
+        </span>
+        <span class="absolute inset-y-0 right-2 flex items-center text-stone-400 pointer-events-none">
+            <iconify-icon icon="lucide:chevron-down" class="text-sm"></iconify-icon>
+        </span>
+    </div>
 
     {{-- Spacer --}}
     <div class="flex-1 hidden sm:block"></div>
@@ -171,7 +181,7 @@
     let hashPage    = parseInt(window.location.hash.replace('#page=', ''));
     let currentPage = hashPage ? hashPage : 1;
     let filteredData = [];
-    let sortAsc      = true;
+    let sortMode     = 'terbaru';
     const basePath   = "{{ asset('images/akomodasi') }}";
     const imgs       = ['a.png','b.png','c.png','d.png'];
 
@@ -460,25 +470,52 @@
         const jenis  = document.getElementById('filterJenisAdmin').value;
 
         filteredData = AKOMODASI_DATA.filter(d => {
-            const matchSearch = d.judul.toLowerCase().includes(search);
+            const textToSearch = [
+                d.judul,
+                d.jenis,
+                d.kasur,
+                d.fasilitas,
+                d.makanan,
+                d.harga_weekday,
+                d.harga_weekend,
+                d.harga_highseason,
+                d.max_orang + ' orang',
+                d.max_orang + ' pax',
+                d.slot + ' kamar',
+                d.slot + ' tenda'
+            ].join(' ').toLowerCase();
+            
+            const matchSearch = textToSearch.includes(search);
             const matchJenis  = !jenis || d.jenis === jenis;
             return matchSearch && matchJenis;
         });
 
         // Sort
-        filteredData.sort((a, b) => sortAsc
-            ? a.harga_weekday - b.harga_weekday
-            : b.harga_weekday - a.harga_weekday);
+        switch(sortMode) {
+            case 'terbaru':
+                filteredData.sort((a, b) => b.id - a.id);
+                break;
+            case 'nama-az':
+                filteredData.sort((a, b) => a.judul.localeCompare(b.judul));
+                break;
+            case 'nama-za':
+                filteredData.sort((a, b) => b.judul.localeCompare(a.judul));
+                break;
+            case 'harga-asc':
+                filteredData.sort((a, b) => a.harga_weekday - b.harga_weekday);
+                break;
+            case 'harga-desc':
+                filteredData.sort((a, b) => b.harga_weekday - a.harga_weekday);
+                break;
+        }
 
         if (!keepPage) currentPage = 1;
         renderUnitTable();
     };
 
-    // ── Sort button ────────────────────────────────────────────
-    document.getElementById('btnSortHarga').addEventListener('click', function() {
-        sortAsc = !sortAsc;
-        this.querySelector('iconify-icon').setAttribute('icon',
-            sortAsc ? 'lucide:arrow-up' : 'lucide:arrow-down');
+    // ── Sort dropdown ──────────────────────────────────────────
+    document.getElementById('sortSelect').addEventListener('change', function() {
+        sortMode = this.value;
         applyFilter();
     });
 
