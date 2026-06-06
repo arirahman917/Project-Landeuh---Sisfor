@@ -24,7 +24,7 @@
         <h2 class="text-2xl font-bold text-center text-gray-800 mb-8 relative z-10">Log In</h2>
 
         <div class="space-y-4 relative z-10">
-            <a href="{{ route('auth.google') }}" class="w-full flex items-center justify-center gap-3 bg-white hover:bg-gray-50 text-gray-700 py-3 rounded-full font-semibold shadow-sm border border-gray-200 transition">
+            <a href="{{ route('auth.google') }}" id="btnGoogleLogin" class="w-full flex items-center justify-center gap-3 bg-white hover:bg-gray-50 text-gray-700 py-3 rounded-full font-semibold shadow-sm border border-gray-200 transition">
                 <svg class="w-5 h-5" viewBox="0 0 24 24">
                     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
                     <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
@@ -196,6 +196,18 @@ if (typeof window.loginModalInitialized === 'undefined') {
         loginOverlay.classList.remove('hidden');
         loginOverlay.classList.remove('opacity-0', 'invisible');
         
+        // Setup Google link with pending redirect if any
+        const pendingUrl = sessionStorage.getItem('pending_redirect');
+        const btnGoogle = document.getElementById('btnGoogleLogin');
+        if (btnGoogle) {
+            let baseGoogleUrl = "{{ route('auth.google') }}";
+            if (pendingUrl) {
+                btnGoogle.href = baseGoogleUrl + '?redirect=' + encodeURIComponent(pendingUrl);
+            } else {
+                btnGoogle.href = baseGoogleUrl;
+            }
+        }
+
         hideAllLoginModals();
         modalLoginMain.classList.remove('hidden');
         setTimeout(() => {
@@ -299,7 +311,13 @@ if (typeof window.loginModalInitialized === 'undefined') {
 
                 // After 1.5 seconds, close modal and reload page
                 setTimeout(() => {
-                    window.location.reload();
+                    const pendingUrl = sessionStorage.getItem('pending_redirect');
+                    if (pendingUrl) {
+                        sessionStorage.removeItem('pending_redirect');
+                        window.location.href = pendingUrl;
+                    } else {
+                        window.location.reload();
+                    }
                 }, 1500);
             } else {
                 showLoginFailedModal();

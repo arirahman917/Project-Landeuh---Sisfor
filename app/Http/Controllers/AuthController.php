@@ -94,42 +94,47 @@ class AuthController extends Controller
         return response()->json(['message' => 'Admin logout successful'], 200);
     }
 
-    public function redirectToGoogle()
+    public function redirectToGoogle(Request $request)
     {
+        if ($request->has('redirect')) {
+            session()->put('url.intended', $request->query('redirect'));
+        } else {
+            // Only set intended to previous if we don't already have one
+            if (!session()->has('url.intended')) {
+                session()->put('url.intended', url()->previous());
+            }
+        }
         return Socialite::driver('google')->redirect();
     }
 
     public function handleGoogleCallback()
     {
         try {
-            // Use stateless() to avoid session state mismatch behind reverse proxies
-            $googleUser = Socialite::driver('google')->stateless()->user();
-
-            \Log::info('Google OAuth callback - email: ' . $googleUser->getEmail());
+            $googleUser = Socialite::driver('google')->user();
 
             $user = User::where('email', $googleUser->getEmail())->first();
 
-            if ($user) {
+            if (!$user) {
+                $user = User::create([
+                    'name' => $googleUser->getName(),
+                    'email' => $googleUser->getEmail(),
+                    'password' => Hash::make(uniqid()),
+                    'google_id' => $googleUser->getId(),
+                    'email_verified_at' => now(), // Auto verify if from google
+                    'role' => 'user'
+                ]);
+                \Log::info('Google OAuth - new user created: ' . $user->id);
+            } else {
                 if (!$user->google_id) {
                     $user->update(['google_id' => $googleUser->getId()]);
                 }
                 if (!$user->email_verified_at) {
                     $user->update(['email_verified_at' => now()]);
                 }
-                Auth::login($user);
                 \Log::info('Google OAuth - existing user logged in: ' . $user->id);
-            } else {
-                $newUser = User::create([
-                    'name'              => $googleUser->getName(),
-                    'email'             => $googleUser->getEmail(),
-                    'google_id'         => $googleUser->getId(),
-                    'password'          => null,
-                    'email_verified_at' => now(),
-                ]);
-
-                Auth::login($newUser);
-                \Log::info('Google OAuth - new user created: ' . $newUser->id);
             }
+
+            Auth::login($user);
 
             return redirect()->intended('/');
         } catch (\Exception $e) {

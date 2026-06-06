@@ -46,39 +46,52 @@
                    placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition"/>
     </div>
 
-    {{-- Filter Jenis --}}
-    <div class="relative">
-        <select id="filterJenisAdmin"
-            class="appearance-none pl-4 pr-9 py-2.5 rounded-xl border border-stone-200 bg-white/80 text-stone-800 text-sm
-                   focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition">
-            <option value="">Jenis Akomodasi</option>
-            <option value="Cabin">Cabin</option>
-            <option value="Rumah Industrial">Rumah Industrial</option>
-            <option value="Glamping">Glamping</option>
-        </select>
+    {{-- Filter Jenis Custom Dropdown --}}
+    <div class="relative select-none" id="customFilterJenis">
+        <div id="filterJenisDisplay"
+            class="flex items-center min-w-[170px] pl-4 pr-9 py-2.5 rounded-xl border border-stone-200 bg-white/80 text-stone-700 text-sm font-medium
+                   hover:bg-amber-50 hover:border-amber-300 transition cursor-pointer">
+            Semua Jenis
+        </div>
         <span class="absolute inset-y-0 right-3 flex items-center text-stone-400 pointer-events-none">
             <iconify-icon icon="lucide:chevron-down" class="text-sm"></iconify-icon>
         </span>
+        <div id="filterJenisOptions"
+            class="custom-dropdown-options absolute z-50 mt-2 w-full min-w-[180px] bg-white rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] border border-stone-100 hidden opacity-0 transition-opacity duration-200 overflow-hidden">
+            <div class="py-2 flex flex-col">
+                <div class="px-4 py-2.5 text-sm font-medium text-stone-600 hover:bg-amber-50 hover:text-amber-700 cursor-pointer transition-colors" data-value="">Semua Jenis</div>
+                <div class="px-4 py-2.5 text-sm font-medium text-stone-600 hover:bg-amber-50 hover:text-amber-700 cursor-pointer transition-colors" data-value="Cabin">Cabin</div>
+                <div class="px-4 py-2.5 text-sm font-medium text-stone-600 hover:bg-amber-50 hover:text-amber-700 cursor-pointer transition-colors" data-value="Rumah Industrial">Rumah Industrial</div>
+                <div class="px-4 py-2.5 text-sm font-medium text-stone-600 hover:bg-amber-50 hover:text-amber-700 cursor-pointer transition-colors" data-value="Glamping">Glamping</div>
+            </div>
+        </div>
+        <input type="hidden" id="filterJenisAdmin" value="">
     </div>
 
-    {{-- Sort Dropdown --}}
-    <div class="relative">
-        <select id="sortSelect"
-            class="appearance-none pl-9 pr-8 py-2.5 rounded-xl border border-stone-200 bg-white/80 text-stone-700
-                   text-sm font-medium hover:bg-amber-50 hover:border-amber-300 transition
-                   focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent cursor-pointer">
-            <option value="terbaru">Terbaru</option>
-            <option value="nama-az">Nama A → Z</option>
-            <option value="nama-za">Nama Z → A</option>
-            <option value="harga-asc">Harga Terendah</option>
-            <option value="harga-desc">Harga Tertinggi</option>
-        </select>
+    {{-- Sort Custom Dropdown --}}
+    <div class="relative select-none" id="customSort">
+        <div id="sortDisplay"
+            class="flex items-center min-w-[180px] pl-9 pr-8 py-2.5 rounded-xl border border-stone-200 bg-white/80 text-stone-700 text-sm font-medium
+                   hover:bg-amber-50 hover:border-amber-300 transition cursor-pointer">
+            Terbaru
+        </div>
         <span class="absolute inset-y-0 left-3 flex items-center text-stone-400 pointer-events-none">
             <iconify-icon icon="lucide:arrow-up-down" class="text-sm"></iconify-icon>
         </span>
-        <span class="absolute inset-y-0 right-2 flex items-center text-stone-400 pointer-events-none">
+        <span class="absolute inset-y-0 right-3 flex items-center text-stone-400 pointer-events-none">
             <iconify-icon icon="lucide:chevron-down" class="text-sm"></iconify-icon>
         </span>
+        <div id="sortOptions"
+            class="custom-dropdown-options absolute z-50 mt-2 w-full min-w-[190px] right-0 bg-white rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] border border-stone-100 hidden opacity-0 transition-opacity duration-200 overflow-hidden">
+            <div class="py-2 flex flex-col">
+                <div class="px-4 py-2.5 text-sm font-medium text-stone-600 hover:bg-amber-50 hover:text-amber-700 cursor-pointer transition-colors" data-value="terbaru">Terbaru</div>
+                <div class="px-4 py-2.5 text-sm font-medium text-stone-600 hover:bg-amber-50 hover:text-amber-700 cursor-pointer transition-colors" data-value="nama-az">Nama A → Z</div>
+                <div class="px-4 py-2.5 text-sm font-medium text-stone-600 hover:bg-amber-50 hover:text-amber-700 cursor-pointer transition-colors" data-value="nama-za">Nama Z → A</div>
+                <div class="px-4 py-2.5 text-sm font-medium text-stone-600 hover:bg-amber-50 hover:text-amber-700 cursor-pointer transition-colors" data-value="harga-asc">Harga Terendah</div>
+                <div class="px-4 py-2.5 text-sm font-medium text-stone-600 hover:bg-amber-50 hover:text-amber-700 cursor-pointer transition-colors" data-value="harga-desc">Harga Tertinggi</div>
+            </div>
+        </div>
+        <input type="hidden" id="sortSelect" value="terbaru">
     </div>
 
     {{-- Spacer --}}
@@ -541,6 +554,59 @@
     window.lbPrev = function() { lbIdx = (lbIdx - 1 + lbImages.length) % lbImages.length; showLbImg(); };
     window.lbNext = function() { lbIdx = (lbIdx + 1) % lbImages.length; showLbImg(); };
     function showLbImg() { document.getElementById('lbImg').src = lbImages[lbIdx]; }
+
+    // ── Custom Dropdown Initialization ─────────────────────────
+    function setupCustomDropdown(containerId, displayId, optionsId, inputId) {
+        const container = document.getElementById(containerId);
+        const display = document.getElementById(displayId);
+        const optionsDiv = document.getElementById(optionsId);
+        const input = document.getElementById(inputId);
+        const options = optionsDiv.querySelectorAll('div[data-value]');
+
+        display.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isHidden = optionsDiv.classList.contains('hidden');
+            // Close all other dropdowns
+            document.querySelectorAll('.custom-dropdown-options').forEach(el => {
+                el.classList.add('hidden');
+                el.classList.remove('opacity-100');
+            });
+            if (isHidden) {
+                optionsDiv.classList.remove('hidden');
+                setTimeout(() => optionsDiv.classList.add('opacity-100'), 10);
+            }
+        });
+
+        options.forEach(opt => {
+            opt.addEventListener('click', () => {
+                const val = opt.getAttribute('data-value');
+                const text = opt.innerText;
+                input.value = val;
+                // Only update display text if it's sort (filter uses icon or text)
+                if(inputId === 'sortSelect') {
+                    display.innerText = text;
+                } else if(inputId === 'filterJenisAdmin') {
+                    display.innerText = val ? text : 'Semua Jenis';
+                }
+                
+                optionsDiv.classList.remove('opacity-100');
+                setTimeout(() => optionsDiv.classList.add('hidden'), 200);
+                
+                // Trigger change event
+                input.dispatchEvent(new Event('change'));
+            });
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!container.contains(e.target)) {
+                optionsDiv.classList.remove('opacity-100');
+                setTimeout(() => optionsDiv.classList.add('hidden'), 200);
+            }
+        });
+    }
+
+    setupCustomDropdown('customFilterJenis', 'filterJenisDisplay', 'filterJenisOptions', 'filterJenisAdmin');
+    setupCustomDropdown('customSort', 'sortDisplay', 'sortOptions', 'sortSelect');
 
     // ── Init ───────────────────────────────────────────────────
     applyFilter(true); // true = keep page from URL hash on first load

@@ -129,11 +129,19 @@
     const basePath = "{{ asset('images/akomodasi') }}";
     let lbImages=[], lbIdx=0;
 
+    function resolveImgUrl(url) {
+        if (!url) return '/images/placeholder.jpg';
+        if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) {
+            return url;
+        }
+        return url.startsWith('/') ? url : '/' + url;
+    }
+
     // Lightbox
     window.openLightbox=function(id){
         const item = AKOMODASI_DATA.find(d => d.id === id);
         const images = Array.isArray(item.gambar) ? item.gambar : (item.gambar ? [item.gambar] : []);
-        lbImages = images.map(g => '/' + g);
+        lbImages = images.map(g => resolveImgUrl(g));
         if(lbImages.length===0) lbImages=['/images/akomodasi/cabin1/a.png'];
         lbIdx=0;
         showLbImg();
@@ -276,11 +284,11 @@
         return `
         <div class="ako-card flex flex-col md:flex-row" data-id="${item.id}">
             <div class="img-grid" onclick="openLightbox(${item.id})">
-                <div class="img-main"><img src="/${Array.isArray(item.gambar) && item.gambar.length > 0 ? item.gambar[0] : item.gambar}" alt="${item.judul}" loading="lazy"></div>
-                <div class="img-thumb"><img src="/${Array.isArray(item.gambar) && item.gambar.length > 1 ? item.gambar[1] : (Array.isArray(item.gambar) && item.gambar.length > 0 ? item.gambar[0] : item.gambar)}" alt="" loading="lazy"></div>
-                <div class="img-thumb"><img src="/${Array.isArray(item.gambar) && item.gambar.length > 2 ? item.gambar[2] : (Array.isArray(item.gambar) && item.gambar.length > 0 ? item.gambar[0] : item.gambar)}" alt="" loading="lazy"></div>
+                <div class="img-main"><img src="${resolveImgUrl(Array.isArray(item.gambar) && item.gambar.length > 0 ? item.gambar[0] : item.gambar)}" alt="${item.judul}" loading="lazy"></div>
+                <div class="img-thumb"><img src="${resolveImgUrl(Array.isArray(item.gambar) && item.gambar.length > 1 ? item.gambar[1] : (Array.isArray(item.gambar) && item.gambar.length > 0 ? item.gambar[0] : item.gambar))}" alt="" loading="lazy"></div>
+                <div class="img-thumb"><img src="${resolveImgUrl(Array.isArray(item.gambar) && item.gambar.length > 2 ? item.gambar[2] : (Array.isArray(item.gambar) && item.gambar.length > 0 ? item.gambar[0] : item.gambar))}" alt="" loading="lazy"></div>
                 <div class="img-thumb" style="position:relative">
-                    <img src="/${Array.isArray(item.gambar) && item.gambar.length > 3 ? item.gambar[3] : (Array.isArray(item.gambar) && item.gambar.length > 0 ? item.gambar[0] : item.gambar)}" alt="" loading="lazy">
+                    <img src="${resolveImgUrl(Array.isArray(item.gambar) && item.gambar.length > 3 ? item.gambar[3] : (Array.isArray(item.gambar) && item.gambar.length > 0 ? item.gambar[0] : item.gambar))}" alt="" loading="lazy">
                     <div class="overlay-label"><span>Lihat foto</span></div>
                 </div>
             </div>
