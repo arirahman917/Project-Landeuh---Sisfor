@@ -79,7 +79,7 @@
                 <div>
                     <div class="flex justify-between items-center mb-1">
                         <label class="block text-xs font-bold text-gray-800">Password</label>
-                        <button type="button" onclick="closeLoginModal(); setTimeout(() => openForgotPasswordModal(), 300)" class="text-[10px] text-blue-500 hover:text-blue-700 hover:underline">Lupa Password?</button>
+                        {{-- <button type="button" onclick="closeLoginModal(); setTimeout(() => openForgotPasswordModal(), 300)" class="text-[10px] text-blue-500 hover:text-blue-700 hover:underline">Lupa Password?</button> --}}
                     </div>
                     <div class="relative">
                         <input type="password" id="logPassword" required class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:outline-none focus:border-[#3a523a] focus:ring-1 focus:ring-[#3a523a] text-sm pr-10" placeholder="Masukkan Password">
