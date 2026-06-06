@@ -57,9 +57,9 @@ class UnitController extends Controller
         $gambarArray = [];
         if ($request->hasFile('gambar')) {
             $files = is_array($request->file('gambar')) ? $request->file('gambar') : [$request->file('gambar')];
-            $cloudinary = new Cloudinary(env('CLOUDINARY_URL'));
             foreach ($files as $file) {
                 try {
+                    $cloudinary = new Cloudinary(env('CLOUDINARY_URL'));
                     $result = $cloudinary->uploadApi()->upload($file->getRealPath(), ['folder' => 'landeuh-akomodasi']);
                     $gambarArray[] = $result['secure_url'];
                 } catch (\Throwable $e) {
@@ -113,9 +113,9 @@ class UnitController extends Controller
 
         if ($request->hasFile('gambar')) {
             $files = is_array($request->file('gambar')) ? $request->file('gambar') : [$request->file('gambar')];
-            $cloudinary = new Cloudinary(env('CLOUDINARY_URL'));
             foreach ($files as $file) {
                 try {
+                    $cloudinary = new Cloudinary(env('CLOUDINARY_URL'));
                     $result = $cloudinary->uploadApi()->upload($file->getRealPath(), ['folder' => 'landeuh-akomodasi']);
                     $gambarArray[] = $result['secure_url'];
                 } catch (\Throwable $e) {
