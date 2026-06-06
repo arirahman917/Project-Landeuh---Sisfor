@@ -3,9 +3,9 @@
 
     {{-- Batik Ornaments --}}
     <div class="absolute inset-0 pointer-events-none select-none z-0" aria-hidden="true">
-        <img src="{{ asset('images/assets_lain/batik.png') }}" alt=""
+        <img loading="lazy" src="{{ asset('images/assets_lain/batik.png') }}" alt=""
              class="absolute top-100 -right-45 w-82 opacity-40 translate-x-6 -translate-y-4 rotate-[12deg] scale-x-[-1]">
-        <img src="{{ asset('images/assets_lain/batik.png') }}" alt=""
+        <img loading="lazy" src="{{ asset('images/assets_lain/batik.png') }}" alt=""
              class="absolute bottom-0 left-0 w-44 opacity-40 -translate-x-4 translate-y-4 rotate-[6deg]">
     </div>
 

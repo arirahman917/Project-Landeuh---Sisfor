@@ -3,7 +3,7 @@
 
     {{-- Batik Ornament: Bottom Left --}}
     <div class="absolute bottom-0 left-0 pointer-events-none select-none z-0" aria-hidden="true">
-        <img src="{{ asset('images/assets_lain/batik.png') }}"
+        <img loading="lazy" src="{{ asset('images/assets_lain/batik.png') }}"
              alt=""
              class="w-48 md:w-64 opacity-40 -translate-x-6 translate-y-6 rotate-[-15deg]"
              draggable="false">
@@ -35,7 +35,7 @@
                     
                     {{-- Image Container --}}
                     <div class="relative h-64 overflow-hidden">
-                        <img src="{{ asset(is_array($item->gambar) && count($item->gambar) > 0 ? $item->gambar[0] : $item->gambar) }}" 
+                        <img loading="lazy" src="{{ asset(is_array($item->gambar) && count($item->gambar) > 0 ? $item->gambar[0] : $item->gambar) }}" 
                              alt="{{ $item->judul }}" 
                              class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
                         <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full flex items-center gap-1 shadow-sm">

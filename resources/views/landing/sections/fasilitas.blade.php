@@ -3,7 +3,7 @@
 
     <!-- Batik Ornament: Top Right -->
     <div class="absolute top-0 right-0 pointer-events-none select-none z-0" aria-hidden="true">
-        <img src="{{ asset('images/assets_lain/batik.png') }}"
+        <img loading="lazy" src="{{ asset('images/assets_lain/batik.png') }}"
              alt=""
              class="w-48 md:w-64 opacity-40 translate-x-6 -translate-y-6 rotate-[15deg] scale-x-[-1]"
              draggable="false">

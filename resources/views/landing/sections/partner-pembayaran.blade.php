@@ -7,9 +7,9 @@
     <!-- Batik Ornaments -->
     <!-- Batik Ornaments -->
     <div class="absolute inset-0 pointer-events-none select-none z-0" aria-hidden="true">
-        <img src="{{ asset('images/assets_lain/batik.png') }}" alt=""
+        <img loading="lazy" src="{{ asset('images/assets_lain/batik.png') }}" alt=""
              class="absolute top-0 right-10 w-40 md:w-56 opacity-50 translate-y-4 rotate-[15deg]">
-        <img src="{{ asset('images/assets_lain/batik.png') }}" alt=""
+        <img loading="lazy" src="{{ asset('images/assets_lain/batik.png') }}" alt=""
              class="absolute bottom-4 left-10 w-32 md:w-48 opacity-40 -rotate-[15deg] scale-x-[-1]">
     </div>
 
@@ -60,7 +60,7 @@
                     @foreach ($row1 as $p)
                         {{-- Slot TETAP 110px — jarak antar logo selalu sama --}}
                         <div style="flex-shrink:0; display:flex; align-items:center; justify-content:center; width:110px; height:40px;" title="{{ $p['name'] }}">
-                            <img src="{{ asset('images/partner-pembayaran/'.$p['file']) }}"
+                            <img loading="lazy" src="{{ asset('images/partner-pembayaran/'.$p['file']) }}"
                                  alt="{{ $p['name'] }}"
                                  draggable="false"
                                  style="display:block; max-width:{{ $p['w'] }}px; max-height:{{ $p['h'] }}px; width:auto; height:auto; object-fit:contain; opacity:0.72; transition:opacity .3s; user-select:none;"
@@ -80,7 +80,7 @@
                     @foreach ($row2 as $p)
                         {{-- Slot TETAP 110px — jarak antar logo selalu sama --}}
                         <div style="flex-shrink:0; display:flex; align-items:center; justify-content:center; width:110px; height:40px;" title="{{ $p['name'] }}">
-                            <img src="{{ asset('images/partner-pembayaran/'.$p['file']) }}"
+                            <img loading="lazy" src="{{ asset('images/partner-pembayaran/'.$p['file']) }}"
                                  alt="{{ $p['name'] }}"
                                  draggable="false"
                                  style="display:block; max-width:{{ $p['w'] }}px; max-height:{{ $p['h'] }}px; width:auto; height:auto; object-fit:contain; opacity:0.72; transition:opacity .3s; user-select:none;"

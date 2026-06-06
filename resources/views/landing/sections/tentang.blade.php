@@ -5,17 +5,17 @@
         
         <!-- Ornamen Batik Kiri Atas -->
         <div class="absolute top-10 md:top-20 left-4 md:left-20 opacity-50 pointer-events-none w-32 md:w-48 rotate-[15deg] z-0">
-            <img src="{{ asset('images/assets_lain/batik.png') }}" alt="Ornamen Batik Kiri Atas">
+            <img loading="lazy" src="{{ asset('images/assets_lain/batik.png') }}" alt="Ornamen Batik Kiri Atas">
         </div>
         
         <!-- Ornamen Batik Kanan Atas Judul -->
         <div class="absolute top-24 md:top-36 left-1/3 opacity-40 pointer-events-none w-28 md:w-40 hidden md:block -rotate-[15deg] z-0">
-            <img src="{{ asset('images/assets_lain/batik.png') }}" alt="Ornamen Batik Kanan Atas">
+            <img loading="lazy" src="{{ asset('images/assets_lain/batik.png') }}" alt="Ornamen Batik Kanan Atas">
         </div>
 
         <!-- Ornamen Batik Kanan Bawah -->
         <div class="absolute bottom-10 right-4 md:right-20 opacity-40 pointer-events-none w-32 md:w-48 rotate-[180deg] z-0">
-            <img src="{{ asset('images/assets_lain/batik.png') }}" alt="Ornamen Batik Kanan Bawah">
+            <img loading="lazy" src="{{ asset('images/assets_lain/batik.png') }}" alt="Ornamen Batik Kanan Bawah">
         </div>
 
         <div class="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 relative flex flex-col z-10 h-[85vh] lg:h-[80vh] pb-6">
@@ -64,10 +64,10 @@
 
                 <!-- Kanan: Gambar -->
                 <div class="relative h-[280px] md:h-[340px] lg:h-[420px] w-full rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl group">
-                    <img id="tentang-img-1" src="{{ asset('images/akomodasi/glamping_vip/c.png') }}" class="tentang-img-item absolute inset-0 w-full h-full object-cover transition-all duration-1000 opacity-100 scale-100">
-                    <img id="tentang-img-2" src="{{ asset('images/akomodasi/cabin5/a.png') }}" class="tentang-img-item absolute inset-0 w-full h-full object-cover transition-all duration-1000 opacity-0 scale-105">
-                    <img id="tentang-img-3" src="{{ asset('images/akomodasi/glamping_vip/d-tentang.png') }}" class="tentang-img-item absolute inset-0 w-full h-full object-cover transition-all duration-1000 opacity-0 scale-105">
-                    <img id="tentang-img-4" src="{{ asset('images/akomodasi/kedai/a.jpg') }}" class="tentang-img-item absolute inset-0 w-full h-full object-cover transition-all duration-1000 opacity-0 scale-105">
+                    <img loading="lazy" id="tentang-img-1" src="{{ asset('images/akomodasi/glamping_vip/c.png') }}" class="tentang-img-item absolute inset-0 w-full h-full object-cover transition-all duration-1000 opacity-100 scale-100">
+                    <img loading="lazy" id="tentang-img-2" src="{{ asset('images/akomodasi/cabin5/a.png') }}" class="tentang-img-item absolute inset-0 w-full h-full object-cover transition-all duration-1000 opacity-0 scale-105">
+                    <img loading="lazy" id="tentang-img-3" src="{{ asset('images/akomodasi/glamping_vip/d-tentang.png') }}" class="tentang-img-item absolute inset-0 w-full h-full object-cover transition-all duration-1000 opacity-0 scale-105">
+                    <img loading="lazy" id="tentang-img-4" src="{{ asset('images/akomodasi/kedai/a.jpg') }}" class="tentang-img-item absolute inset-0 w-full h-full object-cover transition-all duration-1000 opacity-0 scale-105">
                 </div>
             </div>
             </div>
