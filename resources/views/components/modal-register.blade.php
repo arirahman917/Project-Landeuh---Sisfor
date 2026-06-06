@@ -310,16 +310,17 @@ if (typeof window.registerModalInitialized === 'undefined') {
 
             if (response.ok) {
                 registeredName = name;
-                document.getElementById('verifEmailDisplay').textContent = email;
                 
-                // Show verification modal
+                // Show success modal directly
                 window.hideAllModals();
-                modalVerification.classList.remove('hidden');
+                modalSuccess.classList.remove('hidden');
                 setTimeout(() => {
-                    modalVerification.classList.remove('scale-95');
-                    modalVerification.classList.add('scale-100');
-                    window.startResendCountdown();
+                    modalSuccess.classList.remove('scale-95');
+                    modalSuccess.classList.add('scale-100');
                 }, 10);
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
             } else {
                 window.showFailedModal();
             }
