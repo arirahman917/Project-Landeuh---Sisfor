@@ -360,7 +360,8 @@
         fetch(`/admin/unit/${id}`, {
             method: 'POST', // POST for FormData, but _method is PUT
             headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Accept': 'application/json'
             },
             body: formData
         })

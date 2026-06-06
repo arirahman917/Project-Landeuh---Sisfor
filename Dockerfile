@@ -17,6 +17,13 @@ RUN apt-get update && apt-get install -y \
 # Install PHP extensions
 RUN docker-php-ext-install pdo pdo_mysql mbstring exif pcntl bcmath gd
 
+# Configure custom php.ini settings for large file uploads
+RUN echo "upload_max_filesize = 50M" >> /usr/local/etc/php/conf.d/custom-php.ini && \
+    echo "post_max_size = 50M" >> /usr/local/etc/php/conf.d/custom-php.ini && \
+    echo "memory_limit = 256M" >> /usr/local/etc/php/conf.d/custom-php.ini && \
+    echo "display_errors = Off" >> /usr/local/etc/php/conf.d/custom-php.ini && \
+    echo "log_errors = On" >> /usr/local/etc/php/conf.d/custom-php.ini
+
 # Install Node.js & npm (for Vite/frontend assets)
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y nodejs
