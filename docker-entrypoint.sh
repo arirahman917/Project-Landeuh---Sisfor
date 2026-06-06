@@ -25,14 +25,8 @@ php artisan config:clear
 php artisan route:clear
 php artisan view:clear
 
-# Force wipe database and run migrations
-echo "Wiping database and running fresh migrations..."
-php artisan migrate:fresh --force
-
-# Force import seed data from backup using Laravel's DB facade (bypasses CLI SSL issues)
-echo "Force importing seed data from local backup via Laravel..."
-php artisan tinker --execute="\Illuminate\Support\Facades\DB::unprepared(file_get_contents('/var/www/html/database/project_landeuh_backup.sql'));" || echo "WARNING: Seed data import encountered an error, but server will continue starting."
-echo "Seed data import attempt finished!"
+# Run Laravel migrations
+php artisan migrate --force
 
 # Start queue worker in background to process emails without freezing the UI
 php artisan queue:work --tries=3 --timeout=90 &

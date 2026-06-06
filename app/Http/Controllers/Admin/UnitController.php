@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Accommodation;
 use Illuminate\Http\Request;
+use Cloudinary\Cloudinary;
 
 class UnitController extends Controller
 {
@@ -56,9 +57,17 @@ class UnitController extends Controller
         $gambarArray = [];
         if ($request->hasFile('gambar')) {
             $files = is_array($request->file('gambar')) ? $request->file('gambar') : [$request->file('gambar')];
+            $cloudinary = new Cloudinary(env('CLOUDINARY_URL'));
             foreach ($files as $file) {
-                $path = $file->store('images/akomodasi', 'public');
-                $gambarArray[] = 'storage/' . $path;
+                try {
+                    $result = $cloudinary->uploadApi()->upload($file->getRealPath(), ['folder' => 'landeuh-akomodasi']);
+                    $gambarArray[] = $result['secure_url'];
+                } catch (\Exception $e) {
+                    \Log::error('Cloudinary upload failed: ' . $e->getMessage());
+                    // Fallback to local storage if Cloudinary fails or is not configured
+                    $path = $file->store('images/akomodasi', 'public');
+                    $gambarArray[] = 'storage/' . $path;
+                }
             }
         }
         
@@ -104,9 +113,17 @@ class UnitController extends Controller
 
         if ($request->hasFile('gambar')) {
             $files = is_array($request->file('gambar')) ? $request->file('gambar') : [$request->file('gambar')];
+            $cloudinary = new Cloudinary(env('CLOUDINARY_URL'));
             foreach ($files as $file) {
-                $path = $file->store('images/akomodasi', 'public');
-                $gambarArray[] = 'storage/' . $path;
+                try {
+                    $result = $cloudinary->uploadApi()->upload($file->getRealPath(), ['folder' => 'landeuh-akomodasi']);
+                    $gambarArray[] = $result['secure_url'];
+                } catch (\Exception $e) {
+                    \Log::error('Cloudinary upload failed: ' . $e->getMessage());
+                    // Fallback to local storage if Cloudinary fails or is not configured
+                    $path = $file->store('images/akomodasi', 'public');
+                    $gambarArray[] = 'storage/' . $path;
+                }
             }
         }
         $data['gambar'] = $gambarArray;
