@@ -62,7 +62,7 @@ class UnitController extends Controller
                 try {
                     $result = $cloudinary->uploadApi()->upload($file->getRealPath(), ['folder' => 'landeuh-akomodasi']);
                     $gambarArray[] = $result['secure_url'];
-                } catch (\Exception $e) {
+                } catch (\Throwable $e) {
                     \Log::error('Cloudinary upload failed: ' . $e->getMessage());
                     // Fallback to local storage if Cloudinary fails or is not configured
                     $path = $file->store('images/akomodasi', 'public');
@@ -118,7 +118,7 @@ class UnitController extends Controller
                 try {
                     $result = $cloudinary->uploadApi()->upload($file->getRealPath(), ['folder' => 'landeuh-akomodasi']);
                     $gambarArray[] = $result['secure_url'];
-                } catch (\Exception $e) {
+                } catch (\Throwable $e) {
                     \Log::error('Cloudinary upload failed: ' . $e->getMessage());
                     // Fallback to local storage if Cloudinary fails or is not configured
                     $path = $file->store('images/akomodasi', 'public');
