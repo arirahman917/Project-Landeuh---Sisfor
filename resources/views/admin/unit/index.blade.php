@@ -178,6 +178,13 @@
         return 'IDR ' + Number(n).toLocaleString('id-ID');
     }
 
+    // ── Format Image URL ───────────────────────────────────────
+    function formatImgUrl(url) {
+        if (!url) return '';
+        if (url.startsWith('http') || url.startsWith('data:')) return url;
+        return url.startsWith('/') ? url : '/' + url;
+    }
+
     // Helper to parse date strictly in local time (00:00:00) to prevent timezone/hour shifting bugs
     function parseToLocalDate(dateInput) {
         if (!dateInput) return null;
@@ -283,11 +290,11 @@
 
             {{-- Image grid --}}
             <div class="unit-img-grid" onclick="openLightbox(${item.id})">
-                <div class="img-main"><img src="${'/' + (Array.isArray(item.gambar) && item.gambar.length > 0 ? item.gambar[0] : item.gambar)}" alt="${item.judul}" loading="lazy"></div>
-                <div class="img-thumb"><img src="${'/' + (Array.isArray(item.gambar) && item.gambar.length > 1 ? item.gambar[1] : (Array.isArray(item.gambar) && item.gambar.length > 0 ? item.gambar[0] : item.gambar))}" alt="" loading="lazy"></div>
-                <div class="img-thumb"><img src="${'/' + (Array.isArray(item.gambar) && item.gambar.length > 2 ? item.gambar[2] : (Array.isArray(item.gambar) && item.gambar.length > 0 ? item.gambar[0] : item.gambar))}" alt="" loading="lazy"></div>
+                <div class="img-main"><img src="${formatImgUrl(Array.isArray(item.gambar) && item.gambar.length > 0 ? item.gambar[0] : item.gambar)}" alt="${item.judul}" loading="lazy"></div>
+                <div class="img-thumb"><img src="${formatImgUrl(Array.isArray(item.gambar) && item.gambar.length > 1 ? item.gambar[1] : (Array.isArray(item.gambar) && item.gambar.length > 0 ? item.gambar[0] : item.gambar))}" alt="" loading="lazy"></div>
+                <div class="img-thumb"><img src="${formatImgUrl(Array.isArray(item.gambar) && item.gambar.length > 2 ? item.gambar[2] : (Array.isArray(item.gambar) && item.gambar.length > 0 ? item.gambar[0] : item.gambar))}" alt="" loading="lazy"></div>
                 <div class="img-thumb" style="position:relative">
-                    <img src="${'/' + (Array.isArray(item.gambar) && item.gambar.length > 3 ? item.gambar[3] : (Array.isArray(item.gambar) && item.gambar.length > 0 ? item.gambar[0] : item.gambar))}" alt="" loading="lazy">
+                    <img src="${formatImgUrl(Array.isArray(item.gambar) && item.gambar.length > 3 ? item.gambar[3] : (Array.isArray(item.gambar) && item.gambar.length > 0 ? item.gambar[0] : item.gambar))}" alt="" loading="lazy">
                     <div class="overlay-label"><span>Lihat foto</span></div>
                 </div>
             </div>
@@ -478,7 +485,7 @@
     window.openLightbox = function(id) {
         const item = AKOMODASI_DATA.find(d => d.id === id);
         const images = Array.isArray(item.gambar) ? item.gambar : (item.gambar ? [item.gambar] : []);
-        lbImages = images.map(g => '/' + g);
+        lbImages = images.map(g => formatImgUrl(g));
         if (lbImages.length === 0) lbImages = ['/images/akomodasi/cabin1/a.png'];
         lbIdx = 0; showLbImg();
         const lb = document.getElementById('lightbox');

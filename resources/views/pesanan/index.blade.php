@@ -122,7 +122,9 @@ function renderOrders(container, bookings) {
     } else {
         pendingBookings.forEach(b => {
             const acc = b.accommodation || {};
-            const imgPath = acc.gambar ? '/' + acc.gambar : '/images/akomodasi/cabin1/a.png';
+            let rawImg = acc.gambar;
+            if (Array.isArray(rawImg) && rawImg.length > 0) rawImg = rawImg[0];
+            const imgPath = rawImg ? (rawImg.startsWith('http') || rawImg.startsWith('data:') ? rawImg : '/' + rawImg) : '/images/akomodasi/cabin1/a.png';
             const dateStr = `${formatDateFriendly(b.check_in_date)} - ${formatDateFriendly(b.check_out_date)}`;
             
             html += `
@@ -168,7 +170,9 @@ function renderOrders(container, bookings) {
     } else {
         successBookings.forEach(b => {
             const acc = b.accommodation || {};
-            const imgPath = acc.gambar ? '/' + acc.gambar : '/images/akomodasi/cabin1/a.png';
+            let rawImg = acc.gambar;
+            if (Array.isArray(rawImg) && rawImg.length > 0) rawImg = rawImg[0];
+            const imgPath = rawImg ? (rawImg.startsWith('http') || rawImg.startsWith('data:') ? rawImg : '/' + rawImg) : '/images/akomodasi/cabin1/a.png';
             const dateStr = `${formatDateFriendly(b.check_in_date)} - ${formatDateFriendly(b.check_out_date)}`;
 
             const isRefundPending = b.status === 'refund_pending';
@@ -260,7 +264,9 @@ function renderOrders(container, bookings) {
     } else {
         cancelledBookings.forEach(b => {
             const acc = b.accommodation || {};
-            const imgPath = acc.gambar ? '/' + acc.gambar : '/images/akomodasi/cabin1/a.png';
+            let rawImg = acc.gambar;
+            if (Array.isArray(rawImg) && rawImg.length > 0) rawImg = rawImg[0];
+            const imgPath = rawImg ? (rawImg.startsWith('http') || rawImg.startsWith('data:') ? rawImg : '/' + rawImg) : '/images/akomodasi/cabin1/a.png';
             const dateStr = `${formatDateFriendly(b.check_in_date)} - ${formatDateFriendly(b.check_out_date)}`;
             
             html += `
