@@ -28,6 +28,16 @@ php artisan view:clear
 # Run Laravel migrations
 php artisan migrate --force
 
+# Import seed data if the database is empty (first deploy only)
+ROW_COUNT=$(php artisan tinker --execute="echo \Illuminate\Support\Facades\DB::table('accommodations')->count();" 2>/dev/null | tail -1)
+if [ "$ROW_COUNT" = "0" ] || [ -z "$ROW_COUNT" ]; then
+    echo "Database is empty. Importing seed data from backup..."
+    mysql -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USERNAME" -p"$DB_PASSWORD" "$DB_DATABASE" < /var/www/html/database/project_landeuh_backup.sql
+    echo "Seed data imported successfully!"
+else
+    echo "Database already has data ($ROW_COUNT accommodations). Skipping import."
+fi
+
 # Start queue worker in background to process emails without freezing the UI
 php artisan queue:work --tries=3 --timeout=90 &
 
