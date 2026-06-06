@@ -221,14 +221,10 @@
             const div = document.createElement('div');
             div.className = 'relative group w-24 h-24 rounded-xl overflow-hidden border border-stone-200 bg-white shadow-sm flex-shrink-0';
 
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const image = document.createElement('img');
-                image.src = e.target.result;
-                image.className = 'w-full h-full object-cover pointer-events-none';
-                div.insertBefore(image, div.firstChild);
-            };
-            reader.readAsDataURL(file);
+            const image = document.createElement('img');
+            image.src = URL.createObjectURL(file);
+            image.className = 'w-full h-full object-cover pointer-events-none';
+            div.insertBefore(image, div.firstChild);
             
             const removeBtn = document.createElement('button');
             removeBtn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>';

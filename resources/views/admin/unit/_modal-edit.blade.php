@@ -218,24 +218,16 @@
         // Sort files by name a to z
         files.sort((a, b) => a.name.localeCompare(b.name));
         
-        const promises = files.map(file => {
-            return new Promise((resolve) => {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    resolve({
-                        type: 'new',
-                        file: file,
-                        url: e.target.result
-                    });
-                };
-                reader.readAsDataURL(file);
-            });
+        const results = files.map(file => {
+            return {
+                type: 'new',
+                file: file,
+                url: URL.createObjectURL(file)
+            };
         });
 
-        Promise.all(promises).then(results => {
-            window.currentEditImages = window.currentEditImages.concat(results);
-            renderEditImagePreviews();
-        });
+        window.currentEditImages = window.currentEditImages.concat(results);
+        renderEditImagePreviews();
         
         event.target.value = '';
     };
