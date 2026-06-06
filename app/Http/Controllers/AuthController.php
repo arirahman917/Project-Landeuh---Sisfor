@@ -31,13 +31,11 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        app()->terminating(function () use ($user) {
-            try {
-                event(new Registered($user));
-            } catch (\Exception $e) {
-                \Log::error('Failed to send verification email during registration: ' . $e->getMessage());
-            }
-        });
+        try {
+            event(new Registered($user));
+        } catch (\Exception $e) {
+            \Log::error('Failed to send verification email during registration: ' . $e->getMessage());
+        }
 
         Auth::login($user);
 
@@ -155,13 +153,11 @@ class AuthController extends Controller
 
         $resetLink = url('/reset-password/' . $token . '?email=' . urlencode($request->email));
 
-        app()->terminating(function () use ($request, $resetLink) {
-            try {
-                Mail::to($request->email)->send(new ResetPasswordMail($resetLink));
-            } catch (\Exception $e) {
-                \Log::error('Failed to send reset password email: ' . $e->getMessage());
-            }
-        });
+        try {
+            Mail::to($request->email)->send(new ResetPasswordMail($resetLink));
+        } catch (\Exception $e) {
+            \Log::error('Failed to send reset password email: ' . $e->getMessage());
+        }
 
         return response()->json(['message' => 'Link reset password telah dikirim ke email Anda.']);
     }
