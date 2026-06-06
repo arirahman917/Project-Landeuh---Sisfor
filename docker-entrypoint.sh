@@ -29,9 +29,9 @@ php artisan view:clear
 echo "Wiping database and running fresh migrations..."
 php artisan migrate:fresh --force
 
-# Force import seed data from backup (with error handling so it doesn't crash)
-echo "Force importing seed data from local backup..."
-mysql -h "${DB_HOST:-127.0.0.1}" -P "${DB_PORT:-3306}" -u "${DB_USERNAME:-root}" -p"${DB_PASSWORD}" "${DB_DATABASE}" < /var/www/html/database/project_landeuh_backup.sql || echo "WARNING: Seed data import encountered an error, but server will continue starting."
+# Force import seed data from backup using Laravel's DB facade (bypasses CLI SSL issues)
+echo "Force importing seed data from local backup via Laravel..."
+php artisan tinker --execute="\Illuminate\Support\Facades\DB::unprepared(file_get_contents('/var/www/html/database/project_landeuh_backup.sql'));" || echo "WARNING: Seed data import encountered an error, but server will continue starting."
 echo "Seed data import attempt finished!"
 
 # Start queue worker in background to process emails without freezing the UI
