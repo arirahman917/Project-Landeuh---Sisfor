@@ -19,11 +19,13 @@
     border-radius: 1.2rem !important;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
     border: none !important;
-    padding: 16px 12px !important;
+    padding: 16px 20px !important;
     margin-top: 15px !important;
     font-family: inherit !important;
     background: #ffffff !important;
     animation: fpFadeInDown 300ms cubic-bezier(0.23, 1, 0.32, 1) forwards;
+    min-width: 320px !important;
+    width: auto !important;
 }
 
 @keyframes fpFadeInDown {
