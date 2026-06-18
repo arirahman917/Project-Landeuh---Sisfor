@@ -18,7 +18,7 @@ class LandingController extends Controller
     public function akomodasi()
     {
         $accommodations = Accommodation::with(['bookings' => function($query) {
-            $query->where('status', '!=', 'failed');
+            $query->whereNotIn('status', ['failed', 'refunded']);
         }])->get();
         $dateSettings = \App\Models\DateSetting::all();
         

@@ -30,7 +30,7 @@
         </ul>
     </div>
 
-    <p>Bersama email ini, kami juga melampirkan file PDF E-Ticket / Invoice Anda. Silakan tunjukkan E-Ticket tersebut saat proses Check-in.</p>
+    <p>Bersama email ini, kami juga melampirkan file PDF E-Ticket / Invoice Anda. Silakan tunjukkan Invoice tersebut / menyebutkan nomor pemesanan saat proses Check-in.</p>
     
     <p>Jika Anda memiliki pertanyaan, jangan ragu untuk membalas pesan ini atau hubungi kami di WhatsApp: 085795016378.</p>
     

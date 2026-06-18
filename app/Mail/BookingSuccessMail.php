@@ -51,6 +51,16 @@ class BookingSuccessMail extends Mailable
      */
     public function attachments(): array
     {
+        $pdfPath = public_path('invoices/Invoice_' . $this->booking->no_pesanan . '.pdf');
+        
+        if (\Illuminate\Support\Facades\File::exists($pdfPath)) {
+            return [
+                \Illuminate\Mail\Mailables\Attachment::fromPath($pdfPath)
+                        ->as('Invoice_' . $this->booking->no_pesanan . '.pdf')
+                        ->withMime('application/pdf'),
+            ];
+        }
+
         return [];
     }
 }

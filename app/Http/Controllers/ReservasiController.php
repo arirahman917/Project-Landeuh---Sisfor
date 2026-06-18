@@ -121,6 +121,18 @@ class ReservasiController extends Controller
 
             $booking = Booking::where('no_pesanan', $validated['no_pesanan'])->firstOrFail();
             
+            // Jangan izinkan menimpa status refund (refund_pending/refunded/refund_rejected) 
+            // dengan success/failed dari auto-update halaman konfirmasi
+            $refundStatuses = ['refund_pending', 'refunded', 'refund_rejected'];
+            $incomingStatus = $validated['status'];
+            if (in_array($booking->status, $refundStatuses) && in_array($incomingStatus, ['success', 'failed'])) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Status tidak diubah karena booking sudah dalam proses refund.',
+                    'booking' => $booking
+                ]);
+            }
+
             // Cek apakah booking bertransisi dari pending ke success (pembayaran pertama kali)
             $isTransitioning = ($booking->status === 'pending' && $validated['status'] === 'success');
 
@@ -130,13 +142,66 @@ class ReservasiController extends Controller
             }
             $booking->save();
 
-            // Kirim E-Ticket via Email secara otomatis HANYA jika status berubah dari pending ke success
+            // Tindakan otomatis HANYA jika status berubah dari pending ke success
             if ($isTransitioning) {
+                // 1. Generate PDF Server-side
                 try {
-                    Mail::to($booking->pemesan_email)->send(new BookingSuccessMail($booking));
+                    $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.invoice', ['booking' => $booking])->setPaper('a4', 'portrait');
+                    $invoicesPath = public_path('invoices');
+                    if (!\Illuminate\Support\Facades\File::exists($invoicesPath)) {
+                        \Illuminate\Support\Facades\File::makeDirectory($invoicesPath, 0755, true);
+                    }
+                    $pdf->save($invoicesPath . '/Invoice_' . $booking->no_pesanan . '.pdf');
+                } catch (\Exception $e) {
+                    \Log::error('Gagal membuat PDF untuk pesanan ' . $booking->no_pesanan . ': ' . $e->getMessage());
+                }
+
+                // 2. Kirim E-Ticket via Email
+                try {
+                    \Illuminate\Support\Facades\Mail::to($booking->pemesan_email)->send(new \App\Mail\BookingSuccessMail($booking));
                 } catch (\Exception $mailEx) {
-                    // Log error pengiriman email agar transaksi pembayaran utama tidak terganggu jika SMTP offline
                     \Log::error('Gagal mengirim email E-Ticket untuk pesanan ' . $booking->no_pesanan . ': ' . $mailEx->getMessage());
+                }
+
+                // 3. Kirim Konfirmasi WhatsApp via Fonnte
+                try {
+                    $token = env('FONNTE_TOKEN');
+                    if (!empty($token)) {
+                        $checkIn = \Carbon\Carbon::parse($booking->check_in_date)->locale('id')->isoFormat('dddd, D MMMM Y');
+                        $checkOut = \Carbon\Carbon::parse($booking->check_out_date)->locale('id')->isoFormat('dddd, D MMMM Y');
+                        $totalStr = number_format($booking->total, 0, ',', '.');
+                        $invoiceUrl = url('/invoices/Invoice_' . $booking->no_pesanan . '.pdf');
+                        $akomodasiJudul = $booking->accommodation ? $booking->accommodation->judul : 'Akomodasi';
+
+                        $message = "Halo, {$booking->pemesan_nama}!\n\n"
+                                 . "Terima kasih telah melakukan pemesanan di *Landeuh Village Riverside*.\n\n"
+                                 . "Pembayaran Anda untuk pesanan *{$booking->no_pesanan}* telah BERHASIL diverifikasi.\n\n"
+                                 . "Detail Pesanan:\n"
+                                 . "🏠 Akomodasi: {$akomodasiJudul}\n"
+                                 . "📅 Check-in: {$checkIn}\n"
+                                 . "🌙 Durasi: {$booking->malam} Malam\n"
+                                 . "📅 Check-out: {$checkOut}\n"
+                                 . "💰 Total: IDR {$totalStr}\n"
+                                 . "💳 Metode: {$booking->metode_pembayaran}\n\n"
+                                 . "Kebijakan\n"
+                                 . "- Pemesanan ini tidak dapat diubah\n"
+                                 . "- Pemesanan tidak ada refund jika Anda membatalkannya\n\n"
+                                 . "Silakan unduh E-Ticket/Invoice Anda melalui link berikut:\n"
+                                 . "👉 {$invoiceUrl}\n\n"
+                                 . "Tunjukkan Invoice tersebut atau menyebutkan nomor pemesanan saat proses Check-in nanti.\n\n"
+                                 . "Jika Anda memiliki pertanyaan, jangan ragu untuk menghubungi kami di nomor ini.\n\n"
+                                 . "Salam hangat,\n"
+                                 . "Tim Landeuh Village Riverside";
+
+                        \Illuminate\Support\Facades\Http::withHeaders([
+                            'Authorization' => $token,
+                        ])->post('https://api.fonnte.com/send', [
+                            'target' => $booking->pemesan_telp,
+                            'message' => $message,
+                        ]);
+                    }
+                } catch (\Exception $waEx) {
+                    \Log::error('Gagal mengirim WhatsApp untuk pesanan ' . $booking->no_pesanan . ': ' . $waEx->getMessage());
                 }
             }
 

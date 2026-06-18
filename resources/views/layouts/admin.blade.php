@@ -8,6 +8,7 @@
     <title>@yield('title', 'Admin Panel — Landeuh Village')</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <style>
         /* Sidebar visible by default on desktop, hidden on mobile */
         @media (max-width: 767px) {
@@ -147,6 +148,8 @@
     </div>
 
     {{-- Scripts stack --}}
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/id.js"></script>
     @stack('scripts')
 </body>
 </html>

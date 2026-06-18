@@ -72,7 +72,7 @@
                     <th class="px-3 py-3.5 text-left font-bold text-stone-700 text-xs uppercase tracking-wider">Nama Tamu</th>
                     <th class="px-3 py-3.5 text-left font-bold text-stone-700 text-xs uppercase tracking-wider">Akomodasi</th>
                     <th class="px-3 py-3.5 text-center font-bold text-stone-700 text-xs uppercase tracking-wider">Malam</th>
-                    <th class="px-3 py-3.5 text-left font-bold text-stone-700 text-xs uppercase tracking-wider">Check-in / Check-out</th>
+                    <th class="px-3 py-3.5 text-left font-bold text-stone-700 text-xs uppercase tracking-wider min-w-[180px]">Check-in / Check-out</th>
                     <th class="px-3 py-3.5 text-right font-bold text-stone-700 text-xs uppercase tracking-wider">Total Bayar</th>
                     <th class="px-3 py-3.5 text-center font-bold text-stone-700 text-xs uppercase tracking-wider">Status</th>
                     <th class="px-3 py-3.5 text-center font-bold text-stone-700 text-xs uppercase tracking-wider w-[140px]">Aksi</th>

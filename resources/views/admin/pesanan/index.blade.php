@@ -71,8 +71,13 @@
                     <th class="px-3 py-3.5 text-left font-bold text-stone-700 text-xs uppercase tracking-wider">Nama Tamu</th>
                     <th class="px-3 py-3.5 text-left font-bold text-stone-700 text-xs uppercase tracking-wider">Akomodasi</th>
                     <th class="px-3 py-3.5 text-center font-bold text-stone-700 text-xs uppercase tracking-wider">Berapa Malam</th>
-                    <th class="px-3 py-3.5 text-left font-bold text-stone-700 text-xs uppercase tracking-wider">Check-in dan Check-out</th>
-                    <th class="px-3 py-3.5 text-left font-bold text-stone-700 text-xs uppercase tracking-wider">Tambahan Orang</th>
+                    <th class="px-3 py-3.5 text-left font-bold text-stone-700 text-xs uppercase tracking-wider min-w-[180px]">Check-in dan Check-out</th>
+                    <th class="px-3 py-3.5 text-left font-bold text-stone-700 text-xs uppercase tracking-wider">
+                        <div class="flex items-center gap-1">
+                            <iconify-icon icon="lucide:info" class="text-stone-400 hover:text-amber-500 cursor-pointer text-sm transition-colors" onclick="showModalInfoTambahan()"></iconify-icon>
+                            Tambahan Orang
+                        </div>
+                    </th>
                     <th class="px-3 py-3.5 text-right font-bold text-stone-700 text-xs uppercase tracking-wider">Pembayaran</th>
                     <th class="px-3 py-3.5 text-center font-bold text-stone-700 text-xs uppercase tracking-wider w-[130px]">Status</th>
                 </tr>
@@ -92,6 +97,25 @@
     </div>
 </div>
 
+{{-- ── MODAL INFO TAMBAHAN ORANG ────────────────────────────────── --}}
+<div id="modalInfoTambahan" class="fixed inset-0 z-[9999] bg-black/40 backdrop-blur-sm flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
+    <div class="bg-white rounded-2xl max-w-sm w-[90%] p-6 shadow-2xl transform scale-90 transition-transform duration-300" id="modalInfoTambahanBox">
+        <h3 class="text-base font-extrabold text-stone-800 mb-3 flex items-center gap-2">
+            <iconify-icon icon="lucide:info" class="text-xl text-amber-500"></iconify-icon>
+            Keterangan Tambahan Orang
+        </h3>
+        <p class="text-sm text-stone-600 mb-5 leading-relaxed">
+            Data pada kolom ini menunjukkan jumlah tambahan tamu di luar kapasitas maksimal unit:
+            <br><br>
+            • <strong>Anak:</strong> Anak Kecil (di atas 5 tahun)<br>
+            • <strong>Dewasa:</strong> Dewasa (di atas 17 tahun)
+        </p>
+        <div class="flex justify-end">
+            <button onclick="closeModalInfoTambahan()" class="px-4 py-2 rounded-lg text-sm font-bold bg-stone-100 text-stone-600 hover:bg-stone-200 transition">Mengerti</button>
+        </div>
+    </div>
+</div>
+
 @push('scripts')
 <script>
 (function(){
@@ -106,9 +130,49 @@
     function fmt(n) { return Number(n).toLocaleString('id-ID'); }
 
     function statusBadge(s) {
-        if (s === 'refund_rejected') return '<span class="inline-block px-2.5 py-1 rounded-full text-[11px] font-bold bg-red-100 text-red-600">Refund Ditolak</span>';
+        if (s === 'refunded') return '<span class="inline-block px-2.5 py-1 rounded-full text-[11px] font-bold bg-red-100 text-red-600">Dibatalkan</span>';
+        if (s === 'refund_pending') return '<span class="inline-block px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-100 text-amber-700">Refund Pending</span>';
+        if (s === 'refund_rejected') {
+            return `
+                <div class="flex flex-col items-center gap-1.5">
+                    <span class="inline-block px-2.5 py-1 rounded-full text-[11px] font-bold bg-green-100 text-green-700">Sukses / Lunas</span>
+                    <span class="flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-semibold bg-amber-50 text-amber-600 border border-amber-200" title="Pernah mengajukan pembatalan namun ditolak">
+                        <iconify-icon icon="lucide:info" class="text-[10px]"></iconify-icon> Ajuan Ditolak
+                    </span>
+                </div>
+            `;
+        }
         return '<span class="inline-block px-2.5 py-1 rounded-full text-[11px] font-bold bg-green-100 text-green-700">Sukses / Lunas</span>';
     }
+
+    function formatTambahan(anak, dewasa) {
+        let texts = [];
+        if (anak > 0) texts.push(`${anak} Anak`);
+        if (dewasa > 0) texts.push(`${dewasa} Dewasa`);
+        return texts.length > 0 ? texts.join(', ') : '-';
+    }
+
+    window.showModalInfoTambahan = function() {
+        const modal = document.getElementById('modalInfoTambahan');
+        const box   = document.getElementById('modalInfoTambahanBox');
+        modal.classList.remove('opacity-0','pointer-events-none');
+        modal.classList.add('opacity-100');
+        box.classList.remove('scale-90');
+        box.classList.add('scale-100');
+    };
+
+    window.closeModalInfoTambahan = function() {
+        const modal = document.getElementById('modalInfoTambahan');
+        const box   = document.getElementById('modalInfoTambahanBox');
+        modal.classList.add('opacity-0','pointer-events-none');
+        modal.classList.remove('opacity-100');
+        box.classList.add('scale-90');
+        box.classList.remove('scale-100');
+    };
+
+    document.getElementById('modalInfoTambahan')?.addEventListener('click', function(e) {
+        if (e.target === this) closeModalInfoTambahan();
+    });
 
     // ── Render ─────────────────────────────────────────────────
     function render() {
@@ -129,8 +193,8 @@
                 <td class="px-3 py-3 text-stone-700 text-xs leading-relaxed">
                     ${p.checkin} —<br>${p.checkout}
                 </td>
-                <td class="px-3 py-3 text-stone-700 text-xs leading-relaxed">
-                    ${p.tambahanAnak} Anak Kecil (di atas 5 tahun), ${p.tambahanDewasa} Dewasa (di atas 17 tahun)
+                <td class="px-3 py-3 text-stone-700 text-xs leading-relaxed font-medium">
+                    ${formatTambahan(p.tambahanAnak, p.tambahanDewasa)}
                 </td>
                 <td class="px-3 py-3 text-right text-stone-800 font-semibold text-xs whitespace-nowrap">
                     ${fmt(p.total)}<br><span class="text-stone-400 font-normal">(${p.metode})</span>
@@ -205,7 +269,11 @@
     // ── PDF ────────────────────────────────────────────────────
     window.cetakLaporanPesanan = function() {
         const rows = PESANAN_DATA.map((p,i) => {
-            const displayStatus = p.status === 'refund_rejected' ? 'Refund Ditolak' : 'Sukses / Lunas';
+            let displayStatus = 'Sukses / Lunas';
+            if (p.status === 'refunded') displayStatus = 'Dibatalkan';
+            if (p.status === 'refund_pending') displayStatus = 'Refund Pending';
+            if (p.status === 'refund_rejected') displayStatus = 'Sukses / Lunas (Ajuan Ditolak)';
+            
             return `<tr>
                 <td>${i+1}</td><td>${p.noPesanan}</td>
                 <td>${p.pemesanNama}<br>${p.pemesanTelp}</td>

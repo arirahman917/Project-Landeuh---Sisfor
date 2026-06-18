@@ -127,6 +127,12 @@
     <span id="adminToastMsg">Berhasil!</span>
 </div>
 
+{{-- ── MODAL KALENDER TRACKING ────────────────────────────────── --}}
+<div id="modalKalender" class="fixed inset-0 z-[9999] bg-black/30 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
+    {{-- Inline flatpickr calendar --}}
+    <div id="kalenderInline" class="flex justify-center"></div>
+</div>
+
 <style>
 .unit-card {
     background: rgba(253,246,227,0.65);
@@ -177,6 +183,42 @@
     background: #f0fdf4; color: #16a34a;
     font-size: 11px; font-weight: 600;
     border: 1px solid #bbf7d0;
+}
+/* Flatpickr booked-date styling for admin calendar tracking */
+.flatpickr-day.flatpickr-disabled.booked-date {
+    background-color: #e5e7eb !important;
+    border-color: transparent !important;
+    color: #9ca3af !important;
+    border-radius: 50% !important;
+    text-decoration: line-through;
+}
+#kalenderInline .flatpickr-calendar {
+    box-shadow: none !important;
+    border: 1px solid #e7e5e4 !important;
+    border-radius: 0.75rem !important;
+}
+/* Read-only: no selection styling, no active state, hover only */
+#kalenderInline .flatpickr-day:not(.flatpickr-disabled) {
+    cursor: default !important;
+}
+#kalenderInline .flatpickr-day:not(.flatpickr-disabled):hover {
+    background: #fef3c7 !important;
+    border-color: #fbbf24 !important;
+}
+#kalenderInline .flatpickr-day.selected,
+#kalenderInline .flatpickr-day.startRange,
+#kalenderInline .flatpickr-day.endRange,
+#kalenderInline .flatpickr-day.selected:hover,
+#kalenderInline .flatpickr-day.startRange:hover,
+#kalenderInline .flatpickr-day.endRange:hover {
+    background: transparent !important;
+    color: #44403c !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+}
+#kalenderInline .flatpickr-day:active {
+    background: transparent !important;
+    box-shadow: none !important;
 }
 @media (max-width: 768px) {
     .unit-img-grid { width: 100%; min-width: unset; height: 200px; border-radius: 0.75rem 0.75rem 0 0; }
@@ -361,6 +403,12 @@
 
                 {{-- Actions --}}
                 <div class="flex items-center gap-2 pt-1">
+                    <button onclick="openKalenderModal(${item.id})"
+                        class="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold
+                               text-white bg-[#3a523a] hover:bg-[#2c402c] transition shadow-sm active:scale-[0.97]">
+                        <iconify-icon icon="lucide:calendar-search" class="text-sm"></iconify-icon>
+                        Lihat Kalender
+                    </button>
                     <button onclick="openModalEdit(${item.id})"
                         class="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold
                                text-white bg-amber-500 hover:bg-amber-600 transition shadow-sm active:scale-[0.97]">
@@ -627,6 +675,85 @@
         const opt = document.querySelector(`#sortOptions div[data-value="${sortMode}"]`);
         if (opt) document.getElementById('sortDisplay').innerText = opt.innerText;
     }
+
+    // ── Calendar Tracking Modal ──────────────────────────────────
+    let kalenderFp = null;
+
+    window.openKalenderModal = function(id) {
+        const item = AKOMODASI_DATA.find(d => d.id === id);
+        if (!item) return;
+
+        // Destroy previous instance
+        if (kalenderFp) {
+            kalenderFp.destroy();
+            kalenderFp = null;
+        }
+        document.getElementById('kalenderInline').innerHTML = '';
+
+        // Helper: check if a date is fully booked for this accommodation
+        function isDateBooked(dateObj) {
+            if (!item.bookings || item.bookings.length === 0) return false;
+            let checkTime = new Date(dateObj);
+            checkTime.setHours(12, 0, 0, 0);
+            checkTime = checkTime.getTime();
+
+            let count = 0;
+            item.bookings.forEach(b => {
+                if (b.status !== 'failed' && b.status !== 'refunded') {
+                    let bIn = new Date(b.check_in_date);
+                    bIn.setHours(12, 0, 0, 0);
+                    let bOut = new Date(b.check_out_date);
+                    bOut.setHours(12, 0, 0, 0);
+                    if (checkTime >= bIn.getTime() && checkTime < bOut.getTime()) {
+                        count++;
+                    }
+                }
+            });
+            return count >= item.slot;
+        }
+
+        // Create inline flatpickr (read-only, no onChange to avoid lag)
+        kalenderFp = flatpickr(document.getElementById('kalenderInline'), {
+            inline: true,
+            showMonths: window.innerWidth > 500 ? 2 : 1,
+            locale: 'id',
+            minDate: 'today',
+            clickOpens: false,
+            disable: [
+                function(date) {
+                    return isDateBooked(date);
+                }
+            ],
+            onDayCreate: function(dObj, dStr, fp, dayElem) {
+                const todayLocal = new Date();
+                todayLocal.setHours(0, 0, 0, 0);
+                if (dayElem.dateObj >= todayLocal && isDateBooked(dayElem.dateObj)) {
+                    dayElem.classList.add('booked-date');
+                }
+            }
+        });
+
+        // Open modal
+        const modal = document.getElementById('modalKalender');
+        const box = document.getElementById('modalKalenderBox');
+        modal.classList.remove('opacity-0', 'pointer-events-none');
+        modal.classList.add('opacity-100');
+        box.classList.remove('scale-90');
+        box.classList.add('scale-100');
+    };
+
+    window.closeKalenderModal = function() {
+        const modal = document.getElementById('modalKalender');
+        const box = document.getElementById('modalKalenderBox');
+        modal.classList.add('opacity-0', 'pointer-events-none');
+        modal.classList.remove('opacity-100');
+        box.classList.add('scale-90');
+        box.classList.remove('scale-100');
+    };
+
+    document.getElementById('modalKalender')?.addEventListener('click', function(e) {
+        if (e.target === this) closeKalenderModal();
+    });
 
     applyFilter(true); // true = keep page from URL hash on first load
 })();

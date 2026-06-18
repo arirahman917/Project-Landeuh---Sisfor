@@ -548,6 +548,23 @@
     </div>
 </div>
 
+{{-- Modal Konfirmasi Batal --}}
+<div class="modal-overlay" id="modalKonfirmasiBatal">
+    <div class="modal-box">
+        <div class="modal-icon" style="background:#fff3f3; color:#e53e3e; margin-bottom: 1rem;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+        </div>
+        <h4 class="modal-title">Konfirmasi Pembatalan</h4>
+        <p class="modal-desc">Apakah Anda yakin ingin mengajukan pembatalan untuk pesanan ini? Aksi ini tidak dapat dibatalkan.</p>
+        <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1.5rem;">
+            <button style="background: #e2e8f0; color: #475569; font-weight: bold; padding: 0.6rem 1.5rem; border-radius: 0.5rem; border: none; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='#cbd5e1'" onmouseout="this.style.background='#e2e8f0'" id="btnKonfirmasiBatalNo">Kembali</button>
+            <button style="background: #ef4444; color: white; font-weight: bold; padding: 0.6rem 1.5rem; border-radius: 0.5rem; border: none; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='#dc2626'" onmouseout="this.style.background='#ef4444'" id="btnKonfirmasiBatalYes">Ya, Batalkan</button>
+        </div>
+    </div>
+</div>
+
 {{-- Modal Pembatalan --}}
 <div class="modal-overlay" id="modalPembatalan">
     <div class="modal-box">
@@ -614,7 +631,9 @@
                         || sessionStorage.getItem('res_minimarket') 
                         || 'Virtual Account';
 
-    if (dBooking && dBooking !== 'XXXXXXXXXX') {
+    if (dBooking && dBooking !== 'XXXXXXXXXX' && !fromPesanan) {
+        // Hanya kirim update status otomatis saat baru selesai dari flow pembayaran,
+        // BUKAN saat diakses dari riwayat pesanan (from=pesanan).
         fetch('/reservasi/update-status', {
             method: 'POST',
             headers: {
@@ -757,112 +776,81 @@ function unduhPdf() {
     btn.innerHTML = '<svg class="animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" width="16" height="16"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" opacity=".3"/><path fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/></svg> Menyiapkan…';
     btn.disabled = true;
 
-    // Collect data
-    const bookNo  = document.getElementById('dynBookingNo').textContent;
-    const nama    = document.getElementById('dynNama').textContent;
-    const hp      = document.getElementById('dynHp').textContent;
-    const email   = document.getElementById('dynEmail').textContent;
-    const tamu    = document.getElementById('dynTamu').textContent;
-    const room    = document.getElementById('dynRoomName').textContent;
-    const amount  = document.getElementById('dynAmount').textContent;
-    const checkin = document.getElementById('dynCheckin').textContent;
-    const checkout= document.getElementById('dynCheckout').textContent;
-    const nights  = document.getElementById('dynNights').textContent;
-    const guest   = document.getElementById('dynGuestInfo').textContent;
-    const status  = document.getElementById('dynStatusTitle').textContent;
-    const now     = new Date().toLocaleString('id-ID', {dateStyle:'long', timeStyle:'short'});
+    const bookNo = document.getElementById('dynBookingNo').textContent;
+    if (!bookNo || bookNo === 'XXXXXXXXXX') {
+        alert('Gagal mendapatkan nomor pesanan.');
+        btn.innerHTML = origHTML;
+        btn.disabled = false;
+        return;
+    }
 
-    // Build receipt HTML
-    const receiptHTML = `
-    <html><head><meta charset="utf-8"><title>Resi ${bookNo}</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
-        *{margin:0;padding:0;box-sizing:border-box}
-        body{font-family:'Inter',sans-serif;background:#f9f3e8;padding:0}
-        .receipt{max-width:520px;margin:2rem auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.08)}
-        .receipt-header{background:#3a523a;color:#fff;padding:1.5rem;text-align:center}
-        .receipt-header h1{font-size:1.1rem;font-weight:800;margin-bottom:.3rem}
-        .receipt-header p{font-size:.75rem;opacity:.8}
-        .receipt-logo{display:flex;align-items:center;justify-content:center;gap:.6rem;margin-bottom:.8rem}
-        .receipt-logo img{height:36px}
-        .receipt-status{text-align:center;padding:1.5rem 1rem .5rem}
-        .badge{display:inline-block;padding:.35rem 1rem;border-radius:2rem;font-size:.8rem;font-weight:700}
-        .badge-success{background:#d4edda;color:#155724}
-        .badge-failed{background:#f8d7da;color:#721c24}
-        .receipt-amount{text-align:center;font-size:1.6rem;font-weight:800;color:#222;padding:.5rem 0 1rem}
-        .receipt-body{padding:0 1.5rem 1.5rem}
-        .section{margin-bottom:1rem}
-        .section-title{font-size:.7rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:.5rem;padding-bottom:.3rem;border-bottom:1px solid #eee}
-        .row{display:flex;justify-content:space-between;font-size:.82rem;padding:.25rem 0}
-        .row .label{color:#666}
-        .row .value{color:#222;font-weight:600;text-align:right}
-        .receipt-footer{text-align:center;padding:1rem;background:#f1e5cc;font-size:.7rem;color:#666}
-        .divider{border:none;border-top:1px dashed #ddd;margin:.8rem 0}
-        @media print{body{background:#fff;padding:0} .receipt{box-shadow:none;margin:0;max-width:100%}}
-        @media (max-width: 480px){
-            .receipt{margin:1rem;border-radius:12px}
-            .receipt-header{padding:1rem}
-            .receipt-body{padding:0 1rem 1rem}
-        }
-    </style></head><body>
-    <div class="receipt">
-        <div class="receipt-header">
-            <div class="receipt-logo">
-                <img src="${window.location.origin}/images/logo-landeuh.png" alt="Landeuh" style="height:40px">
-                <div><strong>Landeuh Village Riverside</strong><br><span style="font-size:.7rem;opacity:.7">Reservation Receipt</span></div>
-            </div>
-            <p>No. Pemesanan: <strong>${bookNo}</strong></p>
-        </div>
-        <div class="receipt-status">
-            <span class="badge ${status.includes('Berhasil') ? 'badge-success' : 'badge-failed'}">${status}</span>
-        </div>
-        <div class="receipt-amount">${amount}</div>
-        <div class="receipt-body">
-            <div class="section">
-                <div class="section-title">Detail Akomodasi</div>
-                <div class="row"><span class="label">Akomodasi</span><span class="value">${room}</span></div>
-                <div class="row"><span class="label">Check-in</span><span class="value">${checkin}</span></div>
-                <div class="row"><span class="label">Check-out</span><span class="value">${checkout}</span></div>
-                <div class="row"><span class="label">Durasi</span><span class="value">${nights}</span></div>
-                <div class="row"><span class="label">Tamu</span><span class="value">${guest}</span></div>
-            </div>
-            <hr class="divider">
-            <div class="section">
-                <div class="section-title">Identitas Pemesan</div>
-                <div class="row"><span class="label">Nama</span><span class="value">${nama}</span></div>
-                <div class="row"><span class="label">Telepon</span><span class="value">${hp}</span></div>
-                <div class="row"><span class="label">Email</span><span class="value">${email}</span></div>
-                <div class="row"><span class="label">Nama Tamu</span><span class="value">${tamu}</span></div>
-            </div>
-            <hr class="divider">
-            <div class="section">
-                <div class="section-title">Kebijakan</div>
-                <p style="font-size:.78rem;color:#555;line-height:1.5">• Pemesanan ini tidak dapat diubah<br>• Pemesanan tidak ada refund jika dibatalkan</p>
-            </div>
-        </div>
-        <div class="receipt-footer">
-            Dicetak pada ${now} &mdash; Landeuh Village Riverside<br>
-            Dokumen ini merupakan bukti reservasi yang sah.
-        </div>
-    </div>
-    </body></html>`;
-
-    // Open print window
-    const printWin = window.open('', '_blank', 'width=600,height=800');
-    printWin.document.write(receiptHTML);
-    printWin.document.close();
-    printWin.onload = function() {
-        setTimeout(() => {
-            printWin.print();
-            btn.innerHTML = origHTML;
-            btn.disabled = false;
-        }, 400);
-    };
+    setTimeout(() => {
+        window.open('/invoices/Invoice_' + bookNo + '.pdf', '_blank');
+        btn.innerHTML = origHTML;
+        btn.disabled = false;
+    }, 500);
 }
 
 function ajukanPembatalan() {
-    const modal = document.getElementById('modalPembatalan');
-    modal.classList.add('active');
+    const bookingNo = document.getElementById('dynBookingNo').textContent;
+    if (!bookingNo || bookingNo === 'XXXXXXXXXX') {
+        alert('Gagal mendapatkan nomor pesanan.');
+        return;
+    }
+
+    const confirmModal = document.getElementById('modalKonfirmasiBatal');
+    const btnYes = document.getElementById('btnKonfirmasiBatalYes');
+    const btnNo = document.getElementById('btnKonfirmasiBatalNo');
+    
+    confirmModal.classList.add('active');
+
+    // Remove previous event listeners by cloning
+    const newBtnYes = btnYes.cloneNode(true);
+    const newBtnNo = btnNo.cloneNode(true);
+    btnYes.parentNode.replaceChild(newBtnYes, btnYes);
+    btnNo.parentNode.replaceChild(newBtnNo, btnNo);
+
+    newBtnNo.onclick = () => {
+        confirmModal.classList.remove('active');
+    };
+
+    newBtnYes.onclick = () => {
+        confirmModal.classList.remove('active');
+        
+        fetch('/reservasi/update-status', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({
+                no_pesanan: bookingNo,
+                status: 'refund_pending'
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                const modal = document.getElementById('modalPembatalan');
+                modal.classList.add('active');
+                
+                // Add reload event when modal closes
+                const closeBtn = modal.querySelector('button[onclick="closeModalPembatalan()"]');
+                if (closeBtn) {
+                    closeBtn.onclick = () => {
+                        closeModalPembatalan();
+                        location.reload();
+                    };
+                }
+            } else {
+                alert('Gagal mengajukan pembatalan: ' + data.message);
+            }
+        })
+        .catch(err => {
+            console.error('Error:', err);
+            alert('Terjadi kesalahan koneksi.');
+        });
+    };
 }
 
 function closeModalPembatalan() {
