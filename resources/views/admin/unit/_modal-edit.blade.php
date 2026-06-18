@@ -217,7 +217,7 @@
         const existingImages = Array.isArray(item.gambar) ? item.gambar : (item.gambar ? [item.gambar] : []);
         window.currentEditImages = existingImages.map(url => ({
             type: 'existing',
-            url: url.startsWith('http') || url.startsWith('data:') ? url : (url.startsWith('/') ? url : '/' + url)
+            url: formatImgUrl(url)
         }));
             
         renderEditImagePreviews();

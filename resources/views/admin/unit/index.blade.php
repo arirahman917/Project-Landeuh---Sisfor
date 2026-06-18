@@ -248,7 +248,21 @@
     // ── Format Image URL ───────────────────────────────────────
     function formatImgUrl(url) {
         if (!url) return '';
+        if (typeof url !== 'string') {
+            try {
+                if (Array.isArray(url) && url.length > 0) return formatImgUrl(url[0]);
+                url = String(url);
+            } catch(e) {
+                return '';
+            }
+        }
         if (url.startsWith('http') || url.startsWith('data:')) return url;
+        if (url.startsWith('[') && url.endsWith(']')) {
+            try {
+                const parsed = JSON.parse(url);
+                if (Array.isArray(parsed) && parsed.length > 0) return formatImgUrl(parsed[0]);
+            } catch(e) {}
+        }
         return url.startsWith('/') ? url : '/' + url;
     }
 
