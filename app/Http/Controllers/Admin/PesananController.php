@@ -28,6 +28,7 @@ class PesananController extends Controller
                 'akomodasi' => $booking->accommodation->judul,
                 'akomodasiCap' => '(' . $booking->accommodation->max_orang . ' pax)',
                 'malam' => $booking->malam,
+                'tanggalDipesan' => $booking->created_at->locale('id')->isoFormat('D MMM YYYY'),
                 'checkin' => $booking->check_in_date->locale('id')->isoFormat('ddd, D MMM YYYY'),
                 'checkout' => $booking->check_out_date->locale('id')->isoFormat('ddd, D MMM YYYY'),
                 'tambahanAnak' => $booking->tambahan_anak,

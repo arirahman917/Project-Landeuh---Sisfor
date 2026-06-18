@@ -27,7 +27,7 @@
             <iconify-icon icon="lucide:layout-grid" class="text-2xl text-amber-600"></iconify-icon>
         </div>
         <div>
-            <p class="text-xs font-semibold text-stone-500 tracking-wider uppercase">Jumlah Tersedia</p>
+            <p class="text-xs font-semibold text-stone-500 tracking-wider uppercase">Jumlah Tersedia Malam Ini</p>
             <p class="text-3xl font-extrabold text-stone-800 leading-tight" id="statTersedia">—</p>
         </div>
     </div>

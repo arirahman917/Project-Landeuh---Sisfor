@@ -222,7 +222,7 @@ Route::prefix('admin')->group(function () {
 
     Route::get('/pesanan', [PesananController::class, 'index'])->name('admin.pesanan.index');
 
-    Route::get('/pengembalian', function () {
+    Route::get('/pembatalan', function () {
         // Fetch bookings that are related to refunds (pending, refunded, or rejected)
         $bookings = \App\Models\Booking::with('accommodation')
             ->whereIn('status', ['refund_pending', 'refunded', 'refund_rejected'])
@@ -245,6 +245,7 @@ Route::prefix('admin')->group(function () {
                 'akomodasi' => $booking->accommodation->judul,
                 'akomodasiCap' => '(' . $booking->accommodation->max_orang . ' pax)',
                 'malam' => $booking->malam,
+                'tanggalDipesan' => $booking->created_at->locale('id')->isoFormat('D MMM YYYY'),
                 'checkin' => $booking->check_in_date->locale('id')->isoFormat('ddd, D MMM YYYY'),
                 'checkout' => $booking->check_out_date->locale('id')->isoFormat('ddd, D MMM YYYY'),
                 'total' => $booking->total,
@@ -254,8 +255,8 @@ Route::prefix('admin')->group(function () {
             ];
         });
         
-        return view('admin.pesanan.pengembalian', compact('formattedBookings'));
-    })->name('admin.pengembalian.index');
+        return view('admin.pesanan.pembatalan', compact('formattedBookings'));
+    })->name('admin.pembatalan.index');
 
     Route::get('/pelanggan', [PelangganController::class, 'index'])->name('admin.pelanggan.index');
     Route::put('/pelanggan/{id}', [PelangganController::class, 'update'])->name('admin.pelanggan.update');

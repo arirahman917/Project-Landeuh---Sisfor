@@ -13,11 +13,11 @@
         <iconify-icon icon="lucide:clipboard-list" class="text-base"></iconify-icon>
         Data Pesanan
     </a>
-    <a href="/admin/pengembalian"
+    <a href="/admin/pembatalan"
        class="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all
               bg-white/80 text-stone-600 border border-stone-200 hover:bg-amber-50 hover:border-amber-300">
         <iconify-icon icon="lucide:undo-2" class="text-base"></iconify-icon>
-        Data Ajuan Pengembalian
+        Data Ajuan Pembatalan
     </a>
 </div>
 
@@ -78,6 +78,7 @@
                             Tambahan Orang
                         </div>
                     </th>
+                    <th class="px-3 py-3.5 text-left font-bold text-stone-700 text-xs uppercase tracking-wider min-w-[120px]">Tanggal Booking</th>
                     <th class="px-3 py-3.5 text-right font-bold text-stone-700 text-xs uppercase tracking-wider">Pembayaran</th>
                     <th class="px-3 py-3.5 text-center font-bold text-stone-700 text-xs uppercase tracking-wider w-[130px]">Status</th>
                 </tr>
@@ -196,6 +197,7 @@
                 <td class="px-3 py-3 text-stone-700 text-xs leading-relaxed font-medium">
                     ${formatTambahan(p.tambahanAnak, p.tambahanDewasa)}
                 </td>
+                <td class="px-3 py-3 text-stone-800 font-semibold text-xs whitespace-nowrap">${p.tanggalDipesan}</td>
                 <td class="px-3 py-3 text-right text-stone-800 font-semibold text-xs whitespace-nowrap">
                     ${fmt(p.total)}<br><span class="text-stone-400 font-normal">(${p.metode})</span>
                 </td>
