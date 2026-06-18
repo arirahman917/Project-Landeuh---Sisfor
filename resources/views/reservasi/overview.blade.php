@@ -506,6 +506,9 @@
         document.getElementById('totalHarga').textContent=fmt(total);
     }
 
+    // Render price breakdown immediately on page load
+    updateHarga();
+
     document.getElementById('btnLanjutkan').addEventListener('click',function(){
         const nama = document.getElementById('namaLengkap').value.trim();
         const hp = document.getElementById('noHp').value.trim();

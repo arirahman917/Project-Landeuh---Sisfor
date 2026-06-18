@@ -8,8 +8,8 @@
 {{-- Search Bar Fixed --}}
 <div id="searchBarFixed" class="sticky top-0 z-40">
     <div class="max-w-6xl mx-auto px-4">
-        <div class="grid grid-cols-2 md:flex md:flex-row items-stretch gap-2 md:gap-3 backdrop-blur-md bg-white/40 rounded-b-2xl px-4 md:px-6 py-4 border-x border-b border-gray-200 shadow-sm transition-all duration-300">
-            <div class="col-span-1 order-1 md:order-1 flex-1 bg-gray-50 rounded-xl px-3 md:px-4 py-2.5 border border-gray-200 relative cursor-pointer" id="akomodasiPickerContainer">
+        <div class="flex flex-row items-stretch gap-2 md:gap-3 backdrop-blur-md bg-white/40 rounded-b-2xl px-4 md:px-6 py-4 border-x border-b border-gray-200 shadow-sm transition-all duration-300">
+            <div class="flex-1 bg-gray-50 rounded-xl px-3 md:px-4 py-2.5 border border-gray-200 relative cursor-pointer" id="akomodasiPickerContainer">
                 <div class="flex items-center gap-2 h-full" id="akomodasiPickerTrigger">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg>
                     <div class="flex-1 text-sm text-gray-700 select-none truncate" id="akomodasiPickerLabel">Semua Akomodasi</div>
@@ -29,12 +29,8 @@
                 </div>
                 <input type="hidden" id="filterJenis" value="Semua Akomodasi">
             </div>
-            <div class="col-span-2 order-3 md:order-2 flex-[1.4] flex items-center gap-2 bg-gray-50 rounded-xl px-4 py-2.5 border border-gray-200">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/></svg>
-                <input type="text" id="dateRangePicker" class="bg-transparent text-sm text-gray-700 outline-none flex-1" placeholder="Pilih Tanggal">
-            </div>
             
-            <div class="col-span-1 order-2 md:order-3 flex-1 bg-gray-50 rounded-xl px-3 md:px-4 py-2.5 border border-gray-200 relative" id="guestPickerContainer">
+            <div class="flex-1 bg-gray-50 rounded-xl px-3 md:px-4 py-2.5 border border-gray-200 relative" id="guestPickerContainer">
                 <div class="flex items-center gap-2 cursor-pointer h-full" id="guestPickerTrigger">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
                     <span class="text-sm text-gray-700" id="guestPickerLabel">2 Tamu</span>
@@ -61,11 +57,6 @@
                     </div>
                 </div>
             </div>
-
-            <button id="btnCari" class="col-span-2 order-4 md:order-4 w-full md:w-auto bg-[#3a523a] hover:bg-[#2c402c] text-white font-bold px-8 py-3 rounded-xl flex items-center justify-center gap-2 transition shadow-lg text-sm whitespace-nowrap">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
-                Cari
-            </button>
         </div>
     </div>
 </div>
@@ -128,6 +119,15 @@
         <div class="text-[10px] text-gray-400 mt-3 text-right italic">/kamar/malam</div>
     </div>
 </div>
+<style>
+    .flatpickr-day.flatpickr-disabled.booked-date {
+        background-color: #e5e7eb !important; /* bg-gray-200 */
+        border-color: transparent !important;
+        color: #9ca3af !important; /* text-gray-400 */
+        border-radius: 50% !important;
+        text-decoration: line-through; /* Optional styling to emphasize disabled state */
+    }
+</style>
 @endsection
 
 @push('scripts')
@@ -320,8 +320,50 @@
         document.getElementById('priceInfoModalOverlay').classList.remove('active');
     };
 
-    // Global state for nights
+    // Global state for nights and dates
     window.akoMalamState = window.akoMalamState || {};
+    window.akoDateState = window.akoDateState || {};
+
+    window.isDateFullyBooked = function(akomodasi, dateObj) {
+        if (!akomodasi.bookings || akomodasi.bookings.length === 0) return false;
+        
+        let checkTime = new Date(dateObj);
+        checkTime.setHours(12, 0, 0, 0);
+        checkTime = checkTime.getTime();
+
+        let activeBookingsCount = 0;
+        akomodasi.bookings.forEach(b => {
+            if (b.status !== 'failed' && b.status !== 'refunded') {
+                let bIn = new Date(b.check_in_date);
+                bIn.setHours(12, 0, 0, 0);
+                let bOut = new Date(b.check_out_date);
+                bOut.setHours(12, 0, 0, 0);
+
+                // Booking overlaps if check_in <= checkTime < check_out
+                if (checkTime >= bIn.getTime() && checkTime < bOut.getTime()) {
+                    activeBookingsCount++;
+                }
+            }
+        });
+
+        return activeBookingsCount >= akomodasi.slot;
+    };
+
+    window.toggleCollapse = function(id) {
+        const content = document.getElementById('collapse-content-' + id);
+        const fade = document.getElementById('collapse-fade-' + id);
+        const btn = document.getElementById('btn-collapse-' + id);
+        
+        if (content.style.maxHeight === '2000px') {
+            content.style.maxHeight = ''; // reset to class default (140px)
+            fade.style.opacity = '1';
+            btn.innerHTML = 'Lihat selengkapnya <iconify-icon icon="lucide:chevron-down"></iconify-icon>';
+        } else {
+            content.style.maxHeight = '2000px';
+            fade.style.opacity = '0';
+            btn.innerHTML = 'Sembunyikan <iconify-icon icon="lucide:chevron-up"></iconify-icon>';
+        }
+    };
 
     window.changeMalam = function(id, delta) {
         if (!window.akoMalamState[id]) window.akoMalamState[id] = 1;
@@ -382,47 +424,61 @@
                             ${item.merokok?'<iconify-icon icon="lucide:cigarette" class="text-base"></iconify-icon> Boleh merokok':'<iconify-icon icon="lucide:cigarette-off" class="text-base"></iconify-icon> Tidak boleh merokok'}
                         </span>
                     </div>
-                    <div class="flex flex-col md:flex-row gap-6 mt-3">
-                        <div class="w-full md:w-[60%] xl:w-[65%]"><p class="text-xs font-bold text-gray-800 mb-1.5">Fasilitas Kamar:</p>${fasHtml}</div>
-                        <div class="w-full md:w-[40%] xl:w-[35%]"><p class="text-xs font-bold text-gray-800 mb-1.5">Makanan & Minuman:</p>${makHtml}</div>
+                    <div class="relative overflow-hidden transition-[max-height] duration-500 ease-in-out max-h-[140px] md:max-h-none" id="collapse-content-${item.id}">
+                        <div class="flex flex-col md:flex-row gap-6 mt-3">
+                            <div class="w-full md:w-[60%] xl:w-[65%]"><p class="text-xs font-bold text-gray-800 mb-1.5">Fasilitas Kamar:</p>${fasHtml}</div>
+                            <div class="w-full md:w-[40%] xl:w-[35%]"><p class="text-xs font-bold text-gray-800 mb-1.5">Makanan & Minuman:</p>${makHtml}</div>
+                        </div>
+                        <div class="mt-3 p-3 bg-gradient-to-r from-[#e3d1b3]/60 to-transparent rounded-lg">
+                            <p class="text-xs font-bold text-gray-800 mb-2">Catatan:</p>
+                            <div class="flex flex-col gap-1.5">${catHtml}</div>
+                        </div>
+                        <div class="absolute bottom-0 left-0 w-full h-20 bg-gradient-to-t from-[#fdf6e3]/95 via-[#fdf6e3]/80 to-transparent md:hidden pointer-events-none transition-opacity duration-300" id="collapse-fade-${item.id}"></div>
                     </div>
-                    <div class="mt-3 p-3 bg-gradient-to-r from-[#e3d1b3]/60 to-transparent rounded-lg">
-                        <p class="text-xs font-bold text-gray-800 mb-2">Catatan:</p>
-                        <div class="flex flex-col gap-1.5">${catHtml}</div>
-                    </div>
+                    <button class="md:hidden flex items-center justify-center w-full gap-1 text-xs font-bold text-[#3a523a] mt-2 py-2 hover:bg-gray-50 rounded-lg transition-colors border border-gray-200" id="btn-collapse-${item.id}" onclick="toggleCollapse(${item.id})">Lihat selengkapnya <iconify-icon icon="lucide:chevron-down"></iconify-icon></button>
                 </div>
-                <div class="flex items-start md:items-center justify-between pt-1">
-                    <div class="flex flex-col md:flex-row items-start md:items-center gap-1.5 md:gap-4 text-xs text-gray-700 font-medium pt-2">
+                <div class="flex flex-col pt-3 mt-1 border-t border-gray-100">
+                    <!-- Top Row: Info Unit & Malam -->
+                    <div class="flex flex-wrap items-center gap-2 md:gap-4 text-xs text-gray-700 font-medium">
                         <span class="flex items-center gap-1.5 whitespace-nowrap"><iconify-icon icon="lucide:user-check" class="text-base"></iconify-icon> Maks ${item.maxOrang} Dewasa</span>
                         ${slotHtml}
+                        <span class="flex items-center gap-1.5 whitespace-nowrap text-blue-700 bg-blue-50 px-2 py-0.5 rounded font-bold text-xs" id="date-display-${item.id}">
+                            <iconify-icon icon="lucide:moon" class="text-base"></iconify-icon> 
+                            <span id="date-text-${item.id}">Belum pilih tanggal</span>
+                        </span>
                     </div>
-                    <div class="flex flex-col items-end gap-2.5 mt-4 md:mt-0">
-                        <!-- Malam Counter -->
-                        <div class="flex items-center gap-2 bg-white/60 border border-gray-200 rounded-lg p-1 shadow-sm">
-                            <button type="button" onclick="changeMalam(${item.id}, -1)" class="w-6 h-6 flex items-center justify-center bg-white rounded-md border border-gray-200 text-gray-600 hover:text-black hover:bg-gray-50 transition">-</button>
-                            <span class="text-xs font-bold text-gray-800 w-16 text-center" id="lbl-malam-${item.id}">${window.akoMalamState[item.id] || 1} Malam</span>
-                            <button type="button" onclick="changeMalam(${item.id}, 1)" class="w-6 h-6 flex items-center justify-center bg-white rounded-md border border-gray-200 text-gray-600 hover:text-black hover:bg-gray-50 transition">+</button>
+
+                    <!-- Middle Row: Sesuaikan Tanggal (Left) & Harga (Right) -->
+                    <div class="flex items-start justify-between w-full mt-4">
+                        <!-- Kiri: Sesuaikan Tanggal -->
+                        <div class="shrink-0 pt-0.5">
+                            <div style="display:none"><input type="hidden" id="fp-input-${item.id}"></div>
+                            <button type="button" id="btn-dates-${item.id}" class="bg-white hover:bg-gray-50 border border-gray-300 text-gray-700 text-xs font-bold px-3 py-2 rounded-lg transition shadow-sm flex items-center gap-1.5 whitespace-nowrap">
+                                <iconify-icon icon="lucide:calendar-days" class="text-sm"></iconify-icon>
+                                <span id="btn-dates-text-${item.id}">Sesuaikan Tanggal</span>
+                            </button>
                         </div>
-                        
-                        <div class="flex items-center gap-2 md:gap-4">
-                            <div class="flex flex-col items-end">
-                                <div class="flex items-center gap-1 md:gap-1.5">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 md:w-4 md:h-4 text-gray-400 cursor-pointer shrink-0 hover:text-[#B5793A] transition" fill="currentColor" viewBox="0 0 24 24" onclick="openPriceInfoModal(${item.id})"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
-                                    <div class="flex flex-col items-end">
-                                        <div class="flex items-center gap-1.5 mb-0.5">
-                                            <span id="rate-badge-${item.id}" class="text-[9px] font-bold text-white px-1.5 py-0.5 rounded" style="background-color:${getActiveRate(item).color}">${getActiveRate(item).label}</span>
-                                        </div>
-                                        <div id="price-val-${item.id}" class="${item.hargaWeekday.toString().length >= 7 ? 'text-base md:text-xl' : 'text-lg md:text-2xl'} font-extrabold text-[#e53e3e] whitespace-nowrap">${fmt(calculateDynamicTotal(item, window.akoMalamState[item.id] || 1))}</div>
-                                    </div>
-                                </div>
-                                <div class="text-[9px] md:text-[10px] text-gray-400 italic">Total Harga</div>
-                                ${getActiveRate(item).label !== 'Weekday' ? `<div id="breakfast-badge-${item.id}" class="flex items-center gap-1 mt-1 px-2 py-0.5 rounded-md bg-amber-50 border border-amber-200/60"><span class="text-[10px]">🍳</span><span class="text-[10px] font-semibold text-amber-700">Free Breakfast ${item.maxOrang} pax</span></div>` : ''}
+
+                        <!-- Kanan: Harga -->
+                        <div class="flex flex-col items-end text-right">
+                            <div class="mb-1 flex items-center gap-1">
+                                ${getActiveRate(item).label !== 'Weekday' ? `<div id="breakfast-badge-${item.id}" class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-amber-50 border border-amber-200/60"><span class="text-[9px]">🍳</span><span class="text-[9px] font-semibold text-amber-700">Free Breakfast</span></div>` : ''}
+                                <span id="rate-badge-${item.id}" class="text-[9px] font-bold text-white px-1.5 py-0.5 rounded" style="background-color:${getActiveRate(item).color}">${getActiveRate(item).label}</span>
                             </div>
-                            ${item._isBooked 
-                                ? `<button disabled class="bg-gray-400 text-white text-xs md:text-sm font-bold px-4 md:px-5 py-2 md:py-2.5 rounded-lg shadow whitespace-nowrap cursor-not-allowed">Telah Dibooking</button>`
-                                : `<button onclick="handlePilihKamar(${item.id})" id="btn-pilih-${item.id}" class="bg-[#3a523a] hover:bg-[#2c402c] text-white text-xs md:text-sm font-bold px-4 md:px-5 py-2 md:py-2.5 rounded-lg transition shadow whitespace-nowrap cursor-pointer">Pilih Kamar</button>`
-                            }
+                            <div class="flex items-center gap-1.5 mt-0.5">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-gray-400 cursor-pointer hover:text-[#B5793A] transition" fill="currentColor" viewBox="0 0 24 24" onclick="openPriceInfoModal(${item.id})"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                                <div id="price-val-${item.id}" class="${item.hargaWeekday.toString().length >= 7 ? 'text-xl md:text-2xl' : 'text-2xl md:text-3xl'} font-extrabold text-[#e53e3e] leading-none">${fmt(calculateDynamicTotal(item, window.akoMalamState[item.id] || 1))}</div>
+                            </div>
+                            <div class="text-[9px] text-gray-400 italic mt-1">Total Harga</div>
                         </div>
+                    </div>
+
+                    <!-- Bottom Row: Pilih Kamar -->
+                    <div class="w-full mt-3 flex justify-end">
+                        ${item._isBooked 
+                            ? `<button disabled class="bg-gray-400 text-white text-sm font-bold w-full md:w-auto px-6 py-2.5 rounded-lg shadow cursor-not-allowed">Habis</button>`
+                            : `<button onclick="handlePilihKamar(${item.id})" id="btn-pilih-${item.id}" class="bg-[#3a523a] hover:bg-[#2c402c] text-white text-sm font-bold w-full md:w-auto px-6 py-2.5 rounded-lg transition shadow cursor-pointer">Pilih Kamar</button>`
+                        }
                     </div>
                 </div>
             </div>
@@ -436,6 +492,80 @@
         renderPagination();
         updateAllPrices(); // Ensure dynamic logic runs on newly rendered cards
         window.scrollTo({top:0,behavior:'smooth'});
+
+        // Initialize Flatpickr per card
+        pageData.forEach(item => {
+            const btn = document.getElementById(`btn-dates-${item.id}`);
+            const input = document.getElementById(`fp-input-${item.id}`);
+            if(!btn || !input) return;
+
+            let preselected = window.akoDateState[item.id] || [];
+
+            const fp = flatpickr(input, {
+                mode: "range",
+                minDate: "today",
+                showMonths: window.innerWidth > 768 ? 2 : 1,
+                defaultDate: preselected,
+                positionElement: btn,
+                position: window.innerWidth > 768 ? "top left" : "auto",
+                disable: [
+                    function(date) {
+                        return window.isDateFullyBooked(item, date);
+                    }
+                ],
+                onDayCreate: function(dObj, dStr, fp, dayElem) {
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    if (dayElem.dateObj >= today && window.isDateFullyBooked(item, dayElem.dateObj)) {
+                        dayElem.classList.add('booked-date');
+                    }
+                },
+                onReady: function(selectedDates, dateStr, instance) {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        instance.toggle();
+                    });
+                },
+                onChange: function(selectedDates, dateStr, instance) {
+                    if (selectedDates.length === 2) {
+                        window.akoDateState[item.id] = selectedDates;
+                        const diffTime = Math.abs(selectedDates[1] - selectedDates[0]);
+                        const diffNights = Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
+                        
+                        window.akoMalamState[item.id] = diffNights;
+
+                        const fmtOptions = { day: 'numeric', month: 'short', year: '2-digit' };
+                        const inStr = selectedDates[0].toLocaleDateString('id-ID', fmtOptions);
+                        const outStr = selectedDates[1].toLocaleDateString('id-ID', fmtOptions);
+                        
+                        const disp = document.getElementById(`date-text-${item.id}`);
+                        if(disp) disp.innerText = `${diffNights} Malam`;
+
+                        const btnTxt = document.getElementById(`btn-dates-text-${item.id}`);
+                        if(btnTxt) btnTxt.innerText = `${inStr} - ${outStr}`;
+
+                        updateAllPrices();
+
+                        setTimeout(() => { instance.close(); }, 300);
+                    }
+                }
+            });
+
+            // Initial label setup
+            if (preselected.length === 2) {
+                const diffTime = Math.abs(preselected[1] - preselected[0]);
+                const diffNights = Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
+                const fmtOptions = { day: 'numeric', month: 'short', year: '2-digit' };
+                const inStr = preselected[0].toLocaleDateString('id-ID', fmtOptions);
+                const outStr = preselected[1].toLocaleDateString('id-ID', fmtOptions);
+                
+                const disp = document.getElementById(`date-text-${item.id}`);
+                if(disp) disp.innerText = `${diffNights} Malam`;
+
+                const btnTxt = document.getElementById(`btn-dates-text-${item.id}`);
+                if(btnTxt) btnTxt.innerText = `${inStr} - ${outStr}`;
+            }
+        });
     }
 
     function renderPagination(){
@@ -494,6 +624,7 @@
 
     document.getElementById('btnSelesaiGuest').addEventListener('click', () => {
         dropdown.classList.add('hidden');
+        doFilter(); // Auto-filter on guest change
     });
 
     document.addEventListener('click', (e) => {
@@ -507,10 +638,10 @@
     }
 
     document.getElementById('btnDecDewasa').addEventListener('click', () => {
-        if(valDewasa > 1) { valDewasa--; document.getElementById('valDewasa').innerText = valDewasa; updateGuestLabel(); }
+        if(valDewasa > 1) { valDewasa--; document.getElementById('valDewasa').innerText = valDewasa; updateGuestLabel(); doFilter(); }
     });
     document.getElementById('btnIncDewasa').addEventListener('click', () => {
-        valDewasa++; document.getElementById('valDewasa').innerText = valDewasa; updateGuestLabel();
+        valDewasa++; document.getElementById('valDewasa').innerText = valDewasa; updateGuestLabel(); doFilter();
     });
 
     // Call on load to initialize label
@@ -571,26 +702,6 @@
     function doFilter() {
         const j = document.getElementById('filterJenis').value;
         const targetDewasa = parseInt(document.getElementById('valDewasa').innerText);
-        const targetKamar = 1; // Default to 1 room
-
-        const datePickerEl = document.getElementById('dateRangePicker');
-        let fpDates = null;
-        let diffNights = null;
-        if (datePickerEl && datePickerEl._flatpickr) {
-            fpDates = datePickerEl._flatpickr.selectedDates;
-            if (fpDates && fpDates.length === 2) {
-                const diffTime = Math.abs(fpDates[1] - fpDates[0]);
-                diffNights = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                if (diffNights < 1) diffNights = 1;
-            }
-        }
-
-        // Auto-sync global night state if date range is selected
-        if (diffNights !== null) {
-            AKOMODASI_DATA.forEach(d => {
-                window.akoMalamState[d.id] = diffNights;
-            });
-        }
 
         filteredData = AKOMODASI_DATA.filter(d => {
             // Jenis
@@ -600,14 +711,6 @@
             }
             // Tamu (Kapasitas Akomodasi >= Jumlah Tamu)
             let matchTamu = (d.maxOrang >= targetDewasa);
-            
-            // Tanggal (Hanya Tandai)
-            d._isBooked = false;
-            if (fpDates && fpDates.length > 0) {
-                if (isBooked(d, fpDates, targetKamar)) {
-                    d._isBooked = true;
-                }
-            }
 
             return matchJenis && matchTamu;
         });
@@ -616,8 +719,7 @@
         render();
     }
 
-    document.getElementById('btnCari').addEventListener('click', doFilter);
-    
+
     // Custom Dropdown Logic
     const akoTrigger = document.getElementById('akomodasiPickerTrigger');
     const akoDropdown = document.getElementById('akomodasiPickerDropdown');
@@ -640,6 +742,7 @@
                 akoInput.value = val;
                 akoDropdown.classList.add('hidden');
                 if(akoChevron) akoChevron.classList.remove('rotate-180');
+                doFilter(); // Auto-filter on selection
             });
         });
 
@@ -651,65 +754,15 @@
         });
     }
 
-    // Initialize Flatpickr
-    const dateRangeElement = document.getElementById("dateRangePicker");
-    const fpInstance = dateRangeElement ? flatpickr(dateRangeElement, {
-        mode: "range",
-        dateFormat: "Y-m-d",
-        altInput: true,
-        altFormat: "D, d M Y", // Match home page format (e.g., Kam, 28 Mei 2026)
-        locale: "id",
-        minDate: "today",
-        showMonths: 2, // Show 2 months side-by-side
-        closeOnSelect: false, // Smooth auto-close transition
-        onChange: function(selectedDates, dateStr, instance) {
-            // Auto-update prices immediately when dates change
-            if (selectedDates.length >= 1) {
-                // If range is complete (2 dates), sync nights
-                if (selectedDates.length === 2) {
-                    const diffTime = Math.abs(selectedDates[1] - selectedDates[0]);
-                    const diffNights = Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
-                    AKOMODASI_DATA.forEach(d => {
-                        window.akoMalamState[d.id] = diffNights;
-                        const lbl = document.getElementById(`lbl-malam-${d.id}`);
-                        if (lbl) lbl.innerText = `${diffNights} Malam`;
-                    });
-
-                    // Smooth auto-close after 290ms
-                    setTimeout(() => {
-                        if (instance.selectedDates.length === 2 && instance.isOpen) {
-                            instance.close();
-                        }
-                    }, 290);
-                }
-                updateAllPrices();
-            }
-        }
-    }) : null;
-
     // Parse URL parameters
     const urlParams = new URLSearchParams(window.location.search);
     const paramJenis = urlParams.get('jenis');
-    const paramTgl = urlParams.get('tgl');
     const paramDewasa = urlParams.get('dewasa');
     const paramKamar = urlParams.get('kamar');
 
     if (paramJenis) {
         if(akoInput) akoInput.value = paramJenis;
         if(akoLabel) akoLabel.innerText = paramJenis;
-    }
-    if (paramTgl && fpInstance && typeof fpInstance.setDate === 'function') {
-        try {
-            fpInstance.setDate(paramTgl.split(' to '), true);
-        } catch (e) {
-            console.error("Flatpickr setDate error:", e);
-        }
-    } else if (paramTgl && Array.isArray(fpInstance) && fpInstance.length > 0 && typeof fpInstance[0].setDate === 'function') {
-        try {
-            fpInstance[0].setDate(paramTgl.split(' to '), true);
-        } catch (e) {
-            console.error("Flatpickr setDate error:", e);
-        }
     }
     if (paramDewasa) {
         valDewasa = parseInt(paramDewasa) || 2;
@@ -725,19 +778,27 @@
     // ── Pilih Kamar — auth gate ──────────────────────────────────
     window.handlePilihKamar = function(itemId) {
         const malam = window.akoMalamState[itemId] || 1;
+        const selectedDates = window.akoDateState[itemId];
         const isLoggedIn = {{ Auth::check() ? 'true' : 'false' }};
         
-        const fp = document.getElementById('dateRangePicker')?._flatpickr;
-        let tglParam = '';
-        if (fp && fp.selectedDates && fp.selectedDates.length > 0) {
-            const d = fp.selectedDates[0];
-            const year = d.getFullYear();
-            const month = String(d.getMonth() + 1).padStart(2, '0');
-            const day = String(d.getDate()).padStart(2, '0');
-            tglParam = `&checkin=${year}-${month}-${day}`;
+        if (!selectedDates || selectedDates.length !== 2) {
+            // Trigger flatpickr open as a hint, or just alert
+            const fpInput = document.getElementById(`fp-input-${itemId}`);
+            if (fpInput && fpInput._flatpickr) {
+                fpInput._flatpickr.open();
+            } else {
+                alert('Silakan sesuaikan rentang tanggal (Check-in dan Check-out) terlebih dahulu.');
+            }
+            return;
         }
         
-        const targetUrl = '/reservasi/overview/' + itemId + '?malam=' + (malam || 1) + tglParam;
+        const d = selectedDates[0];
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        const tglParam = `&checkin=${year}-${month}-${day}`;
+        
+        const targetUrl = '/reservasi/overview/' + itemId + '?malam=' + malam + tglParam;
 
         if (isLoggedIn) {
             window.location.href = targetUrl;
