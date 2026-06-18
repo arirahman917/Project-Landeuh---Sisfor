@@ -18,7 +18,7 @@ class DatabaseSeeder extends Seeder
         // User::factory(10)->create();
 
         User::where('email', 'admin1@gmail.com')->delete();
-        User::factory()->create([
+        User::create([
             'name' => 'Admin 1',
             'email' => 'admin1@gmail.com',
             'phone' => '081234567890',
@@ -27,7 +27,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         User::where('email', 'admin2@gmail.com')->delete();
-        User::factory()->create([
+        User::create([
             'name' => 'Admin 2',
             'email' => 'admin2@gmail.com',
             'phone' => '081234567890',
