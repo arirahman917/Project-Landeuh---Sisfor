@@ -604,9 +604,13 @@
         const lb = document.getElementById('lightbox');
         lb.classList.add('hidden'); lb.classList.remove('flex');
     };
-    window.lbPrev = function() { lbIdx = (lbIdx - 1 + lbImages.length) % lbImages.length; showLbImg(); };
-    window.lbNext = function() { lbIdx = (lbIdx + 1) % lbImages.length; showLbImg(); };
-    function showLbImg() { document.getElementById('lbImg').src = lbImages[lbIdx]; }
+    window.lbPrev = function() { if(lbIdx>0){lbIdx--; showLbImg();} };
+    window.lbNext = function() { if(lbIdx<lbImages.length-1){lbIdx++; showLbImg();} };
+    function showLbImg() { 
+        document.getElementById('lbImg').src = lbImages[lbIdx]; 
+        document.getElementById('lbBtnPrev').style.display=lbIdx===0?'none':'';
+        document.getElementById('lbBtnNext').style.display=lbIdx>=lbImages.length-1?'none':'';
+    }
 
     // ── Custom Dropdown Initialization ─────────────────────────
     function setupCustomDropdown(containerId, displayId, optionsId, inputId) {
@@ -762,8 +766,8 @@
 {{-- Lightbox --}}
 <div id="lightbox" class="fixed inset-0 z-[200] bg-black/80 hidden items-center justify-center" onclick="closeLightbox(event)">
     <button onclick="closeLightbox()" class="absolute top-4 right-4 text-white text-3xl font-bold z-10 hover:text-gray-300 transition">&times;</button>
-    <button onclick="lbPrev()" class="absolute left-4 top-1/2 -translate-y-1/2 text-white text-4xl font-bold z-10 hover:text-gray-300 transition">‹</button>
-    <button onclick="lbNext()" class="absolute right-4 top-1/2 -translate-y-1/2 text-white text-4xl font-bold z-10 hover:text-gray-300 transition">›</button>
+    <button onclick="lbPrev()" id="lbBtnPrev" class="absolute left-4 top-1/2 -translate-y-1/2 text-white text-4xl font-bold z-10 hover:text-gray-300 transition">‹</button>
+    <button onclick="lbNext()" id="lbBtnNext" class="absolute right-4 top-1/2 -translate-y-1/2 text-white text-4xl font-bold z-10 hover:text-gray-300 transition">›</button>
     <img id="lbImg" src="" class="max-w-[90vw] max-h-[85vh] object-contain rounded-xl shadow-2xl" alt="">
 </div>
 

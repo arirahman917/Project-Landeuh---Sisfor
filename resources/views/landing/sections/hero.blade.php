@@ -117,7 +117,7 @@
                 </div>
 
                 <!-- Tombol Cari -->
-                <div class="col-span-2 order-4 md:order-4 w-full md:w-auto mt-2 md:mt-0 md:mr-4">
+                <div class="col-span-2 order-4 md:order-4 w-full md:w-auto mt-2 md:mt-0 md:px-4 flex items-center justify-center">
                     <button type="button" id="btnCariHero" class="w-full md:w-auto bg-[#3a523a] hover:bg-[#2c402c] text-white font-bold px-10 py-4 md:py-3.5 rounded-xl flex items-center justify-center gap-2 transition shadow-lg text-lg">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />

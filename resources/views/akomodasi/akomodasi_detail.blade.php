@@ -80,8 +80,8 @@
 {{-- Lightbox --}}
 <div id="lightbox" class="fixed inset-0 z-[200] bg-black/80 hidden items-center justify-center" onclick="closeLightbox(event)">
     <button onclick="closeLightbox()" class="absolute top-4 right-4 text-white text-3xl font-bold z-10 hover:text-gray-300 transition">&times;</button>
-    <button onclick="lbPrev()" class="absolute left-4 top-1/2 -translate-y-1/2 text-white text-4xl font-bold z-10 hover:text-gray-300 transition">‹</button>
-    <button onclick="lbNext()" class="absolute right-4 top-1/2 -translate-y-1/2 text-white text-4xl font-bold z-10 hover:text-gray-300 transition">›</button>
+    <button onclick="lbPrev()" id="lbBtnPrev" class="absolute left-4 top-1/2 -translate-y-1/2 text-white text-4xl font-bold z-10 hover:text-gray-300 transition">‹</button>
+    <button onclick="lbNext()" id="lbBtnNext" class="absolute right-4 top-1/2 -translate-y-1/2 text-white text-4xl font-bold z-10 hover:text-gray-300 transition">›</button>
     <img id="lbImg" src="" class="max-w-[90vw] max-h-[85vh] object-contain rounded-xl shadow-2xl transition-opacity duration-300" alt="">
 </div>
 
@@ -168,9 +168,13 @@
         document.getElementById('lightbox').classList.add('hidden');
         document.getElementById('lightbox').classList.remove('flex');
     };
-    window.lbPrev=function(){lbIdx=(lbIdx-1+lbImages.length)%lbImages.length;showLbImg();};
-    window.lbNext=function(){lbIdx=(lbIdx+1)%lbImages.length;showLbImg();};
-    function showLbImg(){document.getElementById('lbImg').src=lbImages[lbIdx];}
+    window.lbPrev=function(){if(lbIdx>0){lbIdx--;showLbImg();}};
+    window.lbNext=function(){if(lbIdx<lbImages.length-1){lbIdx++;showLbImg();}};
+    function showLbImg(){
+        document.getElementById('lbImg').src=lbImages[lbIdx];
+        document.getElementById('lbBtnPrev').style.display=lbIdx===0?'none':'';
+        document.getElementById('lbBtnNext').style.display=lbIdx>=lbImages.length-1?'none':'';
+    }
 
     function fmt(n){
         return 'IDR ' + Number(n).toLocaleString('id-ID', {minimumFractionDigits: 0, maximumFractionDigits: 0});
@@ -203,9 +207,9 @@
 
     function calculateDynamicTotal(item, nights) {
         let startDate = new Date();
-        const fp = document.getElementById('dateRangePicker')?._flatpickr;
-        if (fp && fp.selectedDates && fp.selectedDates.length > 0) {
-            startDate = new Date(fp.selectedDates[0]);
+        const cardDates = window.akoDateState[item.id];
+        if (cardDates && cardDates.length > 0) {
+            startDate = new Date(cardDates[0]);
         }
         
         let total = 0;
@@ -224,9 +228,9 @@
     // Get the active rate for check-in date (for display purposes)
     function getActiveRate(item) {
         let startDate = new Date();
-        const fp = document.getElementById('dateRangePicker')?._flatpickr;
-        if (fp && fp.selectedDates && fp.selectedDates.length > 0) {
-            startDate = new Date(fp.selectedDates[0]);
+        const cardDates = window.akoDateState[item.id];
+        if (cardDates && cardDates.length > 0) {
+            startDate = new Date(cardDates[0]);
         }
         const type = getDateType(startDate);
         if (type === 'highseason') return { price: Number(item.hargaHighseason), label: 'Highseason', color: '#8b0000' };
@@ -474,9 +478,9 @@
                     </div>
 
                     <!-- Bottom Row: Pilih Kamar -->
-                    <div class="w-full mt-3 flex justify-end">
+                    <div class="w-full mt-3 flex justify-end" id="btn-pilih-wrap-${item.id}">
                         ${item._isBooked 
-                            ? `<button disabled class="bg-gray-400 text-white text-sm font-bold w-full md:w-auto px-6 py-2.5 rounded-lg shadow cursor-not-allowed">Habis</button>`
+                            ? `<button disabled class="bg-gray-400 text-white text-sm font-bold w-full md:w-auto px-6 py-2.5 rounded-lg shadow cursor-not-allowed">Sudah Dibooking</button>`
                             : `<button onclick="handlePilihKamar(${item.id})" id="btn-pilih-${item.id}" class="bg-[#3a523a] hover:bg-[#2c402c] text-white text-sm font-bold w-full md:w-auto px-6 py-2.5 rounded-lg transition shadow cursor-pointer">Pilih Kamar</button>`
                         }
                     </div>
@@ -543,6 +547,12 @@
 
                         const btnTxt = document.getElementById(`btn-dates-text-${item.id}`);
                         if(btnTxt) btnTxt.innerText = `${inStr} - ${outStr}`;
+
+                        item._isBooked = false;
+                        const btnPilihWrap = document.getElementById(`btn-pilih-wrap-${item.id}`);
+                        if (btnPilihWrap) {
+                            btnPilihWrap.innerHTML = `<button onclick="handlePilihKamar(${item.id})" id="btn-pilih-${item.id}" class="bg-[#3a523a] hover:bg-[#2c402c] text-white text-sm font-bold w-full md:w-auto px-6 py-2.5 rounded-lg transition shadow cursor-pointer">Pilih Kamar</button>`;
+                        }
 
                         updateAllPrices();
 
@@ -759,6 +769,7 @@
     const paramJenis = urlParams.get('jenis');
     const paramDewasa = urlParams.get('dewasa');
     const paramKamar = urlParams.get('kamar');
+    const paramTgl = urlParams.get('tgl');
 
     if (paramJenis) {
         if(akoInput) akoInput.value = paramJenis;
@@ -770,6 +781,29 @@
         if (valDewasaEl) valDewasaEl.innerText = valDewasa;
     }
     updateGuestLabel();
+
+    if (paramTgl) {
+        const parts = paramTgl.split(' to ');
+        if (parts.length === 2) {
+            const inDate = new Date(parts[0]);
+            const outDate = new Date(parts[1]);
+            if (!isNaN(inDate) && !isNaN(outDate)) {
+                AKOMODASI_DATA.forEach(d => {
+                    const diffTime = Math.abs(outDate - inDate);
+                    const diffNights = Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
+                    
+                    const isBookedStatus = isBooked(d, [inDate, outDate]);
+                    d._isBooked = isBookedStatus;
+                    
+                    // Only pre-fill dates for available accommodations
+                    if (!isBookedStatus) {
+                        window.akoDateState[d.id] = [new Date(inDate), new Date(outDate)];
+                        window.akoMalamState[d.id] = diffNights;
+                    }
+                });
+            }
+        }
+    }
     
     // Initial Filter
     // Allow flatpickr to initialize if it's deferred
