@@ -256,13 +256,18 @@
                 return '';
             }
         }
-        if (url.startsWith('http') || url.startsWith('data:')) return url;
-        if (url.startsWith('[') && url.endsWith(']')) {
-            try {
-                const parsed = JSON.parse(url);
-                if (Array.isArray(parsed) && parsed.length > 0) return formatImgUrl(parsed[0]);
-            } catch(e) {}
+        
+        url = url.replace(/\\/g, '');
+        url = url.replace(/"/g, '');
+        url = url.replace(/'/g, '');
+        url = url.replace(/\[/g, '');
+        url = url.replace(/\]/g, '');
+
+        if (url.includes(',')) {
+            url = url.split(',')[0].trim();
         }
+
+        if (url.startsWith('http') || url.startsWith('data:')) return url;
         return url.startsWith('/') ? url : '/' + url;
     }
 

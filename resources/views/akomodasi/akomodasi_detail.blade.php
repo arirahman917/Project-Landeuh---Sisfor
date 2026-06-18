@@ -148,22 +148,27 @@
         if (!url) return '/images/placeholder.jpg';
         if (typeof url !== 'string') {
             try {
-                // Sometimes Laravel might return an array or object here if it wasn't decoded properly
                 if (Array.isArray(url) && url.length > 0) return resolveImgUrl(url[0]);
                 url = String(url);
             } catch(e) {
                 return '/images/placeholder.jpg';
             }
         }
+        
+        // Bersihkan escape characters jika ada (misal \/ atau \")
+        url = url.replace(/\\/g, '');
+        url = url.replace(/"/g, '');
+        url = url.replace(/'/g, '');
+        url = url.replace(/\[/g, '');
+        url = url.replace(/\]/g, '');
+
+        // Jika url berisi multiple url karena dipisahkan koma
+        if (url.includes(',')) {
+            url = url.split(',')[0].trim();
+        }
+
         if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) {
             return url;
-        }
-        // Handle cases where the string is a JSON array string e.g. '["path.jpg"]'
-        if (url.startsWith('[') && url.endsWith(']')) {
-            try {
-                const parsed = JSON.parse(url);
-                if (Array.isArray(parsed) && parsed.length > 0) return resolveImgUrl(parsed[0]);
-            } catch(e) {}
         }
         return url.startsWith('/') ? url : '/' + url;
     }
