@@ -255,11 +255,11 @@
         const countBookedToday = activeBookingsToday.length;
         const countTersediaToday = Math.max(0, item.slot - countBookedToday);
 
-        // Filter booked dates to show only active current & future bookings (check_out >= today)
+        // Filter booked dates to show only active current & future bookings (check_out > today)
         const currentAndFutureBookings = (item.bookings || []).filter(b => {
             if (b.status === 'failed' || b.status === 'refunded') return false;
             const bOut = parseToLocalDate(b.check_out_date);
-            return bOut.getTime() >= todayTime;
+            return bOut.getTime() > todayTime;
         });
 
         const slotLabel = item.jenis === 'Glamping'
@@ -297,8 +297,9 @@
             ['Untuk berapa orang', `Maks ${item.max_orang} Dewasa`],
             ['Slot',               item.slot],
             ['Harga Weekday',      `[${fmt(item.harga_weekday)}, "Tanpa Breakfast"]`],
-            ['Harga Weekend',      `[${fmt(item.harga_weekend)}, "Free Breakfast 4 pax"]`],
-            ['Harga Highseason',   `[${fmt(item.harga_highseason)}, "Free Breakfast 4 pax"]`],
+            ['Harga Weekend',      `[${fmt(item.harga_weekend)}, "Free Breakfast ${item.max_orang} pax"]`],
+            ['Harga Highseason',   `[${fmt(item.harga_highseason)}, "Free Breakfast ${item.max_orang} pax"]`],
+            ['Catatan Khusus',     Array.isArray(item.catatan) && item.catatan.length > 0 ? item.catatan.join(', ') : '-'],
         ].map(([label, val]) => `
             <tr class="border-b border-stone-100 last:border-0">
                 <td class="py-2 pr-3 text-xs font-semibold text-stone-600 whitespace-nowrap align-top">${label}</td>
@@ -541,7 +542,7 @@
         const item = AKOMODASI_DATA.find(d => d.id === id);
         const images = Array.isArray(item.gambar) ? item.gambar : (item.gambar ? [item.gambar] : []);
         lbImages = images.map(g => formatImgUrl(g));
-        if (lbImages.length === 0) lbImages = ['/images/akomodasi/cabin1/a.png'];
+        if (lbImages.length === 0) lbImages = ['/images/akomodasi/cabin1/a.webp'];
         lbIdx = 0; showLbImg();
         const lb = document.getElementById('lightbox');
         lb.classList.remove('hidden'); lb.classList.add('flex');

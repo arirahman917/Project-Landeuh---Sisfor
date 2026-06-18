@@ -10,12 +10,12 @@
     <!-- Hero Content Wrapper -->
     <div class="relative w-full flex flex-col items-center">
         <!-- Carousel Container -->
-        <div class="relative w-full h-[400px] md:h-[420px] rounded-[1.8rem] overflow-hidden shadow-2xl group z-10">
+        <div class="relative w-full h-[400px] md:h-[420px] md:rounded-[1.8rem] rounded-[1rem] overflow-hidden shadow-2xl group z-10">
             <!-- Carousel Images -->
             <div id="hero-carousel" class="relative w-full h-full bg-gray-200">
-                <img src="{{ asset('images/akomodasi/carousel/a.png') }}" alt="Slide 1" class="absolute inset-0 w-full h-full object-cover object-bottom transition-opacity duration-1000 opacity-100 slide-item">
-                <img src="{{ asset('images/akomodasi/carousel/b.png') }}" alt="Slide 3" class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 opacity-0 slide-item">
-                <img src="{{ asset('images/akomodasi/carousel/c.png') }}" alt="Slide 4" class="absolute inset-0 w-full h-full object-cover object-bottom transition-opacity duration-1000 opacity-0 slide-item">
+                <img src="{{ asset('images/akomodasi/carousel/a.webp') }}" alt="Slide 1" class="absolute inset-0 w-full h-full object-cover object-bottom transition-opacity duration-1000 opacity-100 slide-item">
+                <img src="{{ asset('images/akomodasi/carousel/b.webp') }}" alt="Slide 3" class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 opacity-0 slide-item">
+                <img src="{{ asset('images/akomodasi/carousel/c.webp') }}" alt="Slide 4" class="absolute inset-0 w-full h-full object-cover object-bottom transition-opacity duration-1000 opacity-0 slide-item">
             </div>
 
             <!-- Overlay for text readability -->
@@ -31,10 +31,10 @@
         <!-- Search Panel -->
         <div class="w-[95%] lg:w-[95%] max-w-[94%] z-20 -mt-10 md:-mt-16 relative">
             <!-- Container: Flex gap on mobile for individual rounded boxes, unified bar on desktop -->
-            <div class="flex flex-col md:flex-row items-stretch justify-between gap-3 md:gap-2 md:bg-white/80 md:backdrop-blur-xl md:rounded-[1.5rem] md:shadow-xl md:p-3 md:border md:border-white/50">
+            <div class="grid grid-cols-2 md:flex md:flex-row items-stretch justify-between gap-3 md:gap-2 md:bg-white/80 md:backdrop-blur-xl md:rounded-[1.5rem] md:shadow-xl md:p-3 md:border md:border-white/50">
                 
                 <!-- Jenis Akomodasi -->
-                <div class="flex-1 w-full px-5 py-4 bg-white md:bg-transparent rounded-2xl md:rounded-none shadow-md md:shadow-none border border-gray-100 md:border-0 md:border-r md:border-gray-300 relative" id="akomodasiPickerContainer">
+                <div class="col-span-1 order-1 md:order-1 flex-1 w-full px-3 md:px-5 py-3 md:py-4 bg-white md:bg-transparent rounded-xl md:rounded-none shadow-md md:shadow-none border border-gray-100 md:border-0 md:border-r md:border-gray-300 relative" id="akomodasiPickerContainer">
                     <label class="block text-xs md:text-sm font-semibold text-gray-800 mb-1">Jenis Akomodasi</label>
                     <div class="relative cursor-pointer" id="akomodasiPickerTrigger">
                         <div class="absolute inset-y-0 left-0 flex items-center pointer-events-none text-gray-600">
@@ -53,7 +53,7 @@
                     </div>
 
                     <!-- Custom Dropdown Menu -->
-                    <div class="absolute top-[calc(100%+0.5rem)] left-0 w-full lg:min-w-[220px] bg-white rounded-2xl shadow-[0_15px_40px_-10px_rgba(0,0,0,0.2)] border border-gray-100 py-2 opacity-0 invisible translate-y-[-10px] transition-all duration-300 ease-out z-50" id="akomodasiPickerDropdown">
+                    <div class="absolute top-[calc(100%+0.5rem)] left-0 w-full lg:min-w-[220px] bg-white rounded-xl shadow-[0_15px_40px_-10px_rgba(0,0,0,0.2)] border border-gray-100 py-2 opacity-0 invisible translate-y-[-10px] transition-all duration-300 ease-out z-50" id="akomodasiPickerDropdown">
                         <div class="flex flex-col">
                             <button class="akomodasi-opt w-full text-left px-5 py-3 hover:bg-blue-600 hover:text-white transition-colors text-gray-700 text-sm md:text-base font-medium" data-value="Semua Akomodasi">Semua Akomodasi</button>
                             <button class="akomodasi-opt w-full text-left px-5 py-3 hover:bg-blue-600 hover:text-white transition-colors text-gray-700 text-sm md:text-base font-medium" data-value="Cabin">Cabin</button>
@@ -65,7 +65,7 @@
                 </div>
 
                 <!-- Tanggal Check-in & Check-out -->
-                <div class="flex-[1.5] w-full px-5 py-4 bg-white md:bg-transparent rounded-2xl md:rounded-none shadow-md md:shadow-none border border-gray-100 md:border-0 md:border-r md:border-gray-300">
+                <div class="col-span-2 order-3 md:order-2 flex-[1.5] w-full px-5 py-4 bg-white md:bg-transparent rounded-xl md:rounded-none shadow-md md:shadow-none border border-gray-100 md:border-0 md:border-r md:border-gray-300">
                     <label class="block text-xs md:text-sm font-semibold text-gray-800 mb-1">Tanggal Check-in & Check-out</label>
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 flex items-center pointer-events-none text-gray-600">
@@ -78,7 +78,7 @@
                 </div>
 
                 <!-- Tamu -->
-                <div class="flex-1 w-full px-5 py-4 bg-white md:bg-transparent rounded-2xl md:rounded-none shadow-md md:shadow-none border border-gray-100 md:border-0 relative" id="guestPickerContainer">
+                <div class="col-span-1 order-2 md:order-3 flex-1 w-full px-3 md:px-5 py-3 md:py-4 bg-white md:bg-transparent rounded-xl md:rounded-none shadow-md md:shadow-none border border-gray-100 md:border-0 md:border-r md:border-gray-300 relative" id="guestPickerContainer">
                     <label class="block text-xs md:text-sm font-semibold text-gray-800 mb-1">Jumlah Tamu</label>
                     <div class="relative cursor-pointer" id="guestPickerTrigger">
                         <div class="absolute inset-y-0 left-0 flex items-center pointer-events-none text-gray-600">
@@ -117,8 +117,8 @@
                 </div>
 
                 <!-- Tombol Cari -->
-                <div class="w-full md:w-auto mt-2 md:mt-5 md:mr-4">
-                    <button type="button" id="btnCariHero" class="w-full md:w-auto bg-[#3a523a] hover:bg-[#2c402c] text-white font-bold px-10 py-4 md:py-3.5 rounded-2xl md:rounded-xl flex items-center justify-center gap-2 transition shadow-lg text-lg">
+                <div class="col-span-2 order-4 md:order-4 w-full md:w-auto mt-2 md:mt-0 md:mr-4">
+                    <button type="button" id="btnCariHero" class="w-full md:w-auto bg-[#3a523a] hover:bg-[#2c402c] text-white font-bold px-10 py-4 md:py-3.5 rounded-xl flex items-center justify-center gap-2 transition shadow-lg text-lg">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
                         </svg>

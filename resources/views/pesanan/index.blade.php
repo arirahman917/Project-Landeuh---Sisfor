@@ -124,7 +124,7 @@ function renderOrders(container, bookings) {
             const acc = b.accommodation || {};
             let rawImg = acc.gambar;
             if (Array.isArray(rawImg) && rawImg.length > 0) rawImg = rawImg[0];
-            const imgPath = rawImg ? (rawImg.startsWith('http') || rawImg.startsWith('data:') ? rawImg : '/' + rawImg) : '/images/akomodasi/cabin1/a.png';
+            const imgPath = rawImg ? (rawImg.startsWith('http') || rawImg.startsWith('data:') ? rawImg : '/' + rawImg) : '/images/akomodasi/cabin1/a.webp';
             const dateStr = `${formatDateFriendly(b.check_in_date)} - ${formatDateFriendly(b.check_out_date)}`;
             
             html += `
@@ -172,7 +172,7 @@ function renderOrders(container, bookings) {
             const acc = b.accommodation || {};
             let rawImg = acc.gambar;
             if (Array.isArray(rawImg) && rawImg.length > 0) rawImg = rawImg[0];
-            const imgPath = rawImg ? (rawImg.startsWith('http') || rawImg.startsWith('data:') ? rawImg : '/' + rawImg) : '/images/akomodasi/cabin1/a.png';
+            const imgPath = rawImg ? (rawImg.startsWith('http') || rawImg.startsWith('data:') ? rawImg : '/' + rawImg) : '/images/akomodasi/cabin1/a.webp';
             const dateStr = `${formatDateFriendly(b.check_in_date)} - ${formatDateFriendly(b.check_out_date)}`;
 
             const isRefundPending = b.status === 'refund_pending';
@@ -266,7 +266,7 @@ function renderOrders(container, bookings) {
             const acc = b.accommodation || {};
             let rawImg = acc.gambar;
             if (Array.isArray(rawImg) && rawImg.length > 0) rawImg = rawImg[0];
-            const imgPath = rawImg ? (rawImg.startsWith('http') || rawImg.startsWith('data:') ? rawImg : '/' + rawImg) : '/images/akomodasi/cabin1/a.png';
+            const imgPath = rawImg ? (rawImg.startsWith('http') || rawImg.startsWith('data:') ? rawImg : '/' + rawImg) : '/images/akomodasi/cabin1/a.webp';
             const dateStr = `${formatDateFriendly(b.check_in_date)} - ${formatDateFriendly(b.check_out_date)}`;
             
             html += `
@@ -296,9 +296,26 @@ function renderOrders(container, bookings) {
     }
     html += `</div>`;
 
-    // Modal Pembatalan (Contact WhatsApp)
+    // Modal Konfirmasi Batal
     html += `
-        <div class="modal-overlay" id="modalPembatalan">
+<div class="modal-overlay" id="modalKonfirmasiBatal">
+    <div class="modal-box">
+        <div class="modal-icon" style="background:#fff3f3; color:#e53e3e; margin-bottom: 1rem;">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+        </div>
+        <h4 class="modal-title">Konfirmasi Pembatalan</h4>
+        <p class="modal-desc">Apakah Anda yakin ingin mengajukan pembatalan untuk pesanan ini? Aksi ini tidak dapat dibatalkan.</p>
+        <div class="flex gap-3 justify-center mt-5">
+            <button class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2.5 px-6 rounded-lg transition" id="btnKonfirmasiBatalNo">Kembali</button>
+            <button class="bg-red-500 hover:bg-red-600 text-white font-bold py-2.5 px-6 rounded-lg transition" id="btnKonfirmasiBatalYes">Ya, Batalkan</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Contact WA (Sukses Batal) -->
+<div class="modal-overlay" id="modalPembatalan">
             <div class="modal-box">
                 <div class="modal-icon modal-icon-success">
                     <svg width="36" height="36" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -413,7 +430,26 @@ function initCountdownTimers() {
 }
 
 function ajukanPembatalan(bookingNo) {
-    if (confirm('Apakah Anda yakin ingin mengajukan pembatalan untuk pesanan ini?')) {
+    // Tampilkan Modal Konfirmasi
+    const confirmModal = document.getElementById('modalKonfirmasiBatal');
+    const btnYes = document.getElementById('btnKonfirmasiBatalYes');
+    const btnNo = document.getElementById('btnKonfirmasiBatalNo');
+    
+    confirmModal.classList.add('active');
+
+    // Remove previous event listeners
+    const newBtnYes = btnYes.cloneNode(true);
+    const newBtnNo = btnNo.cloneNode(true);
+    btnYes.parentNode.replaceChild(newBtnYes, btnYes);
+    btnNo.parentNode.replaceChild(newBtnNo, btnNo);
+
+    newBtnNo.onclick = () => {
+        confirmModal.classList.remove('active');
+    };
+
+    newBtnYes.onclick = () => {
+        confirmModal.classList.remove('active');
+        
         // Kirim request AJAX ke database untuk mengubah status menjadi refund_pending
         fetch('/reservasi/update-status', {
             method: 'POST',
@@ -455,7 +491,7 @@ function ajukanPembatalan(bookingNo) {
             console.error('Error:', err);
             alert('Terjadi kesalahan koneksi.');
         });
-    }
+    };
 }
 
 function closeModalPembatalan() {

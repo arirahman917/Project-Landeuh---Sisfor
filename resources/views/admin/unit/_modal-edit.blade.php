@@ -94,10 +94,19 @@
                 </div>
 
                 {{-- Makanan & Minuman --}}
-                <div class="md:col-span-2">
+                <div>
                     <label class="block text-xs font-semibold text-stone-600 mb-1.5 tracking-wider uppercase">Makanan & Minuman</label>
                     <input type="text" id="edit_makanan"
-                        placeholder="Sarapan 4 pax, Air Minum Gratis"
+                        placeholder="Pisahkan dengan koma"
+                        class="w-full px-4 py-2.5 rounded-xl border border-stone-200 bg-white/80 text-stone-800 text-sm placeholder-stone-400
+                               focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition"/>
+                </div>
+
+                {{-- Catatan Khusus --}}
+                <div>
+                    <label class="block text-xs font-semibold text-stone-600 mb-1.5 tracking-wider uppercase">Catatan Khusus</label>
+                    <input type="text" id="edit_catatan"
+                        placeholder="Pisahkan dengan koma"
                         class="w-full px-4 py-2.5 rounded-xl border border-stone-200 bg-white/80 text-stone-800 text-sm placeholder-stone-400
                                focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition"/>
                 </div>
@@ -196,6 +205,7 @@
         document.getElementById('edit_merokok').value      = item.merokok ? '1' : '0';
         document.getElementById('edit_fasilitas').value    = item.fasilitas.join(', ');
         document.getElementById('edit_makanan').value      = item.makanan.join(', ');
+        document.getElementById('edit_catatan').value      = Array.isArray(item.catatan) ? item.catatan.join(', ') : '';
         document.getElementById('edit_maxOrang').value     = item.maxOrang;
         document.getElementById('edit_slot').value         = item.slot;
         document.getElementById('edit_hargaWeekday').value = item.hargaWeekday;
@@ -341,6 +351,7 @@
         formData.append('merokok', document.getElementById('edit_merokok').value === '1' ? '1' : '0');
         formData.append('fasilitas', document.getElementById('edit_fasilitas').value);
         formData.append('makanan', document.getElementById('edit_makanan').value);
+        formData.append('catatan', document.getElementById('edit_catatan').value);
         formData.append('max_orang', document.getElementById('edit_maxOrang').value);
         formData.append('slot', document.getElementById('edit_slot').value);
         formData.append('harga_weekday', document.getElementById('edit_hargaWeekday').value);

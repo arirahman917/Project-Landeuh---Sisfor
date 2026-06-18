@@ -2,7 +2,7 @@
 @section('title', 'Overview Reservasi - Landeuh Village Riverside')
 @section('content')
 <style>
-.ov-page{background:#F8EDD8;min-height:100vh;position:relative}
+.ov-page{background:#F8EDD8;min-height:100vh;position:relative;overflow-x:hidden}
 .ov-header{background:transparent;border-bottom:1px solid rgba(0,0,0,0.08);padding:0.75rem 1.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;backdrop-filter:blur(10px)}
 .ov-logo{display:flex;align-items:center;gap:1rem}
 .ov-logo img{height:40px}
@@ -328,20 +328,21 @@
 
     // Calculate dynamic stay dates & night-by-night pricing
     const datesOfStay = [];
+    let checkinDate = new Date(); // fallback to today
     if (checkinParam) {
         const parts = checkinParam.split('-');
         if (parts.length === 3) {
-            const year = parseInt(parts[0]);
-            const month = parseInt(parts[1]) - 1;
-            const day = parseInt(parts[2]);
-            for (let i = 0; i < malam; i++) {
-                const d = new Date(year, month, day + i);
-                const yyyy = d.getFullYear();
-                const mm = String(d.getMonth() + 1).padStart(2, '0');
-                const dd = String(d.getDate()).padStart(2, '0');
-                datesOfStay.push(`${yyyy}-${mm}-${dd}`);
-            }
+            checkinDate = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
         }
+    }
+
+    for (let i = 0; i < malam; i++) {
+        const d = new Date(checkinDate);
+        d.setDate(d.getDate() + i);
+        const yyyy = d.getFullYear();
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const dd = String(d.getDate()).padStart(2, '0');
+        datesOfStay.push(`${yyyy}-${mm}-${dd}`);
     }
 
     let totalBasePrice = 0;
@@ -484,15 +485,15 @@
 
         let breakdown = `<div class="ov-price-row font-bold"><span>Harga kamar ${akoItem.judul} - ${maxOrang} pax (${malam} malam)</span><span>${fmt(totalBasePrice)}</span></div>`;
         
-        // Detailed night breakdown
         priceBreakdownDetails.forEach((night, index) => {
             const parts = night.date.split('-');
             const d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
             const days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
-            const formattedNight = `${days[d.getDay()]}, ${d.getDate()}/${d.getMonth()+1}`;
+            const mNames = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+            const formattedNight = `${d.getDate()} ${mNames[d.getMonth()]} (${night.label})`;
             
             breakdown += `<div class="ov-price-row text-xs text-stone-500 pl-4 py-0.5 border-l-2 border-amber-200/40">
-                <span>Malam ${index + 1} (${formattedNight} - ${night.label})</span>
+                <span>- ${formattedNight}</span>
                 <span>${fmt(night.price)}</span>
             </div>`;
         });

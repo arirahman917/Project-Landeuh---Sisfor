@@ -466,7 +466,7 @@
                                 </div>
                             </div>
                             <img id="dynRoomImg"
-                                 src="{{ asset('images/akomodasi/cabin1/a.png') }}"
+                                 src="{{ asset('images/akomodasi/cabin1/a.webp') }}"
                                  alt="Foto Kamar"
                                  class="cp-room-img">
                         </div>
@@ -733,7 +733,7 @@
         document.getElementById('dynMakanan').innerHTML =
             akoItem.makanan.map(m => `<li>${m}</li>`).join('');
 
-        // Room photo — images are in /images/akomodasi/{gambar}/a.png
+        // Room photo — images are in /images/akomodasi/{gambar}/a.webp
         if (akoItem.gambar) {
             document.getElementById('dynRoomImg').src =
                 '/images/akomodasi/' + akoItem.gambar + '/a.png';

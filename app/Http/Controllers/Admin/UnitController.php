@@ -38,6 +38,7 @@ class UnitController extends Controller
         
         $data['fasilitas'] = $request->fasilitas ? array_map('trim', explode(',', $request->fasilitas)) : [];
         $data['makanan'] = $request->makanan ? array_map('trim', explode(',', $request->makanan)) : [];
+        $data['catatan'] = $request->catatan ? array_map('trim', explode(',', $request->catatan)) : [];
         $data['merokok'] = $request->merokok == '1';
         
         // Pastikan input angka tidak bernilai null
@@ -46,13 +47,6 @@ class UnitController extends Controller
         $data['harga_weekday'] = (float) ($request->harga_weekday ?: 0);
         $data['harga_weekend'] = (float) ($request->harga_weekend ?: 0);
         $data['harga_highseason'] = (float) ($request->harga_highseason ?: 0);
-        
-        // Default catatan
-        $data['catatan'] = [
-            "Anak di bawah umur 5 tahun Free, maksimal 2 anak.",
-            "Tambahan anak di atas 5 tahun 75k/orang",
-            "Tambahan dewasa di atas 17 tahun 100k/orang"
-        ];
 
         $gambarArray = [];
         if ($request->hasFile('gambar')) {
@@ -72,7 +66,7 @@ class UnitController extends Controller
         }
         
         if (empty($gambarArray)) {
-            $gambarArray[] = 'images/akomodasi/cabin1/a.png'; // default fallback
+            $gambarArray[] = 'images/akomodasi/cabin1/a.webp'; // default fallback
         }
         $data['gambar'] = $gambarArray;
 
@@ -91,6 +85,9 @@ class UnitController extends Controller
         }
         if ($request->has('makanan')) {
             $data['makanan'] = $request->makanan ? array_map('trim', explode(',', $request->makanan)) : [];
+        }
+        if ($request->has('catatan')) {
+            $data['catatan'] = $request->catatan ? array_map('trim', explode(',', $request->catatan)) : [];
         }
         if ($request->has('merokok')) {
             $data['merokok'] = $request->merokok == '1';

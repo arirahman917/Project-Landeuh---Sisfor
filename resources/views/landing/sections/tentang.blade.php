@@ -18,11 +18,11 @@
             <img loading="lazy" src="{{ asset('images/assets_lain/batik.png') }}" alt="Ornamen Batik Kanan Bawah">
         </div>
 
-        <div class="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 relative flex flex-col z-10 h-[85vh] lg:h-[80vh] pb-6">
+        <div class="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 relative flex flex-col z-10 h-full justify-center pb-2 md:pb-6">
             
-            <!-- Content wrapper: flex-1 centers the grid vertically -->
-            <div class="flex-1 flex items-center">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-10 lg:gap-20 items-center w-full">
+            <!-- Content wrapper: flex-1 centers the grid and timeline vertically -->
+            <div class="flex-1 flex flex-col justify-center mt-4">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8 lg:gap-16 items-center w-full">
                 <!-- Kiri: Teks -->
                 <div class="flex flex-col justify-center">
                     <h2 class="text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-900 mb-4 md:mb-6 lg:mb-10 tracking-tight">
@@ -63,49 +63,49 @@
                 </div>
 
                 <!-- Kanan: Gambar -->
-                <div class="relative h-[280px] md:h-[340px] lg:h-[420px] w-full rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl group">
-                    <img loading="lazy" id="tentang-img-1" src="{{ asset('images/akomodasi/glamping_vip/c.png') }}" class="tentang-img-item absolute inset-0 w-full h-full object-cover transition-all duration-1000 opacity-100 scale-100">
-                    <img loading="lazy" id="tentang-img-2" src="{{ asset('images/akomodasi/cabin5/a.png') }}" class="tentang-img-item absolute inset-0 w-full h-full object-cover transition-all duration-1000 opacity-0 scale-105">
-                    <img loading="lazy" id="tentang-img-3" src="{{ asset('images/akomodasi/glamping_vip/d-tentang.png') }}" class="tentang-img-item absolute inset-0 w-full h-full object-cover transition-all duration-1000 opacity-0 scale-105">
-                    <img loading="lazy" id="tentang-img-4" src="{{ asset('images/akomodasi/kedai/a.jpg') }}" class="tentang-img-item absolute inset-0 w-full h-full object-cover transition-all duration-1000 opacity-0 scale-105">
+                <div class="relative h-[240px] md:h-[300px] lg:h-[380px] w-full rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl group">
+                    <img loading="lazy" id="tentang-img-1" src="{{ asset('images/akomodasi/glamping_vip/c.webp') }}" class="tentang-img-item absolute inset-0 w-full h-full object-cover transition-all duration-1000 opacity-100 scale-100">
+                    <img loading="lazy" id="tentang-img-2" src="{{ asset('images/akomodasi/cabin5/a.webp') }}" class="tentang-img-item absolute inset-0 w-full h-full object-cover transition-all duration-1000 opacity-0 scale-105">
+                    <img loading="lazy" id="tentang-img-3" src="{{ asset('images/akomodasi/glamping_vip/d-tentang.webp') }}" class="tentang-img-item absolute inset-0 w-full h-full object-cover transition-all duration-1000 opacity-0 scale-105">
+                    <img loading="lazy" id="tentang-img-4" src="{{ asset('images/akomodasi/kedai/a.png') }}" class="tentang-img-item absolute inset-0 w-full h-full object-cover transition-all duration-1000 opacity-0 scale-105">
                 </div>
-            </div>
-            </div>
-
-            <!-- Bottom Timeline Progress -->
-            <div class="w-full" style="padding-top: 3rem;">
-                <div class="flex w-full gap-2 md:gap-6 justify-between">
-                    <!-- Segment 1 -->
-                    <div class="flex-1 cursor-pointer" onclick="scrollToTentangSegment(0)">
-                        <div class="w-full h-[2px] md:h-[3px] bg-[#d5cebd] relative overflow-hidden mb-2 rounded-full">
-                            <div id="tentang-progress-1" class="absolute top-0 left-0 h-full bg-[#1b1b18] rounded-full transition-all duration-100 ease-out" style="width: 0%;"></div>
+                </div> <!-- END GRID -->
+                
+                <!-- Bottom Timeline Progress -->
+                <div class="w-full mt-4 md:mt-8" style="padding-top: 2rem;">
+                    <div class="flex w-full gap-2 md:gap-6 justify-between">
+                        <!-- Segment 1 -->
+                        <div class="flex-1 cursor-pointer" onclick="scrollToTentangSegment(0)">
+                            <div class="w-full h-[2px] md:h-[3px] bg-[#d5cebd] relative overflow-hidden mb-2 rounded-full">
+                                <div id="tentang-progress-1" class="absolute top-0 left-0 h-full bg-[#1b1b18] rounded-full transition-all duration-100 ease-out" style="width: 0%;"></div>
+                            </div>
+                            <span id="tentang-label-1" class="text-[10px] md:text-sm font-bold text-[#1b1b18] transition-colors duration-300">Tepi Sungai</span>
                         </div>
-                        <span id="tentang-label-1" class="text-[10px] md:text-sm font-bold text-[#1b1b18] transition-colors duration-300">Tepi Sungai</span>
-                    </div>
-                    <!-- Segment 2 -->
-                    <div class="flex-1 cursor-pointer" onclick="scrollToTentangSegment(1)">
-                        <div class="w-full h-[2px] md:h-[3px] bg-[#d5cebd] relative overflow-hidden mb-2 rounded-full">
-                            <div id="tentang-progress-2" class="absolute top-0 left-0 h-full bg-[#1b1b18] rounded-full transition-all duration-100 ease-out" style="width: 0%;"></div>
+                        <!-- Segment 2 -->
+                        <div class="flex-1 cursor-pointer" onclick="scrollToTentangSegment(1)">
+                            <div class="w-full h-[2px] md:h-[3px] bg-[#d5cebd] relative overflow-hidden mb-2 rounded-full">
+                                <div id="tentang-progress-2" class="absolute top-0 left-0 h-full bg-[#1b1b18] rounded-full transition-all duration-100 ease-out" style="width: 0%;"></div>
+                            </div>
+                            <span id="tentang-label-2" class="text-[10px] md:text-sm font-medium text-gray-400 transition-colors duration-300">Cabin & Rumah Industrial</span>
                         </div>
-                        <span id="tentang-label-2" class="text-[10px] md:text-sm font-medium text-gray-400 transition-colors duration-300">Cabin & Rumah Industrial</span>
-                    </div>
-                    <!-- Segment 3 -->
-                    <div class="flex-1 cursor-pointer" onclick="scrollToTentangSegment(2)">
-                        <div class="w-full h-[2px] md:h-[3px] bg-[#d5cebd] relative overflow-hidden mb-2 rounded-full">
-                            <div id="tentang-progress-3" class="absolute top-0 left-0 h-full bg-[#1b1b18] rounded-full transition-all duration-100 ease-out" style="width: 0%;"></div>
+                        <!-- Segment 3 -->
+                        <div class="flex-1 cursor-pointer" onclick="scrollToTentangSegment(2)">
+                            <div class="w-full h-[2px] md:h-[3px] bg-[#d5cebd] relative overflow-hidden mb-2 rounded-full">
+                                <div id="tentang-progress-3" class="absolute top-0 left-0 h-full bg-[#1b1b18] rounded-full transition-all duration-100 ease-out" style="width: 0%;"></div>
+                            </div>
+                            <span id="tentang-label-3" class="text-[10px] md:text-sm font-medium text-gray-400 transition-colors duration-300">Glamping</span>
                         </div>
-                        <span id="tentang-label-3" class="text-[10px] md:text-sm font-medium text-gray-400 transition-colors duration-300">Glamping</span>
-                    </div>
-                    <!-- Segment 4 -->
-                    <div class="flex-1 cursor-pointer" onclick="scrollToTentangSegment(3)">
-                        <div class="w-full h-[2px] md:h-[3px] bg-[#d5cebd] relative overflow-hidden mb-2 rounded-full">
-                            <div id="tentang-progress-4" class="absolute top-0 left-0 h-full bg-[#1b1b18] rounded-full transition-all duration-100 ease-out" style="width: 0%;"></div>
+                        <!-- Segment 4 -->
+                        <div class="flex-1 cursor-pointer" onclick="scrollToTentangSegment(3)">
+                            <div class="w-full h-[2px] md:h-[3px] bg-[#d5cebd] relative overflow-hidden mb-2 rounded-full">
+                                <div id="tentang-progress-4" class="absolute top-0 left-0 h-full bg-[#1b1b18] rounded-full transition-all duration-100 ease-out" style="width: 0%;"></div>
+                            </div>
+                            <span id="tentang-label-4" class="text-[10px] md:text-sm font-medium text-gray-400 transition-colors duration-300">Kedai</span>
                         </div>
-                        <span id="tentang-label-4" class="text-[10px] md:text-sm font-medium text-gray-400 transition-colors duration-300">Kedai</span>
                     </div>
                 </div>
-            </div>
 
+            </div>
         </div>
     </div>
 </section>

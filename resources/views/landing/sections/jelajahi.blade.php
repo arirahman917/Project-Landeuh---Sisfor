@@ -34,17 +34,17 @@
                     $items = [
                         [
                             'label' => 'Cabin',
-                            'image' => asset('images/akomodasi/cabin1/a.png'),
+                            'image' => asset('images/akomodasi/cabin1/a.webp'),
                             'href'  => '#cabin',
                         ],
                         [
                             'label' => 'Rumah Industrial',
-                            'image' => asset('images/akomodasi/industrial2/a.png'),
+                            'image' => asset('images/akomodasi/industrial2/a.webp'),
                             'href'  => '#industrial',
                         ],
                         [
                             'label' => 'Glamping',
-                            'image' => asset('images/akomodasi/glamping_vip/c.png'),
+                            'image' => asset('images/akomodasi/glamping_vip/c.webp'),
                             'href'  => '#glamping',
                         ],
                     ];

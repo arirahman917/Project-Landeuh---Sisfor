@@ -8,8 +8,8 @@
 {{-- Search Bar Fixed --}}
 <div id="searchBarFixed" class="sticky top-0 z-40">
     <div class="max-w-6xl mx-auto px-4">
-        <div class="flex flex-col md:flex-row items-stretch gap-2 md:gap-3 backdrop-blur-md bg-white/40 rounded-b-2xl px-6 py-4 border-x border-b border-gray-200 shadow-sm transition-all duration-300">
-            <div class="flex-1 bg-gray-50 rounded-xl px-4 py-2.5 border border-gray-200 relative cursor-pointer" id="akomodasiPickerContainer">
+        <div class="grid grid-cols-2 md:flex md:flex-row items-stretch gap-2 md:gap-3 backdrop-blur-md bg-white/40 rounded-b-2xl px-4 md:px-6 py-4 border-x border-b border-gray-200 shadow-sm transition-all duration-300">
+            <div class="col-span-1 order-1 md:order-1 flex-1 bg-gray-50 rounded-xl px-3 md:px-4 py-2.5 border border-gray-200 relative cursor-pointer" id="akomodasiPickerContainer">
                 <div class="flex items-center gap-2 h-full" id="akomodasiPickerTrigger">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg>
                     <div class="flex-1 text-sm text-gray-700 select-none truncate" id="akomodasiPickerLabel">Semua Akomodasi</div>
@@ -29,12 +29,12 @@
                 </div>
                 <input type="hidden" id="filterJenis" value="Semua Akomodasi">
             </div>
-            <div class="flex-[1.4] flex items-center gap-2 bg-gray-50 rounded-xl px-4 py-2.5 border border-gray-200">
+            <div class="col-span-2 order-3 md:order-2 flex-[1.4] flex items-center gap-2 bg-gray-50 rounded-xl px-4 py-2.5 border border-gray-200">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/></svg>
                 <input type="text" id="dateRangePicker" class="bg-transparent text-sm text-gray-700 outline-none flex-1" placeholder="Pilih Tanggal">
             </div>
             
-            <div class="flex-1 bg-gray-50 rounded-xl px-4 py-2.5 border border-gray-200 relative" id="guestPickerContainer">
+            <div class="col-span-1 order-2 md:order-3 flex-1 bg-gray-50 rounded-xl px-3 md:px-4 py-2.5 border border-gray-200 relative" id="guestPickerContainer">
                 <div class="flex items-center gap-2 cursor-pointer h-full" id="guestPickerTrigger">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
                     <span class="text-sm text-gray-700" id="guestPickerLabel">2 Tamu</span>
@@ -62,7 +62,7 @@
                 </div>
             </div>
 
-            <button id="btnCari" class="bg-[#3a523a] hover:bg-[#2c402c] text-white font-bold px-8 py-3 rounded-xl flex items-center justify-center gap-2 transition shadow-lg text-sm whitespace-nowrap">
+            <button id="btnCari" class="col-span-2 order-4 md:order-4 w-full md:w-auto bg-[#3a523a] hover:bg-[#2c402c] text-white font-bold px-8 py-3 rounded-xl flex items-center justify-center gap-2 transition shadow-lg text-sm whitespace-nowrap">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
                 Cari
             </button>
@@ -95,14 +95,6 @@
 </div>
 
 <style>
-.price-tooltip{display:none;position:absolute;right:0;bottom:100%;margin-bottom:0.5rem;background:#fff;border:1px solid #ddd;border-radius:0.75rem;padding:0.75rem 1rem;box-shadow:0 10px 25px rgba(0,0,0,0.1);z-index:50;min-width:240px;font-size:0.85rem}
-.price-tooltip table{width:100%}
-.price-tooltip td{padding:4px 0}
-.price-tooltip .label{font-weight:600;padding-right:1rem}
-.price-tooltip .weekday{color:#3a523a}
-.price-tooltip .weekend{color:#b8860b}
-.price-tooltip .highseason{color:#8b0000}
-.price-area:hover .price-tooltip{display:block}
 .ako-card{background:rgba(253,246,227,0.55);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.4);border-radius:1rem;box-shadow:0 2px 12px rgba(0,0,0,0.06);transition:transform 0.2s,box-shadow 0.2s;min-height:250px;position:relative}
 .ako-card:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(0,0,0,0.1)}
 .img-grid{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:5fr 3fr;gap:2px;width:300px;min-width:300px;align-self:stretch;overflow:hidden;border-radius:0.75rem 0 0 0.75rem;cursor:pointer}
@@ -112,7 +104,30 @@
 .img-grid img:hover{transform:scale(1.05)}
 .img-grid .overlay-label{position:absolute;inset:0;background:rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.75rem;font-weight:600}
 @media(max-width:768px){.img-grid{width:100%;height:220px;border-radius:0.75rem 0.75rem 0 0}}
+/* Price Info Modal */
+.price-info-modal-overlay{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.25s ease}
+.price-info-modal-overlay.active{opacity:1;pointer-events:auto}
+.price-info-modal{background:#fff;border-radius:1.25rem;padding:1.5rem;box-shadow:0 20px 60px rgba(0,0,0,0.2);max-width:380px;width:90%;transform:scale(0.92);transition:transform 0.25s ease}
+.price-info-modal-overlay.active .price-info-modal{transform:scale(1)}
+.price-info-row{display:flex;align-items:center;gap:0.75rem;padding:0.65rem 0;border-bottom:1px solid #f3f0e8}
+.price-info-row:last-child{border-bottom:none}
+.price-info-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.price-info-label{font-weight:600;font-size:0.85rem;min-width:90px}
+.price-info-price{font-weight:700;font-size:0.9rem;flex:1;text-align:right}
+.price-info-breakfast{font-size:0.75rem;color:#888;margin-top:2px}
 </style>
+
+{{-- Price Info Modal --}}
+<div id="priceInfoModalOverlay" class="price-info-modal-overlay" onclick="closePriceInfoModal(event)">
+    <div class="price-info-modal" onclick="event.stopPropagation()">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-base font-bold text-gray-900">Detail Harga</h3>
+            <button onclick="closePriceInfoModal()" class="w-7 h-7 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-500 transition">&times;</button>
+        </div>
+        <div id="priceInfoModalContent"></div>
+        <div class="text-[10px] text-gray-400 mt-3 text-right italic">/kamar/malam</div>
+    </div>
+</div>
 @endsection
 
 @push('scripts')
@@ -142,7 +157,7 @@
         const item = AKOMODASI_DATA.find(d => d.id === id);
         const images = Array.isArray(item.gambar) ? item.gambar : (item.gambar ? [item.gambar] : []);
         lbImages = images.map(g => resolveImgUrl(g));
-        if(lbImages.length===0) lbImages=['/images/akomodasi/cabin1/a.png'];
+        if(lbImages.length===0) lbImages=['/images/akomodasi/cabin1/a.webp'];
         lbIdx=0;
         showLbImg();
         document.getElementById('lightbox').classList.remove('hidden');
@@ -226,6 +241,7 @@
             const priceEl = document.getElementById(`price-val-${item.id}`);
             const rateLabel = document.getElementById(`rate-label-${item.id}`);
             const rateBadge = document.getElementById(`rate-badge-${item.id}`);
+            const breakfastBadge = document.getElementById(`breakfast-badge-${item.id}`);
             if (priceEl) {
                 const total = calculateDynamicTotal(item, nights);
                 priceEl.innerHTML = fmt(total);
@@ -239,8 +255,70 @@
                 rateBadge.textContent = rate.label;
                 rateBadge.style.backgroundColor = rate.color;
             }
+            // Update breakfast badge visibility
+            const rate = getActiveRate(item);
+            const breakfastContainer = document.getElementById(`breakfast-badge-${item.id}`);
+            const makananSarapanItems = document.querySelectorAll(`#makanan-list-${item.id} .makanan-sarapan`);
+            
+            if (rate.label === 'Weekday') {
+                // Remove breakfast badge if exists
+                if (breakfastContainer) breakfastContainer.remove();
+                // Hide sarapan from makanan & minuman list
+                makananSarapanItems.forEach(el => el.style.display = 'none');
+            } else {
+                // Add breakfast badge if not exists
+                const priceAreaDiv = document.getElementById(`price-val-${item.id}`)?.closest('.flex.flex-col.items-end');
+                if (priceAreaDiv && !document.getElementById(`breakfast-badge-${item.id}`)) {
+                    const badge = document.createElement('div');
+                    badge.id = `breakfast-badge-${item.id}`;
+                    badge.className = 'flex items-center gap-1 mt-1 px-2 py-0.5 rounded-md bg-amber-50 border border-amber-200/60';
+                    badge.innerHTML = `<span class="text-[10px]">\ud83c\udf73</span><span class="text-[10px] font-semibold text-amber-700">Free Breakfast ${item.maxOrang} pax</span>`;
+                    priceAreaDiv.appendChild(badge);
+                }
+                // Show sarapan from makanan & minuman list
+                makananSarapanItems.forEach(el => el.style.display = 'block');
+            }
         });
     }
+
+    // Price Info Modal
+    window.openPriceInfoModal = function(id) {
+        const item = AKOMODASI_DATA.find(d => d.id === id);
+        if (!item) return;
+        const pax = item.maxOrang || item.max_orang || 4;
+        const content = document.getElementById('priceInfoModalContent');
+        content.innerHTML = `
+            <div class="price-info-row">
+                <div class="price-info-dot" style="background:#f97316"></div>
+                <div>
+                    <div class="price-info-label" style="color:#f97316">Weekday</div>
+                    <div class="price-info-breakfast text-gray-400">Tanpa Breakfast</div>
+                </div>
+                <div class="price-info-price text-gray-600">${fmt(item.hargaWeekday)}</div>
+            </div>
+            <div class="price-info-row">
+                <div class="price-info-dot" style="background:#3b82f6"></div>
+                <div>
+                    <div class="price-info-label" style="color:#3b82f6">Weekend</div>
+                    <div class="price-info-breakfast text-gray-500">Free Breakfast ${pax} pax</div>
+                </div>
+                <div class="price-info-price text-gray-900">${fmt(item.hargaWeekend)}</div>
+            </div>
+            <div class="price-info-row">
+                <div class="price-info-dot" style="background:#ef4444"></div>
+                <div>
+                    <div class="price-info-label" style="color:#ef4444">Highseason</div>
+                    <div class="price-info-breakfast text-gray-500">Free Breakfast ${pax} pax</div>
+                </div>
+                <div class="price-info-price text-gray-900">${fmt(item.hargaHighseason)}</div>
+            </div>
+        `;
+        document.getElementById('priceInfoModalOverlay').classList.add('active');
+    };
+    window.closePriceInfoModal = function(e) {
+        if (e && e.target !== document.getElementById('priceInfoModalOverlay')) return;
+        document.getElementById('priceInfoModalOverlay').classList.remove('active');
+    };
 
     // Global state for nights
     window.akoMalamState = window.akoMalamState || {};
@@ -268,18 +346,23 @@
     };
 
     function renderCard(item){
-        const imgs=['a.png','b.png','c.png','d.png'];
+        const safeFasilitas = Array.isArray(item.fasilitas) ? item.fasilitas : [];
+        const safeMakanan = Array.isArray(item.makanan) ? item.makanan : [];
+        const safeCatatan = Array.isArray(item.catatan) ? item.catatan : [];
+
         const slotHtml = item.slot > 1 ? `<span class="flex items-center gap-1.5 font-medium whitespace-nowrap"><iconify-icon icon="lucide:tent" class="text-lg"></iconify-icon> Sisa ${item.slot} Unit Tenda</span>` : '';
 
         let fasHtml='<div class="grid grid-cols-[auto_1fr] gap-x-8 gap-y-0.5 text-xs text-gray-700">';
-        item.fasilitas.forEach(f=>fasHtml+=`<div>• ${f}</div>`);fasHtml+='</div>';
+        safeFasilitas.forEach(f=>fasHtml+=`<div>• ${f}</div>`);fasHtml+='</div>';
 
-        let makHtml='<div class="flex flex-col gap-0.5 text-xs text-gray-700">';
-        item.makanan.forEach(m=>makHtml+=`<div>• ${m}</div>`);makHtml+='</div>';
+        let makHtml=`<div class="flex flex-col gap-0.5 text-xs text-gray-700" id="makanan-list-${item.id}">`;
+        safeMakanan.forEach(m=>{
+            const isSarapan = m.toLowerCase().includes('sarapan') || m.toLowerCase().includes('breakfast');
+            makHtml+=`<div class="${isSarapan ? 'makanan-sarapan' : ''}">• ${m}</div>`;
+        });
+        makHtml+='</div>';
 
-        let catHtml=item.catatan.map((c,i)=>{
-            return `<div class="flex items-start gap-2 text-[11.5px] text-gray-800 font-medium"><span class="mt-[1px]"><iconify-icon icon="ph:hand-pointing-bold" class="text-sm"></iconify-icon></span><span class="leading-snug">${c}</span></div>`;
-        }).join('');
+        let catHtml = safeCatatan.length > 0 ? safeCatatan.map(c => `<div class="flex items-start gap-2 text-[11.5px] text-gray-800 font-medium"><span class="mt-[1px]"><iconify-icon icon="ph:hand-pointing-bold" class="text-sm"></iconify-icon></span><span class="leading-snug">${c}</span></div>`).join('') : '<div class="text-xs text-gray-500 italic">Tidak ada catatan khusus</div>';
 
         return `
         <div class="ako-card flex flex-col md:flex-row" data-id="${item.id}">
@@ -311,12 +394,12 @@
                         <div class="flex flex-col gap-1.5">${catHtml}</div>
                     </div>
                 </div>
-                <div class="flex items-center justify-between pt-1">
-                    <div class="flex flex-col md:flex-row items-start md:items-center gap-1.5 md:gap-4 text-xs text-gray-700 font-medium">
+                <div class="flex items-start md:items-center justify-between pt-1">
+                    <div class="flex flex-col md:flex-row items-start md:items-center gap-1.5 md:gap-4 text-xs text-gray-700 font-medium pt-2">
                         <span class="flex items-center gap-1.5 whitespace-nowrap"><iconify-icon icon="lucide:user-check" class="text-base"></iconify-icon> Maks ${item.maxOrang} Dewasa</span>
                         ${slotHtml}
                     </div>
-                    <div class="flex flex-col items-end gap-2.5">
+                    <div class="flex flex-col items-end gap-2.5 mt-4 md:mt-0">
                         <!-- Malam Counter -->
                         <div class="flex items-center gap-2 bg-white/60 border border-gray-200 rounded-lg p-1 shadow-sm">
                             <button type="button" onclick="changeMalam(${item.id}, -1)" class="w-6 h-6 flex items-center justify-center bg-white rounded-md border border-gray-200 text-gray-600 hover:text-black hover:bg-gray-50 transition">-</button>
@@ -325,17 +408,9 @@
                         </div>
                         
                         <div class="flex items-center gap-2 md:gap-4">
-                            <div class="price-area relative flex flex-col items-end">
+                            <div class="flex flex-col items-end">
                                 <div class="flex items-center gap-1 md:gap-1.5">
-                                    <div class="price-tooltip">
-                                        <table>
-                                            <tr><td class="label weekday">Weekday</td><td class="text-right font-semibold">${fmt(item.hargaWeekday)}</td></tr>
-                                            <tr><td class="label weekend">Weekend</td><td class="text-right font-semibold">${fmt(item.hargaWeekend)}</td></tr>
-                                            <tr><td class="label highseason">Highseason</td><td class="text-right font-semibold">${fmt(item.hargaHighseason)}</td></tr>
-                                        </table>
-                                        <div class="text-[10px] text-gray-400 mt-2 text-right italic">/kamar/malam</div>
-                                    </div>
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 md:w-4 md:h-4 text-gray-400 cursor-pointer shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 md:w-4 md:h-4 text-gray-400 cursor-pointer shrink-0 hover:text-[#B5793A] transition" fill="currentColor" viewBox="0 0 24 24" onclick="openPriceInfoModal(${item.id})"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
                                     <div class="flex flex-col items-end">
                                         <div class="flex items-center gap-1.5 mb-0.5">
                                             <span id="rate-badge-${item.id}" class="text-[9px] font-bold text-white px-1.5 py-0.5 rounded" style="background-color:${getActiveRate(item).color}">${getActiveRate(item).label}</span>
@@ -344,8 +419,12 @@
                                     </div>
                                 </div>
                                 <div class="text-[9px] md:text-[10px] text-gray-400 italic">Total Harga</div>
+                                ${getActiveRate(item).label !== 'Weekday' ? `<div id="breakfast-badge-${item.id}" class="flex items-center gap-1 mt-1 px-2 py-0.5 rounded-md bg-amber-50 border border-amber-200/60"><span class="text-[10px]">🍳</span><span class="text-[10px] font-semibold text-amber-700">Free Breakfast ${item.maxOrang} pax</span></div>` : ''}
                             </div>
-                            <button onclick="handlePilihKamar(${item.id}, ${window.akoMalamState[item.id] || 1})" id="btn-pilih-${item.id}" class="bg-[#3a523a] hover:bg-[#2c402c] text-white text-xs md:text-sm font-bold px-4 md:px-5 py-2 md:py-2.5 rounded-lg transition shadow whitespace-nowrap cursor-pointer">Pilih Kamar</button>
+                            ${item._isBooked 
+                                ? `<button disabled class="bg-gray-400 text-white text-xs md:text-sm font-bold px-4 md:px-5 py-2 md:py-2.5 rounded-lg shadow whitespace-nowrap cursor-not-allowed">Telah Dibooking</button>`
+                                : `<button onclick="handlePilihKamar(${item.id}, ${window.akoMalamState[item.id] || 1})" id="btn-pilih-${item.id}" class="bg-[#3a523a] hover:bg-[#2c402c] text-white text-xs md:text-sm font-bold px-4 md:px-5 py-2 md:py-2.5 rounded-lg transition shadow whitespace-nowrap cursor-pointer">Pilih Kamar</button>`
+                            }
                         </div>
                     </div>
                 </div>
@@ -358,6 +437,7 @@
         const pageData=filteredData.slice(start,start+PER_PAGE);
         document.getElementById('akomodasiList').innerHTML=pageData.map(renderCard).join('');
         renderPagination();
+        updateAllPrices(); // Ensure dynamic logic runs on newly rendered cards
         window.scrollTo({top:0,behavior:'smooth'});
     }
 
@@ -524,15 +604,15 @@
             // Tamu (Kapasitas Akomodasi >= Jumlah Tamu)
             let matchTamu = (d.maxOrang >= targetDewasa);
             
-            // Tanggal
-            let matchTgl = true;
+            // Tanggal (Hanya Tandai)
+            d._isBooked = false;
             if (fpDates && fpDates.length > 0) {
                 if (isBooked(d, fpDates, targetKamar)) {
-                    matchTgl = false;
+                    d._isBooked = true;
                 }
             }
 
-            return matchJenis && matchTamu && matchTgl;
+            return matchJenis && matchTamu;
         });
 
         currentPage = 1;
@@ -575,7 +655,8 @@
     }
 
     // Initialize Flatpickr
-    const fpInstance = flatpickr("#dateRangePicker", {
+    const dateRangeElement = document.getElementById("dateRangePicker");
+    const fpInstance = dateRangeElement ? flatpickr(dateRangeElement, {
         mode: "range",
         dateFormat: "Y-m-d",
         altInput: true,
@@ -607,7 +688,7 @@
                 updateAllPrices();
             }
         }
-    });
+    }) : null;
 
     // Parse URL parameters
     const urlParams = new URLSearchParams(window.location.search);
@@ -620,8 +701,18 @@
         if(akoInput) akoInput.value = paramJenis;
         if(akoLabel) akoLabel.innerText = paramJenis;
     }
-    if (paramTgl) {
-        fpInstance.setDate(paramTgl.split(' to '), true);
+    if (paramTgl && fpInstance && typeof fpInstance.setDate === 'function') {
+        try {
+            fpInstance.setDate(paramTgl.split(' to '), true);
+        } catch (e) {
+            console.error("Flatpickr setDate error:", e);
+        }
+    } else if (paramTgl && Array.isArray(fpInstance) && fpInstance.length > 0 && typeof fpInstance[0].setDate === 'function') {
+        try {
+            fpInstance[0].setDate(paramTgl.split(' to '), true);
+        } catch (e) {
+            console.error("Flatpickr setDate error:", e);
+        }
     }
     if (paramDewasa) {
         valDewasa = parseInt(paramDewasa) || 2;

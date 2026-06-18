@@ -166,9 +166,8 @@
             border-bottom-right-radius: 1rem;
         }
 
-        /* Subtle left accent on open answer */
+        /* Subtle left accent on open answer (Removed per user request) */
         .faq-item.is-open .faq-panel > div {
-            border-left: 3px solid rgba(181,121,58,0.5);
             margin-left: 0.25rem;
             padding-left: 1.25rem;
         }

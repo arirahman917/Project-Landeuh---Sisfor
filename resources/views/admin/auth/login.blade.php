@@ -20,7 +20,7 @@
     <div class="absolute inset-0 z-0">
         {{-- Ganti URL ini dengan asset foto asli (storage/public atau Unsplash lokal) --}}
         <img
-            src="{{ asset('images/akomodasi/carousel/a.png') }}"
+            src="{{ asset('images/akomodasi/carousel/a.webp') }}"
             alt="Background akomodasi"
             class="w-full h-full object-cover"
         />
