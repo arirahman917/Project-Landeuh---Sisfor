@@ -86,28 +86,30 @@
                 <div class="md:col-span-2">
                     <label class="block text-xs font-semibold text-stone-600 mb-1.5 tracking-wider uppercase">Fasilitas Kamar</label>
                     <input type="text" id="tambah_fasilitas"
-                        placeholder="Pisahkan dengan koma: TV kabel, AC, Dapur, Balkon"
+                        placeholder="TV kabel; AC; Dapur; Balkon"
                         class="w-full px-4 py-2.5 rounded-xl border border-stone-200 bg-white/80 text-stone-800 text-sm placeholder-stone-400
                                focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition"/>
-                    <p class="text-[10px] text-stone-400 mt-1">Pisahkan setiap fasilitas dengan tanda koma (,)</p>
+                    <p class="text-[10px] text-stone-400 mt-1">Pisahkan setiap fasilitas dengan tanda titik koma (;)</p>
                 </div>
 
                 {{-- Makanan & Minuman --}}
                 <div>
                     <label class="block text-xs font-semibold text-stone-600 mb-1.5 tracking-wider uppercase">Makanan & Minuman</label>
                     <input type="text" id="tambah_makanan"
-                        placeholder="Pisahkan dengan koma"
+                        placeholder="Air Mineral; Kopi; Teh"
                         class="w-full px-4 py-2.5 rounded-xl border border-stone-200 bg-white/80 text-stone-800 text-sm placeholder-stone-400
                                focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition"/>
+                    <p class="text-[10px] text-stone-400 mt-1">Pisahkan dengan tanda titik koma (;)</p>
                 </div>
 
                 {{-- Catatan Khusus --}}
                 <div>
                     <label class="block text-xs font-semibold text-stone-600 mb-1.5 tracking-wider uppercase">Catatan Khusus</label>
                     <input type="text" id="tambah_catatan"
-                        placeholder="Pisahkan dengan koma"
+                        placeholder="Anak di bawah 5 tahun gratis; Dilarang membawa hewan peliharaan"
                         class="w-full px-4 py-2.5 rounded-xl border border-stone-200 bg-white/80 text-stone-800 text-sm placeholder-stone-400
                                focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition"/>
+                    <p class="text-[10px] text-stone-400 mt-1">Pisahkan dengan tanda titik koma (;)</p>
                 </div>
 
                 {{-- Untuk Berapa Orang --}}

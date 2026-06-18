@@ -332,9 +332,6 @@
         const lbl = document.getElementById(`lbl-malam-${id}`);
         if(lbl) lbl.innerText = `${n} Malam`;
 
-        const btn = document.getElementById(`btn-pilih-${id}`);
-        if(btn) btn.href = `/reservasi/overview/${id}?malam=${n}`;
-
         const priceEl = document.getElementById(`price-val-${id}`);
         if(priceEl) {
             const item = AKOMODASI_DATA.find(d => d.id == id);
@@ -352,13 +349,13 @@
 
         const slotHtml = item.slot > 1 ? `<span class="flex items-center gap-1.5 font-medium whitespace-nowrap"><iconify-icon icon="lucide:tent" class="text-lg"></iconify-icon> Sisa ${item.slot} Unit Tenda</span>` : '';
 
-        let fasHtml='<div class="grid grid-cols-[auto_1fr] gap-x-8 gap-y-0.5 text-xs text-gray-700">';
-        safeFasilitas.forEach(f=>fasHtml+=`<div>• ${f}</div>`);fasHtml+='</div>';
+        let fasHtml='<div class="columns-1 xl:columns-2 gap-x-6 space-y-1.5 text-xs text-gray-700">';
+        safeFasilitas.forEach(f=>fasHtml+=`<div class="flex items-start gap-1.5 break-words leading-relaxed break-inside-avoid"><span class="flex-shrink-0">•</span><span class="flex-1">${f}</span></div>`);fasHtml+='</div>';
 
-        let makHtml=`<div class="flex flex-col gap-0.5 text-xs text-gray-700" id="makanan-list-${item.id}">`;
+        let makHtml=`<div class="flex flex-col gap-1 text-xs text-gray-700" id="makanan-list-${item.id}">`;
         safeMakanan.forEach(m=>{
             const isSarapan = m.toLowerCase().includes('sarapan') || m.toLowerCase().includes('breakfast');
-            makHtml+=`<div class="${isSarapan ? 'makanan-sarapan' : ''}">• ${m}</div>`;
+            makHtml+=`<div class="flex items-start gap-1.5 break-words leading-relaxed ${isSarapan ? 'makanan-sarapan' : ''}"><span class="flex-shrink-0">•</span><span class="flex-1">${m}</span></div>`;
         });
         makHtml+='</div>';
 
@@ -385,9 +382,9 @@
                             ${item.merokok?'<iconify-icon icon="lucide:cigarette" class="text-base"></iconify-icon> Boleh merokok':'<iconify-icon icon="lucide:cigarette-off" class="text-base"></iconify-icon> Tidak boleh merokok'}
                         </span>
                     </div>
-                    <div class="flex flex-col md:flex-row gap-4 mt-3">
-                        <div class="flex-1"><p class="text-xs font-bold text-gray-800 mb-1">Fasilitas Kamar:</p>${fasHtml}</div>
-                        <div class="flex-1"><p class="text-xs font-bold text-gray-800 mb-1">Makanan & Minuman:</p>${makHtml}</div>
+                    <div class="flex flex-col md:flex-row gap-6 mt-3">
+                        <div class="w-full md:w-[60%] xl:w-[65%]"><p class="text-xs font-bold text-gray-800 mb-1.5">Fasilitas Kamar:</p>${fasHtml}</div>
+                        <div class="w-full md:w-[40%] xl:w-[35%]"><p class="text-xs font-bold text-gray-800 mb-1.5">Makanan & Minuman:</p>${makHtml}</div>
                     </div>
                     <div class="mt-3 p-3 bg-gradient-to-r from-[#e3d1b3]/60 to-transparent rounded-lg">
                         <p class="text-xs font-bold text-gray-800 mb-2">Catatan:</p>
@@ -423,7 +420,7 @@
                             </div>
                             ${item._isBooked 
                                 ? `<button disabled class="bg-gray-400 text-white text-xs md:text-sm font-bold px-4 md:px-5 py-2 md:py-2.5 rounded-lg shadow whitespace-nowrap cursor-not-allowed">Telah Dibooking</button>`
-                                : `<button onclick="handlePilihKamar(${item.id}, ${window.akoMalamState[item.id] || 1})" id="btn-pilih-${item.id}" class="bg-[#3a523a] hover:bg-[#2c402c] text-white text-xs md:text-sm font-bold px-4 md:px-5 py-2 md:py-2.5 rounded-lg transition shadow whitespace-nowrap cursor-pointer">Pilih Kamar</button>`
+                                : `<button onclick="handlePilihKamar(${item.id})" id="btn-pilih-${item.id}" class="bg-[#3a523a] hover:bg-[#2c402c] text-white text-xs md:text-sm font-bold px-4 md:px-5 py-2 md:py-2.5 rounded-lg transition shadow whitespace-nowrap cursor-pointer">Pilih Kamar</button>`
                             }
                         </div>
                     </div>
@@ -726,7 +723,8 @@
     setTimeout(doFilter, 100);
 
     // ── Pilih Kamar — auth gate ──────────────────────────────────
-    window.handlePilihKamar = function(itemId, malam) {
+    window.handlePilihKamar = function(itemId) {
+        const malam = window.akoMalamState[itemId] || 1;
         const isLoggedIn = {{ Auth::check() ? 'true' : 'false' }};
         
         const fp = document.getElementById('dateRangePicker')?._flatpickr;

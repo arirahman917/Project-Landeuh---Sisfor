@@ -280,17 +280,18 @@
 
     // Parse checkin date parameter (menghindari pergeseran timezone UTC)
     const checkinParam = params.get('checkin');
+    let displayDate = new Date();
     if (checkinParam) {
         const dateParts = checkinParam.split('-');
         if (dateParts.length === 3) {
-            const d = new Date(parseInt(dateParts[0]), parseInt(dateParts[1]) - 1, parseInt(dateParts[2]));
-            const days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
-            const mNames = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
-            if (!isNaN(d.getTime())) {
-                const formatted = `${days[d.getDay()]}, ${d.getDate()} ${mNames[d.getMonth()]} ${d.getFullYear()}`;
-                document.getElementById('dynCheckin').textContent = formatted;
-            }
+            displayDate = new Date(parseInt(dateParts[0]), parseInt(dateParts[1]) - 1, parseInt(dateParts[2]));
         }
+    }
+    const days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+    const mNames = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+    if (!isNaN(displayDate.getTime())) {
+        const formatted = `${days[displayDate.getDay()]}, ${displayDate.getDate()} ${mNames[displayDate.getMonth()]} ${displayDate.getFullYear()}`;
+        document.getElementById('dynCheckin').textContent = formatted;
     }
 
     // Find the selected accommodation from database variables passed from controller

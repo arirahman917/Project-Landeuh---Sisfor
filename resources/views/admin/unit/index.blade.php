@@ -73,7 +73,7 @@
         <div id="sortDisplay"
             class="flex items-center min-w-[180px] pl-9 pr-8 py-2.5 rounded-xl border border-stone-200 bg-white/80 text-stone-700 text-sm font-medium
                    hover:bg-amber-50 hover:border-amber-300 transition cursor-pointer">
-            Terbaru
+            Nama A → Z
         </div>
         <span class="absolute inset-y-0 left-3 flex items-center text-stone-400 pointer-events-none">
             <iconify-icon icon="lucide:arrow-up-down" class="text-sm"></iconify-icon>
@@ -91,7 +91,7 @@
                 <div class="px-4 py-2.5 text-sm font-medium text-stone-600 hover:bg-amber-50 hover:text-amber-700 cursor-pointer transition-colors" data-value="harga-desc">Harga Tertinggi</div>
             </div>
         </div>
-        <input type="hidden" id="sortSelect" value="terbaru">
+        <input type="hidden" id="sortSelect" value="nama-az">
     </div>
 
     {{-- Spacer --}}
@@ -194,7 +194,7 @@
     let hashPage    = parseInt(window.location.hash.replace('#page=', ''));
     let currentPage = hashPage ? hashPage : 1;
     let filteredData = [];
-    let sortMode     = 'terbaru';
+    let sortMode     = sessionStorage.getItem('adminSortMode') || 'nama-az';
     const basePath   = "{{ asset('images/akomodasi') }}";
     const imgs       = ['a.png','b.png','c.png','d.png'];
 
@@ -530,11 +530,15 @@
     // ── Sort dropdown ──────────────────────────────────────────
     document.getElementById('sortSelect').addEventListener('change', function() {
         sortMode = this.value;
+        sessionStorage.setItem('adminSortMode', sortMode);
         applyFilter();
     });
 
     document.getElementById('searchInput').addEventListener('input', applyFilter);
-    document.getElementById('filterJenisAdmin').addEventListener('change', applyFilter);
+    document.getElementById('filterJenisAdmin').addEventListener('change', function() {
+        sessionStorage.setItem('adminFilterJenis', this.value);
+        applyFilter();
+    });
 
     // ── Lightbox ───────────────────────────────────────────────
     let lbImages = [], lbIdx = 0;
@@ -610,6 +614,20 @@
     setupCustomDropdown('customSort', 'sortDisplay', 'sortOptions', 'sortSelect');
 
     // ── Init ───────────────────────────────────────────────────
+    // Restore select states from sessionStorage
+    const savedFilter = sessionStorage.getItem('adminFilterJenis');
+    if (savedFilter) {
+        document.getElementById('filterJenisAdmin').value = savedFilter;
+        const opt = document.querySelector(`#filterJenisOptions div[data-value="${savedFilter}"]`);
+        if (opt) document.getElementById('filterJenisDisplay').innerText = opt.innerText;
+    }
+
+    if (sortMode) {
+        document.getElementById('sortSelect').value = sortMode;
+        const opt = document.querySelector(`#sortOptions div[data-value="${sortMode}"]`);
+        if (opt) document.getElementById('sortDisplay').innerText = opt.innerText;
+    }
+
     applyFilter(true); // true = keep page from URL hash on first load
 })();
 </script>

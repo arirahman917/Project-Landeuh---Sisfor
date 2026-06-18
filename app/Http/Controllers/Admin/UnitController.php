@@ -36,9 +36,9 @@ class UnitController extends Controller
     {
         $data = $request->except(['gambar']);
         
-        $data['fasilitas'] = $request->fasilitas ? array_map('trim', explode(',', $request->fasilitas)) : [];
-        $data['makanan'] = $request->makanan ? array_map('trim', explode(',', $request->makanan)) : [];
-        $data['catatan'] = $request->catatan ? array_map('trim', explode(',', $request->catatan)) : [];
+        $data['fasilitas'] = $request->fasilitas ? array_map('trim', explode(';', $request->fasilitas)) : [];
+        $data['makanan'] = $request->makanan ? array_map('trim', explode(';', $request->makanan)) : [];
+        $data['catatan'] = $request->catatan ? array_map('trim', explode(';', $request->catatan)) : [];
         $data['merokok'] = $request->merokok == '1';
         
         // Pastikan input angka tidak bernilai null
@@ -81,13 +81,13 @@ class UnitController extends Controller
         $data = $request->except(['gambar', '_method']);
         
         if ($request->has('fasilitas')) {
-            $data['fasilitas'] = $request->fasilitas ? array_map('trim', explode(',', $request->fasilitas)) : [];
+            $data['fasilitas'] = $request->fasilitas ? array_map('trim', explode(';', $request->fasilitas)) : [];
         }
         if ($request->has('makanan')) {
-            $data['makanan'] = $request->makanan ? array_map('trim', explode(',', $request->makanan)) : [];
+            $data['makanan'] = $request->makanan ? array_map('trim', explode(';', $request->makanan)) : [];
         }
         if ($request->has('catatan')) {
-            $data['catatan'] = $request->catatan ? array_map('trim', explode(',', $request->catatan)) : [];
+            $data['catatan'] = $request->catatan ? array_map('trim', explode(';', $request->catatan)) : [];
         }
         if ($request->has('merokok')) {
             $data['merokok'] = $request->merokok == '1';
