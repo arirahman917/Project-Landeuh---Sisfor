@@ -35,17 +35,17 @@
                         [
                             'label' => 'Cabin',
                             'image' => asset('images/akomodasi/cabin1/a.webp'),
-                            'href'  => '#cabin',
+                            'href'  => '/akomodasi?jenis=Cabin',
                         ],
                         [
                             'label' => 'Rumah Industrial',
                             'image' => asset('images/akomodasi/industrial2/a.webp'),
-                            'href'  => '#industrial',
+                            'href'  => '/akomodasi?jenis=Rumah Industrial',
                         ],
                         [
                             'label' => 'Glamping',
                             'image' => asset('images/akomodasi/glamping_vip/c.webp'),
-                            'href'  => '#glamping',
+                            'href'  => '/akomodasi?jenis=Glamping',
                         ],
                     ];
                 @endphp
