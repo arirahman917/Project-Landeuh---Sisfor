@@ -143,6 +143,14 @@ class ReservasiController extends Controller
 
             // Cek apakah booking bertransisi dari pending ke success (pembayaran pertama kali)
             $isTransitioning = ($booking->status === 'pending' && $validated['status'] === 'success');
+            
+            \Log::info('updateStatus called', [
+                'no_pesanan' => $booking->no_pesanan,
+                'old_status' => $booking->status,
+                'new_status' => $validated['status'],
+                'isTransitioning' => $isTransitioning,
+                'email' => $booking->pemesan_email,
+            ]);
 
             $booking->status = $validated['status'];
             if (!empty($validated['metode_pembayaran'])) {
@@ -156,6 +164,7 @@ class ReservasiController extends Controller
                 try {
                     $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.invoice', ['booking' => $booking])->setPaper('a4', 'portrait');
                     $pdfContent = $pdf->output();
+                    \Log::info('PDF generated for ' . $booking->no_pesanan);
                 } catch (\Exception $e) {
                     \Log::error('Gagal membuat PDF untuk pesanan ' . $booking->no_pesanan . ': ' . $e->getMessage());
                     $pdfContent = null;
@@ -164,6 +173,7 @@ class ReservasiController extends Controller
                 // 2. Kirim E-Ticket via Email
                 try {
                     \Illuminate\Support\Facades\Mail::to($booking->pemesan_email)->send(new \App\Mail\BookingSuccessMail($booking, $pdfContent));
+                    \Log::info('Email E-Ticket SENT for ' . $booking->no_pesanan . ' to ' . $booking->pemesan_email);
                 } catch (\Exception $mailEx) {
                     \Log::error('Gagal mengirim email E-Ticket untuk pesanan ' . $booking->no_pesanan . ': ' . $mailEx->getMessage());
                 }
