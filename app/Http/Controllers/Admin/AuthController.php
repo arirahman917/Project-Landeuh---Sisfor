@@ -3,19 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    /**
-     * Akun admin dummy (hardcoded).
-     * Ganti dengan database lookup saat produksi.
-     */
-    private const ADMIN_EMAIL = 'admin@gmail.com';
-    private const ADMIN_PASS  = 'admin123';
-    private const ADMIN_NAME  = 'Administrator';
-
     /**
      * Tampilkan halaman login.
      */
@@ -42,13 +35,17 @@ class AuthController extends Controller
         $email    = strtolower(trim($request->email));
         $password = $request->password;
 
-        // Cek kredensial dummy
-        if ($email === self::ADMIN_EMAIL && $password === self::ADMIN_PASS) {
+        // Cek user dari database dengan role admin
+        $user = User::where('email', $email)
+                     ->where('role', 'admin')
+                     ->first();
+
+        if ($user && Hash::check($password, $user->password)) {
             // Set session
             session([
                 'admin_logged_in' => true,
-                'admin_email'     => $email,
-                'admin_name'      => self::ADMIN_NAME,
+                'admin_email'     => $user->email,
+                'admin_name'      => $user->name,
                 'admin_login_at'  => now()->toDateTimeString(),
             ]);
 
