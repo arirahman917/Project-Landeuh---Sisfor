@@ -49,13 +49,24 @@ Route::get('/debug-check', function () {
     }
 });
 
-Route::get('/debug-email', function () {
+Route::get('/debug-email', function (\Illuminate\Http\Request $request) {
     try {
-        \Illuminate\Support\Facades\Mail::raw('This is a test email from Landeuh Sisfor.', function ($message) {
-            $message->to(config('mail.from.address'))
-                    ->subject('SMTP Test');
-        });
-        return 'SUCCESS: Email sent successfully! Check the inbox of ' . config('mail.from.address');
+        $targetEmail = $request->query('to', config('mail.from.address'));
+        
+        // Buat dummy booking
+        $booking = \App\Models\Booking::first();
+        if (!$booking) {
+            return 'ERROR: Tidak ada data booking di database untuk dites.';
+        }
+
+        // Generate dummy PDF content
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.invoice', ['booking' => $booking])->setPaper('a4', 'portrait');
+        $pdfContent = $pdf->output();
+
+        // Tes kirim email dengan attachment (persis seperti saat checkout)
+        \Illuminate\Support\Facades\Mail::to($targetEmail)->send(new \App\Mail\BookingSuccessMail($booking, $pdfContent));
+        
+        return 'SUCCESS: Email E-Ticket (dengan attachment PDF) berhasil dikirim via ' . config('mail.default') . ' ke ' . $targetEmail . '!<br>Cek inbox/spam Anda.';
     } catch (\Exception $e) {
         return 'ERROR: ' . $e->getMessage() . '<br><br>Trace:<br>' . nl2br($e->getTraceAsString());
     }
