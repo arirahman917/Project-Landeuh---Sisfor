@@ -47,6 +47,28 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+function unduhPdf(bookNo, btn) {
+    const origHTML = btn.innerHTML;
+    btn.innerHTML = '<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-blue-600 inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" opacity=".3"/><path fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/></svg> Menyiapkan…';
+    btn.disabled = true;
+    btn.style.opacity = '0.7';
+
+    if (!bookNo || bookNo === 'XXXXXXXXXX') {
+        alert('Gagal mendapatkan nomor pesanan.');
+        btn.innerHTML = origHTML;
+        btn.disabled = false;
+        btn.style.opacity = '1';
+        return;
+    }
+
+    setTimeout(() => {
+        window.open('/invoice/' + bookNo + '/download', '_blank');
+        btn.innerHTML = origHTML;
+        btn.disabled = false;
+        btn.style.opacity = '1';
+    }, 500);
+}
+
 function formatDateFriendly(dateStr) {
     if (!dateStr) return '';
     // Safely parse date parts to avoid timezone shifting
@@ -212,7 +234,7 @@ function renderOrders(container, bookings) {
                 priceColor = 'text-stone-600';
             }
             
-            let actionHtml = `<button onclick="window.open('/reservasi/konfirmasi?booking_no=${b.no_pesanan}&from=pesanan', '_blank')" class="bg-blue-50 text-blue-600 hover:bg-blue-100 font-bold py-2 px-5 rounded-lg transition text-sm shadow-sm border border-blue-100 text-center">Cetak E-Voucher</button>`;
+            let actionHtml = `<button onclick="unduhPdf('${b.no_pesanan}', this)" class="bg-blue-50 text-blue-600 hover:bg-blue-100 font-bold py-2 px-5 rounded-lg transition text-sm shadow-sm border border-blue-100 text-center flex items-center justify-center min-w-[140px]">Cetak Invoice</button>`;
             
             if (isRefundPending) {
                 actionHtml += `<div class="text-xs text-amber-700 font-bold bg-amber-50 border border-amber-200 rounded-lg px-4 py-2 text-center leading-relaxed">Ajuan pembatalan sedang ditinjau admin. Silakan konfirmasi via WA.</div>`;
