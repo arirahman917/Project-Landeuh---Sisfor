@@ -12,7 +12,7 @@ class PesananController extends Controller
     {
         // Fetch successful, refunded, refund_pending, and refund_rejected bookings
         $bookings = Booking::with('accommodation')
-            ->whereIn('status', ['success', 'refund_rejected', 'refunded', 'refund_pending'])
+            ->whereIn('status', ['success', 'refund_rejected', 'refunded', 'refund_pending', 'pending'])
             ->orderBy('created_at', 'desc')
             ->get();
 

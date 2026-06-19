@@ -143,6 +143,7 @@
                 </div>
             `;
         }
+        if (s === 'pending') return '<span class="inline-block px-2.5 py-1 rounded-full text-[11px] font-bold bg-blue-100 text-blue-600">Belum Dibayar</span>';
         return '<span class="inline-block px-2.5 py-1 rounded-full text-[11px] font-bold bg-green-100 text-green-700">Sukses / Lunas</span>';
     }
 
@@ -275,6 +276,7 @@
             if (p.status === 'refunded') displayStatus = 'Dibatalkan';
             if (p.status === 'refund_pending') displayStatus = 'Pembatalan Diajukan';
             if (p.status === 'refund_rejected') displayStatus = 'Sukses / Lunas (Ajuan Ditolak)';
+            if (p.status === 'pending') displayStatus = 'Belum Dibayar';
             
             return `<tr>
                 <td>${i+1}</td><td>${p.noPesanan}</td>
