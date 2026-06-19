@@ -17,13 +17,15 @@ class BookingSuccessMail extends Mailable
      * Data booking.
      */
     public $booking;
+    public $pdfContent;
 
     /**
      * Create a new message instance.
      */
-    public function __construct(Booking $booking)
+    public function __construct(Booking $booking, $pdfContent = null)
     {
         $this->booking = $booking;
+        $this->pdfContent = $pdfContent;
     }
 
     /**
@@ -51,12 +53,9 @@ class BookingSuccessMail extends Mailable
      */
     public function attachments(): array
     {
-        $pdfPath = public_path('invoices/Invoice_' . $this->booking->no_pesanan . '.pdf');
-        
-        if (\Illuminate\Support\Facades\File::exists($pdfPath)) {
+        if ($this->pdfContent) {
             return [
-                \Illuminate\Mail\Mailables\Attachment::fromPath($pdfPath)
-                        ->as('Invoice_' . $this->booking->no_pesanan . '.pdf')
+                \Illuminate\Mail\Mailables\Attachment::fromData(fn() => $this->pdfContent, 'Invoice_' . $this->booking->no_pesanan . '.pdf')
                         ->withMime('application/pdf'),
             ];
         }

@@ -155,7 +155,7 @@ class ReservasiController extends Controller
 
                 // 2. Kirim E-Ticket via Email
                 try {
-                    \Illuminate\Support\Facades\Mail::to($booking->pemesan_email)->send(new \App\Mail\BookingSuccessMail($booking));
+                    \Illuminate\Support\Facades\Mail::to($booking->pemesan_email)->send(new \App\Mail\BookingSuccessMail($booking, $pdfContent));
                 } catch (\Exception $mailEx) {
                     \Log::error('Gagal mengirim email E-Ticket untuk pesanan ' . $booking->no_pesanan . ': ' . $mailEx->getMessage());
                 }
@@ -188,25 +188,14 @@ class ReservasiController extends Controller
                                  . "Tunjukkan Invoice tersebut atau menyebutkan nomor pemesanan saat proses Check-in nanti.\n\n"
                                  . "Jika Anda memiliki pertanyaan, jangan ragu untuk menghubungi kami di nomor ini.\n\n"
                                  . "Salam hangat,\n"
-                                 . "Tim Landeuh Village Riverside\n\n"
-                                 . "> _Sent via fonnte.com_";
+                                 . "Tim Landeuh Village Riverside";
 
-                        if ($pdfContent) {
-                            \Illuminate\Support\Facades\Http::withHeaders([
-                                'Authorization' => $token,
-                            ])->attach('file', $pdfContent, 'Invoice_' . $booking->no_pesanan . '.pdf')
-                            ->post('https://api.fonnte.com/send', [
-                                'target' => $booking->pemesan_telp,
-                                'message' => $message,
-                            ]);
-                        } else {
-                            \Illuminate\Support\Facades\Http::withHeaders([
-                                'Authorization' => $token,
-                            ])->post('https://api.fonnte.com/send', [
-                                'target' => $booking->pemesan_telp,
-                                'message' => $message,
-                            ]);
-                        }
+                        \Illuminate\Support\Facades\Http::withHeaders([
+                            'Authorization' => $token,
+                        ])->post('https://api.fonnte.com/send', [
+                            'target' => $booking->pemesan_telp,
+                            'message' => $message,
+                        ]);
                     }
                 } catch (\Exception $waEx) {
                     \Log::error('Gagal mengirim WhatsApp untuk pesanan ' . $booking->no_pesanan . ': ' . $waEx->getMessage());
