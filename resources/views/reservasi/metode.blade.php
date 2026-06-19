@@ -107,7 +107,7 @@
                         ['val'=>'BRI Virtual Account','logo'=>'bri.png', 'w'=>160,  'h'=>39],
                         ['val'=>'BNI Virtual Account','logo'=>'bni.png', 'w'=>74,  'h'=>18],
                         ['val'=>'BSI Virtual Account','logo'=>'bsi.png', 'w'=>180,  'h'=>62],
-                        <!-- ['val'=>'Virtual Account Lainnya','logo'=>'va.png', 'w'=>180,  'h'=>60], -->
+                        // ['val'=>'Virtual Account Lainnya','logo'=>'va.png', 'w'=>180,  'h'=>60],
                     ]],
                     ['key'=>'atm','title'=>'ATM','type'=>'direct','logos'=>[
                         ['file'=>'atm_bersama.png', 'h'=>30],
