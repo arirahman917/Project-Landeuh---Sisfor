@@ -134,7 +134,7 @@
                     </div>
                     <div class="ov-form-row">
                         <div class="ov-form-group">
-                            <label>Nomor Handphone<span class="req">*</span></label>
+                            <label>Nomor Handphone (WhatsApp)<span class="req">*</span></label>
                             <input type="text" id="noHp" placeholder="" value="{{ Auth::check() ? Auth::user()->phone : '' }}">
                             <div class="hint">Contoh: 08xxxxxxxxxx</div>
                         </div>

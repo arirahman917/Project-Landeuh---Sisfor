@@ -108,6 +108,37 @@
     </div>
 </div>
 
+{{-- ── MODERN CONFIRM MODAL ───────────────────────────────────── --}}
+<div id="modalConfirm" class="fixed inset-0 z-[10000] bg-black/40 backdrop-blur-sm flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300">
+    <div class="bg-white rounded-2xl max-w-sm w-[90%] p-6 shadow-2xl transform scale-90 transition-all duration-300" id="modalConfirmBox">
+        <div class="flex items-center gap-3 mb-4">
+            <div id="confirmIconWrap" class="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0">
+                <iconify-icon id="confirmIcon" class="text-xl"></iconify-icon>
+            </div>
+            <h3 class="text-base font-extrabold text-stone-800" id="confirmTitle">Konfirmasi</h3>
+        </div>
+        <p class="text-sm text-stone-600 leading-relaxed mb-6" id="confirmMessage">Apakah Anda yakin?</p>
+        <div class="flex items-center justify-end gap-2">
+            <button onclick="closeConfirmModal()" class="px-4 py-2.5 rounded-xl text-sm font-bold bg-stone-100 text-stone-600 hover:bg-stone-200 transition">Batal</button>
+            <button id="confirmOkBtn" class="px-5 py-2.5 rounded-xl text-sm font-bold text-white transition shadow-sm">Ya, Lanjutkan</button>
+        </div>
+    </div>
+</div>
+
+{{-- ── MODERN RESULT MODAL (Success / Error feedback) ─────────── --}}
+<div id="modalResult" class="fixed inset-0 z-[10001] bg-black/40 backdrop-blur-sm flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300">
+    <div class="bg-white rounded-2xl max-w-sm w-[90%] p-6 shadow-2xl transform scale-90 transition-all duration-300" id="modalResultBox">
+        <div class="flex flex-col items-center text-center">
+            <div id="resultIconWrap" class="w-14 h-14 rounded-full flex items-center justify-center mb-4">
+                <iconify-icon id="resultIcon" class="text-2xl"></iconify-icon>
+            </div>
+            <h3 class="text-base font-extrabold text-stone-800 mb-2" id="resultTitle">Berhasil</h3>
+            <p class="text-sm text-stone-500 leading-relaxed mb-5" id="resultMessage">Operasi berhasil.</p>
+            <button onclick="closeResultModal()" class="px-5 py-2.5 rounded-xl text-sm font-bold bg-[#3a523a] text-white hover:bg-[#2c402c] transition shadow-sm">Mengerti</button>
+        </div>
+    </div>
+</div>
+
 @push('scripts')
 <script>
 (function(){
@@ -214,7 +245,6 @@
     // ── Filter ─────────────────────────────────────────────────
     window.filterAjuan = function(status) {
         activeFilter = status;
-        // Update button styles
         ['All','Pending','Accepted','Rejected'].forEach(s => {
             const btn = document.getElementById('filter' + s);
             if (!btn) return;
@@ -239,64 +269,158 @@
         render();
     }
 
+    // ══════════════════════════════════════════════════════════════
+    // MODERN CONFIRM MODAL SYSTEM
+    // ══════════════════════════════════════════════════════════════
+    let _confirmResolve = null;
+
+    function openConfirmModal(type, title, message) {
+        return new Promise(resolve => {
+            _confirmResolve = resolve;
+            const modal = document.getElementById('modalConfirm');
+            const box = document.getElementById('modalConfirmBox');
+            const iconWrap = document.getElementById('confirmIconWrap');
+            const icon = document.getElementById('confirmIcon');
+            const okBtn = document.getElementById('confirmOkBtn');
+
+            document.getElementById('confirmTitle').textContent = title;
+            document.getElementById('confirmMessage').innerHTML = message;
+
+            if (type === 'accept') {
+                iconWrap.className = 'w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 bg-emerald-100';
+                icon.setAttribute('icon', 'lucide:check-circle');
+                icon.className = 'text-xl text-emerald-600';
+                okBtn.className = 'px-5 py-2.5 rounded-xl text-sm font-bold text-white transition shadow-sm bg-emerald-500 hover:bg-emerald-600';
+                okBtn.textContent = 'Ya, Terima';
+            } else {
+                iconWrap.className = 'w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 bg-red-100';
+                icon.setAttribute('icon', 'lucide:x-circle');
+                icon.className = 'text-xl text-red-500';
+                okBtn.className = 'px-5 py-2.5 rounded-xl text-sm font-bold text-white transition shadow-sm bg-red-500 hover:bg-red-600';
+                okBtn.textContent = 'Ya, Tolak';
+            }
+
+            okBtn.onclick = () => { closeConfirmModal(true); };
+
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            modal.classList.add('opacity-100');
+            box.classList.remove('scale-90');
+            box.classList.add('scale-100');
+        });
+    }
+
+    window.closeConfirmModal = function(confirmed) {
+        const modal = document.getElementById('modalConfirm');
+        const box = document.getElementById('modalConfirmBox');
+        modal.classList.add('opacity-0', 'pointer-events-none');
+        modal.classList.remove('opacity-100');
+        box.classList.add('scale-90');
+        box.classList.remove('scale-100');
+        if (_confirmResolve) { _confirmResolve(!!confirmed); _confirmResolve = null; }
+    };
+
+    document.getElementById('modalConfirm')?.addEventListener('click', function(e) {
+        if (e.target === this) closeConfirmModal(false);
+    });
+
+    // ── Result Modal ──────────────────────────────────────────
+    function showResultModal(type, title, message) {
+        const modal = document.getElementById('modalResult');
+        const box = document.getElementById('modalResultBox');
+        const iconWrap = document.getElementById('resultIconWrap');
+        const icon = document.getElementById('resultIcon');
+
+        document.getElementById('resultTitle').textContent = title;
+        document.getElementById('resultMessage').textContent = message;
+
+        if (type === 'success') {
+            iconWrap.className = 'w-14 h-14 rounded-full flex items-center justify-center mb-4 bg-emerald-100';
+            icon.setAttribute('icon', 'lucide:check-circle-2');
+            icon.className = 'text-2xl text-emerald-600';
+        } else {
+            iconWrap.className = 'w-14 h-14 rounded-full flex items-center justify-center mb-4 bg-red-100';
+            icon.setAttribute('icon', 'lucide:alert-circle');
+            icon.className = 'text-2xl text-red-500';
+        }
+
+        modal.classList.remove('opacity-0', 'pointer-events-none');
+        modal.classList.add('opacity-100');
+        box.classList.remove('scale-90');
+        box.classList.add('scale-100');
+    }
+
+    window.closeResultModal = function() {
+        const modal = document.getElementById('modalResult');
+        const box = document.getElementById('modalResultBox');
+        modal.classList.add('opacity-0', 'pointer-events-none');
+        modal.classList.remove('opacity-100');
+        box.classList.add('scale-90');
+        box.classList.remove('scale-100');
+        location.reload();
+    };
+
+    document.getElementById('modalResult')?.addEventListener('click', function(e) {
+        if (e.target === this) closeResultModal();
+    });
+
     // ── Accept / Reject ────────────────────────────────────────
-    window.acceptAjuan = function(idx) {
+    window.acceptAjuan = async function(idx) {
         const item = AJUAN_DATA[idx];
-        if (confirm(`Apakah Anda yakin ingin MENERIMA pengajuan pembatalan untuk pesanan ${item.noPesanan}?`)) {
-            fetch('/reservasi/update-status', {
+        const confirmed = await openConfirmModal(
+            'accept',
+            'Terima Pembatalan',
+            `Apakah Anda yakin ingin <strong>MENERIMA</strong> pengajuan pembatalan untuk pesanan <strong>${item.noPesanan}</strong>?`
+        );
+        if (!confirmed) return;
+
+        try {
+            const res = await fetch('/reservasi/update-status', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                 },
-                body: JSON.stringify({
-                    no_pesanan: item.noPesanan,
-                    status: 'refunded'
-                })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Pengajuan pembatalan berhasil DITERIMA. Status pesanan diubah menjadi Dibatalkan.');
-                    location.reload();
-                } else {
-                    alert('Gagal memperbarui status: ' + data.message);
-                }
-            })
-            .catch(err => {
-                console.error(err);
-                alert('Terjadi kesalahan koneksi.');
+                body: JSON.stringify({ no_pesanan: item.noPesanan, status: 'refunded' })
             });
+            const data = await res.json();
+            if (data.success) {
+                showResultModal('success', 'Pembatalan Diterima', 'Pengajuan pembatalan berhasil diterima. Status pesanan diubah menjadi Dibatalkan.');
+            } else {
+                showResultModal('error', 'Gagal', 'Gagal memperbarui status: ' + data.message);
+            }
+        } catch (err) {
+            console.error(err);
+            showResultModal('error', 'Kesalahan Koneksi', 'Terjadi kesalahan saat menghubungi server.');
         }
     };
 
-    window.rejectAjuan = function(idx) {
+    window.rejectAjuan = async function(idx) {
         const item = AJUAN_DATA[idx];
-        if (confirm(`Apakah Anda yakin ingin MENOLAK pengajuan pembatalan untuk pesanan ${item.noPesanan}?`)) {
-            fetch('/reservasi/update-status', {
+        const confirmed = await openConfirmModal(
+            'reject',
+            'Tolak Pembatalan',
+            `Apakah Anda yakin ingin <strong>MENOLAK</strong> pengajuan pembatalan untuk pesanan <strong>${item.noPesanan}</strong>?`
+        );
+        if (!confirmed) return;
+
+        try {
+            const res = await fetch('/reservasi/update-status', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                 },
-                body: JSON.stringify({
-                    no_pesanan: item.noPesanan,
-                    status: 'refund_rejected'
-                })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Pengajuan pembatalan DITOLAK. Status pesanan kembali menjadi Lunas/Aktif.');
-                    location.reload();
-                } else {
-                    alert('Gagal memperbarui status: ' + data.message);
-                }
-            })
-            .catch(err => {
-                console.error(err);
-                alert('Terjadi kesalahan koneksi.');
+                body: JSON.stringify({ no_pesanan: item.noPesanan, status: 'refund_rejected' })
             });
+            const data = await res.json();
+            if (data.success) {
+                showResultModal('success', 'Pembatalan Ditolak', 'Pengajuan pembatalan ditolak. Status pesanan kembali menjadi Lunas/Aktif.');
+            } else {
+                showResultModal('error', 'Gagal', 'Gagal memperbarui status: ' + data.message);
+            }
+        } catch (err) {
+            console.error(err);
+            showResultModal('error', 'Kesalahan Koneksi', 'Terjadi kesalahan saat menghubungi server.');
         }
     };
 

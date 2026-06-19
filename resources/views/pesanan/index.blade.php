@@ -202,7 +202,7 @@ function renderOrders(container, bookings) {
                 priceColor = 'text-amber-600';
             } else if (isRefundRejected) {
                 headerBg = 'bg-red-50/50';
-                headerBadgeText = 'Pengembalian Dana Ditolak';
+                headerBadgeText = 'Pembatalan Ditolak';
                 headerBadgeColor = 'text-red-600';
                 priceColor = 'text-[#3a523a]';
             } else if (isPast) {

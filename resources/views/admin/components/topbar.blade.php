@@ -158,6 +158,7 @@
     transform:translateX(120%);
     opacity:0;
     transition:transform .5s cubic-bezier(.22,1,.36,1), opacity .5s ease;
+    cursor:pointer;
 }
 .push-notif-toast.show {
     transform:translateX(0);
@@ -334,7 +335,7 @@
                     hasNew = true;
                     
                     if (!fresh.read) {
-                        showPushNotif(fresh.type, fresh.title, fresh.desc);
+                        showPushNotif(fresh.type, fresh.title, fresh.desc, fresh.noPesanan);
                     }
                 } else {
                     // Already exists in NOTIF_DATA. Update dynamic time and description.
@@ -382,12 +383,15 @@
     document.getElementById('notifPanel')?.addEventListener('click', e => e.stopPropagation());
 
     // ── Push Notification System ───────────────────────────────
-    function showPushNotif(type, title, desc) {
+    function showPushNotif(type, title, desc, noPesanan) {
         const container = document.getElementById('pushNotifContainer');
         if (!container) return;
 
+        const target = type === 'cancel' ? '/admin/pembatalan' : '/admin/pesanan';
+
         const toast = document.createElement('div');
         toast.className = 'push-notif-toast';
+        toast.setAttribute('data-href', target);
         toast.innerHTML = `
             <div class="push-notif-icon ${type}">
                 <iconify-icon icon="${type === 'order' ? 'lucide:shopping-bag' : 'lucide:undo-2'}" class="text-lg"></iconify-icon>
@@ -398,8 +402,20 @@
                 <div class="push-notif-time">Baru saja</div>
                 <div class="push-notif-progress"></div>
             </div>
-            <button class="push-notif-close" onclick="dismissPush(this)">&times;</button>
+            <button class="push-notif-close" onclick="event.stopPropagation();dismissPush(this)">&times;</button>
         `;
+        toast.addEventListener('click', function() {
+            // Mark as read in localStorage
+            if (noPesanan) {
+                const readKeys = JSON.parse(localStorage.getItem('read_notif_keys') || '[]').filter(Boolean);
+                const key = `${noPesanan}_${type}`;
+                if (!readKeys.includes(key)) {
+                    readKeys.push(key);
+                    localStorage.setItem('read_notif_keys', JSON.stringify(readKeys));
+                }
+            }
+            window.location.href = target;
+        });
         container.appendChild(toast);
 
         // Trigger entrance

@@ -693,11 +693,7 @@
 
         document.getElementById('btnUnduhPdf').style.display = 'flex';
         
-        if (fromPesanan) {
-            bannerText.innerHTML = `E-Ticket resmi Anda telah dikirimkan ke <strong><span id="dynEmailInBanner">${dEmail}</span></strong>.`;
-        } else {
-            bannerText.innerHTML = `Cek emailmu (<strong><span id="dynEmailInBanner">${dEmail}</span></strong>) sekarang untuk konfirmasi pembayaran.`;
-        }
+        bannerText.innerHTML = `Pembayaran berhasil! Invoice telah dikirim ke email (<strong><span id="dynEmailInBanner">${dEmail}</span></strong>) dan WhatsApp Anda.`;
 
         // Activate continuous pulse after entrance finishes
         setTimeout(() => iconWrap.classList.add('pulse'), 700);
