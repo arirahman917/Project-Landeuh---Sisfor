@@ -112,7 +112,7 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        const section = document.getElementById('tentang-section');
+        const section = document.getElementById('tentang');
         const totalStates = 4;
         let currentState = -1;
 
@@ -184,7 +184,7 @@
 
     // Function to click on the label and smoothly jump to that segment
     window.scrollToTentangSegment = function(index) {
-        const section = document.getElementById('tentang-section');
+        const section = document.getElementById('tentang');
         const totalScrollableDistance = section.getBoundingClientRect().height - window.innerHeight;
         const segmentHeight = totalScrollableDistance / 4;
         
