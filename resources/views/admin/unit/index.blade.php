@@ -270,6 +270,7 @@
         if (url.startsWith('http') || url.startsWith('data:')) return url;
         return url.startsWith('/') ? url : '/' + url;
     }
+    window.formatImgUrl = formatImgUrl;
 
     // Helper to parse date strictly in local time (00:00:00) to prevent timezone/hour shifting bugs
     function parseToLocalDate(dateInput) {
