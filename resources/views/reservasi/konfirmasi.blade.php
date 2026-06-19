@@ -811,7 +811,13 @@ function ajukanPembatalan() {
     };
 
     newBtnYes.onclick = () => {
-        confirmModal.classList.remove('active');
+        // Change button to loading state
+        const originalText = newBtnYes.innerHTML;
+        newBtnYes.disabled = true;
+        newBtnYes.style.opacity = '0.7';
+        newBtnYes.style.cursor = 'not-allowed';
+        newBtnYes.innerHTML = '<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Memproses...';
+        newBtnNo.disabled = true;
         
         fetch('/reservasi/update-status', {
             method: 'POST',
@@ -826,6 +832,7 @@ function ajukanPembatalan() {
         })
         .then(res => res.json())
         .then(data => {
+            confirmModal.classList.remove('active');
             if (data.success) {
                 const modal = document.getElementById('modalPembatalan');
                 modal.classList.add('active');
@@ -843,8 +850,17 @@ function ajukanPembatalan() {
             }
         })
         .catch(err => {
+            confirmModal.classList.remove('active');
             console.error('Error:', err);
             alert('Terjadi kesalahan koneksi.');
+        })
+        .finally(() => {
+            // Restore button state just in case (though usually we reload)
+            newBtnYes.disabled = false;
+            newBtnNo.disabled = false;
+            newBtnYes.style.opacity = '1';
+            newBtnYes.style.cursor = 'pointer';
+            newBtnYes.innerHTML = originalText;
         });
     };
 }
