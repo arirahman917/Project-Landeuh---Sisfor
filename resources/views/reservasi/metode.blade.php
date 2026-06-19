@@ -475,21 +475,29 @@ function useFallbackPayment(method, akoId) {
         sessionStorage.setItem('res_created_at', '{{ $booking->created_at->toIso8601String() }}');
     @endif
 
-    let seconds = 30 * 60;
+    let expireTime = 0;
     const createdAtStr = sessionStorage.getItem('res_created_at');
     if (createdAtStr) {
         const createdTime = new Date(createdAtStr).getTime();
-        const expireTime = createdTime + 30 * 60 * 1000;
-        const now = new Date().getTime();
-        seconds = Math.max(0, Math.floor((expireTime - now) / 1000));
+        expireTime = createdTime + 30 * 60 * 1000;
     }
 
     const el = document.getElementById('countdownTimer');
-    const interval = setInterval(() => {
-        if (seconds <= 0) {
-            el.textContent = '00:00:00';
-            clearInterval(interval);
+    
+    function updateTimer() {
+        const now = new Date().getTime();
+        let seconds = 0;
+        
+        if (expireTime > 0) {
+            seconds = Math.max(0, Math.floor((expireTime - now) / 1000));
+        } else {
+            // Fallback for missing data
+            seconds = 30 * 60;
+        }
 
+        if (seconds <= 0 && expireTime > 0) {
+            el.textContent = '00:00:00';
+            
             // Automatically mark as failed/expired in the database
             const bookingNo = sessionStorage.getItem('res_booking_no');
             if (bookingNo) {
@@ -509,13 +517,25 @@ function useFallbackPayment(method, akoId) {
                     window.location.href = '/pesanan';
                 });
             }
-            return;
+            return true; // indicates timer finished
         }
-        seconds--;
+        
         const m = String(Math.floor(seconds / 60)).padStart(2, '0');
         const s = String(seconds % 60).padStart(2, '0');
         el.textContent = '00:' + m + ':' + s;
-    }, 1000);
+        return false;
+    }
+    
+    // Initial call
+    const isFinished = updateTimer();
+    
+    if (!isFinished) {
+        const interval = setInterval(() => {
+            if (updateTimer()) {
+                clearInterval(interval);
+            }
+        }, 1000);
+    }
     
     // Parse accommodation ID from URL
     const urlParts = window.location.pathname.split('/');
