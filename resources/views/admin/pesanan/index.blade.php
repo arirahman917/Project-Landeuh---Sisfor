@@ -132,7 +132,7 @@
 
     function statusBadge(s) {
         if (s === 'refunded') return '<span class="inline-block px-2.5 py-1 rounded-full text-[11px] font-bold bg-red-100 text-red-600">Dibatalkan</span>';
-        if (s === 'refund_pending') return '<span class="inline-block px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-100 text-amber-700">Refund Pending</span>';
+        if (s === 'refund_pending') return '<span class="inline-block px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-100 text-amber-700">Pembatalan Diajukan</span>';
         if (s === 'refund_rejected') {
             return `
                 <div class="flex flex-col items-center gap-1.5">
