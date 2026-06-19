@@ -144,16 +144,13 @@ class ReservasiController extends Controller
 
             // Tindakan otomatis HANYA jika status berubah dari pending ke success
             if ($isTransitioning) {
-                // 1. Generate PDF Server-side
+                // 1. Generate PDF (Memory only)
                 try {
                     $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.invoice', ['booking' => $booking])->setPaper('a4', 'portrait');
-                    $invoicesPath = public_path('invoices');
-                    if (!\Illuminate\Support\Facades\File::exists($invoicesPath)) {
-                        \Illuminate\Support\Facades\File::makeDirectory($invoicesPath, 0755, true);
-                    }
-                    $pdf->save($invoicesPath . '/Invoice_' . $booking->no_pesanan . '.pdf');
+                    $pdfContent = $pdf->output();
                 } catch (\Exception $e) {
                     \Log::error('Gagal membuat PDF untuk pesanan ' . $booking->no_pesanan . ': ' . $e->getMessage());
+                    $pdfContent = null;
                 }
 
                 // 2. Kirim E-Ticket via Email
@@ -170,7 +167,7 @@ class ReservasiController extends Controller
                         $checkIn = \Carbon\Carbon::parse($booking->check_in_date)->locale('id')->isoFormat('dddd, D MMMM Y');
                         $checkOut = \Carbon\Carbon::parse($booking->check_out_date)->locale('id')->isoFormat('dddd, D MMMM Y');
                         $totalStr = number_format($booking->total, 0, ',', '.');
-                        $invoiceUrl = url('/invoices/Invoice_' . $booking->no_pesanan . '.pdf');
+                        $invoiceUrl = url('/invoice/' . $booking->no_pesanan . '/download');
                         $akomodasiJudul = $booking->accommodation ? $booking->accommodation->judul : 'Akomodasi';
 
                         $message = "Halo, {$booking->pemesan_nama}!\n\n"
@@ -191,14 +188,25 @@ class ReservasiController extends Controller
                                  . "Tunjukkan Invoice tersebut atau menyebutkan nomor pemesanan saat proses Check-in nanti.\n\n"
                                  . "Jika Anda memiliki pertanyaan, jangan ragu untuk menghubungi kami di nomor ini.\n\n"
                                  . "Salam hangat,\n"
-                                 . "Tim Landeuh Village Riverside";
+                                 . "Tim Landeuh Village Riverside\n\n"
+                                 . "> _Sent via fonnte.com_";
 
-                        \Illuminate\Support\Facades\Http::withHeaders([
-                            'Authorization' => $token,
-                        ])->post('https://api.fonnte.com/send', [
-                            'target' => $booking->pemesan_telp,
-                            'message' => $message,
-                        ]);
+                        if ($pdfContent) {
+                            \Illuminate\Support\Facades\Http::withHeaders([
+                                'Authorization' => $token,
+                            ])->attach('file', $pdfContent, 'Invoice_' . $booking->no_pesanan . '.pdf')
+                            ->post('https://api.fonnte.com/send', [
+                                'target' => $booking->pemesan_telp,
+                                'message' => $message,
+                            ]);
+                        } else {
+                            \Illuminate\Support\Facades\Http::withHeaders([
+                                'Authorization' => $token,
+                            ])->post('https://api.fonnte.com/send', [
+                                'target' => $booking->pemesan_telp,
+                                'message' => $message,
+                            ]);
+                        }
                     }
                 } catch (\Exception $waEx) {
                     \Log::error('Gagal mengirim WhatsApp untuk pesanan ' . $booking->no_pesanan . ': ' . $waEx->getMessage());
@@ -217,6 +225,16 @@ class ReservasiController extends Controller
                 'message' => 'Gagal memperbarui status: ' . $e->getMessage()
             ], 400);
         }
+    }
+
+    /**
+     * Download Invoice PDF.
+     */
+    public function downloadInvoice($no_pesanan)
+    {
+        $booking = Booking::with('accommodation')->where('no_pesanan', $no_pesanan)->firstOrFail();
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.invoice', ['booking' => $booking])->setPaper('a4', 'portrait');
+        return $pdf->download('Invoice_' . $booking->no_pesanan . '.pdf');
     }
 
     /**

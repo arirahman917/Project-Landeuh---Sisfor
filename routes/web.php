@@ -121,6 +121,7 @@ Route::get('/reservasi/overview/{id}', function (Illuminate\Http\Request $reques
 Route::post('/reservasi/store', [ReservasiController::class, 'store'])->name('reservasi.store');
 Route::post('/reservasi/get-snap-token', [ReservasiController::class, 'getSnapToken'])->name('reservasi.snap-token');
 Route::post('/reservasi/update-status', [ReservasiController::class, 'updateStatus'])->name('reservasi.update-status');
+Route::get('/invoice/{no_pesanan}/download', [ReservasiController::class, 'downloadInvoice'])->name('invoice.download');
 
 Route::get('/reservasi/metode-pembayaran/{id}', function (Illuminate\Http\Request $request, $id) {
     $booking = null;

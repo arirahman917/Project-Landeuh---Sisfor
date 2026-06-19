@@ -785,7 +785,7 @@ function unduhPdf() {
     }
 
     setTimeout(() => {
-        window.open('/invoices/Invoice_' + bookNo + '.pdf', '_blank');
+        window.open('/invoice/' + bookNo + '/download', '_blank');
         btn.innerHTML = origHTML;
         btn.disabled = false;
     }, 500);
