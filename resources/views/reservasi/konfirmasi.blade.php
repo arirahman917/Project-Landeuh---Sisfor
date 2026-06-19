@@ -527,7 +527,7 @@
 
         {{-- Bottom actions --}}
         <div class="cp-actions">
-            <button class="cp-btn cp-btn-cancel" onclick="ajukanPembatalan()">
+            <button class="cp-btn cp-btn-cancel" id="btnAjukanPembatalan" onclick="ajukanPembatalan()">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                      stroke-width="2" stroke="currentColor" width="16" height="16">
                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -695,6 +695,10 @@
         
         bannerText.innerHTML = `Pembayaran berhasil! Invoice telah dikirim ke email (<strong><span id="dynEmailInBanner">${dEmail}</span></strong>) dan WhatsApp Anda.`;
 
+        // Show cancel button only if success
+        const btnCancel = document.getElementById('btnAjukanPembatalan');
+        if (btnCancel) btnCancel.style.display = 'flex';
+
         // Activate continuous pulse after entrance finishes
         setTimeout(() => iconWrap.classList.add('pulse'), 700);
 
@@ -717,10 +721,14 @@
 
         // Banner text untuk gagal
         if (fromPesanan) {
-            bannerText.innerHTML = `Pemesanan ini berstatus gagal/dibatalkan.`;
+            bannerText.innerHTML = status === 'refund_pending' ? `Pemesanan ini sedang dalam pengajuan pembatalan.` : `Pemesanan ini berstatus gagal/dibatalkan.`;
         } else {
             bannerText.innerHTML = `Cek emailmu (<strong>${dEmail}</strong>) sekarang untuk detail cara bayar.`;
         }
+        
+        // Hide cancel button
+        const btnCancel = document.getElementById('btnAjukanPembatalan');
+        if (btnCancel) btnCancel.style.display = 'none';
     }
 
     // ── Accommodation data ────────────────────────────────────────────────
@@ -834,6 +842,7 @@ function ajukanPembatalan() {
         .then(data => {
             confirmModal.classList.remove('active');
             if (data.success) {
+                sessionStorage.setItem('res_payment_status', 'refund_pending');
                 const modal = document.getElementById('modalPembatalan');
                 modal.classList.add('active');
                 
