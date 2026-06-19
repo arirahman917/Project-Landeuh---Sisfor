@@ -1,4 +1,4 @@
-<section class="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4" style="margin-bottom: 1rem;">
+<section id="hero" class="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4" style="margin-bottom: 1rem;">
     <!-- Ornamen Batik -->
     <div class="absolute -top-6 -left-6 opacity-50 pointer-events-none w-32 md:w-48 rotate-12 z-0">
         <img src="{{ asset('images/assets_lain/batik.png') }}" alt="Ornamen Batik">

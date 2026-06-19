@@ -10,7 +10,7 @@
         <div class="flex items-center gap-6 lg:gap-10">
             <!-- Navigation (Desktop/Tablet) -->
             <nav class="hidden md:flex items-center gap-6 lg:gap-8 font-semibold text-gray-800 text-sm lg:text-base">
-                <a href="/" class="hover:text-green-800 transition">Beranda</a>
+                <a href="/#hero" class="hover:text-green-800 transition">Beranda</a>
                 <a href="/akomodasi" class="hover:text-green-800 transition">Akomodasi</a>
                 <a href="/pesanan" class="hover:text-green-800 transition">Pesanan</a>
             </nav>
@@ -58,7 +58,7 @@
 
     <!-- Mobile Floating Card Menu (Matches UI/UX) -->
     <div id="mobileMenu" class="absolute top-[80px] right-4 w-[260px] bg-[#F8EDD8] rounded-[2rem] shadow-[0_20px_50px_-10px_rgba(0,0,0,0.2)] border border-white/50 flex flex-col py-6 px-5 transition-all duration-300 opacity-0 invisible origin-top-right transform scale-95 z-[60] md:hidden">
-        <a href="/" class="text-center font-semibold text-gray-800 text-base py-3 hover:text-green-800 transition">Beranda</a>
+        <a href="/#hero" class="text-center font-semibold text-gray-800 text-base py-3 hover:text-green-800 transition">Beranda</a>
         <a href="/akomodasi" class="text-center font-semibold text-gray-800 text-base py-3 hover:text-green-800 transition">Akomodasi</a>
         <a href="/pesanan" class="text-center font-semibold text-gray-800 text-base py-3 hover:text-green-800 transition">Pesanan</a>
         

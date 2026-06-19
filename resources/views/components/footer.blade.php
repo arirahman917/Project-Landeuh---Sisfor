@@ -81,7 +81,7 @@
                     @foreach([
                         ['label'=>'Beranda',   'href'=> url('/') . '#hero'],
                         ['label'=>'Tentang',   'href'=> url('/') . '#tentang'],
-                        ['label'=>'Akomodasi', 'href'=> url('/') . '#akomodasi'],
+                        ['label'=>'Akomodasi', 'href'=> url('/akomodasi')],
                         ['label'=>'Fasilitas', 'href'=> url('/') . '#fasilitas'],
                         ['label'=>'FAQ',       'href'=> url('/') . '#faq'],
                     ] as $nav)

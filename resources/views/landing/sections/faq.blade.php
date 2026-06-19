@@ -1,5 +1,5 @@
 {{-- Section FAQ --}}
-<section class="faq-section relative py-24" style="background-color: #F5EDD8;">
+<section class="faq-section relative py-16 md:py-20" id="faq" style="background-color: #FDFDFC;">
 
     {{-- Batik Ornaments --}}
     <div class="absolute inset-0 pointer-events-none select-none z-0" aria-hidden="true">

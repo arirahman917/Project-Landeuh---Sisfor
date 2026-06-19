@@ -1,5 +1,5 @@
 <!-- Tentang Section -->
-<section id="tentang-section" class="relative w-full h-[400vh] bg-[#F8EDD8]">
+<section id="tentang" class="relative w-full h-[400vh] bg-[#F8EDD8]">
     <!-- Sticky container -->
     <div class="sticky top-0 h-screen w-full flex flex-col justify-center overflow-hidden pt-16 lg:pt-20">
         

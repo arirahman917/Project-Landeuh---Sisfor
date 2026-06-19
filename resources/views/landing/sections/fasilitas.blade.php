@@ -1,5 +1,5 @@
 <!-- Fasilitas Section -->
-<section class="fasilitas-section relative py-20" style="background-color: #F5EDD8;">
+<section id="fasilitas" class="fasilitas-section relative py-20" style="background-color: #F5EDD8;">
 
     <!-- Batik Ornament: Top Right -->
     <div class="absolute top-0 right-0 pointer-events-none select-none z-0" aria-hidden="true">
