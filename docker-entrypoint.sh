@@ -20,10 +20,10 @@ mkdir -p /var/www/html/storage/logs
 chown -R www-data:www-data /var/www/html/storage
 chmod -R 775 /var/www/html/storage
 
-# Clear and rebuild Laravel caches for production
-php artisan config:clear
-php artisan route:clear
-php artisan view:clear
+# Cache Laravel config, routes, and views for production
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
 
 # Run Laravel migrations
 php artisan migrate --force

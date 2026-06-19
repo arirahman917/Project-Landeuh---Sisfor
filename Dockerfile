@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install -y \
     default-mysql-client
 
 # Install PHP extensions
-RUN docker-php-ext-install pdo pdo_mysql mbstring exif pcntl bcmath gd
+RUN docker-php-ext-install pdo pdo_mysql mbstring exif pcntl bcmath gd opcache
 
 # Configure custom php.ini settings for large file uploads
 RUN echo "upload_max_filesize = 50M" >> /usr/local/etc/php/conf.d/custom-php.ini && \
@@ -23,6 +23,15 @@ RUN echo "upload_max_filesize = 50M" >> /usr/local/etc/php/conf.d/custom-php.ini
     echo "memory_limit = 256M" >> /usr/local/etc/php/conf.d/custom-php.ini && \
     echo "display_errors = Off" >> /usr/local/etc/php/conf.d/custom-php.ini && \
     echo "log_errors = On" >> /usr/local/etc/php/conf.d/custom-php.ini
+
+# Configure opcache for maximum performance
+RUN echo "opcache.enable=1" >> /usr/local/etc/php/conf.d/docker-php-ext-opcache.ini && \
+    echo "opcache.memory_consumption=128" >> /usr/local/etc/php/conf.d/docker-php-ext-opcache.ini && \
+    echo "opcache.interned_strings_buffer=8" >> /usr/local/etc/php/conf.d/docker-php-ext-opcache.ini && \
+    echo "opcache.max_accelerated_files=10000" >> /usr/local/etc/php/conf.d/docker-php-ext-opcache.ini && \
+    echo "opcache.revalidate_freq=0" >> /usr/local/etc/php/conf.d/docker-php-ext-opcache.ini && \
+    echo "opcache.validate_timestamps=0" >> /usr/local/etc/php/conf.d/docker-php-ext-opcache.ini && \
+    echo "opcache.save_comments=1" >> /usr/local/etc/php/conf.d/docker-php-ext-opcache.ini
 
 # Install Node.js & npm (for Vite/frontend assets)
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
