@@ -302,7 +302,7 @@
         }
         
         renderNotifList();
-        const target = item.type === 'cancel' ? '/admin/pengembalian' : '/admin/pesanan';
+        const target = item.type === 'cancel' ? '/admin/pembatalan' : '/admin/pesanan';
         window.location.href = target;
     }
 
@@ -382,12 +382,42 @@
 
     document.getElementById('notifPanel')?.addEventListener('click', e => e.stopPropagation());
 
+    // ── System Native Notification (Windows/Mac/Android) ────────
+    if ("Notification" in window && Notification.permission === "default") {
+        // Request permission (some browsers require user gesture, so we also request on click)
+        Notification.requestPermission();
+        document.body.addEventListener('click', () => {
+            if (Notification.permission === "default") Notification.requestPermission();
+        }, { once: true });
+    }
+
+    function showSystemNotification(title, desc, targetUrl) {
+        if (!("Notification" in window) || Notification.permission !== "granted") return;
+        try {
+            const notif = new Notification(title, {
+                body: desc,
+                icon: '/images/logo-landeuh.png',
+                vibrate: [200, 100, 200]
+            });
+            notif.onclick = function() {
+                window.focus();
+                window.location.href = targetUrl;
+                notif.close();
+            };
+        } catch (e) {
+            console.error('System notification failed:', e);
+        }
+    }
+
     // ── Push Notification System ───────────────────────────────
     function showPushNotif(type, title, desc, noPesanan) {
         const container = document.getElementById('pushNotifContainer');
         if (!container) return;
 
         const target = type === 'cancel' ? '/admin/pembatalan' : '/admin/pesanan';
+        
+        // Trigger OS level notification
+        showSystemNotification(title, desc, target);
 
         const toast = document.createElement('div');
         toast.className = 'push-notif-toast';
