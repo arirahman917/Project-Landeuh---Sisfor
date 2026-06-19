@@ -284,6 +284,25 @@
     </div>
 </div>
 
+{{-- Modal Waktu Habis --}}
+<div id="timeoutModal" class="fixed inset-0 z-50 flex items-center justify-center hidden" style="opacity: 0; transition: opacity 0.3s ease;">
+    <div class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
+    <div class="bg-white rounded-2xl shadow-xl w-[90%] max-w-sm overflow-hidden z-10 transform scale-95 transition-transform duration-300" id="timeoutBox">
+        <div class="p-6 text-center">
+            <div class="w-16 h-16 rounded-full bg-red-100 text-red-500 flex items-center justify-center mx-auto mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+            </div>
+            <h3 class="text-lg font-bold text-gray-900 mb-2">Waktu Habis!</h3>
+            <p class="text-sm text-gray-500 mb-6">Waktu pembayaran Anda telah habis. Pesanan otomatis dibatalkan.</p>
+            <button onclick="window.location.href='/pesanan'" class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-4 rounded-xl transition">
+                Kembali ke Pesanan
+            </button>
+        </div>
+    </div>
+</div>
+
 @push('scripts')
 <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
 <script src="{{ asset('js/akomodasi-data.js') }}"></script>
@@ -513,9 +532,25 @@ function useFallbackPayment(method, akoId) {
                     })
                 })
                 .then(() => {
-                    alert('Waktu pembayaran Anda telah habis. Pesanan dibatalkan.');
-                    window.location.href = '/pesanan';
+                    const modal = document.getElementById('timeoutModal');
+                    const box = document.getElementById('timeoutBox');
+                    modal.classList.remove('hidden');
+                    
+                    // Trigger reflow to apply animation
+                    void modal.offsetWidth;
+                    
+                    modal.style.opacity = '1';
+                    box.classList.remove('scale-95');
+                    box.classList.add('scale-100');
                 });
+            } else {
+                const modal = document.getElementById('timeoutModal');
+                const box = document.getElementById('timeoutBox');
+                modal.classList.remove('hidden');
+                void modal.offsetWidth;
+                modal.style.opacity = '1';
+                box.classList.remove('scale-95');
+                box.classList.add('scale-100');
             }
             return true; // indicates timer finished
         }
