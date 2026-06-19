@@ -755,7 +755,7 @@
         // Room photo — images are in /images/akomodasi/{gambar}/a.webp
         if (akoItem.gambar) {
             document.getElementById('dynRoomImg').src =
-                '/images/akomodasi/' + akoItem.gambar + '/a.png';
+                '/images/akomodasi/' + akoItem.gambar + '/a.webp';
         }
     }
 
