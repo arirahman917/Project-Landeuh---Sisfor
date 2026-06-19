@@ -273,7 +273,7 @@
         const rows = PESANAN_DATA.map((p,i) => {
             let displayStatus = 'Sukses / Lunas';
             if (p.status === 'refunded') displayStatus = 'Dibatalkan';
-            if (p.status === 'refund_pending') displayStatus = 'Refund Pending';
+            if (p.status === 'refund_pending') displayStatus = 'Pembatalan Diajukan';
             if (p.status === 'refund_rejected') displayStatus = 'Sukses / Lunas (Ajuan Ditolak)';
             
             return `<tr>
