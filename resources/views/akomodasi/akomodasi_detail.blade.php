@@ -417,12 +417,12 @@
         const slotHtml = item.slot > 1 ? `<span class="flex items-center gap-1.5 font-medium whitespace-nowrap"><iconify-icon icon="lucide:tent" class="text-lg"></iconify-icon> Sisa ${item.slot} Unit Tenda</span>` : '';
 
         let fasHtml='<div class="columns-1 xl:columns-2 gap-x-6 space-y-1.5 text-xs text-gray-700">';
-        safeFasilitas.forEach(f=>fasHtml+=`<div class="flex items-start gap-1.5 break-words leading-relaxed break-inside-avoid"><span class="flex-shrink-0">•</span><span class="flex-1">${f}</span></div>`);fasHtml+='</div>';
+        safeFasilitas.forEach(f=>fasHtml+=`<div class="flex items-start gap-1.5 break-words leading-relaxed break-inside-avoid"><span class="flex-shrink-0 mr-1">•</span><span class="flex-1">${f}</span></div>`);fasHtml+='</div>';
 
         let makHtml=`<div class="flex flex-col gap-1 text-xs text-gray-700" id="makanan-list-${item.id}">`;
         safeMakanan.forEach(m=>{
             const isSarapan = m.toLowerCase().includes('sarapan') || m.toLowerCase().includes('breakfast');
-            makHtml+=`<div class="flex items-start gap-1.5 break-words leading-relaxed ${isSarapan ? 'makanan-sarapan' : ''}"><span class="flex-shrink-0">•</span><span class="flex-1">${m}</span></div>`;
+            makHtml+=`<div class="flex items-start gap-1.5 break-words leading-relaxed ${isSarapan ? 'makanan-sarapan' : ''}"><span class="flex-shrink-0 mr-1">•</span><span class="flex-1">${m}</span></div>`;
         });
         makHtml+='</div>';
 
