@@ -133,6 +133,14 @@ class ReservasiController extends Controller
                 ]);
             }
 
+            if ($booking->status === 'failed' && $incomingStatus === 'success') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Pembayaran ditolak karena pesanan telah dibatalkan (melewati batas waktu).',
+                    'booking' => $booking
+                ], 400);
+            }
+
             // Cek apakah booking bertransisi dari pending ke success (pembayaran pertama kali)
             $isTransitioning = ($booking->status === 'pending' && $validated['status'] === 'success');
 
