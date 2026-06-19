@@ -26,7 +26,7 @@
         <span class="absolute inset-y-0 left-3.5 flex items-center text-stone-400 pointer-events-none">
             <iconify-icon icon="lucide:search" class="text-base"></iconify-icon>
         </span>
-        <input type="text" id="searchPelanggan" placeholder="Cari pesanan…"
+        <input type="text" id="searchPelanggan" placeholder="Cari pelanggan"
             class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-stone-200 bg-white/80 text-stone-800 text-sm
                    placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition"/>
     </div>
