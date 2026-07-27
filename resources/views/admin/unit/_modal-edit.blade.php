@@ -6,7 +6,6 @@
 
 <div id="modalEditKamar"
     class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm hidden"
-    onclick="if(event.target===this) closeModalEdit()"
 >
     <div class="relative w-full max-w-2xl mx-4 bg-[#fdf6e3] rounded-3xl shadow-2xl border border-amber-200/60 overflow-hidden
                 animate-[modalIn_0.25s_ease-out_forwards]"

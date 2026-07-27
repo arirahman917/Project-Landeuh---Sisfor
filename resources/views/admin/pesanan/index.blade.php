@@ -44,6 +44,32 @@
             class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-stone-200 bg-white/80 text-stone-800 text-sm
                    placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition"/>
     </div>
+    <div class="flex items-center gap-2">
+        <div class="relative">
+            <select id="filterBulanBooking" class="appearance-none pl-4 pr-10 py-2.5 rounded-xl border border-stone-200 bg-white/80 text-stone-700 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition shadow-sm hover:border-amber-300">
+                <option value="semua">Bulan (Semua)</option>
+                <option value="01">Januari</option>
+                <option value="02">Februari</option>
+                <option value="03">Maret</option>
+                <option value="04">April</option>
+                <option value="05">Mei</option>
+                <option value="06">Juni</option>
+                <option value="07">Juli</option>
+                <option value="08">Agustus</option>
+                <option value="09">September</option>
+                <option value="10">Oktober</option>
+                <option value="11">November</option>
+                <option value="12">Desember</option>
+            </select>
+            <iconify-icon icon="lucide:chevron-down" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-stone-400 pointer-events-none"></iconify-icon>
+        </div>
+        <div class="relative">
+            <select id="filterTahunBooking" class="appearance-none pl-4 pr-10 py-2.5 rounded-xl border border-stone-200 bg-white/80 text-stone-700 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition shadow-sm hover:border-amber-300">
+                <option value="semua">Tahun (Semua)</option>
+            </select>
+            <iconify-icon icon="lucide:chevron-down" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-stone-400 pointer-events-none"></iconify-icon>
+        </div>
+    </div>
     <button id="btnSortMalam"
         class="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm text-[#fdf6e3]
                bg-gradient-to-r from-[#2d4a2d] to-[#3d6b3d] hover:from-[#3d6b3d] hover:to-[#4a824a]
@@ -164,6 +190,7 @@
     let currentPage = 1;
     let filteredData = [...PESANAN_DATA];
     let sortAsc = true;
+    let isSortedMalam = false;
 
     function fmt(n) { return Number(n).toLocaleString('id-ID'); }
 
@@ -286,21 +313,66 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
-    // ── Search ─────────────────────────────────────────────────
-    document.getElementById('searchPesanan').addEventListener('input', function() {
-        const q = this.value.toLowerCase();
-        filteredData = PESANAN_DATA.filter(p =>
-            p.noPesanan.toLowerCase().includes(q) ||
-            p.pemesanNama.toLowerCase().includes(q) ||
-            p.namaTamu.toLowerCase().includes(q) ||
-            p.akomodasi.toLowerCase().includes(q)
-        );
+    // ── Init Filter Tahun Booking ──────────────────────────────
+    function initFilterTahunBooking() {
+        const tahunSet = new Set();
+        PESANAN_DATA.forEach(p => {
+            if(p.raw_date) tahunSet.add(p.raw_date.split('-')[0]);
+        });
+        const tahunList = Array.from(tahunSet).sort((a,b) => b - a);
+        const selTahun = document.getElementById('filterTahunBooking');
+        tahunList.forEach(th => {
+            const opt = document.createElement('option');
+            opt.value = th;
+            opt.textContent = th;
+            selTahun.appendChild(opt);
+        });
+    }
+    initFilterTahunBooking();
+
+    // ── Apply Filters (Search, Bulan, Tahun) ───────────────────
+    function applyFilters() {
+        const q = document.getElementById('searchPesanan').value.toLowerCase();
+        const bulan = document.getElementById('filterBulanBooking').value;
+        const tahun = document.getElementById('filterTahunBooking').value;
+
+        filteredData = PESANAN_DATA.filter(p => {
+            let matchSearch = true;
+            if (q) {
+                matchSearch = p.noPesanan.toLowerCase().includes(q) ||
+                              p.pemesanNama.toLowerCase().includes(q) ||
+                              p.namaTamu.toLowerCase().includes(q) ||
+                              p.akomodasi.toLowerCase().includes(q);
+            }
+            
+            let matchBulan = true;
+            let matchTahun = true;
+            if (p.raw_date) {
+                const parts = p.raw_date.split('-'); // [YYYY, MM, DD]
+                if (parts.length === 3) {
+                    if (bulan !== 'semua') matchBulan = (parts[1] === bulan);
+                    if (tahun !== 'semua') matchTahun = (parts[0] === tahun);
+                }
+            }
+
+            return matchSearch && matchBulan && matchTahun;
+        });
+
+        if (isSortedMalam) {
+            filteredData.sort((a, b) => sortAsc ? a.malam - b.malam : b.malam - a.malam);
+        }
+
         currentPage = 1;
         render();
-    });
+    }
+
+    document.getElementById('searchPesanan').addEventListener('input', applyFilters);
+    document.getElementById('filterBulanBooking').addEventListener('change', applyFilters);
+    document.getElementById('filterTahunBooking').addEventListener('change', applyFilters);
 
     // ── Sort by Malam ──────────────────────────────────────────
     document.getElementById('btnSortMalam').addEventListener('click', function() {
+        isSortedMalam = true;
         sortAsc = !sortAsc;
         filteredData.sort((a, b) => sortAsc ? a.malam - b.malam : b.malam - a.malam);
         render();

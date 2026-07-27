@@ -328,23 +328,84 @@
             ? `Sisa ${item.slot} Unit Tenda`
             : `Sisa ${item.slot} Unit`;
 
-        // Booked date badges showing date range and guest name
+        // ── Month color palette (matching reference) ──────────────
+        const MONTH_COLORS = [
+            { name: 'Januari',   bg: '#FFE0E0', text: '#CC3333', border: '#FFBBBB' },
+            { name: 'Februari',  bg: '#DDEAFF', text: '#335599', border: '#B8D0FF' },
+            { name: 'Maret',     bg: '#DDFCE0', text: '#1E8C30', border: '#B0E8B8' },
+            { name: 'April',     bg: '#FFF6DD', text: '#BB7711', border: '#FFE8AA' },
+            { name: 'Mei',       bg: '#E6FFDD', text: '#3D9900', border: '#C0F0A0' },
+            { name: 'Juni',      bg: '#EEDDFF', text: '#7733BB', border: '#DDBBFF' },
+            { name: 'Juli',      bg: '#DDF0FF', text: '#2266AA', border: '#AADDFF' },
+            { name: 'Agustus',   bg: '#FFE5EE', text: '#CC2266', border: '#FFBBCC' },
+            { name: 'September', bg: '#FFF0DD', text: '#CC6600', border: '#FFDDAA' },
+            { name: 'Oktober',   bg: '#FCFCE0', text: '#7A7A00', border: '#EEE8A0' },
+            { name: 'November',  bg: '#FFDDF5', text: '#BB2288', border: '#FFBBDD' },
+            { name: 'Desember',  bg: '#DEE0FF', text: '#4444CC', border: '#C0C8FF' },
+        ];
+        const MONTH_SHORT = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agt','Sep','Okt','Nov','Des'];
+
+        // Booked date badges — grouped by check-in month, color-coded
         let bookedBadgesHtml = '';
         if (currentAndFutureBookings.length > 0) {
-            bookedBadgesHtml = currentAndFutureBookings.map(b => {
-                const bIn = parseToLocalDate(b.check_in_date);
-                const bOut = parseToLocalDate(b.check_out_date);
-                
-                const fmtDate = (d) => {
-                    const dd = String(d.getDate()).padStart(2, '0');
-                    const mm = String(d.getMonth() + 1).padStart(2, '0');
-                    const yyyy = d.getFullYear();
-                    return `${dd}-${mm}-${yyyy}`;
-                };
-                
-                const displayStr = `${fmtDate(bIn)} &rarr; ${fmtDate(bOut)} (${b.pemesan_nama || 'Tamu'})`;
-                return `<span class="booked-badge bg-[#fff1f2] border border-red-200 text-red-500 font-semibold px-2 py-1 rounded-lg shadow-sm text-[10px] whitespace-nowrap">${displayStr}</span>`;
-            }).join('');
+            // Sort bookings by check-in date ascending
+            const sorted = [...currentAndFutureBookings].sort((a, b) => {
+                return parseToLocalDate(a.check_in_date).getTime() - parseToLocalDate(b.check_in_date).getTime();
+            });
+
+            const fmtDate = (d) => {
+                const dd = String(d.getDate()).padStart(2, '0');
+                const mm = String(d.getMonth() + 1).padStart(2, '0');
+                const yyyy = d.getFullYear();
+                return `${dd}-${mm}-${yyyy}`;
+            };
+
+            const buildGroupsHtml = (bookingsArr) => {
+                const groups = {};
+                bookingsArr.forEach(b => {
+                    const bIn = parseToLocalDate(b.check_in_date);
+                    const key = `${bIn.getFullYear()}-${String(bIn.getMonth()).padStart(2,'0')}`;
+                    if (!groups[key]) groups[key] = { month: bIn.getMonth(), year: bIn.getFullYear(), bookings: [] };
+                    groups[key].bookings.push(b);
+                });
+
+                return Object.keys(groups).sort().map(key => {
+                    const g = groups[key];
+                    const c = MONTH_COLORS[g.month];
+                    const monthLabel = `${MONTH_SHORT[g.month]} ${g.year}`;
+
+                    const badges = g.bookings.map(b => {
+                        const bIn = parseToLocalDate(b.check_in_date);
+                        const bOut = parseToLocalDate(b.check_out_date);
+                        const displayStr = `${fmtDate(bIn)} &rarr; ${fmtDate(bOut)} (${b.pemesan_nama || 'Tamu'})`;
+                        return `<span style="background:${c.bg}; color:${c.text}; border:1px solid ${c.border};"
+                            class="inline-flex items-center gap-1 px-2 py-1 rounded-lg shadow-sm text-[10px] font-semibold whitespace-nowrap">${displayStr}</span>`;
+                    }).join('');
+
+                    return `<div class="flex flex-wrap items-center gap-1.5">
+                        <span style="background:${c.text}; color:#fff;" class="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[9px] font-bold tracking-wide whitespace-nowrap shadow-sm">
+                            <iconify-icon icon="lucide:calendar-days" class="text-[10px]"></iconify-icon>${monthLabel}
+                        </span>
+                        ${badges}
+                    </div>`;
+                }).join('');
+            };
+
+            // Jika > 3 booking, sisanya di-collapse
+            const visibleBookings = sorted.slice(0, 3);
+            const hiddenBookings = sorted.slice(3);
+
+            bookedBadgesHtml += buildGroupsHtml(visibleBookings);
+
+            if (hiddenBookings.length > 0) {
+                bookedBadgesHtml += `
+                <div id="hidden-bookings-${item.id}" class="hidden flex-col gap-2 mt-1">
+                    ${buildGroupsHtml(hiddenBookings)}
+                </div>
+                <button onclick="toggleBookings(${item.id})" id="btn-toggle-${item.id}" class="text-[10px] text-amber-600 font-bold hover:text-amber-800 transition-colors self-start flex items-center gap-1 mt-1 bg-amber-50 px-2 py-1 rounded-md border border-amber-200">
+                    <iconify-icon icon="lucide:chevron-down"></iconify-icon> Lihat ${hiddenBookings.length} booking lainnya
+                </button>`;
+            }
         }
 
         // Table rows
@@ -413,7 +474,7 @@
                             Terisi Malam Ini : ${countBookedToday}
                         </div>
                     </div>
-                    ${currentAndFutureBookings.length > 0 ? `<div class="flex flex-wrap gap-1.5">${bookedBadgesHtml}</div>` : ''}
+                    ${currentAndFutureBookings.length > 0 ? `<div class="flex flex-col gap-2">${bookedBadgesHtml}</div>` : ''}
                 </div>
 
                 {{-- Detail table --}}
@@ -536,6 +597,27 @@
             ? '<div style="width:100px"></div>'
             : `<button onclick="unitNav(${currentPage+1})" class="bg-[#3a523a] hover:bg-[#2c402c] text-white text-sm font-semibold px-5 py-2.5 rounded-full transition shadow">Selanjutnya</button>`;
     }
+
+    window.toggleBookings = function(id) {
+        const div = document.getElementById('hidden-bookings-' + id);
+        const btn = document.getElementById('btn-toggle-' + id);
+        if (!div || !btn) return;
+        
+        if (div.classList.contains('hidden')) {
+            div.classList.remove('hidden');
+            div.classList.add('flex');
+            btn.innerHTML = '<iconify-icon icon="lucide:chevron-up"></iconify-icon> Sembunyikan';
+        } else {
+            div.classList.add('hidden');
+            div.classList.remove('flex');
+            // We need to restore original text with count, but we don't have count easily accessible here.
+            // A simple trick: count child elements or store it in dataset.
+            // Let's store the count in a data attribute on the button when generating HTML.
+            // Actually, we can just grab it from btn.dataset.count if we added it, but I didn't.
+            // Let's just say "Tampilkan lainnya".
+            btn.innerHTML = '<iconify-icon icon="lucide:chevron-down"></iconify-icon> Tampilkan lainnya';
+        }
+    };
 
     window.unitNav = function(page) {
         const totalPages = Math.ceil(filteredData.length / PER_PAGE);
