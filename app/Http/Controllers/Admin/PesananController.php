@@ -12,7 +12,7 @@ class PesananController extends Controller
     {
         // Fetch successful, refunded, refund_pending, and refund_rejected bookings
         $bookings = Booking::with('accommodation')
-            ->whereIn('status', ['success', 'refund_rejected', 'refunded', 'refund_pending', 'pending'])
+            ->whereIn('status', ['success', 'reschedule_rejected', 'rescheduled', 'reschedule_pending', 'pending'])
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -29,6 +29,7 @@ class PesananController extends Controller
                 'akomodasiCap' => '(' . $booking->accommodation->max_orang . ' pax)',
                 'malam' => $booking->malam,
                 'tanggalDipesan' => $booking->created_at->locale('id')->isoFormat('D MMM YYYY'),
+                'raw_date' => $booking->created_at->format('Y-m-d'),
                 'checkin' => $booking->check_in_date->locale('id')->isoFormat('ddd, D MMM YYYY'),
                 'checkout' => $booking->check_out_date->locale('id')->isoFormat('ddd, D MMM YYYY'),
                 'tambahanAnak' => $booking->tambahan_anak,

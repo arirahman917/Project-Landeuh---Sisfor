@@ -2,7 +2,7 @@
 @section('content')
 
 {{-- ============================================================
-     DATA AJUAN PEMBATALAN — Daftar Pengajuan Pembatalan
+     DATA AJUAN RESCHEDULE — Daftar Pengajuan Reschedule
      ============================================================ --}}
 
 {{-- ── TAB NAVIGATION ─────────────────────────────────────────── --}}
@@ -13,22 +13,22 @@
         <iconify-icon icon="lucide:clipboard-list" class="text-base"></iconify-icon>
         Data Pesanan
     </a>
-    <a href="/admin/pembatalan"
+    <a href="/admin/reschedule"
        class="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all
               bg-[#3a523a] text-white shadow-md">
-        <iconify-icon icon="lucide:undo-2" class="text-base"></iconify-icon>
-        Data Ajuan Pembatalan
+        <iconify-icon icon="lucide:calendar-clock" class="text-base"></iconify-icon>
+        Data Ajuan Reschedule
     </a>
 </div>
 
 {{-- ── STAT CARD ──────────────────────────────────────────────── --}}
 <div class="bg-[#fdf6e3]/80 backdrop-blur-sm rounded-2xl border border-amber-200/60 shadow-sm p-5 flex items-center justify-between mb-6">
     <div class="flex items-center gap-4">
-        <div class="w-12 h-12 rounded-xl bg-red-500/10 flex items-center justify-center shrink-0">
-            <iconify-icon icon="lucide:undo-2" class="text-2xl text-red-600"></iconify-icon>
+        <div class="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center shrink-0">
+            <iconify-icon icon="lucide:calendar-clock" class="text-2xl text-amber-600"></iconify-icon>
         </div>
         <div>
-            <p class="text-xs font-semibold text-stone-500 tracking-wider uppercase">Total Ajuan Pembatalan</p>
+            <p class="text-xs font-semibold text-stone-500 tracking-wider uppercase">Total Ajuan Reschedule</p>
         </div>
     </div>
     <p class="text-3xl font-extrabold text-stone-800" id="statAjuan">—</p>
@@ -72,7 +72,8 @@
                     <th class="px-3 py-3.5 text-left font-bold text-stone-700 text-xs uppercase tracking-wider">Nama Tamu</th>
                     <th class="px-3 py-3.5 text-left font-bold text-stone-700 text-xs uppercase tracking-wider">Akomodasi</th>
                     <th class="px-3 py-3.5 text-center font-bold text-stone-700 text-xs uppercase tracking-wider">Malam</th>
-                    <th class="px-3 py-3.5 text-left font-bold text-stone-700 text-xs uppercase tracking-wider min-w-[180px]">Check-in / Check-out</th>
+                    <th class="px-3 py-3.5 text-left font-bold text-stone-700 text-xs uppercase tracking-wider min-w-[150px]">CI/CO Lama</th>
+                    <th class="px-3 py-3.5 text-left font-bold text-stone-700 text-xs uppercase tracking-wider min-w-[150px]">CI/CO Ajuan</th>
                     <th class="px-3 py-3.5 text-left font-bold text-stone-700 text-xs uppercase tracking-wider min-w-[120px]">Tanggal Booking</th>
                     <th class="px-3 py-3.5 text-right font-bold text-stone-700 text-xs uppercase tracking-wider">Total Bayar</th>
                     <th class="px-3 py-3.5 text-center font-bold text-stone-700 text-xs uppercase tracking-wider">Status</th>
@@ -99,7 +100,7 @@
     <div class="bg-white rounded-2xl max-w-md w-[90%] p-6 shadow-2xl transform scale-90 transition-transform duration-300" id="modalDetailBox">
         <h3 class="text-lg font-extrabold text-stone-800 mb-4 flex items-center gap-2">
             <iconify-icon icon="lucide:info" class="text-xl text-amber-500"></iconify-icon>
-            Detail Ajuan Pembatalan
+            Detail Ajuan Reschedule
         </h3>
         <div id="modalDetailContent" class="text-sm text-stone-600 space-y-2"></div>
         <div class="mt-5 flex justify-end">
@@ -188,6 +189,9 @@
                 <td class="px-3 py-3 text-center text-stone-800 font-semibold text-xs">${p.malam} mlm</td>
                 <td class="px-3 py-3 text-stone-700 text-xs leading-relaxed">
                     ${p.checkin} —<br>${p.checkout}
+                </td>
+                <td class="px-3 py-3 text-amber-700 text-xs font-semibold leading-relaxed">
+                    ${p.rescheduleCheckin} —<br>${p.rescheduleCheckout}
                 </td>
                 <td class="px-3 py-3 text-stone-800 font-semibold text-xs whitespace-nowrap">${p.tanggalDipesan}</td>
                 <td class="px-3 py-3 text-right text-stone-800 font-semibold text-xs whitespace-nowrap">
@@ -368,8 +372,8 @@
         const item = AJUAN_DATA[idx];
         const confirmed = await openConfirmModal(
             'accept',
-            'Terima Pembatalan',
-            `Apakah Anda yakin ingin <strong>MENERIMA</strong> pengajuan pembatalan untuk pesanan <strong>${item.noPesanan}</strong>?`
+            'Terima Reschedule',
+            `Apakah Anda yakin ingin <strong>MENERIMA</strong> pengajuan reschedule untuk pesanan <strong>${item.noPesanan}</strong>?`
         );
         if (!confirmed) return;
 
@@ -380,11 +384,11 @@
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                 },
-                body: JSON.stringify({ no_pesanan: item.noPesanan, status: 'refunded' })
+                body: JSON.stringify({ no_pesanan: item.noPesanan, status: 'rescheduled' })
             });
             const data = await res.json();
             if (data.success) {
-                showResultModal('success', 'Pembatalan Diterima', 'Pengajuan pembatalan berhasil diterima. Status pesanan diubah menjadi Dibatalkan.');
+                showResultModal('success', 'Reschedule Diterima', 'Pengajuan reschedule berhasil diterima. Tanggal check-in & check-out telah diperbarui.');
             } else {
                 showResultModal('error', 'Gagal', 'Gagal memperbarui status: ' + data.message);
             }
@@ -398,8 +402,8 @@
         const item = AJUAN_DATA[idx];
         const confirmed = await openConfirmModal(
             'reject',
-            'Tolak Pembatalan',
-            `Apakah Anda yakin ingin <strong>MENOLAK</strong> pengajuan pembatalan untuk pesanan <strong>${item.noPesanan}</strong>?`
+            'Tolak Reschedule',
+            `Apakah Anda yakin ingin <strong>MENOLAK</strong> pengajuan reschedule untuk pesanan <strong>${item.noPesanan}</strong>?`
         );
         if (!confirmed) return;
 
@@ -410,11 +414,11 @@
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                 },
-                body: JSON.stringify({ no_pesanan: item.noPesanan, status: 'refund_rejected' })
+                body: JSON.stringify({ no_pesanan: item.noPesanan, status: 'reschedule_rejected' })
             });
             const data = await res.json();
             if (data.success) {
-                showResultModal('success', 'Pembatalan Ditolak', 'Pengajuan pembatalan ditolak. Status pesanan kembali menjadi Lunas/Aktif.');
+                showResultModal('success', 'Reschedule Ditolak', 'Pengajuan reschedule ditolak. Status pesanan kembali menjadi Lunas/Aktif pada tanggal semula.');
             } else {
                 showResultModal('error', 'Gagal', 'Gagal memperbarui status: ' + data.message);
             }
@@ -437,8 +441,8 @@
                 <div><span class="text-stone-400 text-xs">Akomodasi</span><br><strong>${p.akomodasi} ${p.akomodasiCap}</strong></div>
                 <div><span class="text-stone-400 text-xs">Tanggal Booking</span><br><strong>${p.tanggalDipesan}</strong></div>
                 <div><span class="text-stone-400 text-xs">Durasi</span><br><strong>${p.malam} malam</strong></div>
-                <div><span class="text-stone-400 text-xs">Check-in</span><br><strong>${p.checkin}</strong></div>
-                <div><span class="text-stone-400 text-xs">Check-out</span><br><strong>${p.checkout}</strong></div>
+                <div><span class="text-stone-400 text-xs">CI/CO Lama</span><br><strong>${p.checkin} — ${p.checkout}</strong></div>
+                <div><span class="text-stone-400 text-xs">CI/CO Ajuan</span><br><strong class="text-amber-600">${p.rescheduleCheckin} — ${p.rescheduleCheckout}</strong></div>
                 <div><span class="text-stone-400 text-xs">Total Bayar</span><br><strong>IDR ${fmt(p.total)}</strong></div>
                 <div><span class="text-stone-400 text-xs">Metode</span><br><strong>${p.metode}</strong></div>
                 <div class="col-span-2"><span class="text-stone-400 text-xs">Status</span><br>${statusBadge(p.status)}</div>

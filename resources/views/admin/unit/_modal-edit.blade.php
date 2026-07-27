@@ -159,12 +159,12 @@
                     <div id="edit_gambar_preview_container" class="flex flex-wrap gap-3 mb-3">
                         <!-- Preview images injected by JS -->
                     </div>
-                    <input type="file" id="edit_gambar" multiple accept="image/*" onchange="handleEditGambarChange(event)"
+                    <input type="file" id="edit_gambar" multiple accept="image/*, .heic" onchange="handleEditGambarChange(event)"
                         class="w-full px-4 py-2.5 rounded-xl border border-stone-200 bg-white/80 text-stone-800 text-sm
                                file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold
                                file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100 transition
                                focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent"/>
-                    <p class="text-[10px] text-stone-400 mt-1">Kosongkan jika tidak ingin menambah gambar baru. Tekan dan geser gambar di atas untuk mengubah urutan (gambar pertama menjadi cover depan). Klik "x" untuk menghapus.</p>
+                    <p class="text-[10px] text-stone-400 mt-1">Kosongkan jika tidak ingin menambah gambar baru. Tekan dan geser gambar di atas untuk mengubah urutan (gambar pertama menjadi cover depan). Klik "x" untuk menghapus. Maksimal ukuran gambar 2MB/gambar.</p>
                 </div>
 
             </div>
@@ -227,10 +227,20 @@
 
     window.handleEditGambarChange = function(event) {
         const files = Array.from(event.target.files);
-        // Sort files by name a to z
-        files.sort((a, b) => a.name.localeCompare(b.name));
+        const validFiles = [];
         
-        const results = files.map(file => {
+        files.forEach(file => {
+            if (file.size > 2 * 1024 * 1024) {
+                alert(`Gambar "${file.name}" gagal diupload karena ukurannya melebihi 2MB.`);
+            } else {
+                validFiles.push(file);
+            }
+        });
+
+        // Sort files by name a to z
+        validFiles.sort((a, b) => a.name.localeCompare(b.name));
+        
+        const results = validFiles.map(file => {
             return {
                 type: 'new',
                 file: file,

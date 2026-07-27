@@ -9,27 +9,27 @@
                 $q->where('status', 'success')
                   ->where('created_at', '>=', now()->subDays(5));
             })->orWhere(function($q) {
-                $q->where('status', 'refund_pending')
+                $q->where('status', 'reschedule_pending')
                   ->where('updated_at', '>=', now()->subDays(5));
             });
         })
         ->get();
 
-    // Sort descending by updated_at for refund_pending, and created_at for success
+    // Sort descending by updated_at for reschedule_pending, and created_at for success
     $sortedBookings = $recentBookings->sortByDesc(function ($booking) {
-        return $booking->status === 'refund_pending' ? $booking->updated_at : $booking->created_at;
+        return $booking->status === 'reschedule_pending' ? $booking->updated_at : $booking->created_at;
     })->take(10);
 
     $notifListRaw = $sortedBookings->map(function ($booking) {
-        $type = $booking->status === 'refund_pending' ? 'cancel' : 'order';
-        $title = $booking->status === 'refund_pending' ? 'Pengajuan Pembatalan' : 'Pesanan Baru Masuk';
+        $type = $booking->status === 'reschedule_pending' ? 'reschedule' : 'order';
+        $title = $booking->status === 'reschedule_pending' ? 'Pengajuan Reschedule' : 'Pesanan Baru Masuk';
         
         $accTitle = $booking->accommodation ? $booking->accommodation->judul : 'Akomodasi';
-        $desc = $booking->status === 'refund_pending'
-            ? "{$booking->pemesan_nama} mengajukan pembatalan pesanan #{$booking->no_pesanan}."
+        $desc = $booking->status === 'reschedule_pending'
+            ? "{$booking->pemesan_nama} mengajukan reschedule pesanan #{$booking->no_pesanan}."
             : "{$booking->pemesan_nama} memesan {$accTitle} untuk {$booking->malam} malam.";
             
-        $timeStr = $booking->status === 'refund_pending'
+        $timeStr = $booking->status === 'reschedule_pending'
             ? $booking->updated_at->diffForHumans()
             : $booking->created_at->diffForHumans();
 
@@ -40,7 +40,7 @@
             'time' => $timeStr,
             'read' => false,
             'noPesanan' => $booking->no_pesanan,
-            'active_time' => $booking->status === 'refund_pending'
+            'active_time' => $booking->status === 'reschedule_pending'
                 ? $booking->updated_at->toIso8601String()
                 : $booking->created_at->toIso8601String(),
         ];
@@ -174,7 +174,7 @@
     flex-shrink:0;
 }
 .push-notif-icon.order { background:#dcfce7;color:#16a34a }
-.push-notif-icon.cancel { background:#fee2e2;color:#dc2626 }
+.push-notif-icon.reschedule { background:#fef3c7;color:#d97706 }
 .push-notif-body { flex:1;min-width:0 }
 .push-notif-title { font-size:.82rem;font-weight:800;color:#222;margin-bottom:.15rem }
 .push-notif-desc { font-size:.75rem;color:#888;line-height:1.4 }
@@ -249,8 +249,8 @@
         list.innerHTML = NOTIF_DATA.map((n, i) => `
             <div class="flex items-start gap-3 px-4 py-3 hover:bg-amber-50/50 transition cursor-pointer ${n.read ? 'opacity-50' : ''}"
                  onclick="clickNotif(${i})">
-                <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 ${n.type === 'order' ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-500'}">
-                    <iconify-icon icon="${n.type === 'order' ? 'lucide:shopping-bag' : 'lucide:undo-2'}" class="text-base"></iconify-icon>
+                <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 ${n.type === 'order' ? 'bg-emerald-100 text-emerald-600' : 'bg-amber-100 text-amber-600'}">
+                    <iconify-icon icon="${n.type === 'order' ? 'lucide:shopping-bag' : 'lucide:calendar-clock'}" class="text-base"></iconify-icon>
                 </div>
                 <div class="flex-1 min-w-0">
                     <div class="text-xs font-bold text-stone-800">${n.title}</div>
@@ -302,7 +302,7 @@
         }
         
         renderNotifList();
-        const target = item.type === 'cancel' ? '/admin/pembatalan' : '/admin/pesanan';
+        const target = item.type === 'reschedule' ? '/admin/reschedule' : '/admin/pesanan';
         window.location.href = target;
     }
 
@@ -414,7 +414,7 @@
         const container = document.getElementById('pushNotifContainer');
         if (!container) return;
 
-        const target = type === 'cancel' ? '/admin/pembatalan' : '/admin/pesanan';
+        const target = type === 'reschedule' ? '/admin/reschedule' : '/admin/pesanan';
         
         // Trigger OS level notification
         showSystemNotification(title, desc, target);
@@ -424,7 +424,7 @@
         toast.setAttribute('data-href', target);
         toast.innerHTML = `
             <div class="push-notif-icon ${type}">
-                <iconify-icon icon="${type === 'order' ? 'lucide:shopping-bag' : 'lucide:undo-2'}" class="text-lg"></iconify-icon>
+                <iconify-icon icon="${type === 'order' ? 'lucide:shopping-bag' : 'lucide:calendar-clock'}" class="text-lg"></iconify-icon>
             </div>
             <div class="push-notif-body">
                 <div class="push-notif-title">${title}</div>

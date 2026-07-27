@@ -25,8 +25,8 @@
     <div style="background-color: #f9f9f9; border-left: 4px solid #ff9800; padding: 15px; margin: 20px 0;">
         <p style="margin-top: 0; color: #d84315;"><strong>Kebijakan Pemesanan:</strong></p>
         <ul style="margin-bottom: 0; padding-left: 20px; color: #555;">
-            <li>Pemesanan ini tidak dapat diubah (No Reschedule).</li>
-            <li>Pemesanan tidak dapat dikembalikan (No Refund) jika Anda membatalkannya.</li>
+            <li>Pemesanan hanya dapat dijadwalkan ulang (reschedule) dan tidak dapat dibatalkan.</li>
+            <li>Pembayaran yang telah dilakukan tidak dapat dikembalikan (non-refundable).</li>
         </ul>
     </div>
 

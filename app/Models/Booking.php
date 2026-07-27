@@ -18,6 +18,8 @@ class Booking extends Model
         'nama_tamu',
         'check_in_date',
         'check_out_date',
+        'reschedule_check_in',
+        'reschedule_check_out',
         'malam',
         'tambahan_anak',
         'tambahan_dewasa',
@@ -29,6 +31,8 @@ class Booking extends Model
     protected $casts = [
         'check_in_date' => 'date:Y-m-d',
         'check_out_date' => 'date:Y-m-d',
+        'reschedule_check_in' => 'date:Y-m-d',
+        'reschedule_check_out' => 'date:Y-m-d',
     ];
 
     public function accommodation()

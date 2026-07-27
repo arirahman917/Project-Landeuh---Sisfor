@@ -133,6 +133,8 @@ Route::post('/reservasi/store', [ReservasiController::class, 'store'])->name('re
 Route::post('/reservasi/get-snap-token', [ReservasiController::class, 'getSnapToken'])->name('reservasi.snap-token');
 Route::post('/reservasi/update-status', [ReservasiController::class, 'updateStatus'])->name('reservasi.update-status');
 Route::get('/invoice/{no_pesanan}/download', [ReservasiController::class, 'downloadInvoice'])->name('invoice.download');
+Route::post('/reservasi/reschedule', [ReservasiController::class, 'submitReschedule'])->name('reservasi.reschedule');
+Route::get('/reservasi/booked-dates/{id}', [ReservasiController::class, 'getBookedDates'])->name('reservasi.booked-dates');
 
 Route::get('/reservasi/metode-pembayaran/{id}', function (Illuminate\Http\Request $request, $id) {
     $booking = null;
@@ -234,18 +236,18 @@ Route::prefix('admin')->group(function () {
 
     Route::get('/pesanan', [PesananController::class, 'index'])->name('admin.pesanan.index');
 
-    Route::get('/pembatalan', function () {
-        // Fetch bookings that are related to refunds (pending, refunded, or rejected)
+    Route::get('/reschedule', function () {
+        // Fetch bookings that are related to reschedule (pending, rescheduled, or rejected)
         $bookings = \App\Models\Booking::with('accommodation')
-            ->whereIn('status', ['refund_pending', 'refunded', 'refund_rejected'])
+            ->whereIn('status', ['reschedule_pending', 'rescheduled', 'reschedule_rejected'])
             ->orderBy('updated_at', 'desc')
             ->get();
             
         $formattedBookings = $bookings->map(function ($booking) {
             $statusMap = [
-                'refund_pending' => 'pending',
-                'refunded' => 'accepted',
-                'refund_rejected' => 'rejected'
+                'reschedule_pending' => 'pending',
+                'rescheduled' => 'accepted',
+                'reschedule_rejected' => 'rejected'
             ];
             return [
                 'id' => $booking->id,
@@ -260,6 +262,8 @@ Route::prefix('admin')->group(function () {
                 'tanggalDipesan' => $booking->created_at->locale('id')->isoFormat('D MMM YYYY'),
                 'checkin' => $booking->check_in_date->locale('id')->isoFormat('ddd, D MMM YYYY'),
                 'checkout' => $booking->check_out_date->locale('id')->isoFormat('ddd, D MMM YYYY'),
+                'rescheduleCheckin' => $booking->reschedule_check_in ? $booking->reschedule_check_in->locale('id')->isoFormat('ddd, D MMM YYYY') : '-',
+                'rescheduleCheckout' => $booking->reschedule_check_out ? $booking->reschedule_check_out->locale('id')->isoFormat('ddd, D MMM YYYY') : '-',
                 'total' => $booking->total,
                 'metode' => $booking->metode_pembayaran,
                 'status' => $statusMap[$booking->status] ?? 'pending',
@@ -267,8 +271,8 @@ Route::prefix('admin')->group(function () {
             ];
         });
         
-        return view('admin.pesanan.pembatalan', compact('formattedBookings'));
-    })->name('admin.pembatalan.index');
+        return view('admin.pesanan.reschedule', compact('formattedBookings'));
+    })->name('admin.reschedule.index');
 
     Route::get('/pelanggan', [PelangganController::class, 'index'])->name('admin.pelanggan.index');
     Route::put('/pelanggan/{id}', [PelangganController::class, 'update'])->name('admin.pelanggan.update');
@@ -289,22 +293,22 @@ Route::prefix('admin')->group(function () {
                     $q->where('status', 'success')
                       ->where('created_at', '>=', now()->subDays(5));
                 })->orWhere(function($q) {
-                    $q->where('status', 'refund_pending')
+                    $q->where('status', 'reschedule_pending')
                       ->where('updated_at', '>=', now()->subDays(5));
                 });
             })
             ->get();
 
         $notifications = $recentBookings->map(function ($booking) {
-            $type = $booking->status === 'refund_pending' ? 'cancel' : 'order';
-            $title = $booking->status === 'refund_pending' ? 'Pengajuan Pembatalan' : 'Pesanan Baru Masuk';
+            $type = $booking->status === 'reschedule_pending' ? 'reschedule' : 'order';
+            $title = $booking->status === 'reschedule_pending' ? 'Pengajuan Reschedule' : 'Pesanan Baru Masuk';
             
             $accTitle = $booking->accommodation ? $booking->accommodation->judul : 'Akomodasi';
-            $desc = $booking->status === 'refund_pending'
-                ? "{$booking->pemesan_nama} mengajukan pembatalan pesanan #{$booking->no_pesanan}."
+            $desc = $booking->status === 'reschedule_pending'
+                ? "{$booking->pemesan_nama} mengajukan reschedule pesanan #{$booking->no_pesanan}."
                 : "{$booking->pemesan_nama} memesan {$accTitle} untuk {$booking->malam} malam.";
                 
-            $timeStr = $booking->status === 'refund_pending'
+            $timeStr = $booking->status === 'reschedule_pending'
                 ? $booking->updated_at->diffForHumans()
                 : $booking->created_at->diffForHumans();
 
@@ -315,7 +319,7 @@ Route::prefix('admin')->group(function () {
                 'time' => $timeStr,
                 'read' => false,
                 'noPesanan' => $booking->no_pesanan,
-                'active_time' => $booking->status === 'refund_pending' 
+                'active_time' => $booking->status === 'reschedule_pending' 
                     ? $booking->updated_at->toIso8601String() 
                     : $booking->created_at->toIso8601String(),
             ];

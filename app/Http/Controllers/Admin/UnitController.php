@@ -54,7 +54,13 @@ class UnitController extends Controller
             foreach ($files as $file) {
                 try {
                     $cloudinary = new Cloudinary(env('CLOUDINARY_URL'));
-                    $result = $cloudinary->uploadApi()->upload($file->getRealPath(), ['folder' => 'landeuh-akomodasi']);
+                    $result = $cloudinary->uploadApi()->upload($file->getRealPath(), [
+                        'folder' => 'landeuh-akomodasi',
+                        'format' => 'webp',
+                        'quality' => 'auto',
+                        'width' => 1200,
+                        'crop' => 'limit'
+                    ]);
                     $gambarArray[] = $result['secure_url'];
                 } catch (\Throwable $e) {
                     \Log::error('Cloudinary upload failed: ' . $e->getMessage());
@@ -113,7 +119,13 @@ class UnitController extends Controller
             foreach ($files as $file) {
                 try {
                     $cloudinary = new Cloudinary(env('CLOUDINARY_URL'));
-                    $result = $cloudinary->uploadApi()->upload($file->getRealPath(), ['folder' => 'landeuh-akomodasi']);
+                    $result = $cloudinary->uploadApi()->upload($file->getRealPath(), [
+                        'folder' => 'landeuh-akomodasi',
+                        'format' => 'webp',
+                        'quality' => 'auto',
+                        'width' => 1200,
+                        'crop' => 'limit'
+                    ]);
                     $gambarArray[] = $result['secure_url'];
                 } catch (\Throwable $e) {
                     \Log::error('Cloudinary upload failed: ' . $e->getMessage());

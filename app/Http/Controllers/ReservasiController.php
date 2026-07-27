@@ -115,20 +115,19 @@ class ReservasiController extends Controller
         try {
             $validated = $request->validate([
                 'no_pesanan' => 'required|string|exists:bookings,no_pesanan',
-                'status' => 'required|string|in:success,failed,pending,refund_pending,refunded,refund_rejected',
+                'status' => 'required|string|in:success,failed,pending,refund_pending,refunded,refund_rejected,reschedule_pending,rescheduled,reschedule_rejected',
                 'metode_pembayaran' => 'nullable|string',
             ]);
 
             $booking = Booking::where('no_pesanan', $validated['no_pesanan'])->firstOrFail();
             
-            // Jangan izinkan menimpa status refund (refund_pending/refunded/refund_rejected) 
-            // dengan success/failed dari auto-update halaman konfirmasi
-            $refundStatuses = ['refund_pending', 'refunded', 'refund_rejected'];
+            // Jangan izinkan menimpa status refund/reschedule
+            $protectedStatuses = ['refund_pending', 'refunded', 'refund_rejected', 'reschedule_pending', 'rescheduled', 'reschedule_rejected'];
             $incomingStatus = $validated['status'];
-            if (in_array($booking->status, $refundStatuses) && in_array($incomingStatus, ['success', 'failed'])) {
+            if (in_array($booking->status, $protectedStatuses) && in_array($incomingStatus, ['success', 'failed'])) {
                 return response()->json([
                     'success' => true,
-                    'message' => 'Status tidak diubah karena booking sudah dalam proses refund.',
+                    'message' => 'Status tidak diubah karena booking sudah dalam proses refund/reschedule.',
                     'booking' => $booking
                 ]);
             }
@@ -156,6 +155,16 @@ class ReservasiController extends Controller
             if (!empty($validated['metode_pembayaran'])) {
                 $booking->metode_pembayaran = $validated['metode_pembayaran'];
             }
+
+            // Jika admin menerima reschedule, swap tanggal
+            if ($validated['status'] === 'rescheduled' && $booking->reschedule_check_in && $booking->reschedule_check_out) {
+                $booking->check_in_date = $booking->reschedule_check_in;
+                $booking->check_out_date = $booking->reschedule_check_out;
+                // Clear reschedule fields setelah swap
+                $booking->reschedule_check_in = null;
+                $booking->reschedule_check_out = null;
+            }
+
             $booking->save();
 
             // Tindakan otomatis HANYA jika status berubah dari pending ke success
@@ -385,5 +394,128 @@ class ReservasiController extends Controller
         }
 
         return Carbon::parse($dateStr);
+    }
+
+    /**
+     * Submit reschedule request dari user.
+     */
+    public function submitReschedule(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'no_pesanan' => 'required|string|exists:bookings,no_pesanan',
+                'new_check_in' => 'required|date',
+            ]);
+
+            $booking = Booking::with('accommodation')->where('no_pesanan', $validated['no_pesanan'])->firstOrFail();
+
+            // Hanya booking 'success' yang boleh reschedule
+            if ($booking->status !== 'success') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Hanya pesanan berstatus sukses/lunas yang dapat diajukan reschedule.'
+                ], 400);
+            }
+
+            // Cek H-3: minimal 3 hari sebelum check-in asli
+            $now = Carbon::now()->startOfDay();
+            $originalCheckin = Carbon::parse($booking->check_in_date)->startOfDay();
+            $diffDays = $now->diffInDays($originalCheckin, false);
+
+            if ($diffDays < 3) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Pengajuan reschedule hanya bisa dilakukan minimal H-3 sebelum tanggal check-in.'
+                ], 400);
+            }
+
+            // Hitung check-out baru berdasarkan malam yang sama
+            $newCheckIn = Carbon::parse($validated['new_check_in']);
+            $newCheckOut = $newCheckIn->copy()->addDays($booking->malam);
+
+            // Validasi ketersediaan (sama seperti di store)
+            $accommodation = $booking->accommodation;
+            $totalSlots = $accommodation->slot;
+
+            for ($d = $newCheckIn->copy(); $d->lt($newCheckOut); $d->addDay()) {
+                $currentDate = $d->format('Y-m-d');
+
+                $activeBookingsCount = Booking::where('accommodation_id', $accommodation->id)
+                    ->whereNotIn('status', ['failed', 'refunded'])
+                    ->where('id', '!=', $booking->id) // Exclude booking ini sendiri
+                    ->where(function($query) use ($currentDate) {
+                        $query->where('check_in_date', '<=', $currentDate)
+                              ->where('check_out_date', '>', $currentDate);
+                    })
+                    ->count();
+
+                if ($activeBookingsCount + 1 > $totalSlots) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Maaf, tanggal yang Anda pilih sudah penuh. Silakan pilih tanggal lain.'
+                    ], 400);
+                }
+            }
+
+            // Update booking
+            $booking->reschedule_check_in = $newCheckIn->format('Y-m-d');
+            $booking->reschedule_check_out = $newCheckOut->format('Y-m-d');
+            $booking->status = 'reschedule_pending';
+            $booking->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Pengajuan reschedule berhasil dikirim. Menunggu persetujuan admin.',
+                'booking' => $booking
+            ]);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengajukan reschedule: ' . $e->getMessage()
+            ], 400);
+        }
+    }
+
+    /**
+     * Get booked dates for a specific accommodation (for datepicker).
+     */
+    public function getBookedDates(Request $request, $id)
+    {
+        $accommodation = Accommodation::findOrFail($id);
+        $totalSlots = $accommodation->slot;
+
+        // Ambil semua booking aktif untuk akomodasi ini
+        $bookings = Booking::where('accommodation_id', $id)
+            ->whereNotIn('status', ['failed', 'refunded'])
+            ->get();
+
+        // Exclude booking_id jika disediakan (supaya booking yg sedang di-reschedule tidak menghitung dirinya)
+        $excludeId = $request->query('exclude_booking_id');
+
+        // Scan 365 hari ke depan
+        $bookedDates = [];
+        $startDate = Carbon::now()->startOfDay();
+        $endDate = $startDate->copy()->addDays(365);
+
+        for ($d = $startDate->copy(); $d->lte($endDate); $d->addDay()) {
+            $currentDate = $d->format('Y-m-d');
+
+            $count = $bookings->filter(function($b) use ($currentDate, $excludeId) {
+                if ($excludeId && $b->id == $excludeId) return false;
+                return $b->check_in_date->format('Y-m-d') <= $currentDate
+                    && $b->check_out_date->format('Y-m-d') > $currentDate;
+            })->count();
+
+            if ($count >= $totalSlots) {
+                $bookedDates[] = $currentDate;
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'booked_dates' => $bookedDates,
+            'slot' => $totalSlots
+        ]);
     }
 }

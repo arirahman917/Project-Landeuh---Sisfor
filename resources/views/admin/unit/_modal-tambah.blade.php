@@ -156,12 +156,12 @@
                 <div class="md:col-span-2">
                     <label class="block text-xs font-semibold text-stone-600 mb-1.5 tracking-wider uppercase">Upload Gambar Akomodasi</label>
                     <div id="tambah_gambar_preview_container" class="flex flex-wrap gap-3 mb-3"></div>
-                    <input type="file" id="tambah_gambar" multiple accept="image/*" onchange="handleTambahGambarChange(event)"
+                    <input type="file" id="tambah_gambar" multiple accept="image/*, .heic" onchange="handleTambahGambarChange(event)"
                         class="w-full px-4 py-2.5 rounded-xl border border-stone-200 bg-white/80 text-stone-800 text-sm
                                file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold
                                file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100 transition
                                focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent"/>
-                    <p class="text-[10px] text-stone-400 mt-1">Anda dapat memilih lebih dari 1 gambar (Format: JPG, PNG, dll).</p>
+                    <p class="text-[10px] text-stone-400 mt-1">Anda dapat memilih lebih dari 1 gambar (Format: JPG, PNG, JPEG, Webp, HEIC). Maksimal ukuran gambar 2MB/gambar.</p>
                 </div>
 
             </div>{{-- /grid --}}
@@ -213,9 +213,19 @@
 
     window.handleTambahGambarChange = function(event) {
         const files = Array.from(event.target.files);
+        const validFiles = [];
+        
+        files.forEach(file => {
+            if (file.size > 2 * 1024 * 1024) {
+                alert(`Gambar "${file.name}" gagal diupload karena ukurannya melebihi 2MB.`);
+            } else {
+                validFiles.push(file);
+            }
+        });
+
         // Sort files by name a to z
-        files.sort((a, b) => a.name.localeCompare(b.name));
-        window.tambahKamarFiles = window.tambahKamarFiles.concat(files);
+        validFiles.sort((a, b) => a.name.localeCompare(b.name));
+        window.tambahKamarFiles = window.tambahKamarFiles.concat(validFiles);
         event.target.value = ''; // Reset input so user can select same file again if they want
         renderTambahImagePreviews();
     };

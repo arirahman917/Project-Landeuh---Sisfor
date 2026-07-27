@@ -37,7 +37,7 @@
             @php
                 $isActive = request()->is(ltrim($item['href'], '/') . '*')
                          || (request()->is('admin/dashboard') && $item['href'] === '/admin/unit')
-                         || (request()->is('admin/pembatalan*') && $item['href'] === '/admin/pesanan');
+                         || (request()->is('admin/reschedule*') && $item['href'] === '/admin/pesanan');
             @endphp
             <a href="{{ $item['href'] }}"
                class="flex items-center gap-3.5 px-4 py-3 rounded-xl group

@@ -13,11 +13,11 @@
         <iconify-icon icon="lucide:clipboard-list" class="text-base"></iconify-icon>
         Data Pesanan
     </a>
-    <a href="/admin/pembatalan"
+    <a href="/admin/reschedule"
        class="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all
               bg-white/80 text-stone-600 border border-stone-200 hover:bg-amber-50 hover:border-amber-300">
-        <iconify-icon icon="lucide:undo-2" class="text-base"></iconify-icon>
-        Data Ajuan Pembatalan
+        <iconify-icon icon="lucide:calendar-clock" class="text-base"></iconify-icon>
+        Data Ajuan Reschedule
     </a>
 </div>
 
@@ -51,7 +51,7 @@
         Berapa Malam <iconify-icon icon="lucide:arrow-up-down" class="text-sm"></iconify-icon>
     </button>
     <div class="flex-1 hidden sm:block"></div>
-    <button onclick="cetakLaporanPesanan()"
+    <button onclick="openModalCetakPdfPesanan()"
         class="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm text-[#fdf6e3]
                bg-gradient-to-r from-[#2d4a2d] to-[#3d6b3d] hover:from-[#3d6b3d] hover:to-[#4a824a]
                shadow-lg shadow-green-900/20 transition-all active:scale-[0.98]">
@@ -117,6 +117,43 @@
     </div>
 </div>
 
+{{-- ── MODAL CETAK PDF PESANAN ─────────────────────────────────── --}}
+<div id="modalCetakPdfPesanan" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm hidden" onclick="if(event.target===this) closeModalCetakPdfPesanan()">
+    <div class="bg-[#fdf6e3] rounded-3xl shadow-2xl border border-amber-200/60 p-6 w-full max-w-sm animate-[modalIn_0.25s_ease-out_forwards]">
+        <h3 class="text-lg font-bold text-stone-800 mb-4">Cetak Laporan PDF</h3>
+        <div class="space-y-4 mb-6">
+            <div>
+                <label class="block text-xs font-semibold text-stone-600 mb-1.5 uppercase">Bulan</label>
+                <select id="filterBulanPesanan" class="w-full px-4 py-2.5 rounded-xl border border-stone-200 bg-white/80 text-sm">
+                    <option value="semua">Semua Bulan</option>
+                    <option value="01">Januari</option>
+                    <option value="02">Februari</option>
+                    <option value="03">Maret</option>
+                    <option value="04">April</option>
+                    <option value="05">Mei</option>
+                    <option value="06">Juni</option>
+                    <option value="07">Juli</option>
+                    <option value="08">Agustus</option>
+                    <option value="09">September</option>
+                    <option value="10">Oktober</option>
+                    <option value="11">November</option>
+                    <option value="12">Desember</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-stone-600 mb-1.5 uppercase">Tahun</label>
+                <select id="filterTahunPesanan" class="w-full px-4 py-2.5 rounded-xl border border-stone-200 bg-white/80 text-sm">
+                    <option value="semua">Semua Tahun</option>
+                </select>
+            </div>
+        </div>
+        <div class="flex justify-end gap-3">
+            <button onclick="closeModalCetakPdfPesanan()" class="px-5 py-2 rounded-xl text-sm font-semibold text-stone-600 bg-stone-200 hover:bg-stone-300">Batal</button>
+            <button onclick="prosesCetakPdfPesanan()" class="px-5 py-2 rounded-xl text-sm font-bold text-white bg-green-700 hover:bg-green-800">Cetak</button>
+        </div>
+    </div>
+</div>
+
 @push('scripts')
 <script>
 (function(){
@@ -131,14 +168,14 @@
     function fmt(n) { return Number(n).toLocaleString('id-ID'); }
 
     function statusBadge(s) {
-        if (s === 'refunded') return '<span class="inline-block px-2.5 py-1 rounded-full text-[11px] font-bold bg-red-100 text-red-600">Dibatalkan</span>';
-        if (s === 'refund_pending') return '<span class="inline-block px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-100 text-amber-700">Pembatalan Diajukan</span>';
-        if (s === 'refund_rejected') {
+        if (s === 'rescheduled') return '<span class="inline-block px-2.5 py-1 rounded-full text-[11px] font-bold bg-purple-100 text-purple-700">Reschedule</span>';
+        if (s === 'reschedule_pending') return '<span class="inline-block px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-100 text-amber-700">Reschedule Diajukan</span>';
+        if (s === 'reschedule_rejected') {
             return `
                 <div class="flex flex-col items-center gap-1.5">
                     <span class="inline-block px-2.5 py-1 rounded-full text-[11px] font-bold bg-green-100 text-green-700">Sukses / Lunas</span>
-                    <span class="flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-semibold bg-amber-50 text-amber-600 border border-amber-200" title="Pernah mengajukan pembatalan namun ditolak">
-                        <iconify-icon icon="lucide:info" class="text-[10px]"></iconify-icon> Ajuan Ditolak
+                    <span class="flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-semibold bg-amber-50 text-amber-600 border border-amber-200" title="Pernah mengajukan reschedule namun ditolak">
+                        <iconify-icon icon="lucide:info" class="text-[10px]"></iconify-icon> Ajuan Reschedule Ditolak
                     </span>
                 </div>
             `;
@@ -270,12 +307,75 @@
     });
 
     // ── PDF ────────────────────────────────────────────────────
-    window.cetakLaporanPesanan = function() {
-        const rows = PESANAN_DATA.map((p,i) => {
+    window.openModalCetakPdfPesanan = function() {
+        const modal = document.getElementById('modalCetakPdfPesanan');
+        const tahunSelect = document.getElementById('filterTahunPesanan');
+        
+        let years = new Set();
+        PESANAN_DATA.forEach(p => {
+            if (p.raw_date) years.add(p.raw_date.substring(0, 4));
+        });
+        years = Array.from(years).sort((a,b) => b - a);
+        
+        let yearHtml = '<option value="semua">Semua Tahun</option>';
+        years.forEach(y => {
+            yearHtml += `<option value="${y}">${y}</option>`;
+        });
+        tahunSelect.innerHTML = yearHtml;
+        
+        modal.classList.remove('hidden');
+    };
+
+    window.closeModalCetakPdfPesanan = function() {
+        document.getElementById('modalCetakPdfPesanan').classList.add('hidden');
+    };
+
+    window.prosesCetakPdfPesanan = function() {
+        const bulan = document.getElementById('filterBulanPesanan').value;
+        const tahun = document.getElementById('filterTahunPesanan').value;
+        
+        let dataToPrint = PESANAN_DATA;
+        let titleSuffix = '';
+        
+        const monthNames = ["", "Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+        
+        let periodeString = 'Semua Periode';
+        if (bulan !== 'semua' && tahun !== 'semua') {
+            periodeString = `${monthNames[parseInt(bulan)]} ${tahun}`;
+        } else if (bulan === 'semua' && tahun !== 'semua') {
+            periodeString = `Semua Bulan Tahun ${tahun}`;
+        } else if (bulan !== 'semua' && tahun === 'semua') {
+            periodeString = `Bulan ${monthNames[parseInt(bulan)]} (Semua Tahun)`;
+        }
+
+        const now = new Date();
+        const dicetak = `${now.getDate()} ${monthNames[now.getMonth()+1]} ${now.getFullYear()} ${now.getHours().toString().padStart(2, '0')}.${now.getMinutes().toString().padStart(2, '0')} WIB`;
+
+        if (bulan !== 'semua' || tahun !== 'semua') {
+            dataToPrint = PESANAN_DATA.filter(p => {
+                if (!p.raw_date) return false;
+                const pTahun = p.raw_date.substring(0, 4);
+                const pBulan = p.raw_date.substring(5, 7);
+                
+                let match = true;
+                if (tahun !== 'semua' && pTahun !== tahun) match = false;
+                if (bulan !== 'semua' && pBulan !== bulan) match = false;
+                
+                return match;
+            });
+        }
+        
+        
+        if (dataToPrint.length === 0) {
+            alert('Tidak ada data pada periode tersebut.');
+            return;
+        }
+
+        const rows = dataToPrint.map((p,i) => {
             let displayStatus = 'Sukses / Lunas';
-            if (p.status === 'refunded') displayStatus = 'Dibatalkan';
-            if (p.status === 'refund_pending') displayStatus = 'Pembatalan Diajukan';
-            if (p.status === 'refund_rejected') displayStatus = 'Sukses / Lunas (Ajuan Ditolak)';
+            if (p.status === 'rescheduled') displayStatus = 'Reschedule';
+            if (p.status === 'reschedule_pending') displayStatus = 'Reschedule Diajukan';
+            if (p.status === 'reschedule_rejected') displayStatus = 'Sukses / Lunas (Ajuan Reschedule Ditolak)';
             if (p.status === 'pending') displayStatus = 'Belum Dibayar';
             
             return `<tr>
@@ -283,23 +383,50 @@
                 <td>${p.pemesanNama}<br>${p.pemesanTelp}</td>
                 <td>${p.namaTamu}</td><td>${p.akomodasi}</td>
                 <td>${p.malam} mlm</td><td>${p.checkin} — ${p.checkout}</td>
-                <td>${fmt(p.total)}</td><td>${p.metode}</td>
+                <td>${p.tanggalDipesan}</td>
+                <td style="text-align:right">${fmt(p.total)}</td><td>${p.metode}</td>
                 <td>${displayStatus}</td>
             </tr>`;
         }).join('');
+
+        // Calculate total omset
+        const totalOmset = dataToPrint.reduce((sum, p) => sum + Number(p.total), 0);
+
         const w = window.open('','_blank');
         w.document.write(`<html><head><title>Laporan Pesanan</title>
         <style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:Arial,sans-serif;padding:1.5rem}
-        h1{font-size:1.1rem;margin-bottom:1rem;text-align:center}
+        .header-container{display:flex;align-items:center;margin-bottom:1.5rem;border-bottom:2px solid #3a523a;padding-bottom:1rem}
+        .logo{width:80px;height:auto;margin-right:1.5rem}
+        .header-text h2{font-size:1.3rem;color:#1a1a1a;margin-bottom:0.25rem;text-transform:uppercase;letter-spacing:0.5px}
+        .header-text h3{font-size:1.1rem;color:#3a523a;margin-bottom:0.75rem;font-weight:600}
+        .header-text p{font-size:0.85rem;color:#444;margin-bottom:0.15rem}
         table{width:100%;border-collapse:collapse;font-size:0.7rem}
         th,td{border:1px solid #ccc;padding:4px 6px;text-align:left}
         th{background:#3a523a;color:#fff}tr:nth-child(even){background:#f9f3e8}
+        .omset-box{margin-top:1rem;padding:10px 14px;border:2px solid #3a523a;border-radius:8px;display:flex;justify-content:space-between;align-items:center;font-size:0.85rem}
+        .omset-label{font-weight:bold;color:#3a523a}
+        .omset-value{font-weight:bold;font-size:1rem;color:#1a1a1a}
         @media print{body{padding:0.5rem}}</style></head>
-        <body><h1>Laporan Data Pesanan — Landeuh Village</h1>
-        <table><thead><tr><th>No</th><th>No. Pesanan</th><th>Pemesan</th><th>Tamu</th><th>Akomodasi</th><th>Malam</th><th>Tanggal</th><th>Total</th><th>Metode</th><th>Status</th></tr></thead>
-        <tbody>${rows}</tbody></table></body></html>`);
+        <body>
+        <div class="header-container">
+            <img src="${window.location.origin}/images/logo-landeuh.png" class="logo" alt="Logo" onload="window.print()" onerror="window.print()">
+            <div class="header-text">
+                <h2>LAPORAN DATA PESANAN</h2>
+                <h3>Landeuh Riverside Camp</h3>
+                <p>Periode : ${periodeString || 'Semua Periode'}</p>
+                <p>Dicetak : ${typeof dicetak !== 'undefined' ? dicetak : ''}</p>
+            </div>
+        </div>
+        <table><thead><tr><th>No</th><th>No. Pesanan</th><th>Pemesan</th><th>Tamu</th><th>Akomodasi</th><th>Malam</th><th>Tanggal Check-in — Check-out</th><th>Tanggal Booking</th><th>Total</th><th>Metode</th><th>Status</th></tr></thead>
+        <tbody>${rows}</tbody></table>
+        <div class="omset-box">
+            <span class="omset-label">Total Omset (${periodeString || 'Semua Periode'}):</span>
+            <span class="omset-value">Rp ${fmt(totalOmset)}</span>
+        </div>
+        </body></html>`);
         w.document.close();
-        w.print();
+        
+        closeModalCetakPdfPesanan();
     };
 
     render();

@@ -37,7 +37,7 @@
         Nama <iconify-icon icon="lucide:arrow-up-down" class="text-sm"></iconify-icon>
     </button>
     <div class="flex-1 hidden sm:block"></div>
-    <button onclick="cetakLaporanPelanggan()"
+    <button onclick="openModalCetakPdfPelanggan()"
         class="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm text-[#fdf6e3]
                bg-gradient-to-r from-[#2d4a2d] to-[#3d6b3d] hover:from-[#3d6b3d] hover:to-[#4a824a]
                shadow-lg shadow-green-900/20 transition-all active:scale-[0.98]">
@@ -55,6 +55,7 @@
                     <th class="px-4 py-3.5 text-left font-bold text-stone-700 text-xs uppercase tracking-wider">Nama Lengkap</th>
                     <th class="px-4 py-3.5 text-left font-bold text-stone-700 text-xs uppercase tracking-wider">Email</th>
                     <th class="px-4 py-3.5 text-left font-bold text-stone-700 text-xs uppercase tracking-wider">No. Telepon</th>
+                    <th class="px-4 py-3.5 text-left font-bold text-stone-700 text-xs uppercase tracking-wider">Tanggal Daftar</th>
                     <th class="px-4 py-3.5 text-center font-bold text-stone-700 text-xs uppercase tracking-wider w-[140px]">Tindakan</th>
                 </tr>
             </thead>
@@ -75,6 +76,44 @@
            bg-[#1e2d1e] text-white text-sm font-medium opacity-0 pointer-events-none transition-all duration-300">
     <iconify-icon icon="lucide:check-circle" class="text-green-400 text-lg shrink-0"></iconify-icon>
     <span id="adminToastMsg">Berhasil!</span>
+</div>
+
+{{-- ── MODAL CETAK PDF ────────────────────────────────────────── --}}
+<div id="modalCetakPdfPelanggan" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm hidden" onclick="if(event.target===this) closeModalCetakPdfPelanggan()">
+    <div class="bg-[#fdf6e3] rounded-3xl shadow-2xl border border-amber-200/60 p-6 w-full max-w-sm animate-[modalIn_0.25s_ease-out_forwards]">
+        <h3 class="text-lg font-bold text-stone-800 mb-4">Cetak Laporan PDF</h3>
+        <div class="space-y-4 mb-6">
+            <div>
+                <label class="block text-xs font-semibold text-stone-600 mb-1.5 uppercase">Bulan</label>
+                <select id="filterBulanPelanggan" class="w-full px-4 py-2.5 rounded-xl border border-stone-200 bg-white/80 text-sm">
+                    <option value="semua">Semua Bulan</option>
+                    <option value="01">Januari</option>
+                    <option value="02">Februari</option>
+                    <option value="03">Maret</option>
+                    <option value="04">April</option>
+                    <option value="05">Mei</option>
+                    <option value="06">Juni</option>
+                    <option value="07">Juli</option>
+                    <option value="08">Agustus</option>
+                    <option value="09">September</option>
+                    <option value="10">Oktober</option>
+                    <option value="11">November</option>
+                    <option value="12">Desember</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-stone-600 mb-1.5 uppercase">Tahun</label>
+                <select id="filterTahunPelanggan" class="w-full px-4 py-2.5 rounded-xl border border-stone-200 bg-white/80 text-sm">
+                    <option value="semua">Semua Tahun</option>
+                    <!-- JavaScript will populate years here -->
+                </select>
+            </div>
+        </div>
+        <div class="flex justify-end gap-3">
+            <button onclick="closeModalCetakPdfPelanggan()" class="px-5 py-2 rounded-xl text-sm font-semibold text-stone-600 bg-stone-200 hover:bg-stone-300">Batal</button>
+            <button onclick="prosesCetakPdfPelanggan()" class="px-5 py-2 rounded-xl text-sm font-bold text-white bg-green-700 hover:bg-green-800">Cetak</button>
+        </div>
+    </div>
 </div>
 
 @push('scripts')
@@ -100,6 +139,7 @@
                 <td class="px-4 py-3 text-stone-800 font-medium">${p.nama}</td>
                 <td class="px-4 py-3 text-stone-600">${p.email}</td>
                 <td class="px-4 py-3 text-stone-600">${p.telp}</td>
+                <td class="px-4 py-3 text-stone-600 whitespace-nowrap">${p.tanggal_daftar}</td>
                 <td class="px-4 py-3 text-center">
                     <div class="flex items-center justify-center gap-2">
                         <button onclick="openModalEditPelanggan(${p.id})"
@@ -205,23 +245,102 @@
     window.renderPelangganTable = render;
 
     // ── PDF ────────────────────────────────────────────────────
-    window.cetakLaporanPelanggan = function() {
-        const rows = PELANGGAN_DATA.map((p,i) =>
-            `<tr><td>${i+1}</td><td>${p.nama}</td><td>${p.email}</td><td>${p.telp}</td></tr>`
+    window.openModalCetakPdfPelanggan = function() {
+        const modal = document.getElementById('modalCetakPdfPelanggan');
+        const tahunSelect = document.getElementById('filterTahunPelanggan');
+        
+        // Populate years dynamically based on data
+        let years = new Set();
+        PELANGGAN_DATA.forEach(p => {
+            if (p.raw_date) {
+                years.add(p.raw_date.substring(0, 4));
+            }
+        });
+        years = Array.from(years).sort((a,b) => b - a);
+        
+        let yearHtml = '<option value="semua">Semua Tahun</option>';
+        years.forEach(y => {
+            yearHtml += `<option value="${y}">${y}</option>`;
+        });
+        tahunSelect.innerHTML = yearHtml;
+        
+        modal.classList.remove('hidden');
+    };
+
+    window.closeModalCetakPdfPelanggan = function() {
+        document.getElementById('modalCetakPdfPelanggan').classList.add('hidden');
+    };
+
+    window.prosesCetakPdfPelanggan = function() {
+        const bulan = document.getElementById('filterBulanPelanggan').value;
+        const tahun = document.getElementById('filterTahunPelanggan').value;
+        
+        let dataToPrint = PELANGGAN_DATA;
+        let titleSuffix = '';
+        
+        const monthNames = ["", "Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+        
+        let periodeString = 'Semua Periode';
+        if (bulan !== 'semua' && tahun !== 'semua') {
+            periodeString = `${monthNames[parseInt(bulan)]} ${tahun}`;
+        } else if (bulan === 'semua' && tahun !== 'semua') {
+            periodeString = `Semua Bulan Tahun ${tahun}`;
+        } else if (bulan !== 'semua' && tahun === 'semua') {
+            periodeString = `Bulan ${monthNames[parseInt(bulan)]} (Semua Tahun)`;
+        }
+
+        const now = new Date();
+        const dicetak = `${now.getDate()} ${monthNames[now.getMonth()+1]} ${now.getFullYear()} ${now.getHours().toString().padStart(2, '0')}.${now.getMinutes().toString().padStart(2, '0')} WIB`;
+
+        if (bulan !== 'semua' || tahun !== 'semua') {
+            dataToPrint = PELANGGAN_DATA.filter(p => {
+                if (!p.raw_date) return false;
+                const pTahun = p.raw_date.substring(0, 4);
+                const pBulan = p.raw_date.substring(5, 7);
+                
+                let match = true;
+                if (tahun !== 'semua' && pTahun !== tahun) match = false;
+                if (bulan !== 'semua' && pBulan !== bulan) match = false;
+                
+                return match;
+            });
+        }
+        
+        if (dataToPrint.length === 0) {
+            alert('Tidak ada data pada periode tersebut.');
+            return;
+        }
+
+        const rows = dataToPrint.map((p,i) =>
+            `<tr><td>${i+1}</td><td>${p.nama}</td><td>${p.email}</td><td>${p.telp}</td><td>${p.tanggal_daftar}</td></tr>`
         ).join('');
         const w = window.open('','_blank');
         w.document.write(`<html><head><title>Laporan Pelanggan</title>
         <style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:Arial,sans-serif;padding:2rem}
-        h1{font-size:1.2rem;margin-bottom:1rem;text-align:center}
+        .header-container{display:flex;align-items:center;margin-bottom:1.5rem;border-bottom:2px solid #3a523a;padding-bottom:1rem}
+        .logo{width:80px;height:auto;margin-right:1.5rem}
+        .header-text h2{font-size:1.3rem;color:#1a1a1a;margin-bottom:0.25rem;text-transform:uppercase;letter-spacing:0.5px}
+        .header-text h3{font-size:1.1rem;color:#3a523a;margin-bottom:0.75rem;font-weight:600}
+        .header-text p{font-size:0.85rem;color:#444;margin-bottom:0.15rem}
         table{width:100%;border-collapse:collapse;font-size:0.85rem}
         th,td{border:1px solid #ccc;padding:6px 10px;text-align:left}
         th{background:#3a523a;color:#fff}tr:nth-child(even){background:#f9f3e8}
         @media print{body{padding:0.5rem}}</style></head>
-        <body><h1>Laporan Data Pelanggan — Landeuh Village</h1>
-        <table><thead><tr><th>No</th><th>Nama</th><th>Email</th><th>Telepon</th></tr></thead>
+        <body>
+        <div class="header-container">
+            <img src="${window.location.origin}/images/logo-landeuh.png" class="logo" alt="Logo" onload="window.print()" onerror="window.print()">
+            <div class="header-text">
+                <h2>LAPORAN DATA PELANGGAN</h2>
+                <h3>Landeuh Riverside Camp</h3>
+                <p>Periode : ${periodeString || 'Semua Periode'}</p>
+                <p>Dicetak : ${typeof dicetak !== 'undefined' ? dicetak : ''}</p>
+            </div>
+        </div>
+        <table><thead><tr><th>No</th><th>Nama</th><th>Email</th><th>Telepon</th><th>Tanggal Daftar</th></tr></thead>
         <tbody>${rows}</tbody></table></body></html>`);
         w.document.close();
-        w.print();
+        
+        closeModalCetakPdfPelanggan();
     };
 
     render();

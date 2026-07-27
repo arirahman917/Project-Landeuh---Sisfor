@@ -24,6 +24,8 @@ class PelangganController extends Controller
                 'nama' => $user->name,
                 'email' => $user->email,
                 'telp' => $user->phone ?? '-',
+                'tanggal_daftar' => $user->created_at ? $user->created_at->format('d M Y') : '-',
+                'raw_date' => $user->created_at ? $user->created_at->format('Y-m-d') : null,
             ];
         });
 

@@ -252,8 +252,8 @@
     font-weight:700;cursor:pointer;border:none;transition:all .2s;
     display:flex;align-items:center;gap:.5rem;
 }
-.cp-btn-cancel{border:1px solid rgba(250, 63, 70, 1);color:#fa3f46}
-.cp-btn-cancel:hover{background:rgba(250, 63, 70, 0.2)}
+.cp-btn-reschedule{border:1px solid #e6a645;color:#b8860b}
+.cp-btn-reschedule:hover{background:rgba(230,166,69,0.15)}
 .cp-btn-home{background:#3a523a;color:#fff}
 .cp-btn-home:hover{background:#2c402c}
 
@@ -272,6 +272,8 @@
     box-shadow:0 25px 60px rgba(0,0,0,.2);
     transform:scale(.85) translateY(20px);
     transition:transform .4s cubic-bezier(.4,0,.2,1);
+    max-height: 90vh;
+    overflow-y: auto;
 }
 .modal-overlay.active .modal-box{transform:scale(1) translateY(0)}
 .modal-icon{
@@ -355,6 +357,32 @@
     .cp-dates{gap:.3rem;padding:.5rem}
     .cp-date-val{font-size:.75rem}
     .cp-room-img{width:70px;height:55px}
+
+    /* Modal Reschedule Fix */
+    .modal-box { padding: 1.5rem 1rem 1.5rem !important; width: 96% !important; }
+}
+
+/* Datepicker Custom Styles */
+.flatpickr-calendar.inline {
+    margin: 0 auto !important; /* Center the calendar to remove empty space */
+    width: 100% !important; 
+    padding: 12px 10px !important; 
+    box-sizing: border-box !important;
+}
+.flatpickr-days, .dayContainer { width: 100% !important; min-width: 0 !important; max-width: 100% !important; }
+.flatpickr-day { max-width: none !important; flex-basis: 14.28% !important; height: 38px !important; line-height: 38px !important; }
+.flatpickr-weekdaycontainer { display: flex; width: 100%; padding: 0 10px !important; box-sizing: border-box !important; }
+.flatpickr-weekday { flex: 1; }
+.flatpickr-day.h3-blocked {
+    background-color: #fee2e2 !important; /* Red background for H-3 */
+    color: #ef4444 !important;
+    border-color: transparent !important;
+}
+.flatpickr-day.booked-date {
+    background-color: #f3f4f6 !important; /* Gray background */
+    color: #9ca3af !important; /* Gray text */
+    text-decoration: line-through !important;
+    border-color: transparent !important;
 }
 </style>
 
@@ -424,8 +452,8 @@
                     <div class="cp-box">
                         <div class="cp-box-title">Kebijakan</div>
                         <div class="cp-policy">
-                            <p>Pemesanan ini tidak dapat diubah</p>
-                            <p>Pemesanan tidak ada refund jika Anda membatalkannya</p>
+                            <p>Pemesanan hanya dapat dijadwalkan ulang (reschedule) dan tidak dapat dibatalkan.</p>
+                            <p>Pembayaran yang telah dilakukan tidak dapat dikembalikan (non-refundable).</p>
                         </div>
                     </div>
 
@@ -527,13 +555,13 @@
 
         {{-- Bottom actions --}}
         <div class="cp-actions">
-            <button class="cp-btn cp-btn-cancel" id="btnAjukanPembatalan" onclick="ajukanPembatalan()">
+            <button class="cp-btn cp-btn-reschedule" id="btnAjukanReschedule" onclick="ajukanReschedule()">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                      stroke-width="2" stroke="currentColor" width="16" height="16">
                     <path stroke-linecap="round" stroke-linejoin="round"
-                          d="M6 18L18 6M6 6l12 12"/>
+                          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                 </svg>
-                Ajukan Pembatalan
+                Ajukan Re-schedule
             </button>
             <button class="cp-btn cp-btn-home" onclick="window.location.href='/'">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -548,47 +576,102 @@
     </div>
 </div>
 
-{{-- Modal Konfirmasi Batal --}}
-<div class="modal-overlay" id="modalKonfirmasiBatal">
-    <div class="modal-box">
-        <div class="modal-icon" style="background:#fff3f3; color:#e53e3e; margin-bottom: 1rem;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-            </svg>
+{{-- Modal Reschedule (Datepicker) --}}
+<div class="modal-overlay" id="modalReschedule">
+    <div class="modal-box" style="max-width:480px;text-align:left">
+        <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1.2rem">
+            <div style="width:48px;height:48px;border-radius:50%;background:#fff7ed;display:flex;align-items:center;justify-content:center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="#e6a645" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+            </div>
+            <div>
+                <h4 class="modal-title" style="margin-bottom:0">Ajukan Re-schedule</h4>
+                <p style="font-size:.75rem;color:#999;margin-top:.15rem">Pilih tanggal check-in baru</p>
+            </div>
         </div>
-        <h4 class="modal-title">Konfirmasi Pembatalan</h4>
-        <p class="modal-desc">Apakah Anda yakin ingin mengajukan pembatalan untuk pesanan ini? Aksi ini tidak dapat dibatalkan.</p>
-        <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1.5rem;">
-            <button style="background: #e2e8f0; color: #475569; font-weight: bold; padding: 0.6rem 1.5rem; border-radius: 0.5rem; border: none; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='#cbd5e1'" onmouseout="this.style.background='#e2e8f0'" id="btnKonfirmasiBatalNo">Kembali</button>
-            <button style="background: #ef4444; color: white; font-weight: bold; padding: 0.6rem 1.5rem; border-radius: 0.5rem; border: none; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='#dc2626'" onmouseout="this.style.background='#ef4444'" id="btnKonfirmasiBatalYes">Ya, Batalkan</button>
+
+        <div style="background:#fff7ed;border:1px solid #fde68a;border-radius:.6rem;padding:.75rem 1rem;margin-bottom:1rem;font-size:.78rem;color:#92400e;display:flex;align-items:flex-start;gap:.5rem">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="flex-shrink:0;margin-top:1px">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <div>
+                <strong>Ketentuan:</strong><br>
+                • Minimal pengajuan H-3 sebelum tanggal check-in awal<br>
+                • Durasi menginap tetap <strong id="reschedDurasi">1 malam</strong> (tidak bisa diubah)<br>
+                • Tanggal yang dipilih harus tersedia (tidak ada booking lain)
+            </div>
+        </div>
+
+        <div style="margin-bottom:.75rem">
+            <label style="font-size:.82rem;font-weight:700;color:#444;display:block;margin-bottom:.4rem">Tanggal Check-in Baru <span style="color:#e53e3e">*</span></label>
+            <input type="text" id="reschedDatepicker" placeholder="Pilih tanggal…"
+                   style="width:100%;padding:.7rem .9rem;border:2px solid #ddd;border-radius:.6rem;font-size:.9rem;background:#fff;cursor:pointer" readonly>
+        </div>
+
+        <div id="reschedPreview" style="display:none;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:.6rem;padding:.75rem 1rem;margin-bottom:1rem">
+            <div style="font-size:.78rem;font-weight:700;color:#166534;margin-bottom:.3rem">Preview Jadwal Baru:</div>
+            <div style="font-size:.85rem;color:#333">
+                Check-in: <strong id="reschedNewCI">-</strong><br>
+                Check-out: <strong id="reschedNewCO">-</strong> (<span id="reschedNewMalam">1</span> malam)
+            </div>
+        </div>
+
+        <div style="display:flex;gap:.75rem;justify-content:flex-end;margin-top:1.2rem">
+            <button style="background:#e2e8f0;color:#475569;font-weight:bold;padding:.6rem 1.5rem;border-radius:.5rem;border:none;cursor:pointer;transition:.2s;font-size:.88rem"
+                    onmouseover="this.style.background='#cbd5e1'" onmouseout="this.style.background='#e2e8f0'"
+                    onclick="closeModalReschedule()">Batal</button>
+            <button id="btnSubmitReschedule" disabled
+                    style="background:#e6a645;color:#fff;font-weight:bold;padding:.6rem 1.5rem;border-radius:.5rem;border:none;cursor:not-allowed;opacity:.5;transition:.2s;font-size:.88rem"
+                    onclick="submitReschedule()">Kirim Pengajuan</button>
         </div>
     </div>
 </div>
 
-{{-- Modal Pembatalan --}}
-<div class="modal-overlay" id="modalPembatalan">
+{{-- Modal Reschedule Success --}}
+<div class="modal-overlay" id="modalRescheduleSuccess">
     <div class="modal-box">
         <div class="modal-icon modal-icon-success">
             <svg width="36" height="36" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path class="cp-check-path" d="M12 25l9 9 15-18" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
         </div>
-        <h3 class="modal-title">Pengajuan Pembatalan Terkirim</h3>
+        <h3 class="modal-title">Pengajuan Reschedule Terkirim</h3>
         <p class="modal-desc">
-            Permintaan pembatalan Anda telah dikirim ke admin Landeuh Village Riverside.<br>
+            Permintaan reschedule Anda telah dikirim ke admin Landeuh Village Riverside.<br>
             Silakan hubungi admin melalui WhatsApp untuk konfirmasi lebih lanjut.
         </p>
-        <button class="modal-btn-wa" onclick="window.open('https://wa.me/6281234567890?text=Halo%20Admin%2C%20saya%20ingin%20mengonfirmasi%20pengajuan%20pembatalan%20pesanan%20saya.%20No.%20Pemesanan%3A%20' + encodeURIComponent(document.getElementById('dynBookingNo').textContent), '_blank')">
+        <button class="modal-btn-wa" onclick="window.open('https://wa.me/6281234567890?text=Halo%20Admin%2C%20saya%20ingin%20mengonfirmasi%20pengajuan%20reschedule%20pesanan%20saya.%20No.%20Pemesanan%3A%20' + encodeURIComponent(document.getElementById('dynBookingNo').textContent), '_blank')">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
             Hubungi Admin via WhatsApp
         </button>
-        <button class="modal-btn-close" onclick="closeModalPembatalan()">Tutup</button>
+        <button class="modal-btn-close" onclick="closeModalRescheduleSuccess()">Tutup</button>
+    </div>
+</div>
+
+{{-- Modal Reschedule Error (H-3) --}}
+<div class="modal-overlay" id="modalRescheduleError">
+    <div class="modal-box">
+        <div class="modal-icon" style="background:#e6a645; animation: scaleInBounce .6s cubic-bezier(.4,0,.2,1) both;">
+            <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M22 12V24" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="22" cy="33" r="3.5" fill="#fff"/>
+            </svg>
+        </div>
+        <h3 class="modal-title">Reschedule Tidak Tersedia</h3>
+        <p class="modal-desc">
+            Pengajuan reschedule hanya dapat dilakukan minimal <strong>H-3</strong> sebelum tanggal check-in awal pesanan Anda.
+        </p>
+        <button class="modal-btn-close" onclick="closeModalRescheduleError()" style="background:#e2e8f0;color:#475569;font-weight:bold;padding:.6rem 1.5rem;border-radius:.5rem;border:none;cursor:pointer;margin-top:1rem;transition:.2s;">Tutup</button>
     </div>
 </div>
 
 @push('scripts')
 <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
 <script src="{{ asset('js/akomodasi-data.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://npmcdn.com/flatpickr/dist/l10n/id.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <script>
 (function () {
     @if(isset($booking))
@@ -608,10 +691,13 @@
         sessionStorage.setItem('res_akoId', '{{ $booking->accommodation_id }}');
         sessionStorage.setItem('res_payment_status', '{{ $booking->status }}');
         sessionStorage.setItem('res_payment_method', '{{ $booking->metode_pembayaran }}');
+        sessionStorage.setItem('res_malam', '{{ $booking->malam }}');
+        sessionStorage.setItem('res_booking_id', '{{ $booking->id }}');
+        sessionStorage.setItem('res_checkin_raw', '{{ $booking->check_in_date }}');
     @endif
 
     // ── Baca sessionStorage ───────────────────────────────────────────────
-    const status   = sessionStorage.getItem('res_payment_status') || 'success'; // 'success' | 'failed'
+    const status   = sessionStorage.getItem('res_payment_status') || 'success';
     const dNama    = sessionStorage.getItem('res_nama')    || 'Ari Rahman';
     const dHp      = sessionStorage.getItem('res_hp')      || '081512345678';
     const dEmail   = sessionStorage.getItem('res_email')   || 'arirahman@gmail.com';
@@ -620,6 +706,7 @@
     const dTotal   = sessionStorage.getItem('res_total')   || '1.475.000';
     const dBooking = sessionStorage.getItem('res_booking_no') || 'XXXXXXXXXX';
     const akoId    = parseInt(sessionStorage.getItem('res_akoId')) || 1;
+    const dMalam   = parseInt(sessionStorage.getItem('res_malam')) || 1;
     
     // Parse URL query parameters to check if accessed from My Bookings history page
     const urlParams = new URLSearchParams(window.location.search);
@@ -632,8 +719,6 @@
                         || 'Virtual Account';
 
     if (dBooking && dBooking !== 'XXXXXXXXXX' && !fromPesanan) {
-        // Hanya kirim update status otomatis saat baru selesai dari flow pembayaran,
-        // BUKAN saat diakses dari riwayat pesanan (from=pesanan).
         fetch('/reservasi/update-status', {
             method: 'POST',
             headers: {
@@ -676,7 +761,11 @@
     const titleEl    = document.getElementById('dynStatusTitle');
     const bannerText = document.getElementById('dynEmailBannerText');
 
-    if (status === 'success') {
+    // Statuses that mean payment was successful (booking is valid)
+    const successLikeStatuses = ['success', 'reschedule_pending', 'rescheduled', 'reschedule_rejected'];
+    const isSuccessLike = successLikeStatuses.includes(status);
+
+    if (isSuccessLike) {
         // Icon: green checkmark
         iconWrap.className = 'cp-icon-wrap cp-icon-success';
         iconWrap.innerHTML = `
@@ -695,9 +784,25 @@
         
         bannerText.innerHTML = `Pembayaran berhasil! Invoice telah dikirim ke email (<strong><span id="dynEmailInBanner">${dEmail}</span></strong>) dan WhatsApp Anda.`;
 
-        // Show cancel button only if success
-        const btnCancel = document.getElementById('btnAjukanPembatalan');
-        if (btnCancel) btnCancel.style.display = 'flex';
+        // Show/hide reschedule button based on sub-status
+        const btnResched = document.getElementById('btnAjukanReschedule');
+        if (btnResched) {
+            if (status === 'reschedule_pending') {
+                btnResched.disabled = true;
+                btnResched.style.opacity = '0.5';
+                btnResched.style.cursor = 'not-allowed';
+                btnResched.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg> Menunggu Konfirmasi`;
+                bannerText.innerHTML = `Pemesanan ini sedang dalam pengajuan reschedule. Silakan tunggu konfirmasi admin.`;
+            } else if (status === 'rescheduled') {
+                btnResched.style.display = 'none'; // Or disable it depending on logic, but hiding might be okay if they already got it rescheduled
+                bannerText.innerHTML = `Jadwal baru Anda telah disetujui oleh admin.`;
+            } else if (status === 'reschedule_rejected') {
+                btnResched.style.display = 'flex';
+                bannerText.innerHTML = `Pengajuan reschedule Anda ditolak. Anda dapat mengajukan ulang.`;
+            } else {
+                btnResched.style.display = 'flex';
+            }
+        }
 
         // Activate continuous pulse after entrance finishes
         setTimeout(() => iconWrap.classList.add('pulse'), 700);
@@ -721,14 +826,14 @@
 
         // Banner text untuk gagal
         if (fromPesanan) {
-            bannerText.innerHTML = status === 'refund_pending' ? `Pemesanan ini sedang dalam pengajuan pembatalan.` : `Pemesanan ini berstatus gagal/dibatalkan.`;
+            bannerText.innerHTML = `Pemesanan ini berstatus gagal/dibatalkan.`;
         } else {
             bannerText.innerHTML = `Cek emailmu (<strong>${dEmail}</strong>) sekarang untuk detail cara bayar.`;
         }
         
-        // Hide cancel button
-        const btnCancel = document.getElementById('btnAjukanPembatalan');
-        if (btnCancel) btnCancel.style.display = 'none';
+        // Hide reschedule button
+        const btnResched = document.getElementById('btnAjukanReschedule');
+        if (btnResched) btnResched.style.display = 'none';
     }
 
     // ── Accommodation data ────────────────────────────────────────────────
@@ -756,20 +861,24 @@
         document.getElementById('dynMakanan').innerHTML =
             akoItem.makanan.map(m => `<li>${m}</li>`).join('');
 
-        // Room photo — images are in /images/akomodasi/{gambar}/a.webp
+        // Room photo
         if (akoItem.gambar) {
             document.getElementById('dynRoomImg').src =
                 '/images/akomodasi/' + akoItem.gambar + '/a.webp';
         }
     }
 
-    // ── Check-in / Check-out (dari sessionStorage jika tersedia) ──────────
+    // ── Check-in / Check-out ──────────────────────────────────────────────
     const dCheckin  = sessionStorage.getItem('res_checkin');
     const dCheckout = sessionStorage.getItem('res_checkout');
     const dNights   = sessionStorage.getItem('res_malam');
     if (dCheckin)  document.getElementById('dynCheckin').textContent  = dCheckin;
     if (dCheckout) document.getElementById('dynCheckout').textContent = dCheckout;
     if (dNights)   document.getElementById('dynNights').textContent   = dNights + ' malam';
+
+    // Update durasi di modal reschedule
+    const reschedDurasi = document.getElementById('reschedDurasi');
+    if (reschedDurasi) reschedDurasi.textContent = dMalam + ' malam';
 })();
 
 // ── Actions ─────────────────────────────────────────────────────────────────────
@@ -795,94 +904,238 @@ function unduhPdf() {
     }, 500);
 }
 
-function ajukanPembatalan() {
+// ── Reschedule Logic ────────────────────────────────────────────────────────────
+let reschedFlatpickr = null;
+let selectedNewCheckin = null;
+
+function ajukanReschedule() {
     const bookingNo = document.getElementById('dynBookingNo').textContent;
     if (!bookingNo || bookingNo === 'XXXXXXXXXX') {
         alert('Gagal mendapatkan nomor pesanan.');
         return;
     }
 
-    const confirmModal = document.getElementById('modalKonfirmasiBatal');
-    const btnYes = document.getElementById('btnKonfirmasiBatalYes');
-    const btnNo = document.getElementById('btnKonfirmasiBatalNo');
+    // Check H-3 validation BEFORE opening modal
+    const checkinRaw = sessionStorage.getItem('res_checkin_raw');
+    let isEligible = true;
     
-    confirmModal.classList.add('active');
-
-    // Remove previous event listeners by cloning
-    const newBtnYes = btnYes.cloneNode(true);
-    const newBtnNo = btnNo.cloneNode(true);
-    btnYes.parentNode.replaceChild(newBtnYes, btnYes);
-    btnNo.parentNode.replaceChild(newBtnNo, btnNo);
-
-    newBtnNo.onclick = () => {
-        confirmModal.classList.remove('active');
-    };
-
-    newBtnYes.onclick = () => {
-        // Change button to loading state
-        const originalText = newBtnYes.innerHTML;
-        newBtnYes.disabled = true;
-        newBtnYes.style.opacity = '0.7';
-        newBtnYes.style.cursor = 'not-allowed';
-        newBtnYes.innerHTML = '<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Memproses...';
-        newBtnNo.disabled = true;
-        
-        fetch('/reservasi/update-status', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            },
-            body: JSON.stringify({
-                no_pesanan: bookingNo,
-                status: 'refund_pending'
-            })
-        })
-        .then(res => res.json())
-        .then(data => {
-            confirmModal.classList.remove('active');
-            if (data.success) {
-                sessionStorage.setItem('res_payment_status', 'refund_pending');
-                const modal = document.getElementById('modalPembatalan');
-                modal.classList.add('active');
-                
-                // Add reload event when modal closes
-                const closeBtn = modal.querySelector('button[onclick="closeModalPembatalan()"]');
-                if (closeBtn) {
-                    closeBtn.onclick = () => {
-                        closeModalPembatalan();
-                        location.reload();
-                    };
-                }
-            } else {
-                alert('Gagal mengajukan pembatalan: ' + data.message);
+    if (checkinRaw) {
+        const checkinParts = checkinRaw.split('T')[0].split(' ')[0].split('-');
+        if (checkinParts.length === 3) {
+            const ciDate = new Date(parseInt(checkinParts[0]), parseInt(checkinParts[1]) - 1, parseInt(checkinParts[2]));
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            if (Math.ceil((ciDate - today) / (1000 * 60 * 60 * 24)) < 3) isEligible = false;
+        }
+    } else {
+        const checkinText = document.getElementById('dynCheckin').textContent;
+        const parts = checkinText.split(', ');
+        if (parts.length === 2) {
+            const dateStr = parts[1];
+            const months = {'Januari':0,'Februari':1,'Maret':2,'April':3,'Mei':4,'Juni':5,'Juli':6,'Agustus':7,'September':8,'Oktober':9,'November':10,'Desember':11};
+            const dParts = dateStr.split(' ');
+            if (dParts.length === 3) {
+                const ciDate = new Date(parseInt(dParts[2]), months[dParts[1]], parseInt(dParts[0]));
+                const today = new Date();
+                today.setHours(0,0,0,0);
+                if (Math.ceil((ciDate - today) / (1000 * 60 * 60 * 24)) < 3) isEligible = false;
             }
+        }
+    }
+
+    if (!isEligible) {
+        document.getElementById('modalRescheduleError').classList.add('active');
+        return;
+    }
+
+    const malam = parseInt(sessionStorage.getItem('res_malam')) || 1;
+    const akoId = parseInt(sessionStorage.getItem('res_akoId')) || 1;
+    const bookingId = sessionStorage.getItem('res_booking_id') || '';
+
+    // Reset state
+    selectedNewCheckin = null;
+    const submitBtn = document.getElementById('btnSubmitReschedule');
+    submitBtn.disabled = true;
+    submitBtn.style.cursor = 'not-allowed';
+    submitBtn.style.opacity = '.5';
+    document.getElementById('reschedPreview').style.display = 'none';
+    document.getElementById('reschedDatepicker').value = '';
+
+    // Destroy existing flatpickr
+    if (reschedFlatpickr) {
+        reschedFlatpickr.destroy();
+        reschedFlatpickr = null;
+    }
+
+    // Show modal first
+    const modal = document.getElementById('modalReschedule');
+    modal.classList.add('active');
+
+    // Fetch booked dates then init flatpickr
+    fetch(`/reservasi/booked-dates/${akoId}?exclude_booking_id=${bookingId}`)
+        .then(r => r.json())
+        .then(data => {
+            const bookedDates = data.booked_dates || [];
+
+            reschedFlatpickr = flatpickr('#reschedDatepicker', {
+                locale: 'id',
+                dateFormat: 'Y-m-d',
+                minDate: 'today',
+                disable: [
+                    function(date) {
+                        const today = new Date();
+                        today.setHours(0,0,0,0);
+                        const h3Date = new Date(today);
+                        h3Date.setDate(today.getDate() + 3);
+                        
+                        if (date >= today && date < h3Date) return true;
+
+                        // Check if ALL nights from this check-in date are available
+                        for (let i = 0; i < malam; i++) {
+                            const d = new Date(date);
+                            d.setDate(d.getDate() + i);
+                            const str = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+                            if (bookedDates.includes(str)) return true;
+                        }
+                        return false;
+                    }
+                ],
+                onDayCreate: function(dObj, dStr, fp, dayElem) {
+                    const date = dayElem.dateObj;
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    const h3Date = new Date(today);
+                    h3Date.setDate(today.getDate() + 3);
+
+                    if (date >= today && date < h3Date) {
+                        dayElem.classList.add('h3-blocked');
+                    } else if (date >= today) {
+                        // Check if it's booked
+                        let isBooked = false;
+                        for (let i = 0; i < malam; i++) {
+                            const d = new Date(date);
+                            d.setDate(d.getDate() + i);
+                            const str = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+                            if (bookedDates.includes(str)) {
+                                isBooked = true;
+                                break;
+                            }
+                        }
+                        if (isBooked) {
+                            dayElem.classList.add('booked-date');
+                        }
+                    }
+                },
+                onChange: function(selectedDates) {
+                    if (selectedDates.length > 0) {
+                        selectedNewCheckin = selectedDates[0];
+                        const co = new Date(selectedNewCheckin);
+                        co.setDate(co.getDate() + malam);
+
+                        const days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+                        const months = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+
+                        const fmtDate = (d) => `${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+
+                        document.getElementById('reschedNewCI').textContent = fmtDate(selectedNewCheckin);
+                        document.getElementById('reschedNewCO').textContent = fmtDate(co);
+                        document.getElementById('reschedNewMalam').textContent = malam;
+                        document.getElementById('reschedPreview').style.display = 'block';
+
+                        submitBtn.disabled = false;
+                        submitBtn.style.cursor = 'pointer';
+                        submitBtn.style.opacity = '1';
+                    }
+                },
+                inline: true
+            });
         })
         .catch(err => {
-            confirmModal.classList.remove('active');
-            console.error('Error:', err);
-            alert('Terjadi kesalahan koneksi.');
-        })
-        .finally(() => {
-            // Restore button state just in case (though usually we reload)
-            newBtnYes.disabled = false;
-            newBtnNo.disabled = false;
-            newBtnYes.style.opacity = '1';
-            newBtnYes.style.cursor = 'pointer';
-            newBtnYes.innerHTML = originalText;
+            console.error('Failed to fetch booked dates:', err);
+            alert('Gagal memuat ketersediaan tanggal.');
         });
-    };
 }
 
-function closeModalPembatalan() {
-    const modal = document.getElementById('modalPembatalan');
+function submitReschedule() {
+    if (!selectedNewCheckin) return;
+
+    const bookingNo = document.getElementById('dynBookingNo').textContent;
+    const submitBtn = document.getElementById('btnSubmitReschedule');
+    const origText = submitBtn.textContent;
+    submitBtn.textContent = 'Memproses...';
+    submitBtn.disabled = true;
+    submitBtn.style.opacity = '.6';
+
+    const ciStr = selectedNewCheckin.getFullYear() + '-' + String(selectedNewCheckin.getMonth()+1).padStart(2,'0') + '-' + String(selectedNewCheckin.getDate()).padStart(2,'0');
+
+    fetch('/reservasi/reschedule', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify({
+            no_pesanan: bookingNo,
+            new_check_in: ciStr
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        closeModalReschedule();
+        if (data.success) {
+            sessionStorage.setItem('res_payment_status', 'reschedule_pending');
+            const successModal = document.getElementById('modalRescheduleSuccess');
+            successModal.classList.add('active');
+        } else {
+            alert('Gagal mengajukan reschedule: ' + data.message);
+        }
+    })
+    .catch(err => {
+        console.error('Error:', err);
+        alert('Terjadi kesalahan koneksi.');
+        submitBtn.textContent = origText;
+        submitBtn.disabled = false;
+        submitBtn.style.opacity = '1';
+    });
+}
+
+function closeModalReschedule() {
+    const modal = document.getElementById('modalReschedule');
     modal.classList.remove('active');
 }
 
-// Close modal on overlay click
-document.getElementById('modalPembatalan')?.addEventListener('click', function(e) {
-    if (e.target === this) closeModalPembatalan();
+function closeModalRescheduleSuccess() {
+    const modal = document.getElementById('modalRescheduleSuccess');
+    modal.classList.remove('active');
+
+    // Update UI inline instead of reloading (reload would show wrong status)
+    const btnResched = document.getElementById('btnAjukanReschedule');
+    if (btnResched) {
+        btnResched.disabled = true;
+        btnResched.style.opacity = '0.5';
+        btnResched.style.cursor = 'not-allowed';
+        btnResched.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg> Menunggu Konfirmasi`;
+    }
+
+    const bannerText = document.getElementById('dynEmailBannerText');
+    if (bannerText) bannerText.innerHTML = `Pemesanan ini sedang dalam pengajuan reschedule. Silakan tunggu konfirmasi admin.`;
+}
+
+function closeModalRescheduleError() {
+    document.getElementById('modalRescheduleError').classList.remove('active');
+}
+
+// Close modals on overlay click
+document.getElementById('modalReschedule')?.addEventListener('click', function(e) {
+    if (e.target === this) closeModalReschedule();
+});
+document.getElementById('modalRescheduleSuccess')?.addEventListener('click', function(e) {
+    if (e.target === this) closeModalRescheduleSuccess();
+});
+document.getElementById('modalRescheduleError')?.addEventListener('click', function(e) {
+    if (e.target === this) closeModalRescheduleError();
 });
 </script>
 @endpush
 @endsection
+

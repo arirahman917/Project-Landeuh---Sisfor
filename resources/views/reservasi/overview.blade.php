@@ -250,8 +250,8 @@
     <div class="modal-overlay" id="modalKebijakan">
         <div class="modal-box">
             <h4>Kebijakan</h4>
-            <p>Pemesanan ini tidak dapat diubah</p>
-            <p>Pemesanan tidak ada refund jika Anda membatalkannya</p>
+            <p>Pemesanan hanya dapat dijadwalkan ulang (reschedule) dan tidak dapat dibatalkan.</p>
+            <p>Pembayaran yang telah dilakukan tidak dapat dikembalikan (non-refundable).</p>
             <div class="close"><button onclick="document.getElementById('modalKebijakan').classList.remove('show')">Tutup</button></div>
         </div>
     </div>

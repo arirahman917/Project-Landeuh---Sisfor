@@ -267,6 +267,28 @@
             const rateLabel = document.getElementById(`rate-label-${item.id}`);
             const rateBadge = document.getElementById(`rate-badge-${item.id}`);
             const breakfastBadge = document.getElementById(`breakfast-badge-${item.id}`);
+            
+            const slotBadge = document.getElementById(`slot-badge-${item.id}`);
+            if (slotBadge && window.getAvailableSlots) {
+                const selectedDates = window.akoDateState[item.id] || [];
+                const available = window.getAvailableSlots(item, selectedDates);
+                slotBadge.innerHTML = `<iconify-icon icon="lucide:tent" class="text-lg"></iconify-icon> Sisa ${available} Unit Kamar`;
+                
+                if (available === 0) {
+                    item._isBooked = true;
+                } else {
+                    item._isBooked = false;
+                }
+                const btnPilihWrap = document.getElementById(`btn-pilih-wrap-${item.id}`);
+                if (btnPilihWrap) {
+                    if (item._isBooked) {
+                        btnPilihWrap.innerHTML = `<button disabled class="bg-gray-400 text-white text-sm font-bold w-full md:w-auto px-6 py-2.5 rounded-lg shadow cursor-not-allowed">Sudah Dibooking</button>`;
+                    } else {
+                        btnPilihWrap.innerHTML = `<button onclick="handlePilihKamar(${item.id})" id="btn-pilih-${item.id}" class="bg-[#3a523a] hover:bg-[#2c402c] text-white text-sm font-bold w-full md:w-auto px-6 py-2.5 rounded-lg transition shadow cursor-pointer">Pilih Kamar</button>`;
+                    }
+                }
+            }
+
             if (priceEl) {
                 const total = calculateDynamicTotal(item, nights);
                 priceEl.innerHTML = fmt(total);
@@ -414,7 +436,10 @@
         const safeMakanan = Array.isArray(item.makanan) ? item.makanan : [];
         const safeCatatan = Array.isArray(item.catatan) ? item.catatan : [];
 
-        const slotHtml = item.slot > 1 ? `<span class="flex items-center gap-1.5 font-medium whitespace-nowrap"><iconify-icon icon="lucide:tent" class="text-lg"></iconify-icon> Sisa ${item.slot} Unit Tenda</span>` : '';
+        const selectedDates = window.akoDateState[item.id] || [];
+        const availableSlots = window.getAvailableSlots ? window.getAvailableSlots(item, selectedDates) : item.slot;
+
+        const slotHtml = item.slot > 1 ? `<span id="slot-badge-${item.id}" class="flex items-center gap-1.5 font-medium whitespace-nowrap"><iconify-icon icon="lucide:tent" class="text-lg"></iconify-icon> Sisa ${availableSlots} Unit Kamar</span>` : '';
 
         let fasHtml='<div class="columns-1 xl:columns-2 gap-x-6 space-y-1.5 text-xs text-gray-700">';
         safeFasilitas.forEach(f=>fasHtml+=`<div class="flex items-start gap-1.5 break-words leading-relaxed break-inside-avoid"><span class="flex-shrink-0 mr-1">•</span><span class="flex-1">${f}</span></div>`);fasHtml+='</div>';
@@ -677,6 +702,56 @@
 
     // Call on load to initialize label
     updateGuestLabel();
+
+    window.getAvailableSlots = function(akomodasi, flatpickrDates) {
+        let maxBooked = 0;
+        let start = new Date();
+        start.setHours(12, 0, 0, 0);
+        let end = new Date(start);
+        end.setDate(end.getDate() + 1);
+
+        if (flatpickrDates && flatpickrDates.length > 0) {
+            start = new Date(flatpickrDates[0]);
+            start.setHours(12, 0, 0, 0);
+
+            if (flatpickrDates.length > 1) {
+                end = new Date(flatpickrDates[1]);
+                end.setHours(12, 0, 0, 0);
+            } else {
+                end = new Date(start);
+                end.setDate(end.getDate() + 1);
+            }
+
+            if (start.getTime() === end.getTime()) {
+                end.setDate(end.getDate() + 1);
+            }
+        }
+
+        for (let dt = new Date(start); dt < end; dt.setDate(dt.getDate() + 1)) {
+            const checkTime = dt.getTime();
+            let activeBookingsCount = 0;
+            if (akomodasi.bookings && akomodasi.bookings.length > 0) {
+                akomodasi.bookings.forEach(b => {
+                    if (b.status !== 'failed' && b.status !== 'refunded') {
+                        let bIn = new Date(b.check_in_date);
+                        bIn.setHours(12, 0, 0, 0);
+                        let bOut = new Date(b.check_out_date);
+                        bOut.setHours(12, 0, 0, 0);
+
+                        if (checkTime >= bIn.getTime() && checkTime < bOut.getTime()) {
+                            activeBookingsCount++;
+                        }
+                    }
+                });
+            }
+            if (activeBookingsCount > maxBooked) {
+                maxBooked = activeBookingsCount;
+            }
+        }
+
+        let available = akomodasi.slot - maxBooked;
+        return available < 0 ? 0 : available;
+    };
 
     function isBooked(akomodasi, flatpickrDates, targetKamar = 1) {
         if (!flatpickrDates || flatpickrDates.length === 0) return false;
