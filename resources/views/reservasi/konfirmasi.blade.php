@@ -599,14 +599,21 @@
                 <strong>Ketentuan:</strong><br>
                 • Minimal pengajuan H-3 sebelum tanggal check-in awal<br>
                 • Durasi menginap tetap <strong id="reschedDurasi">1 malam</strong> (tidak bisa diubah)<br>
-                • Tanggal yang dipilih harus tersedia (tidak ada booking lain)
+                • Tanggal yang dipilih harus tersedia (tidak ada booking lain, dan harus sesuai kawasan waktu check-in anda)<br>
+                • Kawasan waktu check-in anda adalah <strong id="reschedRateType" style="text-transform:capitalize">...</strong>
             </div>
         </div>
 
-        <div style="margin-bottom:.75rem">
+        <div style="margin-bottom:.75rem; position:relative;">
             <label style="font-size:.82rem;font-weight:700;color:#444;display:block;margin-bottom:.4rem">Tanggal Check-in Baru <span style="color:#e53e3e">*</span></label>
             <input type="text" id="reschedDatepicker" placeholder="Pilih tanggal…"
                    style="width:100%;padding:.7rem .9rem;border:2px solid #ddd;border-radius:.6rem;font-size:.9rem;background:#fff;cursor:pointer" readonly>
+            <div id="reschedLoading" style="display:none; position:absolute; bottom: 0.7rem; right: 1rem;">
+                <svg class="animate-spin h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+            </div>
         </div>
 
         <div id="reschedPreview" style="display:none;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:.6rem;padding:.75rem 1rem;margin-bottom:1rem">
@@ -615,6 +622,12 @@
                 Check-in: <strong id="reschedNewCI">-</strong><br>
                 Check-out: <strong id="reschedNewCO">-</strong> (<span id="reschedNewMalam">1</span> malam)
             </div>
+        </div>
+
+        <div style="display:flex;gap:1rem;margin-bottom:1rem;font-size:0.75rem;justify-content:center;">
+            <div style="display:flex;align-items:center;gap:0.3rem;"><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#10b981;"></span> Weekday</div>
+            <div style="display:flex;align-items:center;gap:0.3rem;"><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#f59e0b;"></span> Weekend</div>
+            <div style="display:flex;align-items:center;gap:0.3rem;"><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#ef4444;"></span> Highseason</div>
         </div>
 
         <div style="display:flex;gap:.75rem;justify-content:flex-end;margin-top:1.2rem">
@@ -665,6 +678,53 @@
         <button class="modal-btn-close" onclick="closeModalRescheduleError()" style="background:#e2e8f0;color:#475569;font-weight:bold;padding:.6rem 1.5rem;border-radius:.5rem;border:none;cursor:pointer;margin-top:1rem;transition:.2s;">Tutup</button>
     </div>
 </div>
+
+<style>
+/* Custom Flatpickr colors for date types */
+.flatpickr-day.date-weekday {
+    background-color: #d1fae5 !important;
+    color: #065f46 !important;
+    border-color: #d1fae5 !important;
+}
+.flatpickr-day.date-weekday.selected { background-color: #10b981 !important; color: #fff !important; border-color: #10b981 !important; }
+.flatpickr-day.date-weekend {
+    background-color: #fef3c7 !important;
+    color: #92400e !important;
+    border-color: #fef3c7 !important;
+}
+.flatpickr-day.date-weekend.selected { background-color: #f59e0b !important; color: #fff !important; border-color: #f59e0b !important; }
+.flatpickr-day.date-highseason {
+    background-color: #fee2e2 !important;
+    color: #b91c1c !important;
+    border-color: #fee2e2 !important;
+}
+.flatpickr-day.date-highseason.selected { background-color: #ef4444 !important; color: #fff !important; border-color: #ef4444 !important; }
+
+/* Blocked mismatches */
+.flatpickr-day.date-mismatch {
+    opacity: 0.6 !important;
+    cursor: not-allowed !important;
+}
+
+/* Adjacent month days */
+.flatpickr-day.prevMonthDay, .flatpickr-day.nextMonthDay {
+    opacity: 0.3 !important;
+}
+
+/* Original block */
+.flatpickr-day.h3-blocked {
+    background-color: #f3f4f6 !important;
+    color: #9ca3af !important;
+    border-color: transparent !important;
+    cursor: not-allowed !important;
+}
+.flatpickr-day.booked-date {
+    background-color: #f3f4f6 !important;
+    color: #9ca3af !important;
+    text-decoration: line-through !important;
+    border-color: transparent !important;
+}
+</style>
 
 @push('scripts')
 <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
@@ -908,6 +968,31 @@ function unduhPdf() {
 let reschedFlatpickr = null;
 let selectedNewCheckin = null;
 
+// Helper to determine date type in frontend
+function getDateTypeFrontend(dateObj, settings) {
+    const year = dateObj.getFullYear();
+    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const day = String(dateObj.getDate()).padStart(2, '0');
+    const dateString = `${year}-${month}-${day}`;
+    
+    const daysIndo = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', "Jum'at", 'Sabtu'];
+    const dayName = daysIndo[dateObj.getDay()];
+
+    // 1. Check Highseason
+    const hsSettings = settings.filter(d => d.type === 'highseason');
+    for (let hs of hsSettings) {
+        if (hs.dates && hs.dates.includes(dateString)) return 'highseason';
+    }
+
+    // 2. Check Weekend
+    const weSetting = settings.find(d => d.type === 'weekend');
+    if (weSetting && weSetting.dates) {
+        if (weSetting.dates.includes(dateString) || weSetting.dates.includes(dayName)) return 'weekend';
+    }
+
+    return 'weekday';
+}
+
 function ajukanReschedule() {
     const bookingNo = document.getElementById('dynBookingNo').textContent;
     if (!bookingNo || bookingNo === 'XXXXXXXXXX') {
@@ -918,11 +1003,13 @@ function ajukanReschedule() {
     // Check H-3 validation BEFORE opening modal
     const checkinRaw = sessionStorage.getItem('res_checkin_raw');
     let isEligible = true;
+    let originalCheckinDateObj = null;
     
     if (checkinRaw) {
         const checkinParts = checkinRaw.split('T')[0].split(' ')[0].split('-');
         if (checkinParts.length === 3) {
             const ciDate = new Date(parseInt(checkinParts[0]), parseInt(checkinParts[1]) - 1, parseInt(checkinParts[2]));
+            originalCheckinDateObj = ciDate;
             const today = new Date();
             today.setHours(0,0,0,0);
             if (Math.ceil((ciDate - today) / (1000 * 60 * 60 * 24)) < 3) isEligible = false;
@@ -936,6 +1023,7 @@ function ajukanReschedule() {
             const dParts = dateStr.split(' ');
             if (dParts.length === 3) {
                 const ciDate = new Date(parseInt(dParts[2]), months[dParts[1]], parseInt(dParts[0]));
+                originalCheckinDateObj = ciDate;
                 const today = new Date();
                 today.setHours(0,0,0,0);
                 if (Math.ceil((ciDate - today) / (1000 * 60 * 60 * 24)) < 3) isEligible = false;
@@ -971,11 +1059,29 @@ function ajukanReschedule() {
     const modal = document.getElementById('modalReschedule');
     modal.classList.add('active');
 
+    const dateInput = document.getElementById('reschedDatepicker');
+    const loadingIcon = document.getElementById('reschedLoading');
+    dateInput.placeholder = 'Memuat kalender...';
+    dateInput.disabled = true;
+    if (loadingIcon) loadingIcon.style.display = 'block';
+
     // Fetch booked dates then init flatpickr
     fetch(`/reservasi/booked-dates/${akoId}?exclude_booking_id=${bookingId}`)
         .then(r => r.json())
         .then(data => {
+            dateInput.placeholder = 'Pilih tanggal...';
+            dateInput.disabled = false;
+            if (loadingIcon) loadingIcon.style.display = 'none';
+
             const bookedDates = data.booked_dates || [];
+            const dateSettings = data.date_settings || [];
+            
+            // Determine the rate type of the original checkin
+            let originalType = 'weekday';
+            if (originalCheckinDateObj) {
+                originalType = getDateTypeFrontend(originalCheckinDateObj, dateSettings);
+            }
+            document.getElementById('reschedRateType').textContent = originalType;
 
             reschedFlatpickr = flatpickr('#reschedDatepicker', {
                 locale: 'id',
@@ -989,6 +1095,10 @@ function ajukanReschedule() {
                         h3Date.setDate(today.getDate() + 3);
                         
                         if (date >= today && date < h3Date) return true;
+                        
+                        // Check if the date type matches the original booking's date type
+                        const currentType = getDateTypeFrontend(date, dateSettings);
+                        if (currentType !== originalType) return true;
 
                         // Check if ALL nights from this check-in date are available
                         for (let i = 0; i < malam; i++) {
@@ -1006,10 +1116,24 @@ function ajukanReschedule() {
                     today.setHours(0, 0, 0, 0);
                     const h3Date = new Date(today);
                     h3Date.setDate(today.getDate() + 3);
+                    
+                    const currentType = getDateTypeFrontend(date, dateSettings);
+                    
+                    if (date < today) return; // Skip styling for past dates (keeps default flatpickr disabled style)
+
+                    // Add background color for date types
+                    dayElem.classList.add('date-' + currentType);
 
                     if (date >= today && date < h3Date) {
                         dayElem.classList.add('h3-blocked');
+                        dayElem.innerHTML = `<span style="text-decoration: line-through; font-size: 0.75em; font-weight: bold; line-height: 2.6;">H-3</span>`;
                     } else if (date >= today) {
+                        // Check if mismatch type
+                        if (currentType !== originalType) {
+                            dayElem.classList.add('date-mismatch');
+                            return;
+                        }
+
                         // Check if it's booked
                         let isBooked = false;
                         for (let i = 0; i < malam; i++) {
@@ -1051,6 +1175,11 @@ function ajukanReschedule() {
             });
         })
         .catch(err => {
+            const dateInput = document.getElementById('reschedDatepicker');
+            const loadingIcon = document.getElementById('reschedLoading');
+            dateInput.placeholder = 'Gagal memuat kalender';
+            dateInput.disabled = true;
+            if (loadingIcon) loadingIcon.style.display = 'none';
             console.error('Failed to fetch booked dates:', err);
             alert('Gagal memuat ketersediaan tanggal.');
         });

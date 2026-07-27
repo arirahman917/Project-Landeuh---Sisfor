@@ -429,6 +429,18 @@ class ReservasiController extends Controller
                 ], 400);
             }
 
+            // Hitung tipe tanggal untuk check-in asli dan check-in baru
+            $settings = \App\Models\DateSetting::all();
+            $originalType = $this->getDateType($booking->check_in_date, $settings);
+            $newType = $this->getDateType($validated['new_check_in'], $settings);
+
+            if ($originalType !== $newType) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Pengajuan reschedule ditolak. Anda hanya dapat memindahkan jadwal ke tipe hari yang sama (' . ucfirst($originalType) . ').'
+                ], 400);
+            }
+
             // Hitung check-out baru berdasarkan malam yang sama
             $newCheckIn = Carbon::parse($validated['new_check_in']);
             $newCheckOut = $newCheckIn->copy()->addDays($booking->malam);
@@ -515,7 +527,38 @@ class ReservasiController extends Controller
         return response()->json([
             'success' => true,
             'booked_dates' => $bookedDates,
-            'slot' => $totalSlots
+            'slot' => $totalSlots,
+            'date_settings' => \App\Models\DateSetting::all()
         ]);
+    }
+
+    /**
+     * Helper untuk menentukan tipe tanggal (highseason, weekend, weekday)
+     */
+    private function getDateType($dateString, $settings)
+    {
+        $date = Carbon::parse($dateString);
+        $dateStr = $date->format('Y-m-d');
+        
+        $daysIndo = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jum\'at', 'Sabtu'];
+        $dayName = $daysIndo[$date->dayOfWeek];
+
+        // 1. Check Highseason
+        $hsSettings = $settings->where('type', 'highseason');
+        foreach ($hsSettings as $hs) {
+            if ($hs->dates && str_contains($hs->dates, $dateStr)) {
+                return 'highseason';
+            }
+        }
+
+        // 2. Check Weekend
+        $weSetting = $settings->where('type', 'weekend')->first();
+        if ($weSetting && $weSetting->dates) {
+            if (str_contains($weSetting->dates, $dateStr) || str_contains($weSetting->dates, $dayName)) {
+                return 'weekend';
+            }
+        }
+
+        return 'weekday';
     }
 }
