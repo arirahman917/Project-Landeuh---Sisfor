@@ -21,6 +21,7 @@ Route::get('/setup-admin-landeuh-rahasia', function () {
 });
 
 Route::get('/akomodasi', [LandingController::class, 'akomodasi'])->name('akomodasi.index');
+Route::get('/paket-corporate', [LandingController::class, 'corporate'])->name('akomodasi.corporate');
 
 Route::get('/debug-session-set', function () {
     session(['test_key' => 'Hello from session! ' . time()]);

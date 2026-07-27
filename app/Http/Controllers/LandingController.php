@@ -17,9 +17,10 @@ class LandingController extends Controller
 
     public function akomodasi()
     {
-        $accommodations = Accommodation::with(['bookings' => function($query) {
-            $query->whereNotIn('status', ['failed', 'refunded']);
-        }])->get();
+        $accommodations = Accommodation::whereNotIn('jenis', ['Corporate Glamping', 'Corporate Cabin'])
+            ->with(['bookings' => function($query) {
+                $query->whereNotIn('status', ['failed', 'refunded']);
+            }])->get();
         $dateSettings = \App\Models\DateSetting::all();
         
         $accommodations->transform(function ($item) {
@@ -36,5 +37,39 @@ class LandingController extends Controller
         });
 
         return view('akomodasi.akomodasi_detail', compact('accommodations', 'dateSettings'));
+    }
+
+    public function corporate()
+    {
+        $accommodations = Accommodation::whereIn('jenis', ['Corporate Glamping', 'Corporate Cabin'])
+            ->with(['bookings' => function($query) {
+                $query->whereNotIn('status', ['failed', 'refunded']);
+            }])->get();
+            
+        $dateSettings = \App\Models\DateSetting::all();
+        
+        $accommodations->transform(function ($item) {
+            $bookedDates = $item->bookings->map(function ($booking) {
+                return $booking->check_in_date->format('Y-m-d') . ' -> ' . $booking->check_out_date->format('Y-m-d');
+            });
+            $item->bookedDates = $bookedDates;
+            // Map keys for JS compatibility
+            $item->hargaWeekday = $item->harga_weekday;
+            $item->hargaWeekend = $item->harga_weekend;
+            $item->hargaHighseason = $item->harga_highseason;
+            $item->maxOrang = $item->max_orang;
+            return $item;
+        });
+
+        $individualBookings = \App\Models\Booking::whereHas('accommodation', function($query) {
+            $query->whereIn('jenis', ['Glamping', 'Cabin']);
+        })->whereNotIn('status', ['failed', 'refunded'])
+          ->with('accommodation:id,jenis')
+          ->get(['id', 'accommodation_id', 'check_in_date', 'check_out_date', 'status']);
+          
+        $glampingBookings = $individualBookings->filter(function($b) { return $b->accommodation->jenis === 'Glamping'; })->values();
+        $cabinBookings = $individualBookings->filter(function($b) { return $b->accommodation->jenis === 'Cabin'; })->values();
+
+        return view('akomodasi.corporate', compact('accommodations', 'dateSettings', 'glampingBookings', 'cabinBookings'));
     }
 }

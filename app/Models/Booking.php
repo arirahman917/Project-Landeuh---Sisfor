@@ -21,6 +21,7 @@ class Booking extends Model
         'reschedule_check_in',
         'reschedule_check_out',
         'malam',
+        'jumlah_pax',
         'tambahan_anak',
         'tambahan_dewasa',
         'total',

@@ -28,6 +28,7 @@ class ReservasiController extends Controller
                 'malam' => 'required|integer|min:1',
                 'tambahan_anak' => 'nullable|integer|min:0',
                 'tambahan_dewasa' => 'nullable|integer|min:0',
+                'jumlah_pax' => 'nullable|integer|min:25|max:150',
                 'total' => 'required',
                 'metode_pembayaran' => 'nullable|string|max:255',
             ]);
@@ -56,10 +57,52 @@ class ReservasiController extends Controller
                     })
                     ->count();
 
-                if ($activeBookingsCount + 1 > $totalSlots) {
+                $isAvailable = true;
+
+                if ($accommodation->jenis === 'Corporate Glamping') {
+                    $glampingBookedCount = Booking::whereHas('accommodation', function($q) {
+                            $q->where('jenis', 'Glamping');
+                        })
+                        ->whereNotIn('status', ['failed', 'refunded'])
+                        ->where('check_in_date', '<=', $currentDate)
+                        ->where('check_out_date', '>', $currentDate)
+                        ->count();
+                    if ($glampingBookedCount >= 13 || $activeBookingsCount + 1 > $totalSlots) $isAvailable = false;
+                } else if ($accommodation->jenis === 'Corporate Cabin') {
+                    $cabinBookedCount = Booking::whereHas('accommodation', function($q) {
+                            $q->where('jenis', 'Cabin');
+                        })
+                        ->whereNotIn('status', ['failed', 'refunded'])
+                        ->where('check_in_date', '<=', $currentDate)
+                        ->where('check_out_date', '>', $currentDate)
+                        ->count();
+                    if ($cabinBookedCount >= 8 || $activeBookingsCount + 1 > $totalSlots) $isAvailable = false;
+                } else if ($accommodation->jenis === 'Glamping') {
+                    $corpGlampingBooked = Booking::whereHas('accommodation', function($q) {
+                            $q->where('jenis', 'Corporate Glamping');
+                        })
+                        ->whereNotIn('status', ['failed', 'refunded'])
+                        ->where('check_in_date', '<=', $currentDate)
+                        ->where('check_out_date', '>', $currentDate)
+                        ->count();
+                    if ($corpGlampingBooked > 0 || $activeBookingsCount + 1 > $totalSlots) $isAvailable = false;
+                } else if ($accommodation->jenis === 'Cabin') {
+                    $corpCabinBooked = Booking::whereHas('accommodation', function($q) {
+                            $q->where('jenis', 'Corporate Cabin');
+                        })
+                        ->whereNotIn('status', ['failed', 'refunded'])
+                        ->where('check_in_date', '<=', $currentDate)
+                        ->where('check_out_date', '>', $currentDate)
+                        ->count();
+                    if ($corpCabinBooked > 0 || $activeBookingsCount + 1 > $totalSlots) $isAvailable = false;
+                } else {
+                    if ($activeBookingsCount + 1 > $totalSlots) $isAvailable = false;
+                }
+
+                if (!$isAvailable) {
                     return response()->json([
                         'success' => false,
-                        'message' => 'Maaf, tipe akomodasi ' . $accommodation->judul . ' sudah penuh pada tanggal yang Anda pilih. Silakan pilih rentang tanggal lain.'
+                        'message' => 'Maaf, tipe akomodasi ' . $accommodation->judul . ' sudah penuh/terdapat reservasi lain pada tanggal yang Anda pilih.'
                     ], 400);
                 }
             }
@@ -81,6 +124,7 @@ class ReservasiController extends Controller
                 'check_in_date' => $checkInDate->format('Y-m-d'),
                 'check_out_date' => $checkOutDate->format('Y-m-d'),
                 'malam' => $malam,
+                'jumlah_pax' => isset($validated['jumlah_pax']) ? intval($validated['jumlah_pax']) : null,
                 'tambahan_anak' => intval($validated['tambahan_anak'] ?? 0),
                 'tambahan_dewasa' => intval($validated['tambahan_dewasa'] ?? 0),
                 'total' => $total,
@@ -461,10 +505,56 @@ class ReservasiController extends Controller
                     })
                     ->count();
 
-                if ($activeBookingsCount + 1 > $totalSlots) {
+                $isAvailable = true;
+
+                if ($accommodation->jenis === 'Corporate Glamping') {
+                    $glampingBookedCount = Booking::whereHas('accommodation', function($q) {
+                            $q->where('jenis', 'Glamping');
+                        })
+                        ->whereNotIn('status', ['failed', 'refunded'])
+                        ->where('id', '!=', $booking->id)
+                        ->where('check_in_date', '<=', $currentDate)
+                        ->where('check_out_date', '>', $currentDate)
+                        ->count();
+                    if ($glampingBookedCount >= 13 || $activeBookingsCount + 1 > $totalSlots) $isAvailable = false;
+                } else if ($accommodation->jenis === 'Corporate Cabin') {
+                    $cabinBookedCount = Booking::whereHas('accommodation', function($q) {
+                            $q->where('jenis', 'Cabin');
+                        })
+                        ->whereNotIn('status', ['failed', 'refunded'])
+                        ->where('id', '!=', $booking->id)
+                        ->where('check_in_date', '<=', $currentDate)
+                        ->where('check_out_date', '>', $currentDate)
+                        ->count();
+                    if ($cabinBookedCount >= 8 || $activeBookingsCount + 1 > $totalSlots) $isAvailable = false;
+                } else if ($accommodation->jenis === 'Glamping') {
+                    $corpGlampingBooked = Booking::whereHas('accommodation', function($q) {
+                            $q->where('jenis', 'Corporate Glamping');
+                        })
+                        ->whereNotIn('status', ['failed', 'refunded'])
+                        ->where('id', '!=', $booking->id)
+                        ->where('check_in_date', '<=', $currentDate)
+                        ->where('check_out_date', '>', $currentDate)
+                        ->count();
+                    if ($corpGlampingBooked > 0 || $activeBookingsCount + 1 > $totalSlots) $isAvailable = false;
+                } else if ($accommodation->jenis === 'Cabin') {
+                    $corpCabinBooked = Booking::whereHas('accommodation', function($q) {
+                            $q->where('jenis', 'Corporate Cabin');
+                        })
+                        ->whereNotIn('status', ['failed', 'refunded'])
+                        ->where('id', '!=', $booking->id)
+                        ->where('check_in_date', '<=', $currentDate)
+                        ->where('check_out_date', '>', $currentDate)
+                        ->count();
+                    if ($corpCabinBooked > 0 || $activeBookingsCount + 1 > $totalSlots) $isAvailable = false;
+                } else {
+                    if ($activeBookingsCount + 1 > $totalSlots) $isAvailable = false;
+                }
+
+                if (!$isAvailable) {
                     return response()->json([
                         'success' => false,
-                        'message' => 'Maaf, tanggal yang Anda pilih sudah penuh. Silakan pilih tanggal lain.'
+                        'message' => 'Maaf, tanggal yang Anda pilih sudah penuh atau terkunci oleh reservasi lain.'
                     ], 400);
                 }
             }
@@ -518,8 +608,62 @@ class ReservasiController extends Controller
                 return $b->check_in_date->format('Y-m-d') <= $currentDate
                     && $b->check_out_date->format('Y-m-d') > $currentDate;
             })->count();
+            
+            $isBooked = false;
 
-            if ($count >= $totalSlots) {
+            if ($accommodation->jenis === 'Corporate Glamping') {
+                $glampingBookedCount = Booking::whereHas('accommodation', function($q) {
+                        $q->where('jenis', 'Glamping');
+                    })
+                    ->whereNotIn('status', ['failed', 'refunded'])
+                    ->when($excludeId, function($q) use ($excludeId) {
+                        return $q->where('id', '!=', $excludeId);
+                    })
+                    ->where('check_in_date', '<=', $currentDate)
+                    ->where('check_out_date', '>', $currentDate)
+                    ->count();
+                if ($glampingBookedCount >= 13 || $count >= $totalSlots) $isBooked = true;
+            } else if ($accommodation->jenis === 'Corporate Cabin') {
+                $cabinBookedCount = Booking::whereHas('accommodation', function($q) {
+                        $q->where('jenis', 'Cabin');
+                    })
+                    ->whereNotIn('status', ['failed', 'refunded'])
+                    ->when($excludeId, function($q) use ($excludeId) {
+                        return $q->where('id', '!=', $excludeId);
+                    })
+                    ->where('check_in_date', '<=', $currentDate)
+                    ->where('check_out_date', '>', $currentDate)
+                    ->count();
+                if ($cabinBookedCount >= 8 || $count >= $totalSlots) $isBooked = true;
+            } else if ($accommodation->jenis === 'Glamping') {
+                $corpGlampingBooked = Booking::whereHas('accommodation', function($q) {
+                        $q->where('jenis', 'Corporate Glamping');
+                    })
+                    ->whereNotIn('status', ['failed', 'refunded'])
+                    ->when($excludeId, function($q) use ($excludeId) {
+                        return $q->where('id', '!=', $excludeId);
+                    })
+                    ->where('check_in_date', '<=', $currentDate)
+                    ->where('check_out_date', '>', $currentDate)
+                    ->count();
+                if ($corpGlampingBooked > 0 || $count >= $totalSlots) $isBooked = true;
+            } else if ($accommodation->jenis === 'Cabin') {
+                $corpCabinBooked = Booking::whereHas('accommodation', function($q) {
+                        $q->where('jenis', 'Corporate Cabin');
+                    })
+                    ->whereNotIn('status', ['failed', 'refunded'])
+                    ->when($excludeId, function($q) use ($excludeId) {
+                        return $q->where('id', '!=', $excludeId);
+                    })
+                    ->where('check_in_date', '<=', $currentDate)
+                    ->where('check_out_date', '>', $currentDate)
+                    ->count();
+                if ($corpCabinBooked > 0 || $count >= $totalSlots) $isBooked = true;
+            } else {
+                if ($count >= $totalSlots) $isBooked = true;
+            }
+
+            if ($isBooked) {
                 $bookedDates[] = $currentDate;
             }
         }

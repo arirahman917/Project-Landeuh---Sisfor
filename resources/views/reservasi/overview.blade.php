@@ -277,6 +277,7 @@
     // Parse malam parameter
     const params = new URLSearchParams(window.location.search);
     const malam = parseInt(params.get('malam')) || 1;
+    const pax = parseInt(params.get('pax')) || null;
 
     // Parse checkin date parameter (menghindari pergeseran timezone UTC)
     const checkinParam = params.get('checkin');
@@ -298,6 +299,7 @@
     const accommodationRaw = @json($accommodation);
     const akoItem = {
         id: accommodationRaw.id,
+        jenis: accommodationRaw.jenis,
         judul: accommodationRaw.judul,
         maxOrang: accommodationRaw.max_orang,
         hargaWeekday: parseFloat(accommodationRaw.harga_weekday),
@@ -376,6 +378,10 @@
             }
         }
         
+        if (akoItem.jenis && (akoItem.jenis === 'Corporate Glamping' || akoItem.jenis === 'Corporate Cabin') && pax) {
+            price = price * pax;
+        }
+        
         totalBasePrice += price;
         priceBreakdownDetails.push({ date: dateStr, price: price, label: typeLabel });
     });
@@ -384,7 +390,13 @@
     document.getElementById('headerTitle').textContent = `${akoItem.judul} (${maxOrang} pax)`;
 
     // Update guest info
-    document.getElementById('guestInfoText').textContent = `${maxOrang} Dewasa`;
+    if (akoItem.jenis && (akoItem.jenis === 'Corporate Glamping' || akoItem.jenis === 'Corporate Cabin') && pax) {
+        document.getElementById('guestInfoText').textContent = `${pax} Pax`;
+        const chkTambahanLabel = document.getElementById('chkTambahan')?.closest('label');
+        if (chkTambahanLabel) chkTambahanLabel.style.display = 'none';
+    } else {
+        document.getElementById('guestInfoText').textContent = `${maxOrang} Dewasa`;
+    }
 
     // Update malam labels
     document.getElementById('malamText').textContent = `${malam} malam`;
@@ -408,7 +420,11 @@
 
     // Update price labels
     function fmt(n){ return 'IDR ' + n.toLocaleString('id-ID'); }
-    document.getElementById('priceLabel').textContent = `Harga kamar ${akoItem.judul} - ${maxOrang} pax (${malam} malam)`;
+    if (akoItem.jenis && (akoItem.jenis === 'Corporate Glamping' || akoItem.jenis === 'Corporate Cabin') && pax) {
+        document.getElementById('priceLabel').textContent = `Harga paket ${akoItem.judul} - ${pax} pax (${malam} malam)`;
+    } else {
+        document.getElementById('priceLabel').textContent = `Harga kamar ${akoItem.judul} - ${maxOrang} pax (${malam} malam)`;
+    }
     document.getElementById('priceValue').textContent = fmt(totalBasePrice);
     document.getElementById('totalHarga').textContent = fmt(totalBasePrice);
 
@@ -479,12 +495,20 @@
 
     // Fungsi update harga
     function updateHarga() {
-        let info=`${maxOrang} Dewasa`;
-        if(anak>0)info+=` + ${anak} Anak (di atas 5 tahun)`;
-        if(dewasa>0)info+=` + ${dewasa} Dewasa (di atas 17 tahun)`;
+        let info = `${maxOrang} Dewasa`;
+        if (akoItem.jenis && (akoItem.jenis === 'Corporate Glamping' || akoItem.jenis === 'Corporate Cabin') && pax) {
+            info = `${pax} Pax`;
+        } else {
+            if(anak>0)info+=` + ${anak} Anak (di atas 5 tahun)`;
+            if(dewasa>0)info+=` + ${dewasa} Dewasa (di atas 17 tahun)`;
+        }
         document.getElementById('guestInfoText').textContent=info;
 
-        let breakdown = `<div class="ov-price-row font-bold"><span>Harga kamar ${akoItem.judul} - ${maxOrang} pax (${malam} malam)</span><span>${fmt(totalBasePrice)}</span></div>`;
+        let breakdownLabel = `Harga kamar ${akoItem.judul} - ${maxOrang} pax (${malam} malam)`;
+        if (akoItem.jenis && (akoItem.jenis === 'Corporate Glamping' || akoItem.jenis === 'Corporate Cabin') && pax) {
+            breakdownLabel = `Harga paket ${akoItem.judul} - ${pax} pax (${malam} malam)`;
+        }
+        let breakdown = `<div class="ov-price-row font-bold"><span>${breakdownLabel}</span><span>${fmt(totalBasePrice)}</span></div>`;
         
         priceBreakdownDetails.forEach((night, index) => {
             const parts = night.date.split('-');
@@ -548,6 +572,7 @@
             nama_tamu: guestName,
             check_in_date: document.getElementById('dynCheckin').textContent,
             malam: malam,
+            jumlah_pax: pax,
             tambahan_anak: anak,
             tambahan_dewasa: dewasa,
             total: document.getElementById('totalHarga').textContent,
