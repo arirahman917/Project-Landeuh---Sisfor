@@ -229,11 +229,14 @@ function renderOrders(container, bookings) {
         `;
     } else {
         pendingBookings.forEach(b => {
-            const acc = b.accommodation || {};
-            let rawImg = acc.gambar;
+            const isCorp = !!b.corporate_package_id;
+            const unit = isCorp ? (b.corporate_package || b.corporatePackage || {}) : (b.accommodation || {});
+            let rawImg = unit.gambar;
             if (Array.isArray(rawImg) && rawImg.length > 0) rawImg = rawImg[0];
             const imgPath = rawImg ? (rawImg.startsWith('http') || rawImg.startsWith('data:') ? rawImg : '/' + rawImg) : '/images/akomodasi/cabin1/a.webp';
             const dateStr = `${formatDateFriendly(b.check_in_date)} - ${formatDateFriendly(b.check_out_date)}`;
+            const paxText = isCorp && b.jumlah_pax ? ` (${b.jumlah_pax} pax)` : '';
+            const itemTitle = (unit.judul || 'Akomodasi') + paxText;
             
             html += `
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
@@ -248,9 +251,9 @@ function renderOrders(container, bookings) {
                         </div>
                     </div>
                     <div class="p-4 md:p-6 flex flex-col md:flex-row gap-6">
-                        <img src="${imgPath}" alt="${acc.judul || 'Akomodasi'}" class="w-full md:w-48 h-32 object-cover rounded-xl shrink-0">
+                        <img src="${imgPath}" alt="${itemTitle}" class="w-full md:w-48 h-32 object-cover rounded-xl shrink-0">
                         <div class="flex-1">
-                            <h4 class="text-xl font-bold text-gray-800 mb-2">${acc.judul || 'Akomodasi'}</h4>
+                            <h4 class="text-xl font-bold text-gray-800 mb-2">${itemTitle}</h4>
                             <div class="text-sm text-gray-500 space-y-1 mb-4">
                                 <div class="flex gap-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg> ${dateStr} (${b.malam} Malam)</div>
                                 <div class="flex gap-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg> ${b.nama_tamu}</div>
@@ -277,11 +280,14 @@ function renderOrders(container, bookings) {
         `;
     } else {
         successBookings.forEach(b => {
-            const acc = b.accommodation || {};
-            let rawImg = acc.gambar;
+            const isCorp = !!b.corporate_package_id;
+            const unit = isCorp ? (b.corporate_package || b.corporatePackage || {}) : (b.accommodation || {});
+            let rawImg = unit.gambar;
             if (Array.isArray(rawImg) && rawImg.length > 0) rawImg = rawImg[0];
             const imgPath = rawImg ? (rawImg.startsWith('http') || rawImg.startsWith('data:') ? rawImg : '/' + rawImg) : '/images/akomodasi/cabin1/a.webp';
             const dateStr = `${formatDateFriendly(b.check_in_date)} - ${formatDateFriendly(b.check_out_date)}`;
+            const paxText = isCorp && b.jumlah_pax ? ` (${b.jumlah_pax} pax)` : '';
+            const itemTitle = (unit.judul || 'Akomodasi') + paxText;
 
             const isReschedulePending = b.status === 'reschedule_pending';
             const isRescheduleRejected = b.status === 'reschedule_rejected';
@@ -366,9 +372,9 @@ function renderOrders(container, bookings) {
                         </div>
                     </div>
                     <div class="p-4 md:p-6 flex flex-col md:flex-row gap-6">
-                        <img src="${imgPath}" alt="${acc.judul || 'Akomodasi'}" class="w-full md:w-48 h-32 object-cover rounded-xl shrink-0">
+                        <img src="${imgPath}" alt="${itemTitle}" class="w-full md:w-48 h-32 object-cover rounded-xl shrink-0">
                         <div class="flex-1">
-                            <h4 class="text-xl font-bold text-gray-800 mb-2">${acc.judul || 'Akomodasi'}</h4>
+                            <h4 class="text-xl font-bold text-gray-800 mb-2">${itemTitle}</h4>
                             <div class="text-sm text-gray-500 space-y-1 mb-4">
                                 <div class="flex gap-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg> ${dateStr} (${b.malam} Malam)</div>
                                 <div class="flex gap-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg> ${b.nama_tamu}</div>

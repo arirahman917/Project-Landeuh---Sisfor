@@ -12,6 +12,7 @@ class Booking extends Model
     protected $fillable = [
         'no_pesanan',
         'accommodation_id',
+        'corporate_package_id',
         'pemesan_nama',
         'pemesan_telp',
         'pemesan_email',
@@ -39,5 +40,10 @@ class Booking extends Model
     public function accommodation()
     {
         return $this->belongsTo(Accommodation::class);
+    }
+
+    public function corporatePackage()
+    {
+        return $this->belongsTo(CorporatePackage::class);
     }
 }

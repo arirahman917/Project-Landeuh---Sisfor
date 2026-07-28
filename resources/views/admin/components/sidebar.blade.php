@@ -27,6 +27,7 @@
         @php
             $navItems = [
                 ['href' => '/admin/unit',      'icon' => 'lucide:home',           'label' => 'Data Unit'],
+                ['href' => '/admin/corporate',  'icon' => 'lucide:briefcase',      'label' => 'Paket Corporate'],
                 ['href' => '/admin/pesanan',   'icon' => 'lucide:clipboard-list', 'label' => 'Data Pesanan'],
                 ['href' => '/admin/pelanggan', 'icon' => 'lucide:user',           'label' => 'Data Pelanggan'],
                 ['href' => '/admin/tanggal',   'icon' => 'lucide:calendar-days',  'label' => 'Penentuan Tanggal'],

@@ -460,16 +460,28 @@ function useFallbackPayment(method, akoId) {
 // Countdown timer
 (function(){
     @if(isset($booking))
+        @php
+            $isCorporate = !is_null($booking->corporate_package_id);
+            $unit = $isCorporate ? $booking->corporatePackage : $booking->accommodation;
+            $judul = $unit ? addslashes($unit->judul) : '';
+            $maxOrang = $unit ? $unit->max_orang : 0;
+            $akoId = $isCorporate ? 0 : ($booking->accommodation_id ?? 0);
+        @endphp
         // Populate sessionStorage with the database booking data
         sessionStorage.setItem('res_booking_no', '{{ $booking->no_pesanan }}');
-        sessionStorage.setItem('res_judul', '{{ $booking->accommodation->judul }}');
+        sessionStorage.setItem('res_judul', '{{ $judul }}');
         sessionStorage.setItem('res_nama', '{{ $booking->pemesan_nama }}');
         sessionStorage.setItem('res_hp', '{{ $booking->pemesan_telp }}');
         sessionStorage.setItem('res_email', '{{ $booking->pemesan_email }}');
         sessionStorage.setItem('res_tamu', '{{ $booking->nama_tamu }}');
-        sessionStorage.setItem('res_guest', '{{ $booking->accommodation->max_orang }} Dewasa');
+        sessionStorage.setItem('res_guest', '{{ $maxOrang }} Dewasa');
         sessionStorage.setItem('res_malam', '{{ $booking->malam }}');
+        sessionStorage.setItem('res_akoId', '{{ $akoId }}');
+        sessionStorage.setItem('res_is_corporate', '{{ $isCorporate ? "1" : "0" }}');
         
+        @if($isCorporate && $booking->corporatePackage)
+        sessionStorage.setItem('res_corp_judul', '{{ addslashes($booking->corporatePackage->judul) }}');
+        @endif
         @php
             $days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
             $mNames = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
@@ -490,7 +502,6 @@ function useFallbackPayment(method, akoId) {
         sessionStorage.setItem('res_checkin', '{{ $ciStr }}');
         sessionStorage.setItem('res_checkout', '{{ $coStr }}');
         sessionStorage.setItem('res_total', '{{ $formattedTotal }}');
-        sessionStorage.setItem('res_akoId', '{{ $booking->accommodation_id }}');
         sessionStorage.setItem('res_created_at', '{{ $booking->created_at->toIso8601String() }}');
     @endif
 

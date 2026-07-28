@@ -240,6 +240,12 @@
         $checkIn = \Carbon\Carbon::parse($booking->check_in_date)->locale('id');
         $checkOut = \Carbon\Carbon::parse($booking->check_out_date)->locale('id');
         $today = \Carbon\Carbon::now()->locale('id')->isoFormat('D MMMM YYYY');
+
+        $isCorporate = !is_null($booking->corporate_package_id);
+        $unit = $isCorporate ? $booking->corporatePackage : $booking->accommodation;
+        $judul = $unit ? $unit->judul : 'Akomodasi';
+        $maxOrang = ($isCorporate && !empty($booking->jumlah_pax)) ? $booking->jumlah_pax : ($unit ? $unit->max_orang : '-');
+        $slot = $isCorporate ? ($unit->slot ?? 1) : 1;
     ?>
 
     <div class="container">
@@ -259,7 +265,7 @@
                         <h1>Invoice RESERVASI</h1>
                         <div class="no-pesanan">No. Pemesanan: <strong>{{ $booking->no_pesanan }}</strong></div>
                         <div style="font-size: 13px; margin-top: 5px; font-weight: bold; color: #333;">
-                            {{ $booking->accommodation->judul ?? 'Akomodasi' }} ({{ $booking->accommodation->max_orang ?? '-' }} Pax)
+                            {{ $judul }} ({{ $maxOrang }} Pax)
                         </div>
                     </td>
                 </tr>
@@ -321,8 +327,8 @@
                 <!-- Harga Kamar Dasar -->
                 <tr>
                     <td>
-                        <div class="payment-title">{{ $booking->accommodation->judul ?? 'Akomodasi' }} ({{ $booking->accommodation->max_orang ?? '-' }} Pax)</div>
-                        <div class="payment-desc">1 Unit &times; {{ $malam }} Malam</div>
+                        <div class="payment-title">{{ $judul }} ({{ $maxOrang }} Pax)</div>
+                        <div class="payment-desc">{{ $slot }} Unit &times; {{ $malam }} Malam</div>
                     </td>
                     <td class="payment-amount">{{ rp($total_kamar) }}</td>
                 </tr>

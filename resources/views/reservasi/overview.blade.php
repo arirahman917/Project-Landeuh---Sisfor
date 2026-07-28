@@ -387,7 +387,11 @@
     });
 
     // Update header title with dynamic data
-    document.getElementById('headerTitle').textContent = `${akoItem.judul} (${maxOrang} pax)`;
+    if (akoItem.jenis && (akoItem.jenis === 'Corporate Glamping' || akoItem.jenis === 'Corporate Cabin') && pax) {
+        document.getElementById('headerTitle').textContent = `${akoItem.judul} (${pax} pax)`;
+    } else {
+        document.getElementById('headerTitle').textContent = `${akoItem.judul} (${maxOrang} pax)`;
+    }
 
     // Update guest info
     if (akoItem.jenis && (akoItem.jenis === 'Corporate Glamping' || akoItem.jenis === 'Corporate Cabin') && pax) {
@@ -564,8 +568,8 @@
         const guestName = chkSaya ? nama : untukSiapa;
 
         // Siapkan data untuk dikirim ke backend MySQL
+        const isCorp = {{ isset($isCorporate) && $isCorporate ? 'true' : 'false' }};
         const payload = {
-            accommodation_id: akoId,
             pemesan_nama: nama,
             pemesan_telp: hp,
             pemesan_email: em,
@@ -578,6 +582,11 @@
             total: document.getElementById('totalHarga').textContent,
             metode_pembayaran: 'pending'
         };
+        if (isCorp) {
+            payload.corporate_package_id = akoId;
+        } else {
+            payload.accommodation_id = akoId;
+        }
 
         // Kirim data via AJAX POST ke database
         fetch('/reservasi/store', {

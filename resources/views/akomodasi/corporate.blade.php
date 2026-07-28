@@ -174,6 +174,26 @@
 .corp-btn.green:hover { background:linear-gradient(135deg,#2c402c,#3a523a); box-shadow:0 6px 20px rgba(58,82,58,.35); transform:translateY(-1px); }
 .corp-btn.dis { background:#e0e0e0; color:#aaa; cursor:not-allowed; }
 
+/* Flatpickr selected check-in/check-out blue circle background & white text */
+.flatpickr-day.selected,
+.flatpickr-day.startRange,
+.flatpickr-day.endRange,
+.flatpickr-day.selected.startRange,
+.flatpickr-day.selected.endRange {
+    background: #2563eb !important;
+    background-color: #2563eb !important;
+    color: #ffffff !important;
+    border-color: #2563eb !important;
+    border-radius: 50% !important;
+    font-weight: 700 !important;
+}
+
+.flatpickr-day.inRange {
+    background: #dbeafe !important;
+    box-shadow: -5px 0 0 #dbeafe, 5px 0 0 #dbeafe !important;
+    color: #1e40af !important;
+}
+
 /* Flatpickr booked style */
 .flatpickr-day.booked-date.flatpickr-disabled {
     background:#e5e7eb !important; color:#9ca3af !important;
@@ -251,11 +271,11 @@
             $gCat  = is_array($glamping->catatan) ? $glamping->catatan : (json_decode($glamping->catatan ?? '[]', true) ?: []);
         @endphp
         <div class="corp-card">
-            <div class="corp-photo" onclick="openLb('glamping')">
+            <div class="corp-photo" onclick="window.location.href='/akomodasi?jenis=Glamping'">
                 <img src="{{ $gImgs[0] ?? 'https://placehold.co/600x400/3a523a/fff?text=Glamping' }}" alt="{{ $glamping->judul }}">
                 <div class="corp-photo-badge">Glamping</div>
                 <div class="corp-photo-overlay">
-                    <button class="corp-gallery-btn"><iconify-icon icon="lucide:images" style="font-size:.9rem"></iconify-icon> Lihat Foto</button>
+                    <button class="corp-gallery-btn"><iconify-icon icon="lucide:layout-list" style="font-size:.9rem"></iconify-icon> Lihat Detail Unit</button>
                 </div>
             </div>
             <div class="corp-body">
@@ -274,13 +294,17 @@
                         <div id="avail-glamping" style="font-size:.6rem;font-weight:800;color:#2c7a2c;background:#e8f5e9;padding:.15rem .4rem;border-radius:.25rem;border:1px solid #c8dfc8;">Tersedia: 13 unit Glamping</div>
                     </div>
                     <div class="corp-date-row">
-                        <div style="display:none"><input type="text" id="fp-glamping"></div>
+                        <div style="position:absolute;visibility:hidden;width:0;height:0;"><input type="text" id="fp-glamping"></div>
                         <button type="button" class="corp-date-btn" id="btn-date-glamping">
                             <iconify-icon icon="lucide:calendar-days" style="font-size:.95rem;flex-shrink:0"></iconify-icon>
                             <span id="date-text-glamping">Sesuaikan Tanggal</span>
                         </button>
                         <div class="nights-badge" id="nights-glamping"><iconify-icon icon="lucide:moon" style="font-size:.8rem"></iconify-icon> 1 Malam</div>
                     </div>
+                    <!-- <div id="date-info-badge-glamping" style="display:none;margin-top:.4rem;font-size:.65rem;font-weight:700;color:#333;background:#f0fdf4;border:1px solid #bbf7d0;padding:.3rem .5rem;border-radius:.35rem;">
+                        <div><span style="color:#15803d;font-weight:800;">Check-in:</span> <span id="checkin-txt-glamping">-</span></div>
+                        <div><span style="color:#b45309;font-weight:800;">Check-out:</span> <span id="checkout-txt-glamping">-</span></div>
+                    </div> -->
                 </div>
                 <div class="corp-price-box">
                     <div class="corp-per-pax">Rp {{ number_format($glamping->harga_weekday,0,',','.') }}/pax/malam</div>
@@ -296,6 +320,9 @@
                 </div>
                 @endif
                 <div id="booked-glamping" style="display:none" class="booked-banner"><iconify-icon icon="lucide:alert-circle"></iconify-icon> Tanggal ini sudah penuh — pilih tanggal lain</div>
+                <!-- <a href="/akomodasi?jenis=Glamping" class="corp-btn" style="background:#f8fdf8;border:1.5px solid #3a523a;color:#3a523a;text-decoration:none;font-size:.82rem;" onmouseover="this.style.background='#e8f5e9'" onmouseout="this.style.background='#f8fdf8'">
+                    <iconify-icon icon="lucide:layout-list" style="font-size:.95rem"></iconify-icon> Lihat Detail Unit Glamping
+                </a> -->
                 <button class="corp-btn green" id="btn-pilih-glamping" onclick="pilihPaket({{ $glamping->id }}, 'glamping')">
                     <iconify-icon icon="lucide:check-circle-2" style="font-size:1rem"></iconify-icon> Pilih Paket Glamping
                 </button>
@@ -312,11 +339,11 @@
             $cCat  = is_array($cabin->catatan) ? $cabin->catatan : (json_decode($cabin->catatan ?? '[]', true) ?: []);
         @endphp
         <div class="corp-card">
-            <div class="corp-photo" onclick="openLb('cabin')">
+            <div class="corp-photo" onclick="window.location.href='/akomodasi?jenis=Cabin'">
                 <img src="{{ $cImgs[0] ?? 'https://placehold.co/600x400/3a523a/fff?text=Cabin' }}" alt="{{ $cabin->judul }}">
                 <div class="corp-photo-badge">Cabin</div>
                 <div class="corp-photo-overlay">
-                    <button class="corp-gallery-btn"><iconify-icon icon="lucide:images" style="font-size:.9rem"></iconify-icon> Lihat Foto</button>
+                    <button class="corp-gallery-btn"><iconify-icon icon="lucide:layout-list" style="font-size:.9rem"></iconify-icon> Lihat Detail Unit</button>
                 </div>
             </div>
             <div class="corp-body">
@@ -335,13 +362,17 @@
                         <div id="avail-cabin" style="font-size:.6rem;font-weight:800;color:#2c7a2c;background:#e8f5e9;padding:.15rem .4rem;border-radius:.25rem;border:1px solid #c8dfc8;">Tersedia: 8 unit Cabin</div>
                     </div>
                     <div class="corp-date-row">
-                        <div style="display:none"><input type="text" id="fp-cabin"></div>
+                        <div style="position:absolute;visibility:hidden;width:0;height:0;"><input type="text" id="fp-cabin"></div>
                         <button type="button" class="corp-date-btn" id="btn-date-cabin">
                             <iconify-icon icon="lucide:calendar-days" style="font-size:.95rem;flex-shrink:0"></iconify-icon>
                             <span id="date-text-cabin">Sesuaikan Tanggal</span>
                         </button>
                         <div class="nights-badge" id="nights-cabin"><iconify-icon icon="lucide:moon" style="font-size:.8rem"></iconify-icon> 1 Malam</div>
                     </div>
+                    <!-- <div id="date-info-badge-cabin" style="display:none;margin-top:.4rem;font-size:.65rem;font-weight:700;color:#333;background:#f0fdf4;border:1px solid #bbf7d0;padding:.3rem .5rem;border-radius:.35rem;">
+                        <div><span style="color:#15803d;font-weight:800;">Check-in:</span> <span id="checkin-txt-cabin">-</span></div>
+                        <div><span style="color:#b45309;font-weight:800;">Check-out:</span> <span id="checkout-txt-cabin">-</span></div>
+                    </div> -->
                 </div>
                 <div class="corp-price-box">
                     <div class="corp-per-pax">Rp {{ number_format($cabin->harga_weekday,0,',','.') }}/pax/malam</div>
@@ -357,6 +388,9 @@
                 </div>
                 @endif
                 <div id="booked-cabin" style="display:none" class="booked-banner"><iconify-icon icon="lucide:alert-circle"></iconify-icon> Tanggal ini sudah penuh — pilih tanggal lain</div>
+                <!-- <a href="/akomodasi?jenis=Cabin" class="corp-btn" style="background:#f8fdf8;border:1.5px solid #3a523a;color:#3a523a;text-decoration:none;font-size:.82rem;" onmouseover="this.style.background='#e8f5e9'" onmouseout="this.style.background='#f8fdf8'">
+                    <iconify-icon icon="lucide:layout-list" style="font-size:.95rem"></iconify-icon> Lihat Detail Unit Cabin
+                </a> -->
                 <button class="corp-btn green" id="btn-pilih-cabin" onclick="pilihPaket({{ $cabin->id }}, 'cabin')">
                     <iconify-icon icon="lucide:check-circle-2" style="font-size:1rem"></iconify-icon> Pilih Paket Cabin
                 </button>
@@ -393,6 +427,7 @@
         glamping: {
             id: {{ $glamping->id ?? 'null' }},
             harga: {{ $glamping->harga_weekday ?? 400000 }},
+            slot: {{ $glamping->slot ?? 6 }},
             images: @json(isset($glamping) ? (is_array($glamping->gambar) ? $glamping->gambar : json_decode($glamping->gambar ?? '[]', true)) : []),
             bookings: @json(isset($glamping) ? $glamping->bookings->map(function($b){ return ['ci'=>(string)$b->check_in_date,'co'=>(string)$b->check_out_date,'st'=>$b->status]; }) : []),
             indBookings: @json(isset($glampingBookings) ? $glampingBookings->map(function($b){ return ['ci'=>(string)$b->check_in_date,'co'=>(string)$b->check_out_date,'st'=>$b->status]; }) : [])
@@ -400,6 +435,7 @@
         cabin: {
             id: {{ $cabin->id ?? 'null' }},
             harga: {{ $cabin->harga_weekday ?? 500000 }},
+            slot: {{ $cabin->slot ?? 8 }},
             images: @json(isset($cabin) ? (is_array($cabin->gambar) ? $cabin->gambar : json_decode($cabin->gambar ?? '[]', true)) : []),
             bookings: @json(isset($cabin) ? $cabin->bookings->map(function($b){ return ['ci'=>(string)$b->check_in_date,'co'=>(string)$b->check_out_date,'st'=>$b->status]; }) : []),
             indBookings: @json(isset($cabinBookings) ? $cabinBookings->map(function($b){ return ['ci'=>(string)$b->check_in_date,'co'=>(string)$b->check_out_date,'st'=>$b->status]; }) : [])
@@ -428,6 +464,7 @@
         var bks=CORP[t].bookings||[];
         for(var dt=new Date(s); dt<e; dt.setDate(dt.getDate()+1)){
             var tp=dt.getTime();
+            // Check direct corporate bookings
             for(var i=0;i<bks.length;i++){
                 var b=bks[i];
                 if(b.st==='failed'||b.st==='refunded') continue;
@@ -435,6 +472,18 @@
                 var bo=new Date(b.co); bo.setHours(12,0,0,0);
                 if(tp>=bi.getTime()&&tp<bo.getTime()) return true;
             }
+            // Check individual bookings availability: block ONLY if ALL units of that type are booked
+            var maxU = t === 'glamping' ? 13 : 8;
+            var dayBooked = 0;
+            var indBks = CORP[t].indBookings || [];
+            for(var j=0; j<indBks.length; j++){
+                var b2 = indBks[j];
+                if(b2.st==='failed'||b2.st==='refunded') continue;
+                var bi2 = new Date(b2.ci); bi2.setHours(12,0,0,0);
+                var bo2 = new Date(b2.co); bo2.setHours(12,0,0,0);
+                if(tp >= bi2.getTime() && tp < bo2.getTime()) dayBooked++;
+            }
+            if(dayBooked >= maxU) return true;
         }
         return false;
     }
@@ -465,6 +514,7 @@
     function isDayBooked(t, dateObj){
         var d=new Date(dateObj); d.setHours(12,0,0,0); var tp=d.getTime();
         var bks=CORP[t].bookings||[];
+        // Check direct corporate bookings
         for(var i=0;i<bks.length;i++){
             var b=bks[i];
             if(b.st==='failed'||b.st==='refunded') continue;
@@ -472,6 +522,19 @@
             var bo=new Date(b.co); bo.setHours(12,0,0,0);
             if(tp>=bi.getTime()&&tp<bo.getTime()) return true;
         }
+        // Check individual bookings availability: block ONLY if ALL units of that type are booked
+        var maxU = t === 'glamping' ? 13 : 8;
+        var dayBooked = 0;
+        var indBks = CORP[t].indBookings || [];
+        for(var j=0; j<indBks.length; j++){
+            var b2 = indBks[j];
+            if(b2.st==='failed'||b2.st==='refunded') continue;
+            var bi2 = new Date(b2.ci); bi2.setHours(12,0,0,0);
+            var bo2 = new Date(b2.co); bo2.setHours(12,0,0,0);
+            if(tp >= bi2.getTime() && tp < bo2.getTime()) dayBooked++;
+        }
+        if(dayBooked >= maxU) return true;
+        
         return false;
     }
 
@@ -512,6 +575,53 @@
     });
 
     /* ── Init flatpickr ───────────────────────────── */
+    window.updateFpPopupFooter = function(instance, selectedDates) {
+        if (!instance || !instance.calendarContainer) return;
+        let footer = instance.calendarContainer.querySelector('.fp-custom-footer');
+        if (!footer) {
+            footer = document.createElement('div');
+            footer.className = 'fp-custom-footer';
+            footer.style.cssText = 'padding: 8px 12px; background: #f8fafc; border-top: 1px solid #e2e8f0; font-size: 11px; color: #334155; font-weight: 600; display: flex; align-items: center; justify-content: space-between; gap: 8px; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; width: 100%; box-sizing: border-box;';
+            footer.innerHTML = `
+                <div style="display:flex; align-items:center; gap:4px;"><span style="color:#059669; font-weight:700;">Check-in:</span> <span class="fp-in-val" style="color:#0f172a; font-weight:700;">Belum dipilih</span></div>
+                <div style="display:flex; align-items:center; gap:4px;"><span style="color:#d97706; font-weight:700;">Check-out:</span> <span class="fp-out-val" style="color:#0f172a; font-weight:700;">Belum dipilih</span></div>
+            `;
+            instance.calendarContainer.appendChild(footer);
+        }
+        const inVal = footer.querySelector('.fp-in-val');
+        const outVal = footer.querySelector('.fp-out-val');
+        const fmtFull = { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' };
+
+        if (!selectedDates || selectedDates.length === 0) {
+            if (inVal) inVal.innerText = 'Belum dipilih';
+            if (outVal) outVal.innerText = 'Belum dipilih';
+        } else if (selectedDates.length === 1) {
+            if (inVal) inVal.innerText = selectedDates[0].toLocaleDateString('id-ID', fmtFull);
+            if (outVal) outVal.innerText = 'Pilih Check-out';
+
+            setTimeout(() => {
+                const days = instance.calendarContainer.querySelectorAll('.flatpickr-day');
+                days.forEach(day => {
+                    if (day.dateObj) {
+                        const dObj = new Date(day.dateObj);
+                        dObj.setHours(0,0,0,0);
+                        const sObj = new Date(selectedDates[0]);
+                        sObj.setHours(0,0,0,0);
+                        if (dObj.getTime() === sObj.getTime()) {
+                            day.classList.add('selected', 'startRange');
+                            day.style.setProperty('background-color', '#2563eb', 'important');
+                            day.style.setProperty('color', '#ffffff', 'important');
+                            day.style.setProperty('border-radius', '50%', 'important');
+                        }
+                    }
+                });
+            }, 0);
+        } else if (selectedDates.length === 2) {
+            if (inVal) inVal.innerText = selectedDates[0].toLocaleDateString('id-ID', fmtFull);
+            if (outVal) outVal.innerText = selectedDates[1].toLocaleDateString('id-ID', fmtFull);
+        }
+    };
+
     function initFp(t){
         var input=document.getElementById('fp-'+t);
         var btn  =document.getElementById('btn-date-'+t);
@@ -520,22 +630,75 @@
         var bkEl =document.getElementById('booked-'+t);
         var ctaEl=document.getElementById('btn-pilih-'+t);
         var availEl=document.getElementById('avail-'+t);
-        var maxUnits=t==='glamping'?6:8;
+        var maxUnits=t==='glamping'?13:8;
         var unitName=t==='glamping'?'Glamping':'Cabin';
         if(!input||!btn) return;
 
-        var fp=flatpickr(input,{
+        var fp;
+        fp = flatpickr(input,{
             mode:'range', minDate:'today',
             showMonths: window.innerWidth>768?2:1,
             locale: typeof flatpickr.l10ns !== 'undefined' && flatpickr.l10ns.id ? 'id' : 'default',
-            disable:[function(d){ return isDayBooked(t,d); }],
+            disable:[function(d){ 
+                var selected = (fp && fp.selectedDates) ? fp.selectedDates : (this && this.selectedDates ? this.selectedDates : []);
+                if (selected && selected.length === 1) {
+                    var start = new Date(selected[0]);
+                    start.setHours(0, 0, 0, 0);
+
+                    var cur = new Date(d);
+                    cur.setHours(0, 0, 0, 0);
+
+                    if (cur <= start) {
+                        return true;
+                    }
+
+                    for (var check = new Date(start); check < cur; check.setDate(check.getDate() + 1)) {
+                        if (isDayBooked(t, check)) {
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+                return isDayBooked(t,d); 
+            }],
             onDayCreate:function(dObj,dStr,fpI,dayElem){
                 var today=new Date(); today.setHours(0,0,0,0);
                 if(dayElem.dateObj>=today && isDayBooked(t,dayElem.dateObj))
                     dayElem.classList.add('booked-date');
             },
-            onChange:function(sel){
-                if(sel.length===2){
+            onReady:function(selectedDates, dateStr, instance){
+                if (window.updateFpPopupFooter) {
+                    window.updateFpPopupFooter(instance, selectedDates);
+                }
+            },
+            onOpen:function(selectedDates, dateStr, instance){
+                if (window.updateFpPopupFooter) {
+                    window.updateFpPopupFooter(instance, selectedDates);
+                }
+            },
+            onChange:function(sel, dateStr, instance){
+                if (window.updateFpPopupFooter) {
+                    window.updateFpPopupFooter(instance, sel);
+                }
+                var badge = document.getElementById('date-info-badge-' + t);
+                var inTxt = document.getElementById('checkin-txt-' + t);
+                var outTxt = document.getElementById('checkout-txt-' + t);
+                var fmtFull = { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' };
+
+                if (sel.length === 1) {
+                    var inStr = sel[0].toLocaleDateString('id-ID', fmtFull);
+                    if (badge) badge.style.display = 'block';
+                    if (inTxt) inTxt.textContent = inStr;
+                    if (outTxt) outTxt.textContent = 'Pilih Tanggal Check-out';
+
+                    if (txtEl) txtEl.textContent = 'In: ' + sel[0].toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+                } else if (sel.length === 2) {
+                    var inStr = sel[0].toLocaleDateString('id-ID', fmtFull);
+                    var outStr = sel[1].toLocaleDateString('id-ID', fmtFull);
+                    if (badge) badge.style.display = 'block';
+                    if (inTxt) inTxt.textContent = inStr;
+                    if (outTxt) outTxt.textContent = outStr;
+
                     dateState[t]=sel;
                     var diff=Math.abs(sel[1]-sel[0]);
                     var nights=Math.max(1,Math.ceil(diff/86400000));
@@ -613,7 +776,7 @@
         var malam=nightState[t];
         var d=dates[0];
         var ci=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-        var url='/reservasi/overview/'+id+'?malam='+malam+'&pax='+pax+'&checkin='+ci;
+        var url='/reservasi/overview/'+id+'?malam='+malam+'&pax='+pax+'&checkin='+ci+'&is_corporate=1';
         var loggedIn={{ Auth::check() ? 'true' : 'false' }};
         if(loggedIn){ window.location.href=url; }
         else{

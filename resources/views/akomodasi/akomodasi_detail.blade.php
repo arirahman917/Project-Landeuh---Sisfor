@@ -9,7 +9,7 @@
 <div id="searchBarFixed" class="sticky top-0 z-40">
     <div class="max-w-6xl mx-auto px-4">
         <div class="flex flex-row items-stretch gap-2 md:gap-3 backdrop-blur-md bg-white/40 rounded-b-2xl px-4 md:px-6 py-4 border-x border-b border-gray-200 shadow-sm transition-all duration-300">
-            <div class="flex-1 bg-gray-50 rounded-xl px-3 md:px-4 py-2.5 border border-gray-200 relative cursor-pointer" id="akomodasiPickerContainer">
+            <div class="flex-1 bg-gray-50 rounded-xl px-3 md:px-4 py-2.5 border border-gray-200 relative cursor-pointer" id="akomodasiPickerContainer" onclick="toggleAkoDropdown(event)">
                 <div class="flex items-center gap-2 h-full" id="akomodasiPickerTrigger">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg>
                     <div class="flex-1 text-sm text-gray-700 select-none truncate" id="akomodasiPickerLabel">Semua Akomodasi</div>
@@ -19,7 +19,7 @@
                         </svg>
                     </div>
                 </div>
-                <div class="absolute top-[calc(100%+0.5rem)] left-0 w-full min-w-[200px] bg-white rounded-2xl shadow-[0_15px_40px_-10px_rgba(0,0,0,0.2)] border border-gray-100 py-2 hidden z-50" id="akomodasiPickerDropdown">
+                <div class="absolute top-[calc(100%+0.5rem)] left-0 w-full min-w-[200px] bg-white rounded-2xl shadow-[0_15px_40px_-10px_rgba(0,0,0,0.2)] border border-gray-100 py-2 hidden z-50" id="akomodasiPickerDropdown" onclick="event.stopPropagation()">
                     <div class="flex flex-col">
                         <button class="akomodasi-opt w-full text-left px-5 py-3 hover:bg-blue-600 hover:text-white transition-colors text-gray-700 text-sm font-medium" data-value="Semua Akomodasi">Semua Akomodasi</button>
                         <button class="akomodasi-opt w-full text-left px-5 py-3 hover:bg-blue-600 hover:text-white transition-colors text-gray-700 text-sm font-medium" data-value="Cabin">Cabin</button>
@@ -30,13 +30,18 @@
                 <input type="hidden" id="filterJenis" value="Semua Akomodasi">
             </div>
             
-            <div class="flex-1 bg-gray-50 rounded-xl px-3 md:px-4 py-2.5 border border-gray-200 relative" id="guestPickerContainer">
-                <div class="flex items-center gap-2 cursor-pointer h-full" id="guestPickerTrigger">
+            <div class="flex-1 bg-gray-50 rounded-xl px-3 md:px-4 py-2.5 border border-gray-200 relative cursor-pointer" id="guestPickerContainer" onclick="toggleGuestDropdown(event)">
+                <div class="flex items-center gap-2 h-full" id="guestPickerTrigger">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
-                    <span class="text-sm text-gray-700" id="guestPickerLabel">2 Tamu</span>
+                    <span class="flex-1 text-sm text-gray-700 select-none truncate" id="guestPickerLabel">2 Tamu</span>
+                    <div class="flex items-center text-gray-400 transition-transform duration-300" id="guestPickerChevron">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                        </svg>
+                    </div>
                 </div>
                 <!-- Dropdown -->
-                <div class="absolute top-[calc(100%+0.5rem)] right-0 mt-2 w-[calc(100vw-2rem)] md:w-72 bg-white rounded-2xl shadow-[0_15px_40px_-10px_rgba(0,0,0,0.2)] border border-gray-100 p-5 hidden z-50 transform" id="guestPickerDropdown">
+                <div class="absolute top-[calc(100%+0.5rem)] right-0 mt-2 w-[calc(100vw-2rem)] md:w-72 bg-white rounded-2xl shadow-[0_15px_40px_-10px_rgba(0,0,0,0.2)] border border-gray-100 p-5 hidden z-50 transform" id="guestPickerDropdown" onclick="event.stopPropagation()">
                     <div class="flex items-center justify-between mb-2">
                         <div class="flex items-center gap-3 text-gray-800 font-semibold text-md">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
@@ -66,6 +71,20 @@
     <img src="{{ asset('images/assets_lain/batik.png') }}" class="absolute -top-4 -right-8 w-32 opacity-30 pointer-events-none rotate-12 scale-x-[-1] z-0" alt="">
     <img src="{{ asset('images/assets_lain/batik.png') }}" class="absolute bottom-20 right-280 w-100 opacity-30 pointer-events-none -rotate-6 z-0" alt="">
     <img src="{{ asset('images/assets_lain/batik.png') }}" class="absolute top-1/2 -right-12 w-44 opacity-40 pointer-events-none rotate-45 z-0" alt="">
+
+    {{-- Filter Banner (shown when ?jenis= is in URL) --}}
+    <!-- <div id="filterBannerWrap" class="relative z-10 mb-4 hidden">
+        <div class="flex items-center gap-3 bg-[#3a523a]/10 border border-[#3a523a]/30 rounded-xl px-4 py-3">
+            <iconify-icon icon="lucide:filter" class="text-[#3a523a] text-lg shrink-0"></iconify-icon>
+            <div class="flex-1">
+                <span class="text-sm font-semibold text-[#3a523a]">Menampilkan unit: </span>
+                <span id="filterBannerLabel" class="text-sm font-bold text-[#1e3a1e]"></span>
+            </div>
+            <a href="/akomodasi" class="flex items-center gap-1 text-xs font-semibold text-gray-500 hover:text-red-500 transition">
+                <iconify-icon icon="lucide:x-circle"></iconify-icon> Hapus Filter
+            </a>
+        </div>
+    </div> -->
 
     <div id="akomodasiList" class="relative z-10 flex flex-col gap-5"></div>
 
@@ -120,6 +139,25 @@
     </div>
 </div>
 <style>
+    .flatpickr-day.selected,
+    .flatpickr-day.startRange,
+    .flatpickr-day.endRange,
+    .flatpickr-day.selected.startRange,
+    .flatpickr-day.selected.endRange {
+        background: #2563eb !important;
+        background-color: #2563eb !important;
+        color: #ffffff !important;
+        border-color: #2563eb !important;
+        border-radius: 50% !important;
+        font-weight: 700 !important;
+    }
+
+    .flatpickr-day.inRange {
+        background: #dbeafe !important;
+        box-shadow: -5px 0 0 #dbeafe, 5px 0 0 #dbeafe !important;
+        color: #1e40af !important;
+    }
+
     .flatpickr-day.flatpickr-disabled.booked-date {
         background-color: #e5e7eb !important; /* bg-gray-200 */
         border-color: transparent !important;
@@ -371,6 +409,54 @@
     window.akoMalamState = window.akoMalamState || {};
     window.akoDateState = window.akoDateState || {};
 
+    window.updateFpPopupFooter = function(instance, selectedDates) {
+        if (!instance || !instance.calendarContainer) return;
+        let footer = instance.calendarContainer.querySelector('.fp-custom-footer');
+        if (!footer) {
+            footer = document.createElement('div');
+            footer.className = 'fp-custom-footer';
+            footer.style.cssText = 'padding: 8px 12px; background: #f8fafc; border-top: 1px solid #e2e8f0; font-size: 11px; color: #334155; font-weight: 600; display: flex; align-items: center; justify-content: space-between; gap: 8px; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; width: 100%; box-sizing: border-box;';
+            footer.innerHTML = `
+                <div style="display:flex; align-items:center; gap:4px;"><span style="color:#059669; font-weight:700;">Check-in:</span> <span class="fp-in-val" style="color:#0f172a; font-weight:700;">Belum dipilih</span></div>
+                <div style="display:flex; align-items:center; gap:4px;"><span style="color:#d97706; font-weight:700;">Check-out:</span> <span class="fp-out-val" style="color:#0f172a; font-weight:700;">Belum dipilih</span></div>
+            `;
+            instance.calendarContainer.appendChild(footer);
+        }
+        const inVal = footer.querySelector('.fp-in-val');
+        const outVal = footer.querySelector('.fp-out-val');
+        const fmtFull = { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' };
+
+        if (!selectedDates || selectedDates.length === 0) {
+            if (inVal) inVal.innerText = 'Belum dipilih';
+            if (outVal) outVal.innerText = 'Belum dipilih';
+        } else if (selectedDates.length === 1) {
+            if (inVal) inVal.innerText = selectedDates[0].toLocaleDateString('id-ID', fmtFull);
+            if (outVal) outVal.innerText = 'Pilih Check-out';
+
+            // Actively highlight selected check-in date as blue circle
+            setTimeout(() => {
+                const days = instance.calendarContainer.querySelectorAll('.flatpickr-day');
+                days.forEach(day => {
+                    if (day.dateObj) {
+                        const dObj = new Date(day.dateObj);
+                        dObj.setHours(0,0,0,0);
+                        const sObj = new Date(selectedDates[0]);
+                        sObj.setHours(0,0,0,0);
+                        if (dObj.getTime() === sObj.getTime()) {
+                            day.classList.add('selected', 'startRange');
+                            day.style.setProperty('background-color', '#2563eb', 'important');
+                            day.style.setProperty('color', '#ffffff', 'important');
+                            day.style.setProperty('border-radius', '50%', 'important');
+                        }
+                    }
+                });
+            }, 0);
+        } else if (selectedDates.length === 2) {
+            if (inVal) inVal.innerText = selectedDates[0].toLocaleDateString('id-ID', fmtFull);
+            if (outVal) outVal.innerText = selectedDates[1].toLocaleDateString('id-ID', fmtFull);
+        }
+    };
+
     window.isDateFullyBooked = function(akomodasi, dateObj) {
         if (!akomodasi.bookings || akomodasi.bookings.length === 0) return false;
         
@@ -551,7 +637,8 @@
 
             let preselected = window.akoDateState[item.id] || [];
 
-            const fp = flatpickr(input, {
+            let fp;
+            fp = flatpickr(input, {
                 mode: "range",
                 minDate: "today",
                 showMonths: window.innerWidth > 768 ? 2 : 1,
@@ -560,6 +647,26 @@
                 position: window.innerWidth > 768 ? "top left" : "auto",
                 disable: [
                     function(date) {
+                        const selected = (fp && fp.selectedDates) ? fp.selectedDates : (this && this.selectedDates ? this.selectedDates : []);
+                        if (selected && selected.length === 1) {
+                            const start = new Date(selected[0]);
+                            start.setHours(0, 0, 0, 0);
+
+                            const cur = new Date(date);
+                            cur.setHours(0, 0, 0, 0);
+
+                            if (cur <= start) {
+                                return true;
+                            }
+
+                            for (let d = new Date(start); d < cur; d.setDate(d.getDate() + 1)) {
+                                if (window.isDateFullyBooked(item, d)) {
+                                    return true;
+                                }
+                            }
+                            return false;
+                        }
+
                         return window.isDateFullyBooked(item, date);
                     }
                 ],
@@ -575,14 +682,59 @@
                         e.stopPropagation();
                         instance.toggle();
                     });
+                    if (window.updateFpPopupFooter) {
+                        window.updateFpPopupFooter(instance, selectedDates);
+                    }
+                    if (selectedDates && selectedDates.length === 2) {
+                        const fmtFull = { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' };
+                        const badge = document.getElementById(`date-info-badge-${item.id}`);
+                        const inTxt = document.getElementById(`checkin-txt-${item.id}`);
+                        const outTxt = document.getElementById(`checkout-txt-${item.id}`);
+                        if (badge) {
+                            badge.classList.remove('hidden');
+                            badge.classList.add('flex');
+                        }
+                        if (inTxt) inTxt.innerText = selectedDates[0].toLocaleDateString('id-ID', fmtFull);
+                        if (outTxt) outTxt.innerText = selectedDates[1].toLocaleDateString('id-ID', fmtFull);
+                    }
+                },
+                onOpen: function(selectedDates, dateStr, instance) {
+                    if (window.updateFpPopupFooter) {
+                        window.updateFpPopupFooter(instance, selectedDates);
+                    }
                 },
                 onChange: function(selectedDates, dateStr, instance) {
-                    if (selectedDates.length === 2) {
+                    if (window.updateFpPopupFooter) {
+                        window.updateFpPopupFooter(instance, selectedDates);
+                    }
+                    const fmtFull = { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' };
+                    const badge = document.getElementById(`date-info-badge-${item.id}`);
+                    const inTxt = document.getElementById(`checkin-txt-${item.id}`);
+                    const outTxt = document.getElementById(`checkout-txt-${item.id}`);
+
+                    if (selectedDates.length === 1) {
+                        if (badge) {
+                            badge.classList.remove('hidden');
+                            badge.classList.add('flex');
+                        }
+                        if (inTxt) inTxt.innerText = selectedDates[0].toLocaleDateString('id-ID', fmtFull);
+                        if (outTxt) outTxt.innerText = 'Pilih Tanggal Check-out';
+
+                        const btnTxt = document.getElementById(`btn-dates-text-${item.id}`);
+                        if (btnTxt) btnTxt.innerText = `In: ${selectedDates[0].toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}`;
+                    } else if (selectedDates.length === 2) {
                         window.akoDateState[item.id] = selectedDates;
                         const diffTime = Math.abs(selectedDates[1] - selectedDates[0]);
                         const diffNights = Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
                         
                         window.akoMalamState[item.id] = diffNights;
+
+                        if (badge) {
+                            badge.classList.remove('hidden');
+                            badge.classList.add('flex');
+                        }
+                        if (inTxt) inTxt.innerText = selectedDates[0].toLocaleDateString('id-ID', fmtFull);
+                        if (outTxt) outTxt.innerText = selectedDates[1].toLocaleDateString('id-ID', fmtFull);
 
                         const fmtOptions = { day: 'numeric', month: 'short', year: '2-digit' };
                         const inStr = selectedDates[0].toLocaleDateString('id-ID', fmtOptions);
@@ -604,7 +756,7 @@
 
                         setTimeout(() => { instance.close(); }, 300);
                     }
-                }
+                },
             });
 
             // Initial label setup
@@ -667,24 +819,38 @@
     const trigger = document.getElementById('guestPickerTrigger');
     const dropdown = document.getElementById('guestPickerDropdown');
     const label = document.getElementById('guestPickerLabel');
+    const guestContainer = document.getElementById('guestPickerContainer');
 
     // Sync UI value on load
     if (document.getElementById('valDewasa')) {
         document.getElementById('valDewasa').innerText = valDewasa;
     }
 
-    trigger.addEventListener('click', (e) => {
-        e.stopPropagation();
-        dropdown.classList.toggle('hidden');
-    });
+    if (guestContainer && dropdown) {
+        guestContainer.addEventListener('click', (e) => {
+            if (dropdown.contains(e.target)) return;
+            e.stopPropagation();
+            const akoDp = document.getElementById('akomodasiPickerDropdown');
+            const akoCv = document.getElementById('akomodasiPickerChevron');
+            if (akoDp) {
+                akoDp.classList.add('hidden');
+                if(akoCv) akoCv.classList.remove('rotate-180');
+            }
+            dropdown.classList.toggle('hidden');
+        });
+    }
 
-    document.getElementById('btnSelesaiGuest').addEventListener('click', () => {
-        dropdown.classList.add('hidden');
-        doFilter(); // Auto-filter on guest change
-    });
+    const btnSelesai = document.getElementById('btnSelesaiGuest');
+    if (btnSelesai) {
+        btnSelesai.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (dropdown) dropdown.classList.add('hidden');
+            doFilter(); // Auto-filter on guest change
+        });
+    }
 
     document.addEventListener('click', (e) => {
-        if(!document.getElementById('guestPickerContainer').contains(e.target)) {
+        if(guestContainer && !guestContainer.contains(e.target) && dropdown) {
             dropdown.classList.add('hidden');
         }
     });
@@ -751,6 +917,10 @@
 
         let available = akomodasi.slot - maxBooked;
         return available < 0 ? 0 : available;
+    };
+
+    window.isDateFullyBooked = function(akomodasi, dateObj) {
+        return isBooked(akomodasi, [dateObj]);
     };
 
     function isBooked(akomodasi, flatpickrDates, targetKamar = 1) {
@@ -826,39 +996,75 @@
     }
 
 
-    // Custom Dropdown Logic
-    const akoTrigger = document.getElementById('akomodasiPickerTrigger');
-    const akoDropdown = document.getElementById('akomodasiPickerDropdown');
-    const akoLabel = document.getElementById('akomodasiPickerLabel');
-    const akoInput = document.getElementById('filterJenis');
-    const akoChevron = document.getElementById('akomodasiPickerChevron');
+    // Global Toggle Functions (Immediate Response)
+    window.toggleAkoDropdown = function(e) {
+        if(e) e.stopPropagation();
+        const akoDropdown = document.getElementById('akomodasiPickerDropdown');
+        const akoChevron  = document.getElementById('akomodasiPickerChevron');
+        const guestDropdown = document.getElementById('guestPickerDropdown');
+        const guestChevron  = document.getElementById('guestPickerChevron');
+        
+        if (guestDropdown) guestDropdown.classList.add('hidden');
+        if (guestChevron) guestChevron.classList.remove('rotate-180');
 
-    if (akoTrigger && akoDropdown) {
-        akoTrigger.addEventListener('click', (e) => {
-            e.stopPropagation();
+        if (akoDropdown) {
             akoDropdown.classList.toggle('hidden');
-            if(akoChevron) akoChevron.classList.toggle('rotate-180');
-        });
+            if (akoChevron) akoChevron.classList.toggle('rotate-180');
+        }
+    };
 
-        document.querySelectorAll('.akomodasi-opt').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                const val = e.target.getAttribute('data-value');
-                akoLabel.innerText = val;
-                akoInput.value = val;
-                akoDropdown.classList.add('hidden');
-                if(akoChevron) akoChevron.classList.remove('rotate-180');
-                doFilter(); // Auto-filter on selection
-            });
-        });
+    window.toggleGuestDropdown = function(e) {
+        if(e) e.stopPropagation();
+        const guestDropdown = document.getElementById('guestPickerDropdown');
+        const guestChevron  = document.getElementById('guestPickerChevron');
+        const akoDropdown   = document.getElementById('akomodasiPickerDropdown');
+        const akoChevron    = document.getElementById('akomodasiPickerChevron');
+        
+        if (akoDropdown) akoDropdown.classList.add('hidden');
+        if (akoChevron) akoChevron.classList.remove('rotate-180');
 
-        document.addEventListener('click', (e) => {
-            if(!document.getElementById('akomodasiPickerContainer').contains(e.target)) {
-                akoDropdown.classList.add('hidden');
-                if(akoChevron) akoChevron.classList.remove('rotate-180');
-            }
+        if (guestDropdown) {
+            guestDropdown.classList.toggle('hidden');
+            if (guestChevron) guestChevron.classList.toggle('rotate-180');
+        }
+    };
+
+    document.querySelectorAll('.akomodasi-opt').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const val = btn.getAttribute('data-value');
+            const akoLabel = document.getElementById('akomodasiPickerLabel');
+            const akoInput = document.getElementById('filterJenis');
+            const akoDropdown = document.getElementById('akomodasiPickerDropdown');
+            const akoChevron = document.getElementById('akomodasiPickerChevron');
+
+            if (akoLabel) akoLabel.innerText = val;
+            if (akoInput) akoInput.value = val;
+            if (akoDropdown) akoDropdown.classList.add('hidden');
+            if (akoChevron) akoChevron.classList.remove('rotate-180');
+            doFilter(); // Auto-filter on selection
         });
-    }
+    });
+
+    document.addEventListener('click', (e) => {
+        const akoContainer = document.getElementById('akomodasiPickerContainer');
+        const guestContainer = document.getElementById('guestPickerContainer');
+        
+        if (akoContainer && !akoContainer.contains(e.target)) {
+            const akoDropdown = document.getElementById('akomodasiPickerDropdown');
+            const akoChevron = document.getElementById('akomodasiPickerChevron');
+            if (akoDropdown) akoDropdown.classList.add('hidden');
+            if (akoChevron) akoChevron.classList.remove('rotate-180');
+        }
+
+        if (guestContainer && !guestContainer.contains(e.target)) {
+            const guestDropdown = document.getElementById('guestPickerDropdown');
+            const guestChevron = document.getElementById('guestPickerChevron');
+            if (guestDropdown) guestDropdown.classList.add('hidden');
+            if (guestChevron) guestChevron.classList.remove('rotate-180');
+        }
+    });
 
     // Parse URL parameters
     const urlParams = new URLSearchParams(window.location.search);
@@ -870,6 +1076,13 @@
     if (paramJenis) {
         if(akoInput) akoInput.value = paramJenis;
         if(akoLabel) akoLabel.innerText = paramJenis;
+        // Show filter banner
+        const bannerWrap = document.getElementById('filterBannerWrap');
+        const bannerLabel = document.getElementById('filterBannerLabel');
+        if (bannerWrap && bannerLabel) {
+            bannerLabel.textContent = paramJenis;
+            bannerWrap.classList.remove('hidden');
+        }
     }
     if (paramDewasa) {
         valDewasa = parseInt(paramDewasa) || 2;

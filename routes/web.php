@@ -77,7 +77,7 @@ Route::get('/pesanan', function () {
     $bookings = [];
     if (Auth::check()) {
         $bookings = \App\Models\Booking::where('pemesan_email', Auth::user()->email)
-            ->with('accommodation')
+            ->with(['accommodation', 'corporatePackage'])
             ->orderBy('created_at', 'desc')
             ->get();
     }
@@ -85,7 +85,13 @@ Route::get('/pesanan', function () {
 })->name('pesanan.index');
 
 Route::get('/reservasi/overview/{id}', function (Illuminate\Http\Request $request, $id) {
-    $accommodation = \App\Models\Accommodation::findOrFail($id);
+    $isCorporate = $request->query('is_corporate') == '1';
+    
+    if ($isCorporate) {
+        $accommodation = \App\Models\CorporatePackage::findOrFail($id);
+    } else {
+        $accommodation = \App\Models\Accommodation::findOrFail($id);
+    }
     
     $checkinParam = $request->query('checkin');
     $malam = intval($request->query('malam') ?? 1);
@@ -103,13 +109,19 @@ Route::get('/reservasi/overview/{id}', function (Illuminate\Http\Request $reques
     for ($d = $checkInDate->copy(); $d->lt($checkOutDate); $d->addDay()) {
         $currentDate = $d->format('Y-m-d');
         
-        $count = \App\Models\Booking::where('accommodation_id', $id)
-            ->whereNotIn('status', ['failed', 'refunded'])
-            ->where(function($query) use ($currentDate) {
-                $query->where('check_in_date', '<=', $currentDate)
-                      ->where('check_out_date', '>', $currentDate);
-            })
-            ->count();
+        $query = \App\Models\Booking::whereNotIn('status', ['failed', 'refunded'])
+            ->where(function($q) use ($currentDate) {
+                $q->where('check_in_date', '<=', $currentDate)
+                  ->where('check_out_date', '>', $currentDate);
+            });
+            
+        if ($isCorporate) {
+            $query->where('corporate_package_id', $id);
+        } else {
+            $query->where('accommodation_id', $id);
+        }
+        
+        $count = $query->count();
             
         if ($count > $maxBookedCount) {
             $maxBookedCount = $count;
@@ -126,7 +138,8 @@ Route::get('/reservasi/overview/{id}', function (Illuminate\Http\Request $reques
         'accommodation' => $accommodation,
         'dateSettings' => $dateSettings,
         'remainingSlots' => $remainingSlots,
-        'totalSlots' => $accommodation->slot
+        'totalSlots' => $accommodation->slot,
+        'isCorporate' => $isCorporate
     ]);
 })->name('reservasi.overview');
 
@@ -141,7 +154,7 @@ Route::get('/reservasi/metode-pembayaran/{id}', function (Illuminate\Http\Reques
     $booking = null;
     $bookingNo = $request->query('booking_no') ?? $request->query('order_id');
     if ($bookingNo) {
-        $booking = \App\Models\Booking::where('no_pesanan', $bookingNo)->with('accommodation')->first();
+        $booking = \App\Models\Booking::where('no_pesanan', $bookingNo)->with(['accommodation', 'corporatePackage'])->first();
     }
     return view('reservasi.metode', ['id' => $id, 'booking' => $booking]);
 })->name('reservasi.metode');
@@ -166,7 +179,7 @@ Route::get('/reservasi/konfirmasi', function (Illuminate\Http\Request $request) 
     $booking = null;
     $bookingNo = $request->query('booking_no') ?? $request->query('order_id');
     if ($bookingNo) {
-        $booking = \App\Models\Booking::where('no_pesanan', $bookingNo)->with('accommodation')->first();
+        $booking = \App\Models\Booking::where('no_pesanan', $bookingNo)->with(['accommodation', 'corporatePackage'])->first();
     }
     return view('reservasi.konfirmasi', compact('booking'));
 })->name('reservasi.konfirmasi');
@@ -239,7 +252,7 @@ Route::prefix('admin')->group(function () {
 
     Route::get('/reschedule', function () {
         // Fetch bookings that are related to reschedule (pending, rescheduled, or rejected)
-        $bookings = \App\Models\Booking::with('accommodation')
+        $bookings = \App\Models\Booking::with(['accommodation', 'corporatePackage'])
             ->whereIn('status', ['reschedule_pending', 'rescheduled', 'reschedule_rejected'])
             ->orderBy('updated_at', 'desc')
             ->get();
@@ -250,6 +263,20 @@ Route::prefix('admin')->group(function () {
                 'rescheduled' => 'accepted',
                 'reschedule_rejected' => 'rejected'
             ];
+
+            $isCorporate = !is_null($booking->corporate_package_id);
+            if ($isCorporate && $booking->corporatePackage) {
+                $paxVal = !empty($booking->jumlah_pax) ? $booking->jumlah_pax : $booking->corporatePackage->max_orang;
+                $akomodasiLabel = $booking->corporatePackage->judul;
+                $akomodasiCap   = '(' . $paxVal . ' pax)';
+            } elseif ($booking->accommodation) {
+                $akomodasiLabel = $booking->accommodation->judul;
+                $akomodasiCap   = '(' . $booking->accommodation->max_orang . ' pax)';
+            } else {
+                $akomodasiLabel = '—';
+                $akomodasiCap   = '';
+            }
+
             return [
                 'id' => $booking->id,
                 'noPesanan' => $booking->no_pesanan,
@@ -257,8 +284,8 @@ Route::prefix('admin')->group(function () {
                 'pemesanTelp' => $booking->pemesan_telp,
                 'pemesanEmail' => $booking->pemesan_email,
                 'namaTamu' => $booking->nama_tamu,
-                'akomodasi' => $booking->accommodation->judul,
-                'akomodasiCap' => '(' . $booking->accommodation->max_orang . ' pax)',
+                'akomodasi' => $akomodasiLabel,
+                'akomodasiCap' => $akomodasiCap,
                 'malam' => $booking->malam,
                 'tanggalDipesan' => $booking->created_at->locale('id')->isoFormat('D MMM YYYY'),
                 'checkin' => $booking->check_in_date->locale('id')->isoFormat('ddd, D MMM YYYY'),
@@ -278,6 +305,11 @@ Route::prefix('admin')->group(function () {
     Route::get('/pelanggan', [PelangganController::class, 'index'])->name('admin.pelanggan.index');
     Route::put('/pelanggan/{id}', [PelangganController::class, 'update'])->name('admin.pelanggan.update');
     Route::delete('/pelanggan/{id}', [PelangganController::class, 'destroy'])->name('admin.pelanggan.destroy');
+
+    Route::get('/corporate', [App\Http\Controllers\Admin\CorporatePackageController::class, 'index'])->name('admin.corporate.index');
+    Route::post('/corporate', [App\Http\Controllers\Admin\CorporatePackageController::class, 'store'])->name('admin.corporate.store');
+    Route::put('/corporate/{id}', [App\Http\Controllers\Admin\CorporatePackageController::class, 'update'])->name('admin.corporate.update');
+    Route::delete('/corporate/{id}', [App\Http\Controllers\Admin\CorporatePackageController::class, 'destroy'])->name('admin.corporate.destroy');
 
     Route::get('/tanggal', [App\Http\Controllers\Admin\TanggalController::class, 'index'])->name('admin.tanggal.index');
     Route::post('/tanggal', [App\Http\Controllers\Admin\TanggalController::class, 'updateAll'])->name('admin.tanggal.updateAll');

@@ -735,25 +735,35 @@
 <script>
 (function () {
     @if(isset($booking))
+        @php
+            $isCorporate = !is_null($booking->corporate_package_id);
+            $unit = $isCorporate ? $booking->corporatePackage : $booking->accommodation;
+            $maxOrang = $unit ? $unit->max_orang : 0;
+            $formattedTotal = number_format($booking->total, 0, ',', '.');
+        @endphp
         // Populate sessionStorage with the database booking data
         sessionStorage.setItem('res_booking_no', '{{ $booking->no_pesanan }}');
         sessionStorage.setItem('res_nama', '{{ $booking->pemesan_nama }}');
         sessionStorage.setItem('res_hp', '{{ $booking->pemesan_telp }}');
         sessionStorage.setItem('res_email', '{{ $booking->pemesan_email }}');
         sessionStorage.setItem('res_tamu', '{{ $booking->nama_tamu }}');
-        sessionStorage.setItem('res_guest', '{{ $booking->accommodation->max_orang }} Dewasa');
-        
-        @php
-            $formattedTotal = number_format($booking->total, 0, ',', '.');
-        @endphp
-        
+        sessionStorage.setItem('res_guest', '{{ $maxOrang }} Dewasa');
         sessionStorage.setItem('res_total', '{{ $formattedTotal }}');
-        sessionStorage.setItem('res_akoId', '{{ $booking->accommodation_id }}');
+        sessionStorage.setItem('res_akoId', '{{ $isCorporate ? 0 : ($booking->accommodation_id ?? 0) }}');
+        sessionStorage.setItem('res_corporate_package_id', '{{ $isCorporate ? $booking->corporate_package_id : 0 }}');
+        sessionStorage.setItem('res_is_corporate', '{{ $isCorporate ? "1" : "0" }}');
         sessionStorage.setItem('res_payment_status', '{{ $booking->status }}');
         sessionStorage.setItem('res_payment_method', '{{ $booking->metode_pembayaran }}');
         sessionStorage.setItem('res_malam', '{{ $booking->malam }}');
         sessionStorage.setItem('res_booking_id', '{{ $booking->id }}');
         sessionStorage.setItem('res_checkin_raw', '{{ $booking->check_in_date }}');
+        @if($isCorporate && $booking->corporatePackage)
+        // Corporate package data
+        sessionStorage.setItem('res_corp_judul', '{{ addslashes($booking->corporatePackage->judul) }}');
+        sessionStorage.setItem('res_corp_fasilitas', JSON.stringify({!! json_encode($booking->corporatePackage->fasilitas ?? []) !!}));
+        sessionStorage.setItem('res_corp_makanan', JSON.stringify({!! json_encode($booking->corporatePackage->makanan ?? []) !!}));
+        sessionStorage.setItem('res_corp_gambar', '{{ addslashes(is_array($booking->corporatePackage->gambar) && count($booking->corporatePackage->gambar) > 0 ? $booking->corporatePackage->gambar[0] : "") }}');
+        @endif
     @endif
 
     // ── Baca sessionStorage ───────────────────────────────────────────────
@@ -896,35 +906,69 @@
         if (btnResched) btnResched.style.display = 'none';
     }
 
-    // ── Accommodation data ────────────────────────────────────────────────
-    const akoItem = (typeof AKOMODASI_DATA !== 'undefined')
-        ? (AKOMODASI_DATA.find(d => d.id === akoId) || AKOMODASI_DATA[0])
-        : null;
+    // ── Accommodation / Corporate Package data ────────────────────────────
+    const isCorporate = sessionStorage.getItem('res_is_corporate') === '1';
 
-    if (akoItem) {
-        document.getElementById('dynRoomName').textContent = akoItem.judul;
+    if (isCorporate) {
+        // Corporate package display
+        const corpJudul    = sessionStorage.getItem('res_corp_judul') || 'Paket Corporate';
+        const corpFasilitas = JSON.parse(sessionStorage.getItem('res_corp_fasilitas') || '[]');
+        const corpMakanan  = JSON.parse(sessionStorage.getItem('res_corp_makanan') || '[]');
+        const corpGambar   = sessionStorage.getItem('res_corp_gambar') || '';
 
-        document.getElementById('dynBed').innerHTML =
-            `<iconify-icon icon="lucide:bed-double"></iconify-icon> ${akoItem.kasur}`;
+        document.getElementById('dynRoomName').textContent = corpJudul;
 
-        document.getElementById('dynSmoking').innerHTML = akoItem.merokok
-            ? `<iconify-icon icon="lucide:cigarette"></iconify-icon> Boleh merokok di kamar`
-            : `<iconify-icon icon="lucide:cigarette-off"></iconify-icon> Dilarang merokok`;
+        // Hide kasur/smoking for corporate
+        const bedEl = document.getElementById('dynBed');
+        const smokEl = document.getElementById('dynSmoking');
+        if (bedEl) bedEl.closest('.cp-room-meta')?.setAttribute('style', 'display:none');
+        if (smokEl) smokEl.parentElement?.setAttribute('style', 'display:none');
 
-        // Fasilitas split half
-        const half = Math.ceil(akoItem.fasilitas.length / 2);
+        // Fasilitas
+        const half = Math.ceil(corpFasilitas.length / 2);
         document.getElementById('dynFasilitas1').innerHTML =
-            akoItem.fasilitas.slice(0, half).map(f => `<li>${f}</li>`).join('');
+            corpFasilitas.slice(0, half).map(f => `<li>${f}</li>`).join('');
         document.getElementById('dynFasilitas2').innerHTML =
-            akoItem.fasilitas.slice(half).map(f => `<li>${f}</li>`).join('');
+            corpFasilitas.slice(half).map(f => `<li>${f}</li>`).join('');
 
         document.getElementById('dynMakanan').innerHTML =
-            akoItem.makanan.map(m => `<li>${m}</li>`).join('');
+            corpMakanan.map(m => `<li>${m}</li>`).join('');
 
-        // Room photo
-        if (akoItem.gambar) {
-            document.getElementById('dynRoomImg').src =
-                '/images/akomodasi/' + akoItem.gambar + '/a.webp';
+        // Photo
+        if (corpGambar) {
+            document.getElementById('dynRoomImg').src = corpGambar;
+        }
+    } else {
+        // Regular accommodation
+        const akoItem = (typeof AKOMODASI_DATA !== 'undefined')
+            ? AKOMODASI_DATA.find(d => d.id === akoId)
+            : null;
+
+        if (akoItem) {
+            document.getElementById('dynRoomName').textContent = akoItem.judul;
+
+            document.getElementById('dynBed').innerHTML =
+                `<iconify-icon icon="lucide:bed-double"></iconify-icon> ${akoItem.kasur}`;
+
+            document.getElementById('dynSmoking').innerHTML = akoItem.merokok
+                ? `<iconify-icon icon="lucide:cigarette"></iconify-icon> Boleh merokok di kamar`
+                : `<iconify-icon icon="lucide:cigarette-off"></iconify-icon> Dilarang merokok`;
+
+            // Fasilitas split half
+            const half = Math.ceil(akoItem.fasilitas.length / 2);
+            document.getElementById('dynFasilitas1').innerHTML =
+                akoItem.fasilitas.slice(0, half).map(f => `<li>${f}</li>`).join('');
+            document.getElementById('dynFasilitas2').innerHTML =
+                akoItem.fasilitas.slice(half).map(f => `<li>${f}</li>`).join('');
+
+            document.getElementById('dynMakanan').innerHTML =
+                akoItem.makanan.map(m => `<li>${m}</li>`).join('');
+
+            // Room photo
+            if (akoItem.gambar) {
+                document.getElementById('dynRoomImg').src =
+                    '/images/akomodasi/' + akoItem.gambar + '/a.webp';
+            }
         }
     }
 
