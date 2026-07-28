@@ -119,15 +119,16 @@
                     </button>
                 </div>
 
-                {{-- Gambar URL --}}
+                {{-- Upload Gambar --}}
                 <div class="md:col-span-2">
-                    <label class="block text-xs font-semibold text-stone-600 mb-1.5 tracking-wider uppercase">URL Gambar</label>
-                    <div id="tambah_corp_gambar_list" class="flex flex-col gap-2"></div>
-                    <button type="button" onclick="addGambarRow('tambah')"
-                        class="mt-2 text-xs font-semibold text-amber-600 hover:text-amber-800 flex items-center gap-1 transition">
-                        <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-                        Tambah URL Gambar
-                    </button>
+                    <label class="block text-xs font-semibold text-stone-600 mb-1.5 tracking-wider uppercase">Upload Gambar Paket Corporate</label>
+                    <div id="tambah_corp_gambar_preview_container" class="flex flex-wrap gap-3 mb-3"></div>
+                    <input type="file" id="tambah_corp_gambar" multiple accept="image/*, .heic" onchange="handleTambahCorpGambarChange(event)"
+                        class="w-full px-4 py-2.5 rounded-xl border border-stone-200 bg-white/80 text-stone-800 text-sm
+                               file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold
+                               file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100 transition
+                               focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent"/>
+                    <p class="text-[10px] text-stone-400 mt-1">Anda dapat memilih lebih dari 1 gambar (Format: JPG, PNG, JPEG, Webp, HEIC). Maksimal ukuran gambar 2MB/gambar.</p>
                 </div>
             </div>
 

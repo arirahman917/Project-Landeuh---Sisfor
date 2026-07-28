@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\CorporatePackage;
 use App\Models\Accommodation;
 use Illuminate\Http\Request;
+use Cloudinary\Cloudinary;
 
 class CorporatePackageController extends Controller
 {
@@ -31,10 +32,33 @@ class CorporatePackageController extends Controller
             'harga_weekday'     => 'required|numeric|min:0',
             'harga_weekend'     => 'required|numeric|min:0',
             'harga_highseason'  => 'required|numeric|min:0',
-            'gambar'            => 'nullable|array',
         ]);
 
         $validated['slot'] = count($validated['accommodation_ids']);
+
+        $gambarArray = [];
+        if ($request->hasFile('gambar')) {
+            $files = is_array($request->file('gambar')) ? $request->file('gambar') : [$request->file('gambar')];
+            foreach ($files as $file) {
+                try {
+                    $cloudinary = new Cloudinary(env('CLOUDINARY_URL'));
+                    $result = $cloudinary->uploadApi()->upload($file->getRealPath(), [
+                        'folder' => 'landeuh-corporate',
+                        'format' => 'webp',
+                        'quality' => 'auto',
+                        'width' => 1200,
+                        'crop' => 'limit'
+                    ]);
+                    $gambarArray[] = $result['secure_url'];
+                } catch (\Throwable $e) {
+                    \Log::error('Cloudinary upload failed: ' . $e->getMessage());
+                    $path = $file->store('images/corporate', 'public');
+                    $gambarArray[] = 'storage/' . $path;
+                }
+            }
+        }
+
+        $validated['gambar'] = $gambarArray;
 
         CorporatePackage::create($validated);
 
@@ -58,10 +82,40 @@ class CorporatePackageController extends Controller
             'harga_weekday'     => 'required|numeric|min:0',
             'harga_weekend'     => 'required|numeric|min:0',
             'harga_highseason'  => 'required|numeric|min:0',
-            'gambar'            => 'nullable|array',
         ]);
 
         $validated['slot'] = count($validated['accommodation_ids']);
+
+        $gambarArray = [];
+        if ($request->has('existing_gambar')) {
+            $existing = is_array($request->existing_gambar) ? $request->existing_gambar : [$request->existing_gambar];
+            $gambarArray = array_map(function($url) {
+                return ltrim($url, '/');
+            }, $existing);
+        }
+
+        if ($request->hasFile('gambar')) {
+            $files = is_array($request->file('gambar')) ? $request->file('gambar') : [$request->file('gambar')];
+            foreach ($files as $file) {
+                try {
+                    $cloudinary = new Cloudinary(env('CLOUDINARY_URL'));
+                    $result = $cloudinary->uploadApi()->upload($file->getRealPath(), [
+                        'folder' => 'landeuh-corporate',
+                        'format' => 'webp',
+                        'quality' => 'auto',
+                        'width' => 1200,
+                        'crop' => 'limit'
+                    ]);
+                    $gambarArray[] = $result['secure_url'];
+                } catch (\Throwable $e) {
+                    \Log::error('Cloudinary upload failed: ' . $e->getMessage());
+                    $path = $file->store('images/corporate', 'public');
+                    $gambarArray[] = 'storage/' . $path;
+                }
+            }
+        }
+
+        $validated['gambar'] = $gambarArray;
 
         $package->update($validated);
 

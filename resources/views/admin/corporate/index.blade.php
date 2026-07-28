@@ -235,9 +235,11 @@ function renderAccomCheckboxes(containerId, selectedIds, jenisAkomodasi) {
         el.innerHTML = `<p class="text-stone-400 text-xs col-span-2">Tidak ada unit ${jenisAkomodasi} ditemukan.</p>`;
         return;
     }
+    // Normalize selectedIds to integers to handle JSON string vs number mismatch
+    const selectedInts = (selectedIds || []).map(id => parseInt(id));
     el.innerHTML = filtered.map(a => `
         <label class="flex items-center gap-2 cursor-pointer text-stone-700 hover:text-[#3a523a] text-xs font-medium">
-            <input type="checkbox" value="${a.id}" ${(selectedIds||[]).includes(a.id) ? 'checked' : ''}
+            <input type="checkbox" value="${a.id}" ${selectedInts.includes(parseInt(a.id)) ? 'checked' : ''}
                 class="rounded accent-[#3a523a] w-3.5 h-3.5 cursor-pointer">
             <span>${a.judul}</span>
         </label>`).join('');
@@ -261,6 +263,141 @@ window.onEditJenisChange = function(val) {
     renderAccomCheckboxes('edit_corp_accommodation_list', currentIds, ja);
 };
 
+/* ── Corporate Image Upload Helpers ──────────────────── */
+window.tambahCorpFiles = [];
+window.currentEditCorpImages = [];
+
+function formatImgUrl(url) {
+    if (!url) return '/images/placeholder.jpg';
+    if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('/')) {
+        return url;
+    }
+    return '/' + url;
+}
+
+window.handleTambahCorpGambarChange = function(event) {
+    const files = Array.from(event.target.files);
+    const validFiles = [];
+    
+    files.forEach(file => {
+        if (file.size > 2 * 1024 * 1024) {
+            alert(`Gambar "${file.name}" gagal diupload karena ukurannya melebihi 2MB.`);
+        } else {
+            validFiles.push(file);
+        }
+    });
+
+    validFiles.sort((a, b) => a.name.localeCompare(b.name));
+    window.tambahCorpFiles = window.tambahCorpFiles.concat(validFiles);
+    event.target.value = '';
+    renderTambahCorpImagePreviews();
+};
+
+window.renderTambahCorpImagePreviews = function() {
+    const container = document.getElementById('tambah_corp_gambar_preview_container');
+    if (!container) return;
+    container.innerHTML = '';
+    if (window.tambahCorpFiles.length === 0) {
+        container.innerHTML = '<span class="text-xs text-stone-400">Belum ada gambar yang dipilih.</span>';
+        return;
+    }
+
+    window.tambahCorpFiles.forEach((file, index) => {
+        const div = document.createElement('div');
+        div.className = 'relative group w-24 h-24 rounded-xl overflow-hidden border border-stone-200 bg-white shadow-sm flex-shrink-0';
+
+        const image = document.createElement('img');
+        image.src = URL.createObjectURL(file);
+        image.className = 'w-full h-full object-cover pointer-events-none';
+        div.appendChild(image);
+        
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>';
+        removeBtn.className = 'absolute top-1 right-1 w-6 h-6 bg-red-500/90 text-white rounded-full flex items-center justify-center font-bold opacity-0 group-hover:opacity-100 transition-opacity z-10 shadow';
+        removeBtn.onclick = (e) => {
+            e.preventDefault();
+            window.tambahCorpFiles.splice(index, 1);
+            renderTambahCorpImagePreviews();
+        };
+
+        if (index === 0) {
+            const badge = document.createElement('div');
+            badge.innerHTML = 'Depan';
+            badge.className = 'absolute bottom-0 left-0 right-0 bg-amber-500/90 text-white text-[9px] text-center font-bold py-0.5 z-10';
+            div.appendChild(badge);
+        }
+
+        div.appendChild(removeBtn);
+        container.appendChild(div);
+    });
+};
+
+window.handleEditCorpGambarChange = function(event) {
+    const files = Array.from(event.target.files);
+    const validFiles = [];
+    
+    files.forEach(file => {
+        if (file.size > 2 * 1024 * 1024) {
+            alert(`Gambar "${file.name}" gagal diupload karena ukurannya melebihi 2MB.`);
+        } else {
+            validFiles.push(file);
+        }
+    });
+
+    validFiles.sort((a, b) => a.name.localeCompare(b.name));
+    
+    const results = validFiles.map(file => ({
+        type: 'new',
+        file: file,
+        url: URL.createObjectURL(file)
+    }));
+
+    window.currentEditCorpImages = window.currentEditCorpImages.concat(results);
+    renderEditCorpImagePreviews();
+    event.target.value = '';
+};
+
+window.renderEditCorpImagePreviews = function() {
+    const container = document.getElementById('edit_corp_gambar_preview_container');
+    if (!container) return;
+    container.innerHTML = '';
+    if (!window.currentEditCorpImages || window.currentEditCorpImages.length === 0) {
+        container.innerHTML = '<span class="text-xs text-stone-400">Belum ada gambar.</span>';
+        return;
+    }
+
+    window.currentEditCorpImages.forEach((imgObj, index) => {
+        const div = document.createElement('div');
+        div.className = 'relative group w-24 h-24 rounded-xl overflow-hidden border border-stone-200 bg-white shadow-sm flex-shrink-0';
+
+        const image = document.createElement('img');
+        image.src = imgObj.url;
+        image.className = 'w-full h-full object-cover pointer-events-none';
+        div.appendChild(image);
+        
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>';
+        removeBtn.className = 'absolute top-1 right-1 w-6 h-6 bg-red-500/90 text-white rounded-full flex items-center justify-center font-bold opacity-0 group-hover:opacity-100 transition-opacity z-10 shadow';
+        removeBtn.onclick = (e) => {
+            e.preventDefault();
+            window.currentEditCorpImages.splice(index, 1);
+            renderEditCorpImagePreviews();
+        };
+
+        if (index === 0) {
+            const badge = document.createElement('div');
+            badge.innerHTML = 'Depan';
+            badge.className = 'absolute bottom-0 left-0 right-0 bg-amber-500/90 text-white text-[9px] text-center font-bold py-0.5 z-10';
+            div.appendChild(badge);
+        }
+
+        div.appendChild(removeBtn);
+        container.appendChild(div);
+    });
+};
+
 /* ── Modal Tambah ─────────────────────────────────────── */
 window.openModalTambahCorp = function() {
     document.getElementById('tambah_corp_judul').value = '';
@@ -270,7 +407,9 @@ window.openModalTambahCorp = function() {
     document.getElementById('tambah_corp_harga_weekday').value = '';
     document.getElementById('tambah_corp_harga_weekend').value = '';
     document.getElementById('tambah_corp_harga_highseason').value = '';
-    ['fasilitas','makanan','catatan','gambar'].forEach(k => document.getElementById(`tambah_corp_${k}_list`).innerHTML = '');
+    ['fasilitas','makanan','catatan'].forEach(k => document.getElementById(`tambah_corp_${k}_list`).innerHTML = '');
+    window.tambahCorpFiles = [];
+    renderTambahCorpImagePreviews();
     renderAccomCheckboxes('tambah_corp_accommodation_list', [], '');
     document.getElementById('modalTambahCorporate').classList.remove('hidden');
 };
@@ -279,31 +418,41 @@ window.closeModalTambahCorp = function() {
 };
 
 window.submitTambahCorp = async function() {
-    const body = {
-        judul:             document.getElementById('tambah_corp_judul').value.trim(),
-        jenis:             document.getElementById('tambah_corp_jenis').value,
-        jenis_akomodasi:   document.getElementById('tambah_corp_jenis_akomodasi').value,
-        accommodation_ids: getSelectedAccomIds('tambah_corp_accommodation_list'),
-        max_orang:         parseInt(document.getElementById('tambah_corp_max_orang').value) || 150,
-        harga_weekday:     parseFloat(document.getElementById('tambah_corp_harga_weekday').value) || 0,
-        harga_weekend:     parseFloat(document.getElementById('tambah_corp_harga_weekend').value) || 0,
-        harga_highseason:  parseFloat(document.getElementById('tambah_corp_harga_highseason').value) || 0,
-        fasilitas:         getListValues('tambah_corp_fasilitas_list'),
-        makanan:           getListValues('tambah_corp_makanan_list'),
-        catatan:           getListValues('tambah_corp_catatan_list'),
-        gambar:            getListValues('tambah_corp_gambar_list'),
-    };
-    if (!body.judul || !body.jenis || !body.jenis_akomodasi) {
+    const judul = document.getElementById('tambah_corp_judul').value.trim();
+    const jenis = document.getElementById('tambah_corp_jenis').value;
+    const ja    = document.getElementById('tambah_corp_jenis_akomodasi').value;
+    const accomIds = getSelectedAccomIds('tambah_corp_accommodation_list');
+
+    if (!judul || !jenis || !ja) {
         showCorpToast('Judul dan jenis wajib diisi.', false); return;
     }
-    if (!body.accommodation_ids.length) {
+    if (!accomIds.length) {
         showCorpToast('Pilih minimal 1 unit akomodasi.', false); return;
     }
+
+    const formData = new FormData();
+    formData.append('judul', judul);
+    formData.append('jenis', jenis);
+    formData.append('jenis_akomodasi', ja);
+    formData.append('max_orang', parseInt(document.getElementById('tambah_corp_max_orang').value) || 150);
+    formData.append('harga_weekday', parseFloat(document.getElementById('tambah_corp_harga_weekday').value) || 0);
+    formData.append('harga_weekend', parseFloat(document.getElementById('tambah_corp_harga_weekend').value) || 0);
+    formData.append('harga_highseason', parseFloat(document.getElementById('tambah_corp_harga_highseason').value) || 0);
+
+    accomIds.forEach(id => formData.append('accommodation_ids[]', id));
+    getListValues('tambah_corp_fasilitas_list').forEach(val => formData.append('fasilitas[]', val));
+    getListValues('tambah_corp_makanan_list').forEach(val => formData.append('makanan[]', val));
+    getListValues('tambah_corp_catatan_list').forEach(val => formData.append('catatan[]', val));
+
+    window.tambahCorpFiles.forEach(file => {
+        formData.append('gambar[]', file);
+    });
+
     try {
         const res = await fetch('/admin/corporate', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF_TOKEN },
-            body: JSON.stringify(body),
+            headers: { 'X-CSRF-TOKEN': CSRF_TOKEN },
+            body: formData,
         });
         const json = await res.json();
         if (json.success) {
@@ -334,7 +483,14 @@ window.openModalEditCorp = function(id) {
     populateList('edit_corp_fasilitas_list',  pkg.fasilitas);
     populateList('edit_corp_makanan_list',     pkg.makanan);
     populateList('edit_corp_catatan_list',     pkg.catatan);
-    populateList('edit_corp_gambar_list',      pkg.gambar);
+
+    const existingImages = Array.isArray(pkg.gambar) ? pkg.gambar : (pkg.gambar ? [pkg.gambar] : []);
+    window.currentEditCorpImages = existingImages.map(url => ({
+        type: 'existing',
+        url: formatImgUrl(url)
+    }));
+    renderEditCorpImagePreviews();
+
     document.getElementById('modalEditCorporate').classList.remove('hidden');
 };
 window.closeModalEditCorp = function() {
@@ -343,27 +499,44 @@ window.closeModalEditCorp = function() {
 
 window.submitEditCorp = async function() {
     const id = document.getElementById('edit_corp_id').value;
-    const body = {
-        judul:             document.getElementById('edit_corp_judul').value.trim(),
-        jenis:             document.getElementById('edit_corp_jenis').value,
-        jenis_akomodasi:   document.getElementById('edit_corp_jenis_akomodasi').value,
-        accommodation_ids: getSelectedAccomIds('edit_corp_accommodation_list'),
-        max_orang:         parseInt(document.getElementById('edit_corp_max_orang').value) || 150,
-        harga_weekday:     parseFloat(document.getElementById('edit_corp_harga_weekday').value) || 0,
-        harga_weekend:     parseFloat(document.getElementById('edit_corp_harga_weekend').value) || 0,
-        harga_highseason:  parseFloat(document.getElementById('edit_corp_harga_highseason').value) || 0,
-        fasilitas:         getListValues('edit_corp_fasilitas_list'),
-        makanan:           getListValues('edit_corp_makanan_list'),
-        catatan:           getListValues('edit_corp_catatan_list'),
-        gambar:            getListValues('edit_corp_gambar_list'),
-    };
-    if (!body.judul || !body.jenis) { showCorpToast('Judul dan jenis wajib diisi.', false); return; }
-    if (!body.accommodation_ids.length) { showCorpToast('Pilih minimal 1 unit akomodasi.', false); return; }
+    const judul = document.getElementById('edit_corp_judul').value.trim();
+    const jenis = document.getElementById('edit_corp_jenis').value;
+    const ja    = document.getElementById('edit_corp_jenis_akomodasi').value;
+    const accomIds = getSelectedAccomIds('edit_corp_accommodation_list');
+
+    if (!judul || !jenis) { showCorpToast('Judul dan jenis wajib diisi.', false); return; }
+    if (!accomIds.length) { showCorpToast('Pilih minimal 1 unit akomodasi.', false); return; }
+
+    const formData = new FormData();
+    formData.append('_method', 'PUT');
+    formData.append('judul', judul);
+    formData.append('jenis', jenis);
+    formData.append('jenis_akomodasi', ja);
+    formData.append('max_orang', parseInt(document.getElementById('edit_corp_max_orang').value) || 150);
+    formData.append('harga_weekday', parseFloat(document.getElementById('edit_corp_harga_weekday').value) || 0);
+    formData.append('harga_weekend', parseFloat(document.getElementById('edit_corp_harga_weekend').value) || 0);
+    formData.append('harga_highseason', parseFloat(document.getElementById('edit_corp_harga_highseason').value) || 0);
+
+    accomIds.forEach(id => formData.append('accommodation_ids[]', id));
+    getListValues('edit_corp_fasilitas_list').forEach(val => formData.append('fasilitas[]', val));
+    getListValues('edit_corp_makanan_list').forEach(val => formData.append('makanan[]', val));
+    getListValues('edit_corp_catatan_list').forEach(val => formData.append('catatan[]', val));
+
+    if (window.currentEditCorpImages && window.currentEditCorpImages.length > 0) {
+        window.currentEditCorpImages.forEach(imgObj => {
+            if (imgObj.type === 'existing') {
+                formData.append('existing_gambar[]', imgObj.url);
+            } else if (imgObj.type === 'new' && imgObj.file) {
+                formData.append('gambar[]', imgObj.file);
+            }
+        });
+    }
+
     try {
         const res = await fetch(`/admin/corporate/${id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF_TOKEN },
-            body: JSON.stringify(body),
+            method: 'POST',
+            headers: { 'X-CSRF-TOKEN': CSRF_TOKEN },
+            body: formData,
         });
         const json = await res.json();
         if (json.success) {

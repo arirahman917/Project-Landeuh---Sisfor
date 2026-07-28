@@ -23,7 +23,7 @@
                 <button onclick="closeModalDeleteCorp()"
                     class="px-5 py-2.5 rounded-xl text-sm font-semibold text-stone-600 bg-stone-100 hover:bg-stone-200 transition">Batal</button>
                 <button onclick="submitDeleteCorp()"
-                    class="px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 shadow transition">
+                    class="px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-red-600 hover:bg-red-700 shadow transition duration-200">
                     Ya, Hapus
                 </button>
             </div>
