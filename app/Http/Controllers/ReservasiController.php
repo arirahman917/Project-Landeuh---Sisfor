@@ -76,17 +76,18 @@ class ReservasiController extends Controller
                     if ($corpBookingsCount + 1 > $totalSlots) {
                         $isAvailable = false;
                     } else {
-                        // Cek apakah ada unit reguler yang sudah dibooking (gunakan jenis_akomodasi)
+                        // Cek apakah seluruh unit reguler (misal: 13 Glamping atau 8 Cabin) sudah habis dibooking
                         $targetJenis = $target->jenis_akomodasi ?? '';
                         if ($targetJenis) {
-                            $regularBooked = Booking::whereHas('accommodation', function($q) use ($targetJenis) {
+                            $maxUnits = Accommodation::where('jenis', $targetJenis)->sum('slot') ?: (strtolower($targetJenis) === 'glamping' ? 13 : 8);
+                            $regularBookedCount = Booking::whereHas('accommodation', function($q) use ($targetJenis) {
                                     $q->where('jenis', $targetJenis);
                                 })
                                 ->whereNotIn('status', ['failed', 'refunded'])
                                 ->where('check_in_date', '<=', $currentDate)
                                 ->where('check_out_date', '>', $currentDate)
-                                ->exists();
-                            if ($regularBooked) $isAvailable = false;
+                                ->count();
+                            if ($regularBookedCount >= $maxUnits) $isAvailable = false;
                         }
                     }
                 } else {
@@ -542,14 +543,16 @@ class ReservasiController extends Controller
                     } else {
                         $targetJenis = $target->jenis_akomodasi ?? '';
                         if ($targetJenis) {
-                            $regularBooked = Booking::whereHas('accommodation', function($q) use ($targetJenis) {
+                            $maxUnits = Accommodation::where('jenis', $targetJenis)->sum('slot') ?: (strtolower($targetJenis) === 'glamping' ? 13 : 8);
+                            $regularBookedCount = Booking::whereHas('accommodation', function($q) use ($targetJenis) {
                                     $q->where('jenis', $targetJenis);
                                 })
                                 ->whereNotIn('status', ['failed', 'refunded'])
+                                ->where('id', '!=', $booking->id)
                                 ->where('check_in_date', '<=', $currentDate)
                                 ->where('check_out_date', '>', $currentDate)
-                                ->exists();
-                            if ($regularBooked) $isAvailable = false;
+                                ->count();
+                            if ($regularBookedCount >= $maxUnits) $isAvailable = false;
                         }
                     }
                 } else {

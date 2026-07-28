@@ -418,6 +418,40 @@
     </div>
 </div>
 
+{{-- Custom Confirm & Alert Modal --}}
+<div id="customConfirmModal" class="fixed inset-0 z-[99999] hidden items-center justify-center bg-black/60 backdrop-blur-sm p-4 transition-all duration-200">
+    <div id="customConfirmBox" class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden transform scale-90 opacity-0 transition-all duration-200" style="font-family: inherit;">
+        <!-- Banner Header -->
+        <div class="p-6 text-center border-b border-gray-100 bg-amber-50/70" id="customConfirmHeader">
+            <div id="customConfirmIconWrap" class="w-14 h-14 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-3 shadow-inner">
+                <iconify-icon id="customConfirmIcon" icon="lucide:alert-triangle" style="font-size: 1.8rem;"></iconify-icon>
+            </div>
+            <h3 class="text-lg font-bold text-gray-900" id="customConfirmTitle">Konfirmasi Pemesanan</h3>
+        </div>
+        <!-- Body Content -->
+        <div class="p-6 text-center space-y-3">
+            <div id="customConfirmBadge" class="inline-block bg-amber-100 text-amber-800 text-xs font-extrabold px-3 py-1 rounded-full">
+                Peringatan Ketersediaan Unit
+            </div>
+            <p id="customConfirmMessage" class="text-sm text-gray-700 font-medium leading-relaxed">
+                Peringatan: Jumlah unit yang tersedia di tanggal ini terbatas.
+            </p>
+            <p id="customConfirmSubtext" class="text-xs text-gray-500 font-semibold pt-2 border-t border-gray-100">
+                Apakah Anda yakin ingin tetap melanjutkan pemesanan Paket Corporate ini dengan harga yang sama?
+            </p>
+        </div>
+        <!-- Action Buttons -->
+        <div class="p-4 bg-gray-50 border-t border-gray-100 flex items-center justify-end gap-3" id="customConfirmFooter">
+            <button type="button" id="btnCustomConfirmCancel" class="w-1/2 py-2.5 px-4 bg-white hover:bg-gray-100 text-gray-700 font-bold text-sm rounded-xl border border-gray-300 transition shadow-sm cursor-pointer">
+                Batal
+            </button>
+            <button type="button" id="btnCustomConfirmOk" class="w-1/2 py-2.5 px-4 bg-[#3a523a] hover:bg-[#2c402c] text-white font-bold text-sm rounded-xl transition shadow cursor-pointer">
+                Ya, Lanjutkan
+            </button>
+        </div>
+    </div>
+</div>
+
 @push('scripts')
 <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
 <script>
@@ -749,6 +783,93 @@
     updatePrice('glamping');
     updatePrice('cabin');
 
+    /* ── Custom Modal Helper ────────────────────── */
+    window.openCustomModal = function(options) {
+        return new Promise((resolve) => {
+            const modal = document.getElementById('customConfirmModal');
+            const box = document.getElementById('customConfirmBox');
+            const header = document.getElementById('customConfirmHeader');
+            const iconWrap = document.getElementById('customConfirmIconWrap');
+            const icon = document.getElementById('customConfirmIcon');
+            const title = document.getElementById('customConfirmTitle');
+            const badge = document.getElementById('customConfirmBadge');
+            const msg = document.getElementById('customConfirmMessage');
+            const subtext = document.getElementById('customConfirmSubtext');
+            const btnCancel = document.getElementById('btnCustomConfirmCancel');
+            const btnOk = document.getElementById('btnCustomConfirmOk');
+
+            const isAlertOnly = options.isAlert || false;
+
+            title.textContent = options.title || 'Informasi';
+            badge.textContent = options.badge || 'Pemberitahuan';
+            msg.textContent = options.message || '';
+            
+            if (options.subtext) {
+                subtext.textContent = options.subtext;
+                subtext.style.display = 'block';
+            } else {
+                subtext.style.display = 'none';
+            }
+
+            if (options.type === 'error') {
+                header.className = 'p-6 text-center border-b border-gray-100 bg-red-50/70';
+                iconWrap.className = 'w-14 h-14 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-3 shadow-inner';
+                icon.setAttribute('icon', 'lucide:x-circle');
+                badge.className = 'inline-block bg-red-100 text-red-800 text-xs font-extrabold px-3 py-1 rounded-full';
+                btnOk.className = 'w-full py-2.5 px-4 bg-red-600 hover:bg-red-700 text-white font-bold text-sm rounded-xl transition shadow cursor-pointer';
+                btnOk.textContent = options.okText || 'Tutup';
+            } else if (options.type === 'info') {
+                header.className = 'p-6 text-center border-b border-gray-100 bg-blue-50/70';
+                iconWrap.className = 'w-14 h-14 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-3 shadow-inner';
+                icon.setAttribute('icon', 'lucide:info');
+                badge.className = 'inline-block bg-blue-100 text-blue-800 text-xs font-extrabold px-3 py-1 rounded-full';
+                btnOk.className = 'w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-xl transition shadow cursor-pointer';
+                btnOk.textContent = options.okText || 'Mengerti';
+            } else {
+                // Default Warning / Confirm
+                header.className = 'p-6 text-center border-b border-gray-100 bg-amber-50/70';
+                iconWrap.className = 'w-14 h-14 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-3 shadow-inner';
+                icon.setAttribute('icon', 'lucide:alert-triangle');
+                badge.className = 'inline-block bg-amber-100 text-amber-800 text-xs font-extrabold px-3 py-1 rounded-full';
+                btnOk.className = 'w-1/2 py-2.5 px-4 bg-[#3a523a] hover:bg-[#2c402c] text-white font-bold text-sm rounded-xl transition shadow cursor-pointer';
+                btnOk.textContent = options.okText || 'Ya, Lanjutkan';
+            }
+
+            if (isAlertOnly) {
+                btnCancel.style.display = 'none';
+                btnOk.classList.remove('w-1/2');
+                btnOk.classList.add('w-full');
+            } else {
+                btnCancel.style.display = 'block';
+                btnOk.classList.remove('w-full');
+                btnOk.classList.add('w-1/2');
+            }
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+
+            setTimeout(() => {
+                box.classList.remove('scale-90', 'opacity-0');
+                box.classList.add('scale-100', 'opacity-100');
+            }, 10);
+
+            function close(res) {
+                box.classList.remove('scale-100', 'opacity-100');
+                box.classList.add('scale-90', 'opacity-0');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                    btnCancel.onclick = null;
+                    btnOk.onclick = null;
+                    resolve(res);
+                }, 150);
+            }
+
+            btnCancel.onclick = function() { close(false); };
+            btnOk.onclick = function() { close(true); };
+        });
+    };
+
     /* ── Pilih Paket ──────────────────────────────── */
     window.pilihPaket=function(id,t){
         var dates=dateState[t];
@@ -757,7 +878,13 @@
             return;
         }
         if(isBooked(t,dates)){
-            alert('Tanggal yang dipilih sudah dipesan oleh rombongan Corporate lain. Pilih tanggal lain.');
+            openCustomModal({
+                type: 'error',
+                isAlert: true,
+                title: 'Tanggal Tidak Tersedia',
+                badge: 'Sudah Penuh',
+                message: 'Tanggal yang Anda pilih sudah dipesan oleh rombongan Corporate lain. Silakan pilih tanggal lain.'
+            });
             return;
         }
         
@@ -766,13 +893,34 @@
         var unitName = t === 'glamping' ? 'Glamping' : 'Cabin';
         
         if (avail === 0) {
-            alert('Pemesanan gagal: Seluruh unit ' + unitName + ' di tanggal ini sudah dipesan oleh tamu reguler sehingga tidak tersedia untuk Paket Corporate. Silakan pilih tanggal lain.');
+            openCustomModal({
+                type: 'error',
+                isAlert: true,
+                title: 'Pemesanan Gagal',
+                badge: 'Seluruh Unit Dipesan',
+                message: 'Seluruh unit ' + unitName + ' di tanggal ini sudah dipesan oleh tamu reguler sehingga tidak tersedia untuk Paket Corporate. Silakan pilih tanggal lain.'
+            });
             return;
         } else if (avail < maxUnits) {
-            var conf = confirm('Peringatan: Jumlah unit ' + unitName + ' yang tersedia di tanggal ini hanya tersisa ' + avail + ' unit (dari total ' + maxUnits + ' unit) karena sebagian sudah dipesan oleh tamu reguler.\n\nApakah Anda yakin ingin tetap memesan Paket Corporate ini?');
-            if (!conf) return;
+            openCustomModal({
+                type: 'warning',
+                isAlert: false,
+                title: 'Konfirmasi Ketersediaan Unit',
+                badge: 'Peringatan Unit Terbatas',
+                message: 'Jumlah unit ' + unitName + ' yang tersedia di tanggal ini hanya tersisa ' + avail + ' unit (dari total ' + maxUnits + ' unit) karena sebagian sudah dipesan oleh tamu reguler.',
+                subtext: 'Apakah Anda yakin ingin tetap melanjutkan pemesanan Paket Corporate ini dengan harga yang sama?'
+            }).then(function(confirmed){
+                if(confirmed){
+                    proceedCorporateBooking(id, t, dates);
+                }
+            });
+            return;
         }
 
+        proceedCorporateBooking(id, t, dates);
+    };
+
+    function proceedCorporateBooking(id, t, dates){
         var malam=nightState[t];
         var d=dates[0];
         var ci=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
@@ -782,9 +930,17 @@
         else{
             sessionStorage.setItem('pending_redirect',url);
             if(typeof openLoginModal==='function') openLoginModal();
-            else alert('Silakan log in terlebih dahulu.');
+            else {
+                openCustomModal({
+                    type: 'info',
+                    isAlert: true,
+                    title: 'Login Diperlukan',
+                    badge: 'Autentikasi Pengguna',
+                    message: 'Silakan log in terlebih dahulu untuk melanjutkan proses pemesanan.'
+                });
+            }
         }
-    };
+    }
 
     /* ── Lightbox ─────────────────────────────────── */
     var lbImgs=[],lbIdx=0;
