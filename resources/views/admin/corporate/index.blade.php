@@ -138,9 +138,9 @@ function renderCorpList(data) {
         const imgs = Array.isArray(pkg.gambar) ? pkg.gambar : [];
         const thumb = imgs[0] || 'https://placehold.co/200x120/3a523a/fff?text=No+Image';
         const fas   = Array.isArray(pkg.fasilitas) ? pkg.fasilitas : [];
-        const accIds= Array.isArray(pkg.accommodation_ids) ? pkg.accommodation_ids : [];
+        const accIds = (Array.isArray(pkg.accommodation_ids) ? pkg.accommodation_ids : []).map(id => parseInt(id));
         const accNames = ACCOM_DATA
-            .filter(a => accIds.includes(a.id))
+            .filter(a => accIds.includes(parseInt(a.id)))
             .map(a => a.judul).join(', ') || '—';
 
         return `
@@ -412,12 +412,18 @@ window.openModalTambahCorp = function() {
     renderTambahCorpImagePreviews();
     renderAccomCheckboxes('tambah_corp_accommodation_list', [], '');
     document.getElementById('modalTambahCorporate').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
 };
 window.closeModalTambahCorp = function() {
     document.getElementById('modalTambahCorporate').classList.add('hidden');
+    document.body.style.overflow = '';
 };
 
 window.submitTambahCorp = async function() {
+    const btn = document.getElementById('btnSubmitTambahCorp');
+    const origHTML = btn.innerHTML;
+    
+    // ... validate ...
     const judul = document.getElementById('tambah_corp_judul').value.trim();
     const jenis = document.getElementById('tambah_corp_jenis').value;
     const ja    = document.getElementById('tambah_corp_jenis_akomodasi').value;
@@ -429,6 +435,10 @@ window.submitTambahCorp = async function() {
     if (!accomIds.length) {
         showCorpToast('Pilih minimal 1 unit akomodasi.', false); return;
     }
+
+    btn.innerHTML = '<iconify-icon icon="lucide:loader-2" class="animate-spin text-lg"></iconify-icon> Mengupload & Menyimpan... Mohon Tunggu';
+    btn.disabled = true;
+    btn.classList.add('opacity-70', 'cursor-not-allowed');
 
     const formData = new FormData();
     formData.append('judul', judul);
@@ -451,18 +461,30 @@ window.submitTambahCorp = async function() {
     try {
         const res = await fetch('/admin/corporate', {
             method: 'POST',
-            headers: { 'X-CSRF-TOKEN': CSRF_TOKEN },
+            headers: { 
+                'X-CSRF-TOKEN': CSRF_TOKEN,
+                'Accept': 'application/json'
+            },
             body: formData,
         });
         const json = await res.json();
-        if (json.success) {
+        if (res.ok && json.success) {
             closeModalTambahCorp();
             showCorpToast(json.message);
             setTimeout(() => location.reload(), 1200);
         } else {
-            showCorpToast(json.message || 'Terjadi kesalahan.', false);
+            showCorpToast(json.message || 'Terjadi kesalahan validasi.', false);
+            btn.innerHTML = origHTML;
+            btn.disabled = false;
+            btn.classList.remove('opacity-70', 'cursor-not-allowed');
         }
-    } catch(e) { showCorpToast('Gagal terhubung ke server.', false); }
+    } catch(e) { 
+        console.error(e);
+        showCorpToast('Gagal terhubung ke server.', false); 
+        btn.innerHTML = origHTML;
+        btn.disabled = false;
+        btn.classList.remove('opacity-70', 'cursor-not-allowed');
+    }
 };
 
 /* ── Modal Edit ───────────────────────────────────────── */
@@ -492,12 +514,17 @@ window.openModalEditCorp = function(id) {
     renderEditCorpImagePreviews();
 
     document.getElementById('modalEditCorporate').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
 };
 window.closeModalEditCorp = function() {
     document.getElementById('modalEditCorporate').classList.add('hidden');
+    document.body.style.overflow = '';
 };
 
 window.submitEditCorp = async function() {
+    const btn = document.getElementById('btnSubmitEditCorp');
+    const origHTML = btn.innerHTML;
+
     const id = document.getElementById('edit_corp_id').value;
     const judul = document.getElementById('edit_corp_judul').value.trim();
     const jenis = document.getElementById('edit_corp_jenis').value;
@@ -539,12 +566,23 @@ window.submitEditCorp = async function() {
             body: formData,
         });
         const json = await res.json();
-        if (json.success) {
+        if (res.ok && json.success) {
             closeModalEditCorp();
             showCorpToast(json.message);
             setTimeout(() => location.reload(), 1200);
-        } else { showCorpToast(json.message || 'Terjadi kesalahan.', false); }
-    } catch(e) { showCorpToast('Gagal terhubung ke server.', false); }
+        } else { 
+            showCorpToast(json.message || 'Terjadi kesalahan.', false); 
+            btn.innerHTML = origHTML;
+            btn.disabled = false;
+            btn.classList.remove('opacity-70', 'cursor-not-allowed');
+        }
+    } catch(e) { 
+        console.error(e);
+        showCorpToast('Gagal terhubung ke server.', false); 
+        btn.innerHTML = origHTML;
+        btn.disabled = false;
+        btn.classList.remove('opacity-70', 'cursor-not-allowed');
+    }
 };
 
 /* ── Modal Delete ─────────────────────────────────────── */
@@ -552,9 +590,11 @@ window.openModalDeleteCorp = function(id, name) {
     document.getElementById('delete_corp_id').value = id;
     document.getElementById('delete_corp_name').textContent = name;
     document.getElementById('modalDeleteCorporate').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
 };
 window.closeModalDeleteCorp = function() {
     document.getElementById('modalDeleteCorporate').classList.add('hidden');
+    document.body.style.overflow = '';
 };
 
 window.submitDeleteCorp = async function() {
@@ -562,15 +602,21 @@ window.submitDeleteCorp = async function() {
     try {
         const res = await fetch(`/admin/corporate/${id}`, {
             method: 'DELETE',
-            headers: { 'X-CSRF-TOKEN': CSRF_TOKEN },
+            headers: { 
+                'X-CSRF-TOKEN': CSRF_TOKEN,
+                'Accept': 'application/json'
+            },
         });
         const json = await res.json();
-        if (json.success) {
+        if (res.ok && json.success) {
             closeModalDeleteCorp();
             showCorpToast(json.message);
             setTimeout(() => location.reload(), 1200);
         } else { showCorpToast(json.message || 'Terjadi kesalahan.', false); }
-    } catch(e) { showCorpToast('Gagal terhubung ke server.', false); }
+    } catch(e) { 
+        console.error(e);
+        showCorpToast('Gagal terhubung ke server.', false); 
+    }
 };
 
 /* ── Init ─────────────────────────────────────────────── */

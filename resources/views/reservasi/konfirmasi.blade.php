@@ -599,8 +599,10 @@
                 <strong>Ketentuan:</strong><br>
                 • Minimal pengajuan H-3 sebelum tanggal check-in awal<br>
                 • Durasi menginap tetap <strong id="reschedDurasi">1 malam</strong> (tidak bisa diubah)<br>
+                <span id="reschedRulesText">
                 • Tanggal yang dipilih harus tersedia (tidak ada booking lain, dan harus sesuai kawasan waktu check-in anda)<br>
                 • Kawasan waktu check-in anda adalah <strong id="reschedRateType" style="text-transform:capitalize">...</strong>
+                </span>
             </div>
         </div>
 
@@ -1126,7 +1128,12 @@ function ajukanReschedule() {
             if (originalCheckinDateObj) {
                 originalType = getDateTypeFrontend(originalCheckinDateObj, dateSettings);
             }
-            document.getElementById('reschedRateType').textContent = originalType;
+            
+            if (data.is_same_price) {
+                document.getElementById('reschedRulesText').innerHTML = '• Tanggal yang dipilih harus tersedia (tidak ada booking lain).<br>• Karena harga tipe akomodasi/paket ini di setiap waktu sama, Anda bebas memilih tanggal mana saja (bebas lintas tipe hari).';
+            } else {
+                document.getElementById('reschedRulesText').innerHTML = '• Tanggal yang dipilih harus tersedia (tidak ada booking lain, dan harus sesuai kawasan waktu check-in anda)<br>• Kawasan waktu check-in anda adalah <strong id="reschedRateType" style="text-transform:capitalize">' + originalType + '</strong>';
+            }
 
             reschedFlatpickr = flatpickr('#reschedDatepicker', {
                 locale: 'id',
@@ -1143,7 +1150,7 @@ function ajukanReschedule() {
                         
                         // Check if the date type matches the original booking's date type
                         const currentType = getDateTypeFrontend(date, dateSettings);
-                        if (currentType !== originalType) return true;
+                        if (!data.is_same_price && currentType !== originalType) return true;
 
                         // Check if ALL nights from this check-in date are available
                         for (let i = 0; i < malam; i++) {
@@ -1174,7 +1181,7 @@ function ajukanReschedule() {
                         dayElem.innerHTML = `<span style="text-decoration: line-through; font-size: 0.75em; font-weight: bold; line-height: 2.6;">H-3</span>`;
                     } else if (date >= today) {
                         // Check if mismatch type
-                        if (currentType !== originalType) {
+                        if (!data.is_same_price && currentType !== originalType) {
                             dayElem.classList.add('date-mismatch');
                             return;
                         }

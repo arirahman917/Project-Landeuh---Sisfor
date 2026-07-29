@@ -257,159 +257,76 @@
 
     {{-- Cards --}}
     <div class="corp-grid">
+        @forelse($accommodations as $pkg)
         @php
-            $glamping = $accommodations->firstWhere('jenis', 'Corporate Glamping');
-            $cabin    = $accommodations->firstWhere('jenis', 'Corporate Cabin');
-        @endphp
-
-        {{-- ─── GLAMPING CARD ─── --}}
-        @if($glamping)
-        @php
-            $gImgs = is_array($glamping->gambar) ? $glamping->gambar : (json_decode($glamping->gambar ?? '[]', true) ?: []);
-            $gFas  = is_array($glamping->fasilitas) ? $glamping->fasilitas : (json_decode($glamping->fasilitas ?? '[]', true) ?: []);
-            $gMak  = is_array($glamping->makanan) ? $glamping->makanan : (json_decode($glamping->makanan ?? '[]', true) ?: []);
-            $gCat  = is_array($glamping->catatan) ? $glamping->catatan : (json_decode($glamping->catatan ?? '[]', true) ?: []);
+            $k = 'pkg_' . $pkg->id;
+            $imgs = is_array($pkg->gambar) ? $pkg->gambar : (json_decode($pkg->gambar ?? '[]', true) ?: []);
+            $fas  = is_array($pkg->fasilitas) ? $pkg->fasilitas : (json_decode($pkg->fasilitas ?? '[]', true) ?: []);
+            $mak  = is_array($pkg->makanan) ? $pkg->makanan : (json_decode($pkg->makanan ?? '[]', true) ?: []);
+            $cat  = is_array($pkg->catatan) ? $pkg->catatan : (json_decode($pkg->catatan ?? '[]', true) ?: []);
+            $jenisName = $pkg->jenis_akomodasi ?: 'Unit';
+            $jenisSlug = strtolower(str_replace(' ', '', $jenisName));
+            $maxUnits = $pkg->slot;
         @endphp
         <div class="corp-card">
-            <div class="corp-photo" onclick="window.location.href='/akomodasi?jenis=Glamping'">
-                <img src="{{ $gImgs[0] ?? 'https://placehold.co/600x400/3a523a/fff?text=Glamping' }}" alt="{{ $glamping->judul }}">
-                <div class="corp-photo-badge">Glamping</div>
+            <div class="corp-photo" onclick="window.location.href='/akomodasi?jenis={{ urlencode($jenisName) }}'">
+                <img src="{{ $imgs[0] ?? 'https://placehold.co/600x400/3a523a/fff?text='.urlencode($pkg->judul) }}" alt="{{ $pkg->judul }}">
+                <div class="corp-photo-badge">{{ $jenisName }}</div>
                 <div class="corp-photo-overlay">
                     <button class="corp-gallery-btn"><iconify-icon icon="lucide:layout-list" style="font-size:.9rem"></iconify-icon> Lihat Detail Unit</button>
                 </div>
             </div>
             <div class="corp-body">
                 <div>
-                    <div class="corp-title">{{ $glamping->judul }}</div>
-                    <div class="corp-sub">Seluruh area Glamping VIP &amp; Reguler secara eksklusif</div>
+                    <div class="corp-title">{{ $pkg->judul }}</div>
+                    <div class="corp-sub">{{ $pkg->jenis }}</div>
                 </div>
                 <ul class="corp-feats">
-                    @foreach(array_merge($gFas, $gMak) as $f)
+                    @foreach(array_merge($fas, $mak) as $f)
                     <li><iconify-icon icon="lucide:check-circle-2" class="chk" style="font-size:.85rem"></iconify-icon> {{ $f }}</li>
                     @endforeach
                 </ul>
                 <div>
                     <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:.35rem;">
                         <div style="font-size:.67rem;font-weight:700;color:#555;">Pilih Tanggal</div>
-                        <div id="avail-glamping" style="font-size:.6rem;font-weight:800;color:#2c7a2c;background:#e8f5e9;padding:.15rem .4rem;border-radius:.25rem;border:1px solid #c8dfc8;">Tersedia: 13 unit Glamping</div>
+                        <div id="avail-{{ $k }}" style="font-size:.6rem;font-weight:800;color:#2c7a2c;background:#e8f5e9;padding:.15rem .4rem;border-radius:.25rem;border:1px solid #c8dfc8;">Tersedia: {{ $maxUnits }} unit {{ $jenisName }}</div>
                     </div>
                     <div class="corp-date-row">
-                        <div style="position:absolute;visibility:hidden;width:0;height:0;"><input type="text" id="fp-glamping"></div>
-                        <button type="button" class="corp-date-btn" id="btn-date-glamping">
+                        <div style="position:absolute;visibility:hidden;width:0;height:0;"><input type="text" id="fp-{{ $k }}"></div>
+                        <button type="button" class="corp-date-btn" id="btn-date-{{ $k }}">
                             <iconify-icon icon="lucide:calendar-days" style="font-size:.95rem;flex-shrink:0"></iconify-icon>
-                            <span id="date-text-glamping">Sesuaikan Tanggal</span>
+                            <span id="date-text-{{ $k }}">Sesuaikan Tanggal</span>
                         </button>
-                        <div class="nights-badge" id="nights-glamping"><iconify-icon icon="lucide:moon" style="font-size:.8rem"></iconify-icon> 1 Malam</div>
+                        <div class="nights-badge" id="nights-{{ $k }}"><iconify-icon icon="lucide:moon" style="font-size:.8rem"></iconify-icon> 1 Malam</div>
                     </div>
-                    <!-- <div id="date-info-badge-glamping" style="display:none;margin-top:.4rem;font-size:.65rem;font-weight:700;color:#333;background:#f0fdf4;border:1px solid #bbf7d0;padding:.3rem .5rem;border-radius:.35rem;">
-                        <div><span style="color:#15803d;font-weight:800;">Check-in:</span> <span id="checkin-txt-glamping">-</span></div>
-                        <div><span style="color:#b45309;font-weight:800;">Check-out:</span> <span id="checkout-txt-glamping">-</span></div>
-                    </div> -->
                 </div>
                 <div class="corp-price-box">
-                    <div class="corp-per-pax" style="margin-bottom: 0.1rem;">Rp {{ number_format($glamping->harga_weekday,0,',','.') }}/pax/malam</div>
+                    <div class="corp-per-pax" style="margin-bottom: 0.1rem;">Rp {{ number_format($pkg->harga_weekday,0,',','.') }}/pax/malam</div>
                     <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <div class="corp-total-price" id="price-glamping">Rp 10.000.000</div>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-400 cursor-pointer hover:text-[#3a523a] transition" fill="currentColor" viewBox="0 0 24 24" onclick="openCorpPriceInfo('Glamping', {{ $glamping->harga_weekday }}, {{ $glamping->harga_weekend }}, {{ $glamping->harga_highseason }})"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                        <div class="corp-total-price" id="price-{{ $k }}">Rp 0</div>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-400 cursor-pointer hover:text-[#3a523a] transition" fill="currentColor" viewBox="0 0 24 24" onclick="openCorpPriceInfo('{{ addslashes($pkg->judul) }}', {{ $pkg->harga_weekday }}, {{ $pkg->harga_weekend }}, {{ $pkg->harga_highseason }})"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
                     </div>
                     <div class="corp-est">Estimasi total</div>
-                    <div class="corp-formula" id="formula-glamping">25 pax × 1 malam × Rp 400.000</div>
+                    <div class="corp-formula" id="formula-{{ $k }}">25 pax × 1 malam × Rp {{ number_format($pkg->harga_weekday,0,',','.') }}</div>
                 </div>
-                @if(count($gCat))
+                @if(count($cat))
                 <div class="corp-notes">
-                    @foreach($gCat as $c)
+                    @foreach($cat as $c)
                     <p><iconify-icon icon="ph:hand-pointing-bold" style="font-size:.85rem;flex-shrink:0;margin-top:1px"></iconify-icon> {{ $c }}</p>
                     @endforeach
                 </div>
                 @endif
-                <div id="booked-glamping" style="display:none" class="booked-banner"><iconify-icon icon="lucide:alert-circle"></iconify-icon> Tanggal ini sudah penuh — pilih tanggal lain</div>
-                <!-- <a href="/akomodasi?jenis=Glamping" class="corp-btn" style="background:#f8fdf8;border:1.5px solid #3a523a;color:#3a523a;text-decoration:none;font-size:.82rem;" onmouseover="this.style.background='#e8f5e9'" onmouseout="this.style.background='#f8fdf8'">
-                    <iconify-icon icon="lucide:layout-list" style="font-size:.95rem"></iconify-icon> Lihat Detail Unit Glamping
-                </a> -->
-                <button class="corp-btn green" id="btn-pilih-glamping" onclick="pilihPaket({{ $glamping->id }}, 'glamping')">
-                    <iconify-icon icon="lucide:check-circle-2" style="font-size:1rem"></iconify-icon> Pilih Paket Glamping
+                <div id="booked-{{ $k }}" style="display:none" class="booked-banner"><iconify-icon icon="lucide:alert-circle"></iconify-icon> Tanggal ini sudah penuh — pilih tanggal lain</div>
+                <button class="corp-btn green" id="btn-pilih-{{ $k }}" onclick="pilihPaket({{ $pkg->id }}, '{{ $k }}')">
+                    <iconify-icon icon="lucide:check-circle-2" style="font-size:1rem"></iconify-icon> Pilih Paket
                 </button>
             </div>
         </div>
-        @endif
-
-        {{-- ─── CABIN CARD ─── --}}
-        @if($cabin)
-        @php
-            $cImgs = is_array($cabin->gambar) ? $cabin->gambar : (json_decode($cabin->gambar ?? '[]', true) ?: []);
-            $cFas  = is_array($cabin->fasilitas) ? $cabin->fasilitas : (json_decode($cabin->fasilitas ?? '[]', true) ?: []);
-            $cMak  = is_array($cabin->makanan) ? $cabin->makanan : (json_decode($cabin->makanan ?? '[]', true) ?: []);
-            $cCat  = is_array($cabin->catatan) ? $cabin->catatan : (json_decode($cabin->catatan ?? '[]', true) ?: []);
-        @endphp
-        <div class="corp-card">
-            <div class="corp-photo" onclick="window.location.href='/akomodasi?jenis=Cabin'">
-                <img src="{{ $cImgs[0] ?? 'https://placehold.co/600x400/3a523a/fff?text=Cabin' }}" alt="{{ $cabin->judul }}">
-                <div class="corp-photo-badge">Cabin</div>
-                <div class="corp-photo-overlay">
-                    <button class="corp-gallery-btn"><iconify-icon icon="lucide:layout-list" style="font-size:.9rem"></iconify-icon> Lihat Detail Unit</button>
-                </div>
-            </div>
-            <div class="corp-body">
-                <div>
-                    <div class="corp-title">{{ $cabin->judul }}</div>
-                    <div class="corp-sub">Seluruh unit Cabin (1–8) secara eksklusif</div>
-                </div>
-                <ul class="corp-feats">
-                    @foreach(array_merge($cFas, $cMak) as $f)
-                    <li><iconify-icon icon="lucide:check-circle-2" class="chk" style="font-size:.85rem"></iconify-icon> {{ $f }}</li>
-                    @endforeach
-                </ul>
-                <div>
-                    <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:.35rem;">
-                        <div style="font-size:.67rem;font-weight:700;color:#555;">Pilih Tanggal</div>
-                        <div id="avail-cabin" style="font-size:.6rem;font-weight:800;color:#2c7a2c;background:#e8f5e9;padding:.15rem .4rem;border-radius:.25rem;border:1px solid #c8dfc8;">Tersedia: 8 unit Cabin</div>
-                    </div>
-                    <div class="corp-date-row">
-                        <div style="position:absolute;visibility:hidden;width:0;height:0;"><input type="text" id="fp-cabin"></div>
-                        <button type="button" class="corp-date-btn" id="btn-date-cabin">
-                            <iconify-icon icon="lucide:calendar-days" style="font-size:.95rem;flex-shrink:0"></iconify-icon>
-                            <span id="date-text-cabin">Sesuaikan Tanggal</span>
-                        </button>
-                        <div class="nights-badge" id="nights-cabin"><iconify-icon icon="lucide:moon" style="font-size:.8rem"></iconify-icon> 1 Malam</div>
-                    </div>
-                    <!-- <div id="date-info-badge-cabin" style="display:none;margin-top:.4rem;font-size:.65rem;font-weight:700;color:#333;background:#f0fdf4;border:1px solid #bbf7d0;padding:.3rem .5rem;border-radius:.35rem;">
-                        <div><span style="color:#15803d;font-weight:800;">Check-in:</span> <span id="checkin-txt-cabin">-</span></div>
-                        <div><span style="color:#b45309;font-weight:800;">Check-out:</span> <span id="checkout-txt-cabin">-</span></div>
-                    </div> -->
-                </div>
-                <div class="corp-price-box">
-                    <div class="corp-per-pax" style="margin-bottom: 0.1rem;">Rp {{ number_format($cabin->harga_weekday,0,',','.') }}/pax/malam</div>
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <div class="corp-total-price" id="price-cabin">Rp 12.500.000</div>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-400 cursor-pointer hover:text-[#3a523a] transition" fill="currentColor" viewBox="0 0 24 24" onclick="openCorpPriceInfo('Cabin', {{ $cabin->harga_weekday }}, {{ $cabin->harga_weekend }}, {{ $cabin->harga_highseason }})"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
-                    </div>
-                    <div class="corp-est">Estimasi total</div>
-                    <div class="corp-formula" id="formula-cabin">25 pax × 1 malam × Rp 500.000</div>
-                </div>
-                @if(count($cCat))
-                <div class="corp-notes">
-                    @foreach($cCat as $c)
-                    <p><iconify-icon icon="ph:hand-pointing-bold" style="font-size:.85rem;flex-shrink:0;margin-top:1px"></iconify-icon> {{ $c }}</p>
-                    @endforeach
-                </div>
-                @endif
-                <div id="booked-cabin" style="display:none" class="booked-banner"><iconify-icon icon="lucide:alert-circle"></iconify-icon> Tanggal ini sudah penuh — pilih tanggal lain</div>
-                <!-- <a href="/akomodasi?jenis=Cabin" class="corp-btn" style="background:#f8fdf8;border:1.5px solid #3a523a;color:#3a523a;text-decoration:none;font-size:.82rem;" onmouseover="this.style.background='#e8f5e9'" onmouseout="this.style.background='#f8fdf8'">
-                    <iconify-icon icon="lucide:layout-list" style="font-size:.95rem"></iconify-icon> Lihat Detail Unit Cabin
-                </a> -->
-                <button class="corp-btn green" id="btn-pilih-cabin" onclick="pilihPaket({{ $cabin->id }}, 'cabin')">
-                    <iconify-icon icon="lucide:check-circle-2" style="font-size:1rem"></iconify-icon> Pilih Paket Cabin
-                </button>
-            </div>
-        </div>
-        @endif
-
-        @if(!$glamping && !$cabin)
+        @empty
         <div style="grid-column:1/-1;text-align:center;padding:4rem 2rem;color:#888;">
             <p style="font-size:.9rem;font-weight:600">Data paket corporate belum tersedia.</p>
-            <p style="font-size:.78rem;margin-top:.4rem">Jalankan: <code>php artisan db:seed --class=CorporatePackageSeeder</code></p>
         </div>
-        @endif
+        @endforelse
     </div>
 </div>
 
@@ -475,29 +392,34 @@
 <script>
 (function(){
     /* ── Backend data ─────────────────────────────── */
-    var CORP = {
-        glamping: {
-            id: {{ $glamping->id ?? 'null' }},
-            harga: {{ $glamping->harga_weekday ?? 400000 }},
-            slot: {{ $glamping->slot ?? 6 }},
-            images: @json(isset($glamping) ? (is_array($glamping->gambar) ? $glamping->gambar : json_decode($glamping->gambar ?? '[]', true)) : []),
-            bookings: @json(isset($glamping) ? $glamping->bookings->map(function($b){ return ['ci'=>(string)$b->check_in_date,'co'=>(string)$b->check_out_date,'st'=>$b->status]; }) : []),
-            indBookings: @json(isset($glampingBookings) ? $glampingBookings->map(function($b){ return ['ci'=>(string)$b->check_in_date,'co'=>(string)$b->check_out_date,'st'=>$b->status]; }) : [])
-        },
-        cabin: {
-            id: {{ $cabin->id ?? 'null' }},
-            harga: {{ $cabin->harga_weekday ?? 500000 }},
-            slot: {{ $cabin->slot ?? 8 }},
-            images: @json(isset($cabin) ? (is_array($cabin->gambar) ? $cabin->gambar : json_decode($cabin->gambar ?? '[]', true)) : []),
-            bookings: @json(isset($cabin) ? $cabin->bookings->map(function($b){ return ['ci'=>(string)$b->check_in_date,'co'=>(string)$b->check_out_date,'st'=>$b->status]; }) : []),
-            indBookings: @json(isset($cabinBookings) ? $cabinBookings->map(function($b){ return ['ci'=>(string)$b->check_in_date,'co'=>(string)$b->check_out_date,'st'=>$b->status]; }) : [])
-        }
+    var CORP = {};
+    @foreach($accommodations as $pkg)
+    @php
+        $k = 'pkg_' . $pkg->id;
+        $jenisName = $pkg->jenis_akomodasi ?: 'Unit';
+        $maxUnits = $pkg->slot;
+        $indB = isset($indBookingsPerPackage[$pkg->id]) ? $indBookingsPerPackage[$pkg->id]->map(function($b){ return ['ci'=>(string)$b->check_in_date,'co'=>(string)$b->check_out_date,'st'=>$b->status]; })->toArray() : [];
+    @endphp
+    CORP['{{ $k }}'] = {
+        id: {{ $pkg->id }},
+        harga: {{ $pkg->harga_weekday ?? 0 }},
+        slot: {{ $pkg->slot ?? 0 }},
+        jenisName: "{{ $jenisName }}",
+        maxUnits: {{ $maxUnits }},
+        images: @json(is_array($pkg->gambar) ? $pkg->gambar : (json_decode($pkg->gambar ?? '[]', true) ?: [])),
+        bookings: @json($pkg->bookings->map(function($b){ return ['ci'=>(string)$b->check_in_date,'co'=>(string)$b->check_out_date,'st'=>$b->status]; })->toArray()),
+        indBookings: @json($indB)
     };
+    @endforeach
 
     /* ── State ────────────────────────────────────── */
     var pax = 25;
-    var dateState  = { glamping:null, cabin:null };
-    var nightState = { glamping:1,    cabin:1    };
+    var dateState  = {};
+    var nightState = {};
+    for (var key in CORP) {
+        dateState[key] = null;
+        nightState[key] = 1;
+    }
 
     /* ── Utils ────────────────────────────────────── */
     function fmtRp(n){ return 'Rp '+Math.round(n).toLocaleString('id-ID'); }
@@ -525,7 +447,7 @@
                 if(tp>=bi.getTime()&&tp<bo.getTime()) return true;
             }
             // Check individual bookings availability: block ONLY if ALL units of that type are booked
-            var maxU = t === 'glamping' ? 13 : 8;
+            var maxU = CORP[t].maxUnits;
             var dayBooked = 0;
             var indBks = CORP[t].indBookings || [];
             for(var j=0; j<indBks.length; j++){
@@ -541,7 +463,7 @@
     }
 
     function getAvailableUnits(t, dates) {
-        var maxU = t === 'glamping' ? 13 : 8;
+        var maxU = CORP[t].maxUnits;
         if(!dates || dates.length < 2) return maxU;
         var s=new Date(dates[0]); s.setHours(12,0,0,0);
         var e=new Date(dates[1]); e.setHours(12,0,0,0);
@@ -575,7 +497,7 @@
             if(tp>=bi.getTime()&&tp<bo.getTime()) return true;
         }
         // Check individual bookings availability: block ONLY if ALL units of that type are booked
-        var maxU = t === 'glamping' ? 13 : 8;
+        var maxU = CORP[t].maxUnits;
         var dayBooked = 0;
         var indBks = CORP[t].indBookings || [];
         for(var j=0; j<indBks.length; j++){
@@ -599,8 +521,7 @@
         if(val > 150) val = 150;
         pax = val;
         paxInput.value = pax;
-        updatePrice('glamping');
-        updatePrice('cabin');
+        for (var key in CORP) { updatePrice(key); }
     }
 
     document.getElementById('btnPaxDec').addEventListener('click',function(){
@@ -614,8 +535,7 @@
         var val = parseInt(this.value);
         if (!isNaN(val) && val >= 25 && val <= 150) {
             pax = val;
-            updatePrice('glamping');
-            updatePrice('cabin');
+            for (var key in CORP) { updatePrice(key); }
         }
     });
     paxInput.addEventListener('blur', function(){
@@ -651,6 +571,7 @@
         overlay.classList.add('opacity-100');
         modal.classList.remove('scale-95');
         modal.classList.add('scale-100');
+        document.body.style.overflow = 'hidden';
     };
 
     window.closeCorpPriceInfo = function() {
@@ -660,6 +581,7 @@
         overlay.classList.remove('opacity-100');
         modal.classList.add('scale-95');
         modal.classList.remove('scale-100');
+        document.body.style.overflow = '';
     };
 
     /* ── Init flatpickr ───────────────────────────── */
@@ -718,8 +640,8 @@
         var bkEl =document.getElementById('booked-'+t);
         var ctaEl=document.getElementById('btn-pilih-'+t);
         var availEl=document.getElementById('avail-'+t);
-        var maxUnits=t==='glamping'?13:8;
-        var unitName=t==='glamping'?'Glamping':'Cabin';
+        var maxUnits=CORP[t].maxUnits;
+        var unitName=CORP[t].jenisName;
         if(!input||!btn) return;
 
         var fp;
@@ -832,10 +754,10 @@
         btn.addEventListener('click',function(e){ e.stopPropagation(); fp.toggle(); });
     }
 
-    initFp('glamping');
-    initFp('cabin');
-    updatePrice('glamping');
-    updatePrice('cabin');
+    for (var key in CORP) {
+        initFp(key);
+        updatePrice(key);
+    }
 
     /* ── Custom Modal Helper ────────────────────── */
     window.openCustomModal = function(options) {
@@ -901,6 +823,7 @@
 
             modal.classList.remove('hidden');
             modal.classList.add('flex');
+            document.body.style.overflow = 'hidden';
 
             setTimeout(() => {
                 box.classList.remove('scale-90', 'opacity-0');
@@ -913,6 +836,7 @@
                 setTimeout(() => {
                     modal.classList.add('hidden');
                     modal.classList.remove('flex');
+                    document.body.style.overflow = '';
                     btnCancel.onclick = null;
                     btnOk.onclick = null;
                     resolve(res);
@@ -942,9 +866,9 @@
             return;
         }
         
-        var maxUnits = t === 'glamping' ? 13 : 8;
+        var maxUnits = CORP[t].maxUnits;
         var avail = getAvailableUnits(t, dates);
-        var unitName = t === 'glamping' ? 'Glamping' : 'Cabin';
+        var unitName = CORP[t].jenisName;
         
         if (avail === 0) {
             openCustomModal({
@@ -1003,8 +927,12 @@
         if(!lbImgs.length) return;
         lbIdx=0; showLb();
         document.getElementById('corpLb').classList.add('show');
+        document.body.style.overflow = 'hidden';
     };
-    window.closeLb=function(){ document.getElementById('corpLb').classList.remove('show'); };
+    window.closeLb=function(){ 
+        document.getElementById('corpLb').classList.remove('show'); 
+        document.body.style.overflow = '';
+    };
     window.lbNav=function(d){
         lbIdx=Math.max(0,Math.min(lbImgs.length-1,lbIdx+d));
         showLb();

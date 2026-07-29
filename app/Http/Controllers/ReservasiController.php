@@ -508,7 +508,12 @@ class ReservasiController extends Controller
             $originalType = $this->getDateType($booking->check_in_date, $settings);
             $newType = $this->getDateType($validated['new_check_in'], $settings);
 
-            if ($originalType !== $newType) {
+            $isCorporate = !empty($booking->corporate_package_id);
+            $target = $isCorporate ? $booking->corporatePackage : $booking->accommodation;
+
+            $isSamePrice = ($target->harga_weekday == $target->harga_weekend && $target->harga_weekend == $target->harga_highseason);
+
+            if (!$isSamePrice && $originalType !== $newType) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Pengajuan reschedule ditolak. Anda hanya dapat memindahkan jadwal ke tipe hari yang sama (' . ucfirst($originalType) . ').'
@@ -701,7 +706,8 @@ class ReservasiController extends Controller
             'success' => true,
             'booked_dates' => $bookedDates,
             'slot' => $totalSlots,
-            'date_settings' => \App\Models\DateSetting::all()
+            'date_settings' => \App\Models\DateSetting::all(),
+            'is_same_price' => ($accommodation->harga_weekday == $accommodation->harga_weekend && $accommodation->harga_weekend == $accommodation->harga_highseason)
         ]);
     }
 

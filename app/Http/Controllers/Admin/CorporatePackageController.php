@@ -59,6 +59,9 @@ class CorporatePackageController extends Controller
         }
 
         $validated['gambar'] = $gambarArray;
+        $validated['fasilitas'] = $validated['fasilitas'] ?? [];
+        $validated['makanan']   = $validated['makanan'] ?? [];
+        $validated['catatan']   = $validated['catatan'] ?? [];
 
         CorporatePackage::create($validated);
 
@@ -116,6 +119,9 @@ class CorporatePackageController extends Controller
         }
 
         $validated['gambar'] = $gambarArray;
+        $validated['fasilitas'] = $validated['fasilitas'] ?? [];
+        $validated['makanan']   = $validated['makanan'] ?? [];
+        $validated['catatan']   = $validated['catatan'] ?? [];
 
         $package->update($validated);
 

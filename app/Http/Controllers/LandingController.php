@@ -103,15 +103,22 @@ class LandingController extends Controller
             return $item;
         });
 
-        $individualBookings = \App\Models\Booking::whereHas('accommodation', function($query) {
-            $query->whereIn('jenis', ['Glamping', 'Cabin']);
-        })->whereNotIn('status', ['failed', 'refunded'])
-          ->with('accommodation:id,jenis')
+        // Get all individual bookings (non-corporate) that are active
+        $individualBookings = \App\Models\Booking::whereNotNull('accommodation_id')
+          ->whereNotIn('status', ['failed', 'refunded'])
           ->get(['id', 'accommodation_id', 'check_in_date', 'check_out_date', 'status']);
-          
-        $glampingBookings = $individualBookings->filter(function($b) { return $b->accommodation->jenis === 'Glamping'; })->values();
-        $cabinBookings = $individualBookings->filter(function($b) { return $b->accommodation->jenis === 'Cabin'; })->values();
 
-        return view('akomodasi.corporate', compact('accommodations', 'dateSettings', 'glampingBookings', 'cabinBookings'));
+        // Build a per-package map: package_id → filtered individual bookings
+        // Only include bookings for units that are in the package's accommodation_ids
+        $indBookingsPerPackage = [];
+        foreach ($accommodations as $pkg) {
+            $pkgAccomIds = is_array($pkg->accommodation_ids) ? $pkg->accommodation_ids : [];
+            $pkgAccomIds = array_map('intval', $pkgAccomIds);
+            $indBookingsPerPackage[$pkg->id] = $individualBookings->filter(function($b) use ($pkgAccomIds) {
+                return in_array((int) $b->accommodation_id, $pkgAccomIds);
+            })->values();
+        }
+
+        return view('akomodasi.corporate', compact('accommodations', 'dateSettings', 'indBookingsPerPackage'));
     }
 }

@@ -136,8 +136,8 @@
             <div class="flex gap-3 mt-6 justify-end">
                 <button onclick="closeModalTambahCorp()"
                     class="px-5 py-2.5 rounded-xl text-sm font-semibold text-stone-600 bg-stone-100 hover:bg-stone-200 transition">Batal</button>
-                <button onclick="submitTambahCorp()"
-                    class="px-5 py-2.5 rounded-xl text-sm font-bold text-[#fdf6e3] bg-gradient-to-r from-[#2d4a2d] to-[#3d6b3d] hover:from-[#3d6b3d] hover:to-[#4a824a] shadow transition">
+                <button id="btnSubmitTambahCorp" onclick="submitTambahCorp()"
+                    class="px-5 py-2.5 rounded-xl text-sm font-bold text-[#fdf6e3] bg-gradient-to-r from-[#2d4a2d] to-[#3d6b3d] hover:from-[#3d6b3d] hover:to-[#4a824a] shadow transition flex items-center justify-center gap-2">
                     Simpan Paket
                 </button>
             </div>
