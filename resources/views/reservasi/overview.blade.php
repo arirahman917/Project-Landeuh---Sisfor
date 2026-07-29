@@ -200,7 +200,7 @@
                 {{-- Validasi Reservasi Card --}}
                 <div class="ov-card">
                     {{-- Red Ribbon --}}
-                    <div class="ov-ribbon">
+                    <div class="ov-ribbon" id="redRibbonSlots">
                         <iconify-icon icon="lucide:alert-triangle"></iconify-icon>
                         Jangan sampai kehabisan! Tersisa <strong id="sisaKamar">{{ $remainingSlots ?? 3 }}</strong> kamar lagi
                     </div>
@@ -305,7 +305,10 @@
         hargaWeekday: parseFloat(accommodationRaw.harga_weekday),
         hargaWeekend: parseFloat(accommodationRaw.harga_weekend),
         hargaHighseason: parseFloat(accommodationRaw.harga_highseason),
-        catatan: typeof accommodationRaw.catatan === 'string' ? JSON.parse(accommodationRaw.catatan) : accommodationRaw.catatan
+        catatan: typeof accommodationRaw.catatan === 'string' ? JSON.parse(accommodationRaw.catatan) : (accommodationRaw.catatan || []),
+        fasilitas: typeof accommodationRaw.fasilitas === 'string' ? JSON.parse(accommodationRaw.fasilitas) : (accommodationRaw.fasilitas || []),
+        makanan: typeof accommodationRaw.makanan === 'string' ? JSON.parse(accommodationRaw.makanan) : (accommodationRaw.makanan || []),
+        gambar: typeof accommodationRaw.gambar === 'string' ? JSON.parse(accommodationRaw.gambar) : (accommodationRaw.gambar || [])
     };
 
     const dateSettings = @json($dateSettings ?? []);
@@ -398,6 +401,9 @@
         document.getElementById('guestInfoText').textContent = `${pax} Pax`;
         const chkTambahanLabel = document.getElementById('chkTambahan')?.closest('label');
         if (chkTambahanLabel) chkTambahanLabel.style.display = 'none';
+        
+        const redRibbon = document.getElementById('redRibbonSlots');
+        if (redRibbon) redRibbon.style.display = 'none';
     } else {
         document.getElementById('guestInfoText').textContent = `${maxOrang} Dewasa`;
     }
@@ -617,6 +623,14 @@
                 sessionStorage.setItem('res_checkout', document.getElementById('dynCheckout').textContent);
                 sessionStorage.setItem('res_total', document.getElementById('totalHarga').textContent);
                 sessionStorage.setItem('res_akoId', akoId);
+                sessionStorage.setItem('res_is_corporate', isCorp ? '1' : '0');
+                
+                if (isCorp) {
+                    sessionStorage.setItem('res_corp_judul', akoItem.judul);
+                    sessionStorage.setItem('res_corp_fasilitas', JSON.stringify(akoItem.fasilitas));
+                    sessionStorage.setItem('res_corp_makanan', JSON.stringify(akoItem.makanan));
+                    sessionStorage.setItem('res_corp_gambar', akoItem.gambar && akoItem.gambar.length > 0 ? akoItem.gambar[0] : '');
+                }
                 
                 // Simpan nomor pesanan resmi hasil generate MySQL
                 sessionStorage.setItem('res_booking_no', data.booking.no_pesanan);

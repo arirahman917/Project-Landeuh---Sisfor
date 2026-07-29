@@ -749,7 +749,7 @@
         sessionStorage.setItem('res_tamu', '{{ $booking->nama_tamu }}');
         sessionStorage.setItem('res_guest', '{{ $maxOrang }} Dewasa');
         sessionStorage.setItem('res_total', '{{ $formattedTotal }}');
-        sessionStorage.setItem('res_akoId', '{{ $isCorporate ? 0 : ($booking->accommodation_id ?? 0) }}');
+        sessionStorage.setItem('res_akoId', '{{ $isCorporate ? $booking->corporate_package_id : ($booking->accommodation_id ?? 0) }}');
         sessionStorage.setItem('res_corporate_package_id', '{{ $isCorporate ? $booking->corporate_package_id : 0 }}');
         sessionStorage.setItem('res_is_corporate', '{{ $isCorporate ? "1" : "0" }}');
         sessionStorage.setItem('res_payment_status', '{{ $booking->status }}');
@@ -936,7 +936,7 @@
 
         // Photo
         if (corpGambar) {
-            document.getElementById('dynRoomImg').src = corpGambar;
+            document.getElementById('dynRoomImg').src = corpGambar.startsWith('http') || corpGambar.startsWith('/') ? corpGambar : '/' + corpGambar;
         }
     } else {
         // Regular accommodation
@@ -1081,6 +1081,7 @@ function ajukanReschedule() {
     }
 
     const malam = parseInt(sessionStorage.getItem('res_malam')) || 1;
+    const isCorp = sessionStorage.getItem('res_is_corporate') === '1';
     const akoId = parseInt(sessionStorage.getItem('res_akoId')) || 1;
     const bookingId = sessionStorage.getItem('res_booking_id') || '';
 
@@ -1110,7 +1111,7 @@ function ajukanReschedule() {
     if (loadingIcon) loadingIcon.style.display = 'block';
 
     // Fetch booked dates then init flatpickr
-    fetch(`/reservasi/booked-dates/${akoId}?exclude_booking_id=${bookingId}`)
+    fetch(`/reservasi/booked-dates/${akoId}?exclude_booking_id=${bookingId}&is_corporate=${isCorp ? 1 : 0}`)
         .then(r => r.json())
         .then(data => {
             dateInput.placeholder = 'Pilih tanggal...';

@@ -1,5 +1,5 @@
 <!-- Tentang Section -->
-<section id="tentang" class="relative w-full h-[400vh] bg-[#F8EDD8]">
+<section id="tentang" class="relative w-full h-[500vh] bg-[#F8EDD8]">
     <!-- Sticky container -->
     <div class="sticky top-0 h-screen w-full flex flex-col justify-center overflow-hidden pt-16 lg:pt-20">
         
@@ -52,8 +52,15 @@
                                 Rasakan sensasi berkemah mewah dengan fasilitas lengkap. Menyatu dengan alam tanpa harus mengorbankan kenyamanan dan kemewahan.
                             </p>
                         </div>
-                        <!-- State 4: Kedai -->
+                        <!-- State 4: Pajet Corporate -->
                         <div class="tentang-text-item absolute inset-0 transition-all duration-700 opacity-0 translate-y-8 pointer-events-none" id="tentang-text-4">
+                            <h3 class="text-xl md:text-2xl font-bold text-gray-800 mb-2 md:mb-3">Paket Corporate</h3>
+                            <p class="text-sm md:text-base text-gray-700 leading-relaxed max-w-lg font-medium">
+                                Nikmati paket khusus untuk gathering perusahaan, instansi, komunitas, maupun acara keluarga, lengkap dengan akomodasi, konsumsi, dan suasana alam yang mendukung kebersamaan.
+                            </p>
+                        </div>
+                        <!-- State 5: Kedai -->
+                        <div class="tentang-text-item absolute inset-0 transition-all duration-700 opacity-0 translate-y-8 pointer-events-none" id="tentang-text-5">
                             <h3 class="text-xl md:text-2xl font-bold text-gray-800 mb-2 md:mb-3">Kedai</h3>
                             <p class="text-sm md:text-base text-gray-700 leading-relaxed max-w-lg font-medium">
                                 Nikmati berbagai hidangan lezat dan kopi hangat di kedai kami, dengan pemandangan indah yang langsung menghadap ke arah sungai yang asri.
@@ -67,7 +74,8 @@
                     <img loading="lazy" id="tentang-img-1" src="{{ asset('images/akomodasi/glamping_vip/c.webp') }}" class="tentang-img-item absolute inset-0 w-full h-full object-cover transition-all duration-1000 opacity-100 scale-100">
                     <img loading="lazy" id="tentang-img-2" src="{{ asset('images/akomodasi/cabin5/a.webp') }}" class="tentang-img-item absolute inset-0 w-full h-full object-cover transition-all duration-1000 opacity-0 scale-105">
                     <img loading="lazy" id="tentang-img-3" src="{{ asset('images/akomodasi/glamping_vip/d-tentang.webp') }}" class="tentang-img-item absolute inset-0 w-full h-full object-cover transition-all duration-1000 opacity-0 scale-105">
-                    <img loading="lazy" id="tentang-img-4" src="{{ asset('images/akomodasi/kedai/a.png') }}" class="tentang-img-item absolute inset-0 w-full h-full object-cover transition-all duration-1000 opacity-0 scale-105">
+                    <img loading="lazy" id="tentang-img-4" src="{{ asset('images/akomodasi/paket_corporate/a.webp') }}" class="tentang-img-item absolute inset-0 w-full h-full object-cover transition-all duration-1000 opacity-0 scale-105">
+                    <img loading="lazy" id="tentang-img-5" src="{{ asset('images/akomodasi/kedai/a.png') }}" class="tentang-img-item absolute inset-0 w-full h-full object-cover transition-all duration-1000 opacity-0 scale-105">
                 </div>
                 </div> <!-- END GRID -->
                 
@@ -77,30 +85,37 @@
                         <!-- Segment 1 -->
                         <div class="flex-1 cursor-pointer" onclick="scrollToTentangSegment(0)">
                             <div class="w-full h-[2px] md:h-[3px] bg-[#d5cebd] relative overflow-hidden mb-2 rounded-full">
-                                <div id="tentang-progress-1" class="absolute top-0 left-0 h-full bg-[#1b1b18] rounded-full transition-all duration-100 ease-out" style="width: 0%;"></div>
+                                <div id="tentang-progress-1" class="absolute top-0 left-0 h-full bg-[#1b1b18] rounded-full" style="width: 0%;"></div>
                             </div>
                             <span id="tentang-label-1" class="text-[10px] md:text-sm font-bold text-[#1b1b18] transition-colors duration-300">Tepi Sungai</span>
                         </div>
                         <!-- Segment 2 -->
                         <div class="flex-1 cursor-pointer" onclick="scrollToTentangSegment(1)">
                             <div class="w-full h-[2px] md:h-[3px] bg-[#d5cebd] relative overflow-hidden mb-2 rounded-full">
-                                <div id="tentang-progress-2" class="absolute top-0 left-0 h-full bg-[#1b1b18] rounded-full transition-all duration-100 ease-out" style="width: 0%;"></div>
+                                <div id="tentang-progress-2" class="absolute top-0 left-0 h-full bg-[#1b1b18] rounded-full" style="width: 0%;"></div>
                             </div>
                             <span id="tentang-label-2" class="text-[10px] md:text-sm font-medium text-gray-400 transition-colors duration-300">Cabin & Rumah Industrial</span>
                         </div>
                         <!-- Segment 3 -->
                         <div class="flex-1 cursor-pointer" onclick="scrollToTentangSegment(2)">
                             <div class="w-full h-[2px] md:h-[3px] bg-[#d5cebd] relative overflow-hidden mb-2 rounded-full">
-                                <div id="tentang-progress-3" class="absolute top-0 left-0 h-full bg-[#1b1b18] rounded-full transition-all duration-100 ease-out" style="width: 0%;"></div>
+                                <div id="tentang-progress-3" class="absolute top-0 left-0 h-full bg-[#1b1b18] rounded-full" style="width: 0%;"></div>
                             </div>
                             <span id="tentang-label-3" class="text-[10px] md:text-sm font-medium text-gray-400 transition-colors duration-300">Glamping</span>
                         </div>
                         <!-- Segment 4 -->
                         <div class="flex-1 cursor-pointer" onclick="scrollToTentangSegment(3)">
                             <div class="w-full h-[2px] md:h-[3px] bg-[#d5cebd] relative overflow-hidden mb-2 rounded-full">
-                                <div id="tentang-progress-4" class="absolute top-0 left-0 h-full bg-[#1b1b18] rounded-full transition-all duration-100 ease-out" style="width: 0%;"></div>
+                                <div id="tentang-progress-4" class="absolute top-0 left-0 h-full bg-[#1b1b18] rounded-full" style="width: 0%;"></div>
                             </div>
-                            <span id="tentang-label-4" class="text-[10px] md:text-sm font-medium text-gray-400 transition-colors duration-300">Kedai</span>
+                            <span id="tentang-label-4" class="text-[10px] md:text-sm font-medium text-gray-400 transition-colors duration-300">Paket Corporate</span>
+                        </div>
+                        <!-- Segment 5 -->
+                        <div class="flex-1 cursor-pointer" onclick="scrollToTentangSegment(4)">
+                            <div class="w-full h-[2px] md:h-[3px] bg-[#d5cebd] relative overflow-hidden mb-2 rounded-full">
+                                <div id="tentang-progress-5" class="absolute top-0 left-0 h-full bg-[#1b1b18] rounded-full" style="width: 0%;"></div>
+                            </div>
+                            <span id="tentang-label-5" class="text-[10px] md:text-sm font-medium text-gray-400 transition-colors duration-300">Kedai</span>
                         </div>
                     </div>
                 </div>
@@ -113,7 +128,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const section = document.getElementById('tentang');
-        const totalStates = 4;
+        const totalStates = 5;
         let currentState = -1;
 
         function updateTentangProgress() {
@@ -177,7 +192,16 @@
             }
         }
 
-        window.addEventListener('scroll', updateTentangProgress);
+        let isTicking = false;
+        window.addEventListener('scroll', () => {
+            if (!isTicking) {
+                window.requestAnimationFrame(() => {
+                    updateTentangProgress();
+                    isTicking = false;
+                });
+                isTicking = true;
+            }
+        }, { passive: true });
         // initial call
         updateTentangProgress();
     });
@@ -186,7 +210,7 @@
     window.scrollToTentangSegment = function(index) {
         const section = document.getElementById('tentang');
         const totalScrollableDistance = section.getBoundingClientRect().height - window.innerHeight;
-        const segmentHeight = totalScrollableDistance / 4;
+        const segmentHeight = totalScrollableDistance / 5;
         
         // Target scroll Y = section top + (segmentHeight * index) + small offset to hit the segment perfectly
         const offset = window.pageYOffset + section.getBoundingClientRect().top + (segmentHeight * index) + 10;

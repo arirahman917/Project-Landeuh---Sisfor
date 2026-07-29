@@ -613,13 +613,26 @@ class ReservasiController extends Controller
      */
     public function getBookedDates(Request $request, $id)
     {
-        $accommodation = Accommodation::findOrFail($id);
+        $isCorporate = $request->query('is_corporate') == '1';
+        
+        if ($isCorporate) {
+            $accommodation = \App\Models\CorporatePackage::findOrFail($id);
+        } else {
+            $accommodation = Accommodation::findOrFail($id);
+        }
+        
         $totalSlots = $accommodation->slot;
 
-        // Ambil semua booking aktif untuk akomodasi ini
-        $bookings = Booking::where('accommodation_id', $id)
-            ->whereNotIn('status', ['failed', 'refunded'])
-            ->get();
+        // Ambil semua booking aktif untuk akomodasi/paket ini
+        $bookings = Booking::where(function($q) use ($isCorporate, $id) {
+            if ($isCorporate) {
+                $q->where('corporate_package_id', $id);
+            } else {
+                $q->where('accommodation_id', $id);
+            }
+        })
+        ->whereNotIn('status', ['failed', 'refunded'])
+        ->get();
 
         // Exclude booking_id jika disediakan (supaya booking yg sedang di-reschedule tidak menghitung dirinya)
         $excludeId = $request->query('exclude_booking_id');
@@ -640,21 +653,43 @@ class ReservasiController extends Controller
             
             $isBooked = false;
 
-            $accomJenis = $accommodation->jenis;
-            if ($accomJenis === 'Glamping' || $accomJenis === 'Cabin') {
-                $corpBooked = Booking::whereHas('corporatePackage', function($q) use ($accomJenis) {
-                        $q->where('jenis_akomodasi', $accomJenis);
-                    })
-                    ->whereNotIn('status', ['failed', 'refunded'])
-                    ->when($excludeId, function($q) use ($excludeId) {
-                        return $q->where('id', '!=', $excludeId);
-                    })
-                    ->where('check_in_date', '<=', $currentDate)
-                    ->where('check_out_date', '>', $currentDate)
-                    ->count();
-                if ($corpBooked > 0 || $count >= $totalSlots) $isBooked = true;
+            if ($isCorporate) {
+                if ($count >= $totalSlots) {
+                    $isBooked = true;
+                } else {
+                    $targetJenis = $accommodation->jenis_akomodasi ?? '';
+                    if ($targetJenis) {
+                        $maxUnits = Accommodation::where('jenis', $targetJenis)->sum('slot') ?: (strtolower($targetJenis) === 'glamping' ? 13 : 8);
+                        $regularBookedCount = Booking::whereHas('accommodation', function($q) use ($targetJenis) {
+                                $q->where('jenis', $targetJenis);
+                            })
+                            ->whereNotIn('status', ['failed', 'refunded'])
+                            ->when($excludeId, function($q) use ($excludeId) {
+                                return $q->where('id', '!=', $excludeId);
+                            })
+                            ->where('check_in_date', '<=', $currentDate)
+                            ->where('check_out_date', '>', $currentDate)
+                            ->count();
+                        if ($regularBookedCount >= $maxUnits) $isBooked = true;
+                    }
+                }
             } else {
-                if ($count >= $totalSlots) $isBooked = true;
+                $accomJenis = $accommodation->jenis;
+                if ($accomJenis === 'Glamping' || $accomJenis === 'Cabin') {
+                    $corpBooked = Booking::whereHas('corporatePackage', function($q) use ($accomJenis) {
+                            $q->where('jenis_akomodasi', $accomJenis);
+                        })
+                        ->whereNotIn('status', ['failed', 'refunded'])
+                        ->when($excludeId, function($q) use ($excludeId) {
+                            return $q->where('id', '!=', $excludeId);
+                        })
+                        ->where('check_in_date', '<=', $currentDate)
+                        ->where('check_out_date', '>', $currentDate)
+                        ->count();
+                    if ($corpBooked > 0 || $count >= $totalSlots) $isBooked = true;
+                } else {
+                    if ($count >= $totalSlots) $isBooked = true;
+                }
             }
 
             if ($isBooked) {

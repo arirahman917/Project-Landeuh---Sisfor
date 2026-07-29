@@ -178,7 +178,7 @@
         const tbody = document.getElementById('ajuanBody');
 
         tbody.innerHTML = page.map((p, i) => `
-            <tr class="border-b border-stone-100 hover:bg-amber-50/40 transition align-top cursor-pointer" ondblclick="showDetail(${AJUAN_DATA.indexOf(p)})">
+            <tr class="border-b border-stone-100 cursor-pointer transition align-top ${p.isCorporate ? 'bg-blue-500/10' : 'hover:bg-amber-50/40'}" ondblclick="showDetail(${AJUAN_DATA.indexOf(p)})">
                 <td class="px-3 py-3 text-stone-600 font-semibold">${start + i + 1}</td>
                 <td class="px-3 py-3 text-stone-800 font-mono text-xs">${p.noPesanan}</td>
                 <td class="px-3 py-3 text-stone-700 text-xs leading-relaxed">

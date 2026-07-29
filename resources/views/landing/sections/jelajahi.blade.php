@@ -47,6 +47,11 @@
                             'image' => asset('images/akomodasi/glamping_vip/c.webp'),
                             'href'  => '/akomodasi?jenis=Glamping',
                         ],
+                        [
+                            'label' => 'Paket Corporate',
+                            'image' => asset('images/akomodasi/paket_corporate/b.webp'),
+                            'href'  => '/paket-corporate',
+                        ],
                     ];
                 @endphp
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Accommodation;
+use App\Models\CorporatePackage;
 use Illuminate\Http\Request;
 use Cloudinary\Cloudinary;
 
@@ -11,16 +12,31 @@ class UnitController extends Controller
 {
     public function index()
     {
-        // Fetch all accommodations with their active bookings to calculate availability
+        // Fetch all accommodations with their active bookings
         $accommodations = Accommodation::with(['bookings' => function($query) {
             $query->whereNotIn('status', ['failed', 'refunded']);
         }])->get();
 
-        $accommodations->transform(function ($item) {
-            $bookedDates = $item->bookings->map(function ($booking) {
-                return $booking->check_in_date->format('Y-m-d') . ' -> ' . $booking->check_out_date->format('Y-m-d');
+        // Fetch corporate packages with their active bookings
+        $corporatePackages = CorporatePackage::with(['bookings' => function($query) {
+            $query->whereNotIn('status', ['failed', 'refunded']);
+        }])->get();
+
+        $accommodations->transform(function ($item) use ($corporatePackages) {
+            // Find corporate packages that include this accommodation
+            $relatedCorporatePackages = $corporatePackages->filter(function($cp) use ($item) {
+                return in_array($item->id, $cp->accommodation_ids ?? []);
             });
-            $item->bookedDates = $bookedDates;
+
+            // Inject corporate bookings into the item's bookings collection
+            foreach ($relatedCorporatePackages as $cp) {
+                foreach ($cp->bookings as $cb) {
+                    $cb->is_corporate = true;
+                    $cb->corporate_label = $cp->judul;
+                    $item->bookings->push($cb);
+                }
+            }
+
             // Map keys for JS compatibility
             $item->hargaWeekday = $item->harga_weekday;
             $item->hargaWeekend = $item->harga_weekend;

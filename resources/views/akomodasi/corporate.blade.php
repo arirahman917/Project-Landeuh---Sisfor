@@ -307,8 +307,11 @@
                     </div> -->
                 </div>
                 <div class="corp-price-box">
-                    <div class="corp-per-pax">Rp {{ number_format($glamping->harga_weekday,0,',','.') }}/pax/malam</div>
-                    <div class="corp-total-price" id="price-glamping">Rp 10.000.000</div>
+                    <div class="corp-per-pax" style="margin-bottom: 0.1rem;">Rp {{ number_format($glamping->harga_weekday,0,',','.') }}/pax/malam</div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <div class="corp-total-price" id="price-glamping">Rp 10.000.000</div>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-400 cursor-pointer hover:text-[#3a523a] transition" fill="currentColor" viewBox="0 0 24 24" onclick="openCorpPriceInfo('Glamping', {{ $glamping->harga_weekday }}, {{ $glamping->harga_weekend }}, {{ $glamping->harga_highseason }})"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                    </div>
                     <div class="corp-est">Estimasi total</div>
                     <div class="corp-formula" id="formula-glamping">25 pax × 1 malam × Rp 400.000</div>
                 </div>
@@ -375,8 +378,11 @@
                     </div> -->
                 </div>
                 <div class="corp-price-box">
-                    <div class="corp-per-pax">Rp {{ number_format($cabin->harga_weekday,0,',','.') }}/pax/malam</div>
-                    <div class="corp-total-price" id="price-cabin">Rp 12.500.000</div>
+                    <div class="corp-per-pax" style="margin-bottom: 0.1rem;">Rp {{ number_format($cabin->harga_weekday,0,',','.') }}/pax/malam</div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <div class="corp-total-price" id="price-cabin">Rp 12.500.000</div>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-400 cursor-pointer hover:text-[#3a523a] transition" fill="currentColor" viewBox="0 0 24 24" onclick="openCorpPriceInfo('Cabin', {{ $cabin->harga_weekday }}, {{ $cabin->harga_weekend }}, {{ $cabin->harga_highseason }})"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                    </div>
                     <div class="corp-est">Estimasi total</div>
                     <div class="corp-formula" id="formula-cabin">25 pax × 1 malam × Rp 500.000</div>
                 </div>
@@ -449,6 +455,18 @@
                 Ya, Lanjutkan
             </button>
         </div>
+    </div>
+</div>
+
+<!-- Price Info Modal -->
+<div id="corpPriceInfoOverlay" class="fixed inset-0 z-[99999] bg-black/50 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-200" onclick="closeCorpPriceInfo()">
+    <div class="bg-white rounded-2xl p-6 shadow-2xl max-w-sm w-[90%] transform scale-95 transition-transform duration-200" id="corpPriceInfoModal" onclick="event.stopPropagation()">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-base font-bold text-gray-900">Detail Harga <span id="corpPriceModalTitle" class="font-normal text-gray-500 text-sm"></span></h3>
+            <button onclick="closeCorpPriceInfo()" class="w-7 h-7 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-500 transition cursor-pointer">&times;</button>
+        </div>
+        <div id="corpPriceInfoContent"></div>
+        <div class="text-[10px] text-gray-400 mt-3 text-right italic">/pax/malam</div>
     </div>
 </div>
 
@@ -607,6 +625,42 @@
     paxInput.addEventListener('keydown', function(e){
         if(e.key === 'Enter') { this.blur(); }
     });
+
+    window.openCorpPriceInfo = function(name, hw, hwe, hhs) {
+        document.getElementById('corpPriceModalTitle').textContent = `(${name})`;
+        document.getElementById('corpPriceInfoContent').innerHTML = `
+            <div class="flex items-center gap-3 py-2.5 border-b border-gray-100">
+                <div class="w-2 h-2 rounded-full shrink-0 bg-orange-500"></div>
+                <div class="font-semibold text-sm w-24 text-orange-600">Weekday</div>
+                <div class="font-bold text-sm flex-1 text-right text-gray-800">${fmtRp(hw)}</div>
+            </div>
+            <div class="flex items-center gap-3 py-2.5 border-b border-gray-100">
+                <div class="w-2 h-2 rounded-full shrink-0 bg-blue-500"></div>
+                <div class="font-semibold text-sm w-24 text-blue-600">Weekend</div>
+                <div class="font-bold text-sm flex-1 text-right text-gray-800">${fmtRp(hwe)}</div>
+            </div>
+            <div class="flex items-center gap-3 py-2.5">
+                <div class="w-2 h-2 rounded-full shrink-0 bg-red-500"></div>
+                <div class="font-semibold text-sm w-24 text-red-600">Highseason</div>
+                <div class="font-bold text-sm flex-1 text-right text-gray-800">${fmtRp(hhs)}</div>
+            </div>
+        `;
+        const overlay = document.getElementById('corpPriceInfoOverlay');
+        const modal = document.getElementById('corpPriceInfoModal');
+        overlay.classList.remove('opacity-0', 'pointer-events-none');
+        overlay.classList.add('opacity-100');
+        modal.classList.remove('scale-95');
+        modal.classList.add('scale-100');
+    };
+
+    window.closeCorpPriceInfo = function() {
+        const overlay = document.getElementById('corpPriceInfoOverlay');
+        const modal = document.getElementById('corpPriceInfoModal');
+        overlay.classList.add('opacity-0', 'pointer-events-none');
+        overlay.classList.remove('opacity-100');
+        modal.classList.add('scale-95');
+        modal.classList.remove('scale-100');
+    };
 
     /* ── Init flatpickr ───────────────────────────── */
     window.updateFpPopupFooter = function(instance, selectedDates) {

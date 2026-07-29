@@ -465,7 +465,7 @@ function useFallbackPayment(method, akoId) {
             $unit = $isCorporate ? $booking->corporatePackage : $booking->accommodation;
             $judul = $unit ? addslashes($unit->judul) : '';
             $maxOrang = $unit ? $unit->max_orang : 0;
-            $akoId = $isCorporate ? 0 : ($booking->accommodation_id ?? 0);
+            $akoId = $isCorporate ? $booking->corporate_package_id : ($booking->accommodation_id ?? 0);
         @endphp
         // Populate sessionStorage with the database booking data
         sessionStorage.setItem('res_booking_no', '{{ $booking->no_pesanan }}');
@@ -583,20 +583,37 @@ function useFallbackPayment(method, akoId) {
         }, 1000);
     }
     
-    // Parse accommodation ID from URL
-    const urlParts = window.location.pathname.split('/');
-    const akoId = parseInt(urlParts[urlParts.length - 1]) || 1;
-    const akoItem = AKOMODASI_DATA.find(d => d.id === akoId) || AKOMODASI_DATA[0];
+    const isCorporate = sessionStorage.getItem('res_is_corporate') === '1';
 
-    // Populasikan rincian bed, smoking, dan fasilitas
-    document.getElementById('dynBed').innerHTML = `<iconify-icon icon="lucide:bed-double" class="text-lg"></iconify-icon> ${akoItem.kasur}`;
-    document.getElementById('dynSmoking').innerHTML = `<iconify-icon icon="${akoItem.merokok ? 'lucide:cigarette' : 'lucide:cigarette-off'}" class="text-lg"></iconify-icon> ${akoItem.merokok ? 'Boleh merokok di kamar' : 'Dilarang merokok'}`;
-    
-    // Pecah fasilitas jadi dua kolom
-    const fasLen = Math.ceil(akoItem.fasilitas.length / 2);
-    document.getElementById('dynFasilitas1').innerHTML = akoItem.fasilitas.slice(0, fasLen).map(f => `<li>${f}</li>`).join('');
-    document.getElementById('dynFasilitas2').innerHTML = akoItem.fasilitas.slice(fasLen).map(f => `<li>${f}</li>`).join('');
-    document.getElementById('dynMakanan').innerHTML = akoItem.makanan.map(m => `<li>${m}</li>`).join('');
+    if (isCorporate) {
+        const bedEl = document.getElementById('dynBed');
+        if (bedEl) {
+            bedEl.closest('.sb-bed').style.display = 'none';
+        }
+        
+        const corpFasilitas = JSON.parse(sessionStorage.getItem('res_corp_fasilitas') || '[]');
+        const corpMakanan  = JSON.parse(sessionStorage.getItem('res_corp_makanan') || '[]');
+        
+        const fasLen = Math.ceil(corpFasilitas.length / 2);
+        document.getElementById('dynFasilitas1').innerHTML = corpFasilitas.slice(0, fasLen).map(f => `<li>${f}</li>`).join('');
+        document.getElementById('dynFasilitas2').innerHTML = corpFasilitas.slice(fasLen).map(f => `<li>${f}</li>`).join('');
+        document.getElementById('dynMakanan').innerHTML = corpMakanan.map(m => `<li>${m}</li>`).join('');
+    } else {
+        // Parse accommodation ID from URL
+        const urlParts = window.location.pathname.split('/');
+        const akoId = parseInt(urlParts[urlParts.length - 1]) || 1;
+        const akoItem = AKOMODASI_DATA.find(d => d.id === akoId) || AKOMODASI_DATA[0];
+
+        // Populasikan rincian bed, smoking, dan fasilitas
+        document.getElementById('dynBed').innerHTML = `<iconify-icon icon="lucide:bed-double" class="text-lg"></iconify-icon> ${akoItem.kasur}`;
+        document.getElementById('dynSmoking').innerHTML = `<iconify-icon icon="${akoItem.merokok ? 'lucide:cigarette' : 'lucide:cigarette-off'}" class="text-lg"></iconify-icon> ${akoItem.merokok ? 'Boleh merokok di kamar' : 'Dilarang merokok'}`;
+        
+        // Pecah fasilitas jadi dua kolom
+        const fasLen = Math.ceil(akoItem.fasilitas.length / 2);
+        document.getElementById('dynFasilitas1').innerHTML = akoItem.fasilitas.slice(0, fasLen).map(f => `<li>${f}</li>`).join('');
+        document.getElementById('dynFasilitas2').innerHTML = akoItem.fasilitas.slice(fasLen).map(f => `<li>${f}</li>`).join('');
+        document.getElementById('dynMakanan').innerHTML = akoItem.makanan.map(m => `<li>${m}</li>`).join('');
+    }
     
     // Load dynamic user data from sessionStorage
     const dJudul = sessionStorage.getItem('res_judul');

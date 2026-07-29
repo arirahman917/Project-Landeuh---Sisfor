@@ -132,6 +132,11 @@ document.addEventListener('DOMContentLoaded', () => {
             renderOrders(container, bookings);
         }
     }
+
+    if (sessionStorage.getItem('forceScrollTop')) {
+        sessionStorage.removeItem('forceScrollTop');
+        setTimeout(() => window.scrollTo(0, 0), 100);
+    }
 });
 
 function unduhPdf(bookNo, btn) {
@@ -357,7 +362,8 @@ function renderOrders(container, bookings) {
                 actionHtml += `<div class="text-xs text-stone-600 font-bold bg-stone-50 border border-stone-200 rounded-lg px-4 py-2 text-center leading-relaxed">Masa Sewa Berakhir</div>`;
             } else {
                 if (canReschedule) {
-                    actionHtml += `<button onclick="ajukanReschedule('${b.no_pesanan}', ${b.accommodation_id}, ${b.id}, ${b.malam}, '${b.check_in_date}')" class="bg-white text-amber-600 hover:bg-amber-50 border border-amber-300 font-bold py-2 px-5 rounded-lg transition text-sm text-center flex items-center justify-center gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg> Ajukan Re-schedule</button>`;
+                    const targetId = isCorp ? b.corporate_package_id : b.accommodation_id;
+                    actionHtml += `<button onclick="ajukanReschedule('${b.no_pesanan}', ${targetId}, ${b.id}, ${b.malam}, '${b.check_in_date}', ${isCorp})" class="bg-white text-amber-600 hover:bg-amber-50 border border-amber-300 font-bold py-2 px-5 rounded-lg transition text-sm text-center flex items-center justify-center gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg> Ajukan Re-schedule</button>`;
                 } else {
                     actionHtml += `<div class="text-xs text-stone-500 font-semibold bg-stone-50 border border-stone-200 rounded-lg px-4 py-2 text-center leading-relaxed">Reschedule sudah tidak tersedia (minimal H-3)</div>`;
                 }
@@ -411,8 +417,17 @@ function renderOrders(container, bookings) {
             
             const target = tab.getAttribute('data-target');
             document.getElementById('tabContent_' + target).classList.remove('hidden');
+
+            sessionStorage.setItem('activePesananTab', target);
         });
     });
+
+    // Restore active tab
+    const savedTab = sessionStorage.getItem('activePesananTab');
+    if (savedTab) {
+        const tabBtn = Array.from(tabs).find(t => t.getAttribute('data-target') === savedTab);
+        if (tabBtn) tabBtn.click();
+    }
 
     // Start countdown timers
     initCountdownTimers();
@@ -510,7 +525,7 @@ function getDateTypeFrontend(dateObj, settings) {
     return 'weekday';
 }
 
-function ajukanReschedule(bookingNo, accommodationId, bookingId, malam, checkInDateStr) {
+function ajukanReschedule(bookingNo, accommodationId, bookingId, malam, checkInDateStr, isCorporate) {
     // Reset state
     selectedNewCheckin = null;
     currentReschedBookingNo = bookingNo;
@@ -551,7 +566,7 @@ function ajukanReschedule(bookingNo, accommodationId, bookingId, malam, checkInD
     if (loadingIcon) loadingIcon.style.display = 'block';
 
     // Fetch booked dates
-    fetch(`/reservasi/booked-dates/${accommodationId}?exclude_booking_id=${bookingId}`)
+    fetch(`/reservasi/booked-dates/${accommodationId}?exclude_booking_id=${bookingId}&is_corporate=${isCorporate ? 1 : 0}`)
         .then(r => r.json())
         .then(data => {
             dateInput.placeholder = 'Pilih tanggal...';
@@ -714,6 +729,7 @@ function submitReschedule() {
             if (closeBtn) {
                 closeBtn.onclick = () => {
                     closeModalRescheduleSuccess();
+                    sessionStorage.setItem('forceScrollTop', '1');
                     location.reload();
                 };
             }

@@ -37,7 +37,11 @@
                 ],
                 [
                     'q' => 'Apakah Landeuh Village Riverside cocok untuk keluarga dan rombongan?',
-                    'a' => 'Tentu. Suasana alam yang nyaman serta area yang luas membuat Landeuh Village Riverside cocok untuk liburan keluarga, gathering, hingga quality time bersama pasangan maupun teman.',
+                    'a' => 'Tentu. Area yang luas, suasana alam yang asri, serta beragam pilihan akomodasi menjadikan Landeuh Village Riverside cocok untuk liburan keluarga, rombongan, maupun quality time bersama orang terdekat.',
+                ],
+                [
+                    'q' => 'Apakah tersedia paket untuk gathering perusahaan atau komunitas?',
+                    'a' => 'TTentu. Landeuh Village Riverside menyediakan paket corporate yang cocok untuk perusahaan, instansi, komunitas, maupun acara keluarga, lengkap dengan akomodasi, tiga kali makan, dan suasana alam yang nyaman.',
                 ],
                 [
                     'q' => 'Apakah tersedia area untuk bersantai atau berkumpul bersama?',

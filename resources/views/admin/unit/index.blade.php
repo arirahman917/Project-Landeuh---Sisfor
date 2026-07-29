@@ -130,8 +130,28 @@
 {{-- ── MODAL KALENDER TRACKING ────────────────────────────────── --}}
 <div id="modalKalender" class="fixed inset-0 z-[9999] bg-black/30 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
     {{-- Inline flatpickr calendar --}}
-    <div id="kalenderInline" class="flex justify-center"></div>
+    <div id="kalenderInline" class="flex justify-center scale-90 transition-transform duration-300"></div>
 </div>
+
+{{-- Template Keterangan / Legend (Akan disuntikkan ke dalam kalender) --}}
+<template id="kalenderLegendTemplate">
+    <div class="mt-2 pt-4 border-t border-stone-200 w-full px-4 pb-4">
+        <div class="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+            <div class="flex items-center gap-2">
+                <div class="w-4 h-4 rounded-full bg-[#e5e7eb] shrink-0 relative flex items-center justify-center">
+                    <div class="w-full h-px bg-[#9ca3af] absolute"></div>
+                </div>
+                <span class="text-xs text-stone-600 font-medium leading-tight">Unit tidak tersedia karena Layanan Reguler</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <div class="w-4 h-4 rounded-full bg-indigo-100 shrink-0 relative flex items-center justify-center">
+                    <div class="w-full h-px bg-indigo-700 absolute"></div>
+                </div>
+                <span class="text-xs text-stone-600 font-medium leading-tight">Unit tidak tersedia karena Layanan Paket Corporate</span>
+            </div>
+        </div>
+    </div>
+</template>
 
 <style>
 .unit-card {
@@ -192,6 +212,10 @@
     border-radius: 50% !important;
     text-decoration: line-through;
 }
+.flatpickr-day.flatpickr-disabled.corporate-booked-date {
+    background-color: #e0e7ff !important; /* indigo-100 */
+    color: #4338ca !important; /* indigo-700 */
+}
 #kalenderInline .flatpickr-calendar {
     box-shadow: none !important;
     border: 1px solid #e7e5e4 !important;
@@ -201,9 +225,16 @@
 #kalenderInline .flatpickr-day:not(.flatpickr-disabled) {
     cursor: default !important;
 }
-#kalenderInline .flatpickr-day:not(.flatpickr-disabled):hover {
-    background: #fef3c7 !important;
-    border-color: #fbbf24 !important;
+#kalenderInline .flatpickr-day.today {
+    background: transparent !important;
+    border-color: transparent !important;
+    color: #44403c !important;
+}
+#kalenderInline .flatpickr-day:not(.flatpickr-disabled):hover,
+#kalenderInline .flatpickr-day.today:not(.flatpickr-disabled):hover {
+    background: #f3f4f6 !important;
+    border-color: #e5e7eb !important;
+    color: #374151 !important;
 }
 #kalenderInline .flatpickr-day.selected,
 #kalenderInline .flatpickr-day.startRange,
@@ -217,7 +248,7 @@
     box-shadow: none !important;
 }
 #kalenderInline .flatpickr-day:active {
-    background: transparent !important;
+    background: #e5e7eb !important;
     box-shadow: none !important;
 }
 @media (max-width: 768px) {
@@ -345,7 +376,7 @@
         ];
         const MONTH_SHORT = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agt','Sep','Okt','Nov','Des'];
 
-        // Booked date badges — grouped by check-in month, color-coded
+        // Booked date badges — grouped by check-in month, color-coded (Accordion Style)
         let bookedBadgesHtml = '';
         if (currentAndFutureBookings.length > 0) {
             // Sort bookings by check-in date ascending
@@ -360,52 +391,63 @@
                 return `${dd}-${mm}-${yyyy}`;
             };
 
-            const buildGroupsHtml = (bookingsArr) => {
-                const groups = {};
-                bookingsArr.forEach(b => {
+            const groups = {};
+            sorted.forEach(b => {
+                const bIn = parseToLocalDate(b.check_in_date);
+                const key = `${bIn.getFullYear()}-${String(bIn.getMonth()).padStart(2,'0')}`;
+                if (!groups[key]) groups[key] = { month: bIn.getMonth(), year: bIn.getFullYear(), bookings: [] };
+                groups[key].bookings.push(b);
+            });
+
+            const currentMonthKey = `${today.getFullYear()}-${String(today.getMonth()).padStart(2,'0')}`;
+            let isFirstGroup = true;
+
+            const accordionsHtml = Object.keys(groups).sort().map(key => {
+                const g = groups[key];
+                const c = MONTH_COLORS[g.month];
+                const monthLabel = `${MONTH_SHORT[g.month]} ${g.year}`;
+                
+                // Open if it's the current month, OR if it's the first group and current month isn't here
+                const isOpen = (key === currentMonthKey) || (isFirstGroup && !groups[currentMonthKey]);
+                isFirstGroup = false;
+
+                const badges = g.bookings.map(b => {
                     const bIn = parseToLocalDate(b.check_in_date);
-                    const key = `${bIn.getFullYear()}-${String(bIn.getMonth()).padStart(2,'0')}`;
-                    if (!groups[key]) groups[key] = { month: bIn.getMonth(), year: bIn.getFullYear(), bookings: [] };
-                    groups[key].bookings.push(b);
-                });
-
-                return Object.keys(groups).sort().map(key => {
-                    const g = groups[key];
-                    const c = MONTH_COLORS[g.month];
-                    const monthLabel = `${MONTH_SHORT[g.month]} ${g.year}`;
-
-                    const badges = g.bookings.map(b => {
-                        const bIn = parseToLocalDate(b.check_in_date);
-                        const bOut = parseToLocalDate(b.check_out_date);
+                    const bOut = parseToLocalDate(b.check_out_date);
+                    
+                    if (b.is_corporate) {
+                        const displayStr = `${fmtDate(bIn)} &rarr; ${fmtDate(bOut)} ▪ Paket Corp. ${b.corporate_label} (${b.pemesan_nama || 'Tamu'})`;
+                        return `<span class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg shadow-sm text-[10px] font-semibold bg-indigo-50 text-indigo-700 border border-indigo-300 border-dashed">
+                            <iconify-icon icon="lucide:building-2" class="text-[11px]"></iconify-icon>${displayStr}
+                        </span>`;
+                    } else {
                         const displayStr = `${fmtDate(bIn)} &rarr; ${fmtDate(bOut)} (${b.pemesan_nama || 'Tamu'})`;
                         return `<span style="background:${c.bg}; color:${c.text}; border:1px solid ${c.border};"
-                            class="inline-flex items-center gap-1 px-2 py-1 rounded-lg shadow-sm text-[10px] font-semibold whitespace-nowrap">${displayStr}</span>`;
-                    }).join('');
-
-                    return `<div class="flex flex-wrap items-center gap-1.5">
-                        <span style="background:${c.text}; color:#fff;" class="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[9px] font-bold tracking-wide whitespace-nowrap shadow-sm">
-                            <iconify-icon icon="lucide:calendar-days" class="text-[10px]"></iconify-icon>${monthLabel}
-                        </span>
-                        ${badges}
-                    </div>`;
+                            class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg shadow-sm text-[10px] font-semibold whitespace-nowrap">
+                            ${displayStr}
+                        </span>`;
+                    }
                 }).join('');
-            };
 
-            // Jika > 3 booking, sisanya di-collapse
-            const visibleBookings = sorted.slice(0, 3);
-            const hiddenBookings = sorted.slice(3);
+                return `
+                <div class="border border-stone-200/60 rounded-xl overflow-hidden bg-white/40 shadow-sm">
+                    <div class="px-3 py-2 bg-stone-50/80 cursor-pointer flex justify-between items-center hover:bg-stone-100 transition" 
+                         onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('.chevron').classList.toggle('rotate-180')">
+                        <div class="flex items-center gap-2">
+                            <span style="background:${c.text}; color:#fff;" class="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[9px] font-bold tracking-wide whitespace-nowrap shadow-sm">
+                                <iconify-icon icon="lucide:calendar-days" class="text-[10px]"></iconify-icon>${monthLabel}
+                            </span>
+                            <span class="text-[11px] font-bold text-stone-600">${g.bookings.length} booking</span>
+                        </div>
+                        <iconify-icon icon="lucide:chevron-down" class="chevron text-stone-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}"></iconify-icon>
+                    </div>
+                    <div class="${isOpen ? '' : 'hidden'} border-t border-stone-100 p-2.5 flex flex-col gap-1.5">
+                        ${badges}
+                    </div>
+                </div>`;
+            }).join('');
 
-            bookedBadgesHtml += buildGroupsHtml(visibleBookings);
-
-            if (hiddenBookings.length > 0) {
-                bookedBadgesHtml += `
-                <div id="hidden-bookings-${item.id}" class="hidden flex-col gap-2 mt-1">
-                    ${buildGroupsHtml(hiddenBookings)}
-                </div>
-                <button onclick="toggleBookings(${item.id})" id="btn-toggle-${item.id}" class="text-[10px] text-amber-600 font-bold hover:text-amber-800 transition-colors self-start flex items-center gap-1 mt-1 bg-amber-50 px-2 py-1 rounded-md border border-amber-200">
-                    <iconify-icon icon="lucide:chevron-down"></iconify-icon> Lihat ${hiddenBookings.length} booking lainnya
-                </button>`;
-            }
+            bookedBadgesHtml = `<div class="flex flex-col gap-2 mt-1">${accordionsHtml}</div>`;
         }
 
         // Table rows
@@ -797,13 +839,14 @@
         document.getElementById('kalenderInline').innerHTML = '';
 
         // Helper: check if a date is fully booked for this accommodation
-        function isDateBooked(dateObj) {
-            if (!item.bookings || item.bookings.length === 0) return false;
+        function getBookingStatusForDate(dateObj) {
+            if (!item.bookings || item.bookings.length === 0) return { booked: false, corporate: false };
             let checkTime = new Date(dateObj);
             checkTime.setHours(12, 0, 0, 0);
             checkTime = checkTime.getTime();
 
             let count = 0;
+            let hasCorporate = false;
             item.bookings.forEach(b => {
                 if (b.status !== 'failed' && b.status !== 'refunded') {
                     let bIn = new Date(b.check_in_date);
@@ -812,10 +855,14 @@
                     bOut.setHours(12, 0, 0, 0);
                     if (checkTime >= bIn.getTime() && checkTime < bOut.getTime()) {
                         count++;
+                        if (b.is_corporate) hasCorporate = true;
                     }
                 }
             });
-            return count >= item.slot;
+            return {
+                booked: count >= item.slot,
+                corporate: hasCorporate
+            };
         }
 
         // Create inline flatpickr (read-only, no onChange to avoid lag)
@@ -827,34 +874,60 @@
             clickOpens: false,
             disable: [
                 function(date) {
-                    return isDateBooked(date);
+                    return getBookingStatusForDate(date).booked;
                 }
             ],
             onDayCreate: function(dObj, dStr, fp, dayElem) {
                 const todayLocal = new Date();
                 todayLocal.setHours(0, 0, 0, 0);
-                if (dayElem.dateObj >= todayLocal && isDateBooked(dayElem.dateObj)) {
-                    dayElem.classList.add('booked-date');
+                if (dayElem.dateObj >= todayLocal) {
+                    const status = getBookingStatusForDate(dayElem.dateObj);
+                    if (status.booked) {
+                        dayElem.classList.add('booked-date');
+                        if (status.corporate) {
+                            dayElem.classList.add('corporate-booked-date');
+                        }
+                    }
+                }
+            },
+            onChange: function(selectedDates, dateStr, instance) {
+                if (selectedDates.length > 0) {
+                    instance.clear();
+                }
+            },
+            onReady: function(selectedDates, dateStr, instance) {
+                // Clone template legend dan masukkan ke dalam box putih kalender
+                const template = document.getElementById('kalenderLegendTemplate');
+                if (template) {
+                    const clone = template.content.cloneNode(true);
+                    instance.calendarContainer.appendChild(clone);
                 }
             }
         });
 
+        // Force jump to current month
+        kalenderFp.jumpToDate(new Date());
+
         // Open modal
         const modal = document.getElementById('modalKalender');
-        const box = document.getElementById('modalKalenderBox');
+        const box = document.getElementById('kalenderInline');
         modal.classList.remove('opacity-0', 'pointer-events-none');
         modal.classList.add('opacity-100');
-        box.classList.remove('scale-90');
-        box.classList.add('scale-100');
+        if(box) {
+            box.classList.remove('scale-90');
+            box.classList.add('scale-100');
+        }
     };
 
     window.closeKalenderModal = function() {
         const modal = document.getElementById('modalKalender');
-        const box = document.getElementById('modalKalenderBox');
+        const box = document.getElementById('kalenderInline');
         modal.classList.add('opacity-0', 'pointer-events-none');
         modal.classList.remove('opacity-100');
-        box.classList.add('scale-90');
-        box.classList.remove('scale-100');
+        if(box) {
+            box.classList.add('scale-90');
+            box.classList.remove('scale-100');
+        }
     };
 
     document.getElementById('modalKalender')?.addEventListener('click', function(e) {

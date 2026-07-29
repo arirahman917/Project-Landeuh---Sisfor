@@ -24,36 +24,97 @@ document.addEventListener('DOMContentLoaded', () => {
     if (dateInput) {
         // Daftar contoh hari libur nasional 2026
         const liburNasional = [
-            "2026-01-01", // Tahun Baru Masehi
-            "2026-02-17", // Idul Fitri (Estimasi)
-            "2026-02-18", // Idul Fitri (Estimasi)
-            "2026-03-20", // Nyepi
-            "2026-04-03", // Wafat Isa Almasih
-            "2026-05-01", // Hari Buruh
-            "2026-05-14", // Kenaikan Isa Almasih
-            "2026-05-31", // Waisak
-            "2026-06-01", // Hari Lahir Pancasila
-            "2026-08-17", // Hari Kemerdekaan RI
-            "2026-12-25", // Hari Raya Natal
+            "2026-01-01", "2026-02-17", "2026-02-18", "2026-03-20",
+            "2026-04-03", "2026-05-01", "2026-05-14", "2026-05-31",
+            "2026-06-01", "2026-08-17", "2026-12-25",
         ];
+
+        // Helper: update check-in / check-out footer inside the calendar popup
+        function updateHeroFpFooter(instance, selectedDates) {
+            if (!instance || !instance.calendarContainer) return;
+            let footer = instance.calendarContainer.querySelector('.fp-custom-footer');
+            if (!footer) {
+                footer = document.createElement('div');
+                footer.className = 'fp-custom-footer';
+                footer.style.cssText = 'padding: 8px 12px; background: #f8fafc; border-top: 1px solid #e2e8f0; font-size: 11px; color: #334155; font-weight: 600; display: flex; align-items: center; justify-content: space-between; gap: 8px; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; width: 100%; box-sizing: border-box;';
+                footer.innerHTML = `
+                    <div style="display:flex; align-items:center; gap:4px;"><span style="color:#059669; font-weight:700;">Check-in:</span> <span class="fp-in-val" style="color:#0f172a; font-weight:700;">Belum dipilih</span></div>
+                    <div style="display:flex; align-items:center; gap:4px;"><span style="color:#d97706; font-weight:700;">Check-out:</span> <span class="fp-out-val" style="color:#0f172a; font-weight:700;">Belum dipilih</span></div>
+                `;
+                instance.calendarContainer.appendChild(footer);
+            }
+            const inVal = footer.querySelector('.fp-in-val');
+            const outVal = footer.querySelector('.fp-out-val');
+            const fmtFull = { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' };
+
+            if (!selectedDates || selectedDates.length === 0) {
+                if (inVal) inVal.innerText = 'Belum dipilih';
+                if (outVal) outVal.innerText = 'Belum dipilih';
+            } else if (selectedDates.length === 1) {
+                if (inVal) inVal.innerText = selectedDates[0].toLocaleDateString('id-ID', fmtFull);
+                if (outVal) outVal.innerText = 'Pilih Check-out';
+
+                // Highlight check-in date as blue circle
+                setTimeout(() => {
+                    const days = instance.calendarContainer.querySelectorAll('.flatpickr-day');
+                    days.forEach(day => {
+                        if (day.dateObj) {
+                            const dObj = new Date(day.dateObj); dObj.setHours(0,0,0,0);
+                            const sObj = new Date(selectedDates[0]); sObj.setHours(0,0,0,0);
+                            if (dObj.getTime() === sObj.getTime()) {
+                                day.classList.add('selected', 'startRange');
+                                day.style.setProperty('background-color', '#2563eb', 'important');
+                                day.style.setProperty('color', '#ffffff', 'important');
+                                day.style.setProperty('border-radius', '50%', 'important');
+                            }
+                        }
+                    });
+                }, 0);
+            } else if (selectedDates.length === 2) {
+                if (inVal) inVal.innerText = selectedDates[0].toLocaleDateString('id-ID', fmtFull);
+                if (outVal) outVal.innerText = selectedDates[1].toLocaleDateString('id-ID', fmtFull);
+            }
+        }
+
+        // Format display text for the input field
+        function fmtInputDisplay(dates) {
+            if (!dates || dates.length === 0) return '';
+            const fmt = { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' };
+            if (dates.length === 1) {
+                return dates[0].toLocaleDateString('id-ID', fmt);
+            }
+            return dates[0].toLocaleDateString('id-ID', fmt) + ' - ' + dates[1].toLocaleDateString('id-ID', fmt);
+        }
 
         const fp = flatpickr(dateInput, {
             mode: 'range',
             minDate: 'today',
             dateFormat: 'D, d M Y',
-            showMonths: 2, // Always render 2 months, CSS will handle vertical stacking on mobile
-            locale: 'id', // Indonesian localization
-            closeOnSelect: false, // Jangan tutup otomatis setelah pilih range
-            defaultDate: [new Date(), new Date(new Date().getTime() + 24 * 60 * 60 * 1000)], // Today to Tomorrow
-            onChange: function(selectedDates, dateStr, instance) {
-                // Jika sudah pilih check-out (2 tanggal terpilih), tunggu 890 milidetik lalu tutup
+            showMonths: 2,
+            locale: 'id',
+            closeOnSelect: false,
+            defaultDate: [new Date(), new Date(new Date().getTime() + 24 * 60 * 60 * 1000)],
+            onReady: function(selectedDates, dateStr, instance) {
+                updateHeroFpFooter(instance, selectedDates);
                 if (selectedDates.length === 2) {
+                    dateInput.value = fmtInputDisplay(selectedDates);
+                }
+            },
+            onOpen: function(selectedDates, dateStr, instance) {
+                updateHeroFpFooter(instance, selectedDates);
+            },
+            onChange: function(selectedDates, dateStr, instance) {
+                updateHeroFpFooter(instance, selectedDates);
+
+                if (selectedDates.length === 1) {
+                    dateInput.value = fmtInputDisplay(selectedDates);
+                } else if (selectedDates.length === 2) {
+                    dateInput.value = fmtInputDisplay(selectedDates);
                     setTimeout(() => {
-                        // Pastikan masih ada 2 tanggal (user tidak klik lagi)
                         if (instance.selectedDates.length === 2 && instance.isOpen) {
                             instance.close();
                         }
-                    }, 290);
+                    }, 300);
                 }
             },
             onDayCreate: function(dObj, dStr, fp, dayElem) {
@@ -63,18 +124,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 const day = String(date.getDate()).padStart(2, '0');
                 const formattedDate = `${year}-${month}-${day}`;
 
-                // Cek apakah tanggal di masa lampau
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);
                 const isPast = date < today;
 
-                // Tanggal Merah: Warnai hari Minggu dan Hari Libur menjadi merah
                 if (date.getDay() === 0 || liburNasional.includes(formattedDate)) {
-                    dayElem.style.color = '#e53e3e'; // Merah kuat (menimpa default CSS)
+                    dayElem.style.color = '#e53e3e';
                     dayElem.style.fontWeight = '800';
-                    
                     if (isPast) {
-                        dayElem.style.opacity = '0.35'; // Lebih transparan untuk tanggal lampau
+                        dayElem.style.opacity = '0.35';
                     }
                 }
             }

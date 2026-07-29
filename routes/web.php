@@ -296,6 +296,7 @@ Route::prefix('admin')->group(function () {
                 'metode' => $booking->metode_pembayaran,
                 'status' => $statusMap[$booking->status] ?? 'pending',
                 'tanggalAjuan' => $booking->updated_at->locale('id')->isoFormat('D MMM YYYY'),
+                'isCorporate' => $isCorporate,
             ];
         });
         

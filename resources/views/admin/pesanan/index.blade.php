@@ -35,8 +35,9 @@
 </div>
 
 {{-- ── TOOLBAR ────────────────────────────────────────────────── --}}
-<div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mb-5">
-    <div class="relative flex-1 max-w-xs">
+<div class="flex flex-col gap-3 mb-5">
+    {{-- Row 1: Search --}}
+    <div class="relative">
         <span class="absolute inset-y-0 left-3.5 flex items-center text-stone-400 pointer-events-none">
             <iconify-icon icon="lucide:search" class="text-base"></iconify-icon>
         </span>
@@ -44,7 +45,8 @@
             class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-stone-200 bg-white/80 text-stone-800 text-sm
                    placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition"/>
     </div>
-    <div class="flex items-center gap-2">
+    {{-- Row 2: Filters + Sort + PDF --}}
+    <div class="flex flex-wrap items-center gap-2">
         <div class="relative">
             <select id="filterBulanBooking" class="appearance-none pl-4 pr-10 py-2.5 rounded-xl border border-stone-200 bg-white/80 text-stone-700 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition shadow-sm hover:border-amber-300">
                 <option value="semua">Bulan (Semua)</option>
@@ -69,20 +71,28 @@
             </select>
             <iconify-icon icon="lucide:chevron-down" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-stone-400 pointer-events-none"></iconify-icon>
         </div>
+        <div class="relative">
+            <select id="filterJenisLayanan" class="appearance-none pl-4 pr-10 py-2.5 rounded-xl border border-stone-200 bg-white/80 text-stone-700 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition shadow-sm hover:border-amber-300">
+                <option value="semua">Jenis Layanan (Semua)</option>
+                <option value="Reguler">Reguler</option>
+                <option value="Paket Corporate">Paket Corporate</option>
+            </select>
+            <iconify-icon icon="lucide:chevron-down" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-stone-400 pointer-events-none"></iconify-icon>
+        </div>
+        <button id="btnSortMalam"
+            class="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm text-[#fdf6e3]
+                   bg-gradient-to-r from-[#2d4a2d] to-[#3d6b3d] hover:from-[#3d6b3d] hover:to-[#4a824a]
+                   shadow-md transition-all active:scale-[0.98]">
+            Malam <iconify-icon icon="lucide:arrow-up-down" class="text-sm"></iconify-icon>
+        </button>
+        <div class="flex-1"></div>
+        <button onclick="openModalCetakPdfPesanan()"
+            class="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm text-[#fdf6e3]
+                   bg-gradient-to-r from-[#2d4a2d] to-[#3d6b3d] hover:from-[#3d6b3d] hover:to-[#4a824a]
+                   shadow-lg shadow-green-900/20 transition-all active:scale-[0.98] whitespace-nowrap">
+            <iconify-icon icon="lucide:printer" class="text-base"></iconify-icon> Cetak Laporan PDF
+        </button>
     </div>
-    <button id="btnSortMalam"
-        class="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm text-[#fdf6e3]
-               bg-gradient-to-r from-[#2d4a2d] to-[#3d6b3d] hover:from-[#3d6b3d] hover:to-[#4a824a]
-               shadow-md transition-all active:scale-[0.98]">
-        Berapa Malam <iconify-icon icon="lucide:arrow-up-down" class="text-sm"></iconify-icon>
-    </button>
-    <div class="flex-1 hidden sm:block"></div>
-    <button onclick="openModalCetakPdfPesanan()"
-        class="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm text-[#fdf6e3]
-               bg-gradient-to-r from-[#2d4a2d] to-[#3d6b3d] hover:from-[#3d6b3d] hover:to-[#4a824a]
-               shadow-lg shadow-green-900/20 transition-all active:scale-[0.98]">
-        <iconify-icon icon="lucide:printer" class="text-base"></iconify-icon> Cetak Laporan PDF
-    </button>
 </div>
 
 {{-- ── TABLE ──────────────────────────────────────────────────── --}}
@@ -247,7 +257,7 @@
         const tbody = document.getElementById('pesananBody');
 
         tbody.innerHTML = page.map((p, i) => `
-            <tr class="border-b border-stone-100 hover:bg-amber-50/40 transition align-top">
+            <tr class="border-b border-stone-100 transition align-top ${p.isCorporate ? 'bg-blue-500/10' : 'hover:bg-amber-50/40'}">
                 <td class="px-3 py-3 text-stone-600 font-semibold">${start + i + 1}</td>
                 <td class="px-3 py-3 text-stone-800 font-mono text-xs">${p.noPesanan}</td>
                 <td class="px-3 py-3 text-stone-700 text-xs leading-relaxed">
@@ -347,6 +357,12 @@
             
             let matchBulan = true;
             let matchTahun = true;
+            let matchJenis = true;
+            const jenisLayanan = document.getElementById('filterJenisLayanan').value;
+            
+            if (jenisLayanan === 'Reguler' && p.isCorporate) matchJenis = false;
+            if (jenisLayanan === 'Paket Corporate' && !p.isCorporate) matchJenis = false;
+
             if (p.raw_date) {
                 const parts = p.raw_date.split('-'); // [YYYY, MM, DD]
                 if (parts.length === 3) {
@@ -355,7 +371,7 @@
                 }
             }
 
-            return matchSearch && matchBulan && matchTahun;
+            return matchSearch && matchBulan && matchTahun && matchJenis;
         });
 
         if (isSortedMalam) {
@@ -369,6 +385,7 @@
     document.getElementById('searchPesanan').addEventListener('input', applyFilters);
     document.getElementById('filterBulanBooking').addEventListener('change', applyFilters);
     document.getElementById('filterTahunBooking').addEventListener('change', applyFilters);
+    document.getElementById('filterJenisLayanan').addEventListener('change', applyFilters);
 
     // ── Sort by Malam ──────────────────────────────────────────
     document.getElementById('btnSortMalam').addEventListener('click', function() {

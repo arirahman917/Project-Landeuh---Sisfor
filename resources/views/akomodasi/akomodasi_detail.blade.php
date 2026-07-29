@@ -1074,6 +1074,8 @@
     const paramTgl = urlParams.get('tgl');
 
     if (paramJenis) {
+        const akoInput = document.getElementById('filterJenis');
+        const akoLabel = document.getElementById('akomodasiPickerLabel');
         if(akoInput) akoInput.value = paramJenis;
         if(akoLabel) akoLabel.innerText = paramJenis;
         // Show filter banner

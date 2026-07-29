@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 27, 2026 at 12:39 PM
+-- Generation Time: Jul 29, 2026 at 08:09 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -29,22 +29,22 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `accommodations` (
   `id` bigint(20) UNSIGNED NOT NULL,
-  `judul` varchar(255) NOT NULL,
-  `jenis` varchar(100) NOT NULL,
-  `kasur` varchar(255) NOT NULL,
+  `judul` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `jenis` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `kasur` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `merokok` tinyint(1) NOT NULL DEFAULT 0,
-  `fasilitas` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`fasilitas`)),
-  `makanan` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`makanan`)),
+  `fasilitas` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
+  `makanan` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
   `max_orang` int(11) NOT NULL,
-  `catatan` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`catatan`)),
+  `catatan` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
   `slot` int(11) NOT NULL,
   `harga_weekday` decimal(12,2) NOT NULL,
   `harga_weekend` decimal(12,2) NOT NULL,
   `harga_highseason` decimal(12,2) NOT NULL,
-  `gambar` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`gambar`)),
+  `gambar` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `accommodations`
@@ -73,7 +73,8 @@ INSERT INTO `accommodations` (`id`, `judul`, `jenis`, `kasur`, `merokok`, `fasil
 CREATE TABLE `bookings` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `no_pesanan` varchar(255) NOT NULL,
-  `accommodation_id` bigint(20) UNSIGNED NOT NULL,
+  `accommodation_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `corporate_package_id` bigint(20) UNSIGNED DEFAULT NULL,
   `pemesan_nama` varchar(255) NOT NULL,
   `pemesan_telp` varchar(255) NOT NULL,
   `pemesan_email` varchar(255) NOT NULL,
@@ -83,6 +84,7 @@ CREATE TABLE `bookings` (
   `reschedule_check_in` date DEFAULT NULL,
   `reschedule_check_out` date DEFAULT NULL,
   `malam` int(11) NOT NULL,
+  `jumlah_pax` int(11) DEFAULT NULL,
   `tambahan_anak` int(11) NOT NULL DEFAULT 0,
   `tambahan_dewasa` int(11) NOT NULL DEFAULT 0,
   `total` decimal(12,2) NOT NULL,
@@ -96,55 +98,29 @@ CREATE TABLE `bookings` (
 -- Dumping data for table `bookings`
 --
 
-INSERT INTO `bookings` (`id`, `no_pesanan`, `accommodation_id`, `pemesan_nama`, `pemesan_telp`, `pemesan_email`, `nama_tamu`, `check_in_date`, `check_out_date`, `reschedule_check_in`, `reschedule_check_out`, `malam`, `tambahan_anak`, `tambahan_dewasa`, `total`, `metode_pembayaran`, `status`, `created_at`, `updated_at`) VALUES
-(1, 'LDH-462A7076', 1, 'Syabib Ibrahim Azkiya', '082115314179', 'syabibibrahim@gmail.com', 'Syabib Ibrahim Azkiya', '2026-04-28', '2026-04-29', NULL, NULL, 1, 0, 0, 1200000.00, 'QRIS', 'success', '2026-05-27 19:50:28', '2026-05-27 19:51:34'),
-(3, 'LDH-81AEF880', 3, 'Syabib Ibrahim', '082115314179', 'syabibibrahim@gmail.com', 'Syabib Ibrahim', '2026-04-28', '2026-04-29', NULL, NULL, 1, 1, 1, 1096609.00, 'BCA Virtual Account', 'success', '2026-05-27 20:02:16', '2026-05-27 20:06:54'),
-(7, 'LDH-5142F097', 7, 'test 3', '021930481204', 'test3@gmail.com', 'test 3', '2026-04-28', '2026-04-29', NULL, NULL, 1, 0, 0, 1350000.00, 'QRIS', 'success', '2026-05-27 20:24:21', '2026-05-27 20:26:53'),
-(10, 'LDH-53DC7821', 1, 'Syabib Ibrahim Azkiya', '082115314179', 'syabibibrahim@gmail.com', 'Syabib Ibrahim Azkiya', '2026-06-02', '2026-06-04', NULL, NULL, 2, 0, 0, 2400000.00, 'QRIS', 'failed', '2026-05-28 02:36:53', '2026-05-28 02:49:14'),
-(11, 'LDH-8BC6BC90', 9, 'Syabib Ibrahim Azkiya', '082115314179', 'syabibibrahim@gmail.com', 'Ghazy Firdaus', '2026-06-28', '2026-06-30', NULL, NULL, 2, 0, 0, 1800000.00, 'Virtual Account', 'failed', '2026-05-28 03:01:12', '2026-05-28 03:03:21'),
-(12, 'LDH-37024A92', 11, 'Syabib Ibrhim', '0290292', 'syabibibrahim@gmail.com', 'Random guy', '2026-06-28', '2026-06-29', NULL, NULL, 1, 0, 0, 921609.00, 'pending', 'failed', '2026-05-28 03:05:07', '2026-05-28 03:35:08'),
-(13, 'LDH-42B9E791', 1, 'Syabib Ibrahim Azkiya', '082115314179', 'syabibibrahim@gmail.com', 'Syabib Ibrahim Azkiya', '2026-05-28', '2026-05-29', NULL, NULL, 1, 0, 0, 1200000.00, 'BCA Virtual Account', 'failed', '2026-05-28 03:18:44', '2026-05-28 04:47:42'),
-(18, 'LDH-B4447832', 1, 'Ari Rahman', '085795016378', 'arryrahmand5@gmail.com', 'Ari Rahman', '2026-04-28', '2026-04-29', NULL, NULL, 1, 3, 4, 625000.00, 'QRIS', 'success', '2026-06-01 04:25:47', '2026-06-01 04:33:28'),
-(19, 'LDH-DEABBF86', 1, 'Ari Rahman', '088888888', 'arryrahmand5@gmail.com', 'Ari Rahman', '2026-06-03', '2026-06-04', NULL, NULL, 1, 2, 0, 1350000.00, 'BCA Virtual Account', 'failed', '2026-06-03 08:06:37', '2026-06-03 08:12:43'),
-(20, 'LDH-97D50960', 1, 'Ari Rahman', '085795016378', 'arirahman@apps.ipb.ac.id', 'Ari Rahman', '2026-06-04', '2026-06-05', NULL, NULL, 1, 2, 0, 1350000.00, 'BCA Virtual Account', 'failed', '2026-06-03 23:51:21', '2026-06-03 23:52:25'),
-(21, 'LDH-8D9F6C33', 1, 'Ari Rahman', '085795016378', 'arirahman@apps.ipb.ac.id', 'Ari Rahman', '2026-06-04', '2026-06-05', NULL, NULL, 1, 2, 0, 1350000.00, 'BCA Virtual Account', 'success', '2026-06-03 23:54:48', '2026-06-03 23:56:07'),
-(22, 'LDH-65AF5C66', 1, 'Ari Rahman', '085795016378', 'arirahman@apps.ipb.ac.id', 'Ari Rahman', '2026-06-04', '2026-06-05', NULL, NULL, 1, 0, 0, 1200000.00, 'pending', 'failed', '2026-06-04 00:09:10', '2026-06-17 01:11:21'),
-(23, 'LDH-A2E0A197', 1, 'Ari Rahman', '085795016378', 'arirahman@apps.ipb.ac.id', 'Ari Rahman', '2026-06-04', '2026-06-05', NULL, NULL, 1, 0, 0, 1200000.00, 'pending', 'failed', '2026-06-04 00:09:30', '2026-06-17 01:11:21'),
-(24, 'LDH-2102DF92', 1, 'Ari Rahman', '081219656391', 'arirahman@apps.ipb.ac.id', 'Ari Rahman', '2026-04-28', '2026-05-01', NULL, NULL, 3, 0, 0, 0.00, 'pending', 'failed', '2026-06-17 01:09:22', '2026-06-17 02:12:33'),
-(25, 'LDH-283E9145', 1, 'Ari Rahman', '081219656391', 'arirahman@apps.ipb.ac.id', 'Ari Rahman', '2026-06-17', '2026-06-20', NULL, NULL, 3, 5, 5, 6625000.00, 'pending', 'failed', '2026-06-17 01:28:50', '2026-06-17 02:12:32'),
-(26, 'LDH-2EE68768', 1, 'Ari Rahman', '081219656391', 'arirahman@apps.ipb.ac.id', 'Ari Rahman', '2026-06-17', '2026-06-18', NULL, NULL, 1, 0, 0, 1800000.00, 'BNI Virtual Account', 'refunded', '2026-06-17 02:35:30', '2026-06-17 02:53:40'),
-(27, 'LDH-57BC8047', 1, 'Ari Rahman', '081219656391', 'arirahman@apps.ipb.ac.id', 'Ari Rahman', '2026-06-17', '2026-06-18', NULL, NULL, 1, 0, 1, 1900000.00, 'QRIS', 'refund_rejected', '2026-06-17 02:54:29', '2026-06-17 02:56:26'),
-(28, 'LDH-BC0B6410', 1, 'Ari Rahman', '081219656391', 'arirahman@apps.ipb.ac.id', 'Ari Rahman', '2026-06-17', '2026-06-20', NULL, NULL, 3, 4, 0, 6300000.00, 'Alfamart / Alfamidi', 'refunded', '2026-06-17 03:01:31', '2026-06-17 03:03:51'),
-(29, 'LDH-F0EC5591', 1, 'Ari Rahman', '081386325970', 'arirahman@apps.ipb.ac.id', 'Ari Rahman', '2026-06-17', '2026-06-20', NULL, NULL, 3, 0, 0, 4000000.00, 'QRIS', 'success', '2026-06-17 03:11:59', '2026-06-17 03:12:46'),
-(30, 'LDH-3C2C6515', 1, 'Ari Rahman', '081219656391', 'arirahman@apps.ipb.ac.id', 'Ari Rahman', '2026-06-19', '2026-06-23', NULL, NULL, 4, 0, 0, 6200000.00, 'BRI Virtual Account', 'success', '2026-06-17 03:38:59', '2026-06-17 03:39:29'),
-(31, 'LDH-6EF09D45', 1, 'Ari Rahman', '081386325970', 'arirahman@apps.ipb.ac.id', 'Ari Rahman', '2026-06-17', '2026-06-18', NULL, NULL, 1, 0, 0, 1200000.00, 'BCA Virtual Account', 'success', '2026-06-17 03:40:54', '2026-06-17 03:46:37'),
-(32, 'LDH-C87DC382', 1, 'Ari Rahman', '081386325970', 'arirahman@apps.ipb.ac.id', 'Ari Rahman', '2026-06-17', '2026-06-21', NULL, NULL, 4, 0, 2, 6400000.00, 'BCA Virtual Account', 'success', '2026-06-17 05:04:12', '2026-06-17 05:04:33'),
-(33, 'LDH-B3367A88', 1, 'Ari Rahman', '081386325970', 'arirahman@apps.ipb.ac.id', 'Ari Rahman', '2026-06-17', '2026-06-20', NULL, NULL, 3, 0, 5, 5500000.00, 'BCA Virtual Account', 'success', '2026-06-17 05:16:11', '2026-06-17 05:16:26'),
-(34, 'LDH-8D621B19', 1, 'Ari Rahman', '081386325970', 'arirahman@apps.ipb.ac.id', 'Ari Rahman', '2026-06-17', '2026-06-18', NULL, NULL, 1, 0, 0, 1200000.00, 'BCA Virtual Account', 'failed', '2026-06-17 05:21:44', '2026-06-17 05:21:57'),
-(35, 'LDH-225FD811', 1, 'Ari Rahman', '081386325970', 'arirahman@apps.ipb.ac.id', 'Ari Rahman', '2026-06-17', '2026-06-18', NULL, NULL, 1, 0, 0, 1200000.00, 'BCA Virtual Account', 'success', '2026-06-17 05:25:38', '2026-06-17 05:25:55'),
-(36, 'LDH-78C01432', 3, 'Ari Rahman', '081386325970', 'arirahman@apps.ipb.ac.id', 'Ari Rahman', '2026-06-17', '2026-06-18', NULL, NULL, 1, 0, 0, 921609.00, 'BCA Virtual Account', 'success', '2026-06-17 05:29:11', '2026-06-17 05:29:28'),
-(37, 'LDH-21C3C064', 4, 'Ari Rahman', '081386325970', 'arirahman@apps.ipb.ac.id', 'Ari Rahman', '2026-06-17', '2026-06-18', NULL, NULL, 1, 0, 0, 2250000.00, 'BCA Virtual Account', 'success', '2026-06-17 05:40:02', '2026-06-17 05:40:21'),
-(38, 'LDH-D9573C50', 3, 'Ari Rahman', '081386325970', 'arirahman@apps.ipb.ac.id', 'Ari Rahman', '2026-06-17', '2026-06-18', NULL, NULL, 1, 2, 3, 1371609.00, 'BCA Virtual Account', 'success', '2026-06-17 05:50:53', '2026-06-17 05:51:10'),
-(39, 'LDH-8B1B5B10', 3, 'Ari Rahman', '081386325970', 'arirahman@apps.ipb.ac.id', 'Ari Rahman', '2026-06-17', '2026-06-18', NULL, NULL, 1, 0, 0, 921609.00, 'BCA Virtual Account', 'success', '2026-06-17 05:58:16', '2026-06-17 05:58:34'),
-(40, 'LDH-78F79366', 3, 'Ari Rahman', '081386325970', 'arirahman@apps.ipb.ac.id', 'Ari Rahman', '2026-06-17', '2026-06-18', NULL, NULL, 1, 0, 0, 921609.00, 'BCA Virtual Account', 'success', '2026-06-17 06:01:43', '2026-06-17 06:01:58'),
-(41, 'LDH-18B59C38', 3, 'Ari Rahman', '081386325970', 'arryrahmand5@gmail.com', 'Ari Rahman', '2026-06-17', '2026-06-18', NULL, NULL, 1, 0, 0, 921609.00, 'BCA Virtual Account', 'success', '2026-06-17 06:35:45', '2026-06-17 06:36:01'),
-(42, 'LDH-FB165596', 3, 'Test Learn', '081386325970', 'testppppoooo123@gmail.com', 'Test Learn', '2026-06-17', '2026-06-18', NULL, NULL, 1, 0, 0, 921609.00, 'BCA Virtual Account', 'success', '2026-06-17 13:52:31', '2026-06-17 13:52:50'),
-(43, 'LDH-E0B22744', 1, 'ari', '085795016378', 'arryrahmand11@gmail.com', 'ari', '2026-07-26', '2026-07-27', NULL, NULL, 1, 2, 1, 1450000.00, 'BCA Virtual Account', 'success', '2026-07-26 13:21:34', '2026-07-26 13:22:14'),
-(44, 'LDH-D8E93582', 1, 'ari', '085795016378', 'arryrahmand11@gmail.com', 'ari', '2026-07-26', '2026-07-27', NULL, NULL, 1, 1, 1, 1375000.00, 'BCA Virtual Account', 'success', '2026-07-26 13:39:57', '2026-07-26 13:40:17'),
-(45, 'LDH-0C3C2520', 1, 'ari', '085795016378', 'arryrahmand11@gmail.com', 'ari', '2026-07-31', '2026-08-02', NULL, NULL, 2, 1, 1, 3150000.00, 'BCA Virtual Account', 'rescheduled', '2026-07-26 14:46:40', '2026-07-26 15:25:35'),
-(46, 'LDH-63799426', 1, 'ari', '085795016378', 'arryrahmand11@gmail.com', 'ari', '2026-08-04', '2026-08-05', NULL, NULL, 1, 0, 0, 1200000.00, 'BCA Virtual Account', 'success', '2026-07-26 15:39:18', '2026-07-26 15:39:34'),
-(47, 'LDH-DF061696', 1, 'ari', '085795016378', 'arryrahmand11@gmail.com', 'Mamah Ari', '2026-07-31', '2026-08-01', '2026-07-30', '2026-07-31', 1, 0, 0, 1600000.00, 'BCA Virtual Account', 'reschedule_rejected', '2026-07-27 02:04:13', '2026-07-27 03:47:08'),
-(48, 'LDH-527FC692', 4, 'ari', '085795016378', 'arryrahmand11@gmail.com', 'ari', '2026-11-13', '2026-11-14', NULL, NULL, 1, 0, 0, 2800000.00, 'BCA Virtual Account', 'success', '2026-07-27 02:24:21', '2026-07-27 02:30:59'),
-(49, 'LDH-E197C739', 5, 'ari', '085795016378', 'arryrahmand11@gmail.com', 'ari', '2026-08-30', '2026-08-31', '2026-07-30', '2026-07-31', 1, 0, 0, 880000.00, 'BCA Virtual Account', 'reschedule_pending', '2026-07-27 02:42:06', '2026-07-27 02:42:40'),
-(50, 'LDH-77CF5750', 3, 'ari', '085795016378', 'arryrahmand11@gmail.com', 'ari', '2026-07-27', '2026-08-06', NULL, NULL, 10, 2, 1, 12072872.00, 'BCA Virtual Account', 'success', '2026-07-27 05:52:55', '2026-07-27 05:53:11'),
-(51, 'LDH-2A453412', 1, 'ari', '085795016378', 'arryrahmand11@gmail.com', 'ari', '2026-08-03', '2026-08-04', NULL, NULL, 1, 0, 0, 1200000.00, 'BCA Virtual Account', 'success', '2026-07-27 09:13:54', '2026-07-27 09:14:30'),
-(52, 'LDH-9C106520', 1, 'ari', '085795016378', 'arryrahmand11@gmail.com', 'ari', '2026-07-27', '2026-07-28', NULL, NULL, 1, 0, 0, 1200000.00, 'QRIS', 'failed', '2026-07-27 09:15:05', '2026-07-27 09:16:08'),
-(53, 'LDH-3A1C9697', 1, 'ari', '085795016378', 'arryrahmand11@gmail.com', 'ari', '2026-07-27', '2026-07-28', NULL, NULL, 1, 0, 0, 1200000.00, 'BSI Virtual Account', 'success', '2026-07-27 09:16:19', '2026-07-27 09:16:41'),
-(54, 'LDH-BB781076', 1, 'ari', '085795016378', 'arryrahmand11@gmail.com', 'ari', '2026-07-28', '2026-07-29', NULL, NULL, 1, 0, 0, 1200000.00, 'BCA Virtual Account', 'success', '2026-07-27 09:17:31', '2026-07-27 09:17:45'),
-(55, 'LDH-3F404642', 1, 'ari', '085795016378', 'arryrahmand11@gmail.com', 'ari', '2026-12-24', '2026-12-26', NULL, NULL, 2, 0, 0, 3600000.00, 'BCA Virtual Account', 'rescheduled', '2026-07-27 10:30:12', '2026-07-27 10:33:25'),
-(56, 'LDH-3E6B5158', 4, 'ari', '085795016378', 'arryrahmand11@gmail.com', 'ari', '2026-12-21', '2026-12-23', NULL, NULL, 2, 0, 0, 6000000.00, 'BCA Virtual Account', 'success', '2026-07-27 10:33:55', '2026-07-27 10:34:10'),
-(57, 'LDH-564C7F86', 3, 'ari', '085795016378', 'arryrahmand11@gmail.com', 'ari', '2026-07-27', '2026-07-28', NULL, NULL, 1, 0, 0, 750000.00, 'BCA Virtual Account', 'success', '2026-07-27 10:37:09', '2026-07-27 10:37:27'),
-(58, 'LDH-263D8D88', 3, 'ari', '085795016378', 'arryrahmand11@gmail.com', 'ari', '2026-08-18', '2026-08-24', '2026-08-16', '2026-08-22', 6, 0, 0, 5200000.00, 'BCA Virtual Account', 'reschedule_pending', '2026-07-27 10:38:10', '2026-07-27 10:39:37');
+INSERT INTO `bookings` (`id`, `no_pesanan`, `accommodation_id`, `corporate_package_id`, `pemesan_nama`, `pemesan_telp`, `pemesan_email`, `nama_tamu`, `check_in_date`, `check_out_date`, `reschedule_check_in`, `reschedule_check_out`, `malam`, `jumlah_pax`, `tambahan_anak`, `tambahan_dewasa`, `total`, `metode_pembayaran`, `status`, `created_at`, `updated_at`) VALUES
+(67, 'LDH-E3147092', NULL, 2, 'Raihan Alma Putra', '08123456789', 'raihan160905@gmail.com', 'Raihan Alma Putra', '2026-07-28', '2026-07-29', NULL, NULL, 1, 25, 0, 0, 12500000.00, 'BCA Virtual Account', 'success', '2026-07-28 06:09:34', '2026-07-28 06:09:48'),
+(68, 'LDH-F6DAB669', NULL, 2, 'Raihan Alma Putra', '08123456789', 'raihan160905@gmail.com', 'Raihan Alma Putra', '2026-07-29', '2026-07-30', NULL, NULL, 1, 25, 0, 0, 12500000.00, 'BCA Virtual Account', 'success', '2026-07-28 06:19:27', '2026-07-28 06:19:50'),
+(83, 'LDH-F6DAB665', 1, NULL, 'Raihan Alma Putra', '08123456789', 'raihan160905@gmail.com', 'Raihan Alma Putra', '2026-07-31', '2026-08-01', NULL, NULL, 1, 25, 0, 0, 12500000.00, 'BCA Virtual Account', 'success', '2026-07-31 06:19:27', '2026-07-31 06:19:50'),
+(84, 'LDH-1315EE67', NULL, 2, 'Raihan Alma Putra', '08123456789', 'raihan160905@gmail.com', 'Raihan Alma Putra', '2026-08-06', '2026-08-07', NULL, NULL, 1, 25, 0, 0, 12500000.00, 'BCA Virtual Account', 'success', '2026-07-28 08:40:33', '2026-07-28 08:41:18'),
+(86, 'LDH-43C6E735', NULL, 2, 'Raihan Alma Putra', '08123456789', 'raihan160905@gmail.com', 'Raihan Alma Putra', '2026-07-31', '2026-08-01', NULL, NULL, 1, 25, 0, 0, 12500000.00, 'BCA Virtual Account', 'success', '2026-07-28 09:11:16', '2026-07-28 09:15:47'),
+(87, 'LDH-14896A79', NULL, 3, 'Raihan Alma Putra', '08123456789', 'raihan160905@gmail.com', 'Raihan Alma Putra', '2026-07-28', '2026-07-29', NULL, NULL, 1, 25, 0, 0, 10000000.00, 'BCA Virtual Account', 'success', '2026-07-28 09:16:17', '2026-07-28 09:16:44'),
+(88, 'LDH-85077F36', NULL, 3, 'Raihan Alma Putra', '08123456789', 'raihan160905@gmail.com', 'Raihan Alma Putra', '2026-07-29', '2026-07-30', NULL, NULL, 1, 25, 0, 0, 10000000.00, 'pending', 'failed', '2026-07-28 09:23:04', '2026-07-28 23:52:14'),
+(89, 'LDH-E3053618', NULL, 2, 'Raihan Alma Putra', '08123456789', 'raihan160905@gmail.com', 'Raihan Alma Putra', '2026-07-30', '2026-07-31', NULL, NULL, 1, 25, 0, 0, 12500000.00, 'pending', 'failed', '2026-07-28 09:23:26', '2026-07-28 23:52:14'),
+(90, 'LDH-7BDE6792', NULL, 3, 'ari', '085795016378', 'arryrahmand11@gmail.com', 'ari', '2026-07-29', '2026-07-31', NULL, NULL, 2, 36, 0, 0, 28800000.00, 'BCA Virtual Account', 'success', '2026-07-28 23:56:39', '2026-07-28 23:58:21'),
+(91, 'LDH-088F1E93', NULL, 2, 'ari', '085795016378', 'arryrahmand11@gmail.com', 'ari', '2026-08-07', '2026-08-08', NULL, NULL, 1, 25, 0, 0, 12500000.00, 'BCA Virtual Account', 'success', '2026-07-29 00:08:32', '2026-07-29 00:08:53'),
+(92, 'LDH-FE045A86', 1, NULL, 'ari', '085795016378', 'arryrahmand11@gmail.com', 'ari', '2026-07-30', '2026-07-31', NULL, NULL, 1, NULL, 1, 1, 1375000.00, 'BCA Virtual Account', 'success', '2026-07-29 00:10:55', '2026-07-29 00:11:12'),
+(93, 'LDH-005A4C58', 1, NULL, 'ari', '085795016378', 'arryrahmand11@gmail.com', 'ari', '2026-08-05', '2026-08-06', '2026-08-02', '2026-08-03', 1, NULL, 0, 0, 1200000.00, 'BCA Virtual Account', 'reschedule_rejected', '2026-07-29 00:11:44', '2026-07-29 00:13:02'),
+(94, 'LDH-C855D020', NULL, 3, 'ari', '085795016378', 'arryrahmand11@gmail.com', 'ari', '2026-08-05', '2026-08-06', '2026-08-06', '2026-08-07', 1, 25, 0, 0, 10000000.00, 'BCA Virtual Account', 'reschedule_pending', '2026-07-29 01:53:00', '2026-07-29 01:57:26'),
+(95, 'LDH-C24E7636', 1, NULL, 'ari', '085795016378', 'arryrahmand11@gmail.com', 'melenoy', '2026-08-03', '2026-08-04', NULL, NULL, 1, NULL, 0, 0, 1200000.00, 'BCA Virtual Account', 'success', '2026-07-29 02:41:16', '2026-07-29 02:41:33'),
+(96, 'LDH-998A4852', NULL, 2, 'ari', '085795016378', 'arryrahmand11@gmail.com', 'ari', '2026-08-12', '2026-08-13', NULL, NULL, 1, 25, 0, 0, 12500000.00, 'BCA Virtual Account', 'success', '2026-07-29 02:54:17', '2026-07-29 02:54:32'),
+(97, 'LDH-BD899B97', NULL, 3, 'ari', '085795016378', 'arryrahmand11@gmail.com', 'ari', '2026-08-13', '2026-08-14', NULL, NULL, 1, 150, 0, 0, 60000000.00, 'BCA Virtual Account', 'success', '2026-07-29 02:55:23', '2026-07-29 02:55:37'),
+(98, 'LDH-E04F7130', NULL, 2, 'ari', '085795016378', 'arryrahmand11@gmail.com', 'ari', '2026-08-21', '2026-08-22', NULL, NULL, 1, 150, 0, 0, 75000000.00, 'BCA Virtual Account', 'success', '2026-07-29 02:55:58', '2026-07-29 02:56:12'),
+(99, 'LDH-3BA15D76', NULL, 3, 'ari', '085795016378', 'arryrahmand11@gmail.com', 'ari', '2026-08-29', '2026-08-30', '2026-08-25', '2026-08-26', 1, 150, 0, 0, 60000000.00, 'BCA Virtual Account', 'reschedule_pending', '2026-07-29 02:57:07', '2026-07-29 04:47:22'),
+(100, 'LDH-BA00A898', NULL, 2, 'ari', '085795016378', 'arryrahmand11@gmail.com', 'ari', '2026-08-29', '2026-08-30', '2026-09-11', '2026-09-12', 1, 150, 0, 0, 75000000.00, 'BCA Virtual Account', 'reschedule_pending', '2026-07-29 02:58:03', '2026-07-29 04:43:52'),
+(101, 'LDH-2D905E13', 1, NULL, 'ari', '085795016378', 'arryrahmand11@gmail.com', 'ari', '2026-09-01', '2026-09-02', NULL, NULL, 1, NULL, 0, 0, 1200000.00, 'BCA Virtual Account', 'success', '2026-07-29 03:10:42', '2026-07-29 03:11:00'),
+(102, 'LDH-A4296B51', NULL, 3, 'ari', '085795016378', 'arryrahmand11@gmail.com', 'ari', '2026-08-13', '2026-08-14', NULL, NULL, 1, 150, 0, 0, 60000000.00, 'BCA Virtual Account', 'rescheduled', '2026-07-29 04:48:26', '2026-07-29 04:56:02'),
+(103, 'LDH-4DE27D70', NULL, 2, 'ari', '085795016378', 'arryrahmand11@gmail.com', 'ari', '2026-08-13', '2026-08-14', NULL, NULL, 1, 25, 0, 0, 12500000.00, 'BCA Virtual Account', 'rescheduled', '2026-07-29 04:54:28', '2026-07-29 04:55:57');
 
 -- --------------------------------------------------------
 
@@ -163,7 +139,7 @@ CREATE TABLE `cache` (
 --
 
 INSERT INTO `cache` (`key`, `value`, `expiration`) VALUES
-('landeuh-village-riverside-cache-booking_cleanup', 'b:1;', 1785148837);
+('landeuh-village-riverside-cache-booking_cleanup', 'b:1;', 1785305387);
 
 -- --------------------------------------------------------
 
@@ -176,6 +152,39 @@ CREATE TABLE `cache_locks` (
   `owner` varchar(255) NOT NULL,
   `expiration` bigint(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `corporate_packages`
+--
+
+CREATE TABLE `corporate_packages` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `judul` varchar(255) NOT NULL,
+  `jenis` varchar(100) NOT NULL,
+  `jenis_akomodasi` varchar(100) DEFAULT NULL,
+  `accommodation_ids` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`accommodation_ids`)),
+  `fasilitas` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`fasilitas`)),
+  `makanan` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`makanan`)),
+  `max_orang` int(11) NOT NULL,
+  `catatan` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`catatan`)),
+  `slot` int(11) NOT NULL,
+  `harga_weekday` decimal(12,2) NOT NULL,
+  `harga_weekend` decimal(12,2) NOT NULL,
+  `harga_highseason` decimal(12,2) NOT NULL,
+  `gambar` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`gambar`)),
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `corporate_packages`
+--
+
+INSERT INTO `corporate_packages` (`id`, `judul`, `jenis`, `jenis_akomodasi`, `accommodation_ids`, `fasilitas`, `makanan`, `max_orang`, `catatan`, `slot`, `harga_weekday`, `harga_weekend`, `harga_highseason`, `gambar`, `created_at`, `updated_at`) VALUES
+(2, 'Paket Corporate Cabin', 'Corporate Cabin', 'Cabin', '[\"1\",\"4\",\"5\",\"6\",\"7\",\"8\",\"9\",\"10\"]', '[\"Menginap di area Cabin\", \"Penggunaan seluruh unit Cabin yang tersedia\"]', '[\"Makan 3 kali per malam\"]', 150, '[\"Minimal pemesanan 25 pax. Maksimal 150 pax.\", \"Harga dihitung per peserta (per pax).\", \"Check-in pukul 14.00–21.00 WIB.\", \"Check-out pukul 12.00 WIB.\"]', 8, 500000.00, 500000.00, 500000.00, '[\"https://res.cloudinary.com/dj6ckubpl/image/upload/v1785229717/landeuh-corporate/g1h4suvikwflh7docx5e.webp\"]', '2026-07-28 03:32:48', '2026-07-29 01:30:02'),
+(3, 'Paket Corporate Glamping', 'Corporate Glamping', 'Glamping', '[\"12\", \"3\"]', '[\"Menginap di area Glamping\", \"Penggunaan seluruh unit Glamping Reguler dan VIP\"]', '[\"Makan 3 kali per malam\"]', 150, '[\"Minimal pemesanan 25 pax. Maksimal 150 pax.\", \"Harga dihitung per peserta (per pax).\", \"Check-in pukul 14.00–21.00 WIB.\", \"Check-out pukul 12.00 WIB.\"]', 2, 400000.00, 400000.00, 400000.00, '[\"https://res.cloudinary.com/dj6ckubpl/image/upload/v1785229767/landeuh-corporate/gqewkttsizwvamdqqtxu.webp\"]', '2026-07-28 09:00:19', '2026-07-28 09:10:47');
 
 -- --------------------------------------------------------
 
@@ -282,7 +291,11 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (7, '2026_05_22_092538_add_role_to_users_table', 1),
 (8, '2026_05_22_112954_change_gambar_column_type_to_json_in_accommodations_table', 1),
 (9, '2026_05_22_120635_create_date_settings_table', 1),
-(10, '2026_07_26_210430_add_reschedule_columns_to_bookings_table', 2);
+(10, '2026_07_26_210430_add_reschedule_columns_to_bookings_table', 2),
+(11, '2026_07_27_181425_add_jumlah_pax_to_bookings_table', 3),
+(12, '2026_07_28_102547_create_corporate_packages_table', 4),
+(13, '2026_07_28_102555_add_corporate_package_id_to_bookings_table', 4),
+(14, '2026_07_28_110707_update_corporate_packages_table', 5);
 
 -- --------------------------------------------------------
 
@@ -316,7 +329,7 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('1GWMO8jkOgeXe0TcgZdHgLzsiislk6dg6mAtKdYi', 8, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36', 'eyJfdG9rZW4iOiJkR3paNnRZSXJHdzBHc3BmVDJ5aVltM09RYThFSHhHcnlLNlE5aENwIiwiX3ByZXZpb3VzIjp7InVybCI6Imh0dHA6XC9cLzEyNy4wLjAuMTo4MDAwXC9hZG1pblwvYXBpXC9ub3RpZmljYXRpb25zIiwicm91dGUiOiJhZG1pbi5hcGkubm90aWZpY2F0aW9ucyJ9LCJfZmxhc2giOnsib2xkIjpbXSwibmV3IjpbXX0sImxvZ2luX2FkbWluXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiOjEsImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjo4fQ==', 1785148787);
+('jMWYa7oa2HUBHzfLeUJSDVRtyVPLLLGFJYLNmRZm', 8, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36', 'eyJfdG9rZW4iOiJnNlpEWnYxT2VsNTVZRVZOR2N3aGJrNk1scVhUVUlQZ3A3anFBSHVCIiwiX3ByZXZpb3VzIjp7InVybCI6Imh0dHA6XC9cLzEyNy4wLjAuMTo4MDAwXC9hZG1pblwvYXBpXC9ub3RpZmljYXRpb25zIiwicm91dGUiOiJhZG1pbi5hcGkubm90aWZpY2F0aW9ucyJ9LCJfZmxhc2giOnsib2xkIjpbXSwibmV3IjpbXX0sImxvZ2luX2FkbWluXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiOjEsImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjo4fQ==', 1785305357);
 
 -- --------------------------------------------------------
 
@@ -350,7 +363,9 @@ INSERT INTO `users` (`id`, `name`, `email`, `phone`, `google_id`, `email_verifie
 (5, 'Ari Rahman', 'arirahman@apps.ipb.ac.id', NULL, '111001602328490234011', '2026-06-17 00:46:37', NULL, 'user', NULL, '2026-06-03 23:50:26', '2026-06-17 00:46:37'),
 (6, 'YPPA', 'yppa2005@gmail.com', NULL, '103520907642598576192', '2026-06-17 00:49:56', '$2y$12$C.RetHOC7i1d5hf9DiUGWuPA.bnXIzeJugdInekjQBYWGskO2cwZy', 'user', NULL, '2026-06-17 00:49:56', '2026-06-17 00:49:56'),
 (7, 'Test Learn', 'testppppoooo123@gmail.com', NULL, '102609481159459500164', '2026-06-17 13:52:16', '$2y$12$Y4FZqh1IOXdNl6XkgyJZFuYtuXFnYebhb2vbpWytpe/ZNQIoQCJ4q', 'user', NULL, '2026-06-17 13:52:16', '2026-06-17 13:52:16'),
-(8, 'ari', 'arryrahmand11@gmail.com', '085795016378', NULL, '2026-07-26 13:16:13', '$2y$12$A8V2xkYiKl.l61beYMK/B.ibI9BHmpV8MNfJqL/RgOwSCrjPK1G9e', 'user', NULL, '2026-07-26 13:16:13', '2026-07-26 13:16:13');
+(8, 'ari', 'arryrahmand11@gmail.com', '085795016378', NULL, '2026-07-26 13:16:13', '$2y$12$A8V2xkYiKl.l61beYMK/B.ibI9BHmpV8MNfJqL/RgOwSCrjPK1G9e', 'user', NULL, '2026-07-26 13:16:13', '2026-07-26 13:16:13'),
+(9, 'Raihan Alma Putra', 'raihan160905@gmail.com', NULL, '110462567503230008773', '2026-07-27 11:27:20', '$2y$12$Ll9V5J9HVL.bGgNMkozu/OZHspyrlyfupi9oMPTPMEdZfpoRe1JgW', 'user', NULL, '2026-07-27 11:27:20', '2026-07-27 11:27:20'),
+(10, 'Raihan Alma Putra', 'raihanalma@apps.ipb.ac.id', NULL, '115663687035248631439', '2026-07-28 07:39:07', '$2y$12$0/Q/6mBrE24yRnpFjPRuxe5MINHONuonlkjMKRhvkNWuEFJakb25S', 'user', NULL, '2026-07-28 07:39:07', '2026-07-28 07:39:07');
 
 --
 -- Indexes for dumped tables
@@ -368,7 +383,8 @@ ALTER TABLE `accommodations`
 ALTER TABLE `bookings`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `bookings_no_pesanan_unique` (`no_pesanan`),
-  ADD KEY `bookings_accommodation_id_foreign` (`accommodation_id`);
+  ADD KEY `bookings_accommodation_id_foreign` (`accommodation_id`),
+  ADD KEY `bookings_corporate_package_id_foreign` (`corporate_package_id`);
 
 --
 -- Indexes for table `cache`
@@ -383,6 +399,12 @@ ALTER TABLE `cache`
 ALTER TABLE `cache_locks`
   ADD PRIMARY KEY (`key`),
   ADD KEY `cache_locks_expiration_index` (`expiration`);
+
+--
+-- Indexes for table `corporate_packages`
+--
+ALTER TABLE `corporate_packages`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `date_settings`
@@ -445,13 +467,19 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `accommodations`
 --
 ALTER TABLE `accommodations`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `bookings`
 --
 ALTER TABLE `bookings`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=59;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=104;
+
+--
+-- AUTO_INCREMENT for table `corporate_packages`
+--
+ALTER TABLE `corporate_packages`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `date_settings`
@@ -475,13 +503,13 @@ ALTER TABLE `jobs`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- Constraints for dumped tables
@@ -491,7 +519,8 @@ ALTER TABLE `users`
 -- Constraints for table `bookings`
 --
 ALTER TABLE `bookings`
-  ADD CONSTRAINT `bookings_accommodation_id_foreign` FOREIGN KEY (`accommodation_id`) REFERENCES `accommodations` (`id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `bookings_accommodation_id_foreign` FOREIGN KEY (`accommodation_id`) REFERENCES `accommodations` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `bookings_corporate_package_id_foreign` FOREIGN KEY (`corporate_package_id`) REFERENCES `corporate_packages` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
