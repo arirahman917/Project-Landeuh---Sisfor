@@ -50,6 +50,8 @@ class PelangganController extends Controller
         $user->phone = $validated['telp'];
         $user->save();
 
+        \App\Models\ActivityLog::log("Mengubah data pelanggan: " . $user->name . " (" . $user->email . ")");
+
         return response()->json([
             'success' => true,
             'message' => 'Data pelanggan berhasil diperbarui.',
@@ -68,7 +70,11 @@ class PelangganController extends Controller
     public function destroy($id)
     {
         $user = User::findOrFail($id);
+        $name = $user->name;
+        $email = $user->email;
         $user->delete();
+
+        \App\Models\ActivityLog::log("Menghapus data pelanggan: " . $name . " (" . $email . ")");
 
         return response()->json([
             'success' => true,

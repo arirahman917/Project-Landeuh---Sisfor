@@ -75,12 +75,38 @@ class AuthController extends Controller
         if (Auth::guard('admin')->attempt($credentials)) {
             $user = Auth::guard('admin')->user();
 
-            // Pastikan user memiliki role admin
-            if ($user->role === 'admin') {
-                return response()->json(['message' => 'Admin login successful'], 200);
+            // Cek jika superadmin
+            if ($user->role === 'superadmin') {
+                $user->update(['last_login_at' => now()]);
+                \App\Models\ActivityLog::log("Login ke Dashboard (sebagai Superadmin)", $user->id);
+                return response()->json([
+                    'message' => 'Superadmin login successful',
+                    'redirect' => route('superadmin.dashboard')
+                ], 200);
             }
 
-            // Bukan admin — logout dan tolak
+            // Pastikan user memiliki role admin
+            if ($user->role === 'admin') {
+                if ($user->status === 'pending') {
+                    Auth::guard('admin')->logout();
+                    return response()->json(['message' => 'Akun Anda masih dalam antrean persetujuan Superadmin.'], 403);
+                }
+                if ($user->status === 'rejected') {
+                    Auth::guard('admin')->logout();
+                    return response()->json(['message' => 'Pendaftaran akun Anda ditolak oleh Superadmin.'], 403);
+                }
+
+                // Update last login & log activity
+                $user->update(['last_login_at' => now()]);
+                \App\Models\ActivityLog::log("Login ke Dashboard", $user->id);
+
+                return response()->json([
+                    'message' => 'Admin login successful',
+                    'redirect' => route('admin.dashboard')
+                ], 200);
+            }
+
+            // Bukan admin/superadmin — logout dan tolak
             Auth::guard('admin')->logout();
             return response()->json(['message' => 'Akses ditolak: bukan admin.'], 403);
         }
@@ -88,8 +114,38 @@ class AuthController extends Controller
         return response()->json(['message' => 'Email atau password salah.'], 401);
     }
 
+    public function adminRegister(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'gender' => 'required|in:Laki-laki,Perempuan',
+            'phone' => 'required|string|max:20',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:6',
+        ]);
+
+        $user = User::create([
+            'name' => $request->name,
+            'gender' => $request->gender,
+            'phone' => $request->phone,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => 'admin',
+            'status' => 'pending',
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Pendaftaran admin berhasil! Akun Anda sedang menunggu persetujuan Superadmin.'
+        ], 201);
+    }
+
     public function adminLogout(Request $request)
     {
+        if (Auth::guard('admin')->check()) {
+            $user = Auth::guard('admin')->user();
+            \App\Models\ActivityLog::log("Logout dari Dashboard", $user->id);
+        }
         Auth::guard('admin')->logout();
         return response()->json(['message' => 'Admin logout successful'], 200);
     }

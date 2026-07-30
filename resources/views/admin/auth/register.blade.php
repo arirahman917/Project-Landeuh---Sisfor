@@ -5,20 +5,13 @@
     [x-cloak] { display: none !important; }
 </style>
 
-{{-- ============================================================
-     LOGIN PAGE — Admin Dashboard Reservasi Akomodasi
-     Stack  : Tailwind CSS + Alpine.js
-     Autentikasi : Terhubung ke database MySQL via Laravel Auth
-     ============================================================ --}}
-
 <div
-    x-data="loginApp()"
-    class="relative min-h-screen w-full flex items-center justify-center overflow-hidden font-sans"
+    x-data="registerApp()"
+    class="relative min-h-screen w-full flex items-center justify-center overflow-hidden font-sans py-12"
 >
 
     {{-- ── BACKGROUND ──────────────────────────────────────────── --}}
     <div class="absolute inset-0 z-0">
-        {{-- Ganti URL ini dengan asset foto asli (storage/public atau Unsplash lokal) --}}
         <img
             src="{{ asset('images/akomodasi/carousel/a.webp') }}"
             alt="Background akomodasi"
@@ -62,31 +55,83 @@
             <div class="px-10 py-10">
 
                 {{-- ── HEADER ──────────────────────────────────── --}}
-                <div class="text-center mb-8">
+                <div class="text-center mb-6">
                     <div class="flex justify-center gap-2 mb-3 opacity-60">
-                        {{-- awan kiri --}}
                         <svg width="52" height="24" viewBox="0 0 52 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M2 20 Q8 6 18 12 Q20 2 28 8 Q34 2 42 10 Q46 4 52 16" stroke="#d97706" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-                            <path d="M0 22 Q7 12 14 16 Q17 8 24 12" stroke="#f59e0b" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.5"/>
                         </svg>
-                        {{-- awan kanan (mirror) --}}
                         <svg width="52" height="24" viewBox="0 0 52 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="transform:scaleX(-1)">
                             <path d="M2 20 Q8 6 18 12 Q20 2 28 8 Q34 2 42 10 Q46 4 52 16" stroke="#d97706" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-                            <path d="M0 22 Q7 12 14 16 Q17 8 24 12" stroke="#f59e0b" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.5"/>
                         </svg>
                     </div>
                     <h1 class="text-3xl font-bold tracking-tight text-stone-800" style="font-family:'Georgia',serif;">
-                        Masuk Admin
+                        Daftar Admin Baru
                     </h1>
-                    <p class="text-stone-500 text-sm mt-1 tracking-wide">Dashboard Reservasi Akomodasi</p>
+                    <p class="text-stone-500 text-sm mt-1 tracking-wide">Pendaftaran Akun Pengelola Akomodasi</p>
                 </div>
 
                 {{-- ── FORM FIELDS ──────────────────────────────── --}}
-                <div class="space-y-5">
+                <div class="space-y-4">
+
+                    {{-- Nama Lengkap --}}
+                    <div>
+                        <label class="block text-xs font-semibold text-stone-600 mb-1 tracking-widest uppercase">Nama Lengkap</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-3.5 flex items-center text-amber-600 pointer-events-none">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                </svg>
+                            </span>
+                            <input
+                                x-model="name"
+                                type="text"
+                                placeholder="Nama Lengkap Anda"
+                                class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-stone-200 bg-white/80 text-stone-800 placeholder-stone-400 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition"
+                            />
+                        </div>
+                    </div>
+
+                    {{-- Jenis Kelamin --}}
+                    <div>
+                        <label class="block text-xs font-semibold text-stone-600 mb-1 tracking-widest uppercase">Jenis Kelamin</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-3.5 flex items-center text-amber-600 pointer-events-none">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                                </svg>
+                            </span>
+                            <select
+                                x-model="gender"
+                                class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-stone-200 bg-white/80 text-stone-800 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition"
+                            >
+                                <option value="" disabled selected>Pilih Jenis Kelamin</option>
+                                <option value="Laki-laki">Laki-laki</option>
+                                <option value="Perempuan">Perempuan</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    {{-- No. WhatsApp --}}
+                    <div>
+                        <label class="block text-xs font-semibold text-stone-600 mb-1 tracking-widest uppercase">No. WhatsApp</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-3.5 flex items-center text-amber-600 pointer-events-none">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.94.725l.548 2.2a1 1 0 01-.321.988l-1.305.98a10.582 10.582 0 004.872 4.872l.98-1.305a1 1 0 01.988-.321l2.2.548a1 1 0 01.725.94V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                                </svg>
+                            </span>
+                            <input
+                                x-model="phone"
+                                type="text"
+                                placeholder="Contoh: 08123456789"
+                                class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-stone-200 bg-white/80 text-stone-800 placeholder-stone-400 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition"
+                            />
+                        </div>
+                    </div>
 
                     {{-- Email --}}
                     <div>
-                        <label class="block text-xs font-semibold text-stone-600 mb-1.5 tracking-widest uppercase">Email</label>
+                        <label class="block text-xs font-semibold text-stone-600 mb-1 tracking-widest uppercase">Email</label>
                         <div class="relative">
                             <span class="absolute inset-y-0 left-3.5 flex items-center text-amber-600 pointer-events-none">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -97,16 +142,14 @@
                                 x-model="email"
                                 type="email"
                                 placeholder="Masukkan Email"
-                                @keydown.enter="doLogin"
-                                autocomplete="email"
-                                class="w-full pl-10 pr-4 py-3 rounded-xl border border-stone-200 bg-white/80 text-stone-800 placeholder-stone-400 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition"
+                                class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-stone-200 bg-white/80 text-stone-800 placeholder-stone-400 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition"
                             />
                         </div>
                     </div>
 
                     {{-- Password --}}
                     <div>
-                        <label class="block text-xs font-semibold text-stone-600 mb-1.5 tracking-widest uppercase">Password</label>
+                        <label class="block text-xs font-semibold text-stone-600 mb-1 tracking-widest uppercase">Password</label>
                         <div class="relative">
                             <span class="absolute inset-y-0 left-3.5 flex items-center text-amber-600 pointer-events-none">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -115,74 +158,43 @@
                             </span>
                             <input
                                 x-model="password"
-                                :type="showPass ? 'text' : 'password'"
-                                placeholder="Masukkan Password"
-                                @keydown.enter="doLogin"
-                                autocomplete="current-password"
-                                class="w-full pl-10 pr-10 py-3 rounded-xl border border-stone-200 bg-white/80 text-stone-800 placeholder-stone-400 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition"
+                                type="password"
+                                placeholder="Masukkan Password (min 6 karakter)"
+                                class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-stone-200 bg-white/80 text-stone-800 placeholder-stone-400 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition"
                             />
-                            <button
-                                type="button"
-                                @click="showPass = !showPass"
-                                class="absolute inset-y-0 right-3.5 flex items-center text-stone-400 hover:text-amber-600 transition"
-                                tabindex="-1"
-                                :aria-label="showPass ? 'Sembunyikan password' : 'Tampilkan password'"
-                            >
-                                {{-- eye open --}}
-                                <svg x-cloak x-show="!showPass" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                </svg>
-                                {{-- eye closed --}}
-                                <svg x-cloak x-show="showPass" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
-                                </svg>
-                            </button>
                         </div>
                     </div>
 
                     {{-- Submit button --}}
                     <button
                         type="button"
-                        @click="doLogin"
+                        @click="doRegister"
                         :disabled="loading"
-                        class="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#2d4a2d] to-[#3d6b3d] hover:from-[#3d6b3d] hover:to-[#4a824a] text-[#fdf6e3] font-bold text-base tracking-wide shadow-lg shadow-green-900/30 transition-all duration-200 active:scale-[0.98] disabled:opacity-60 flex items-center justify-center gap-2"
+                        class="w-full py-3 rounded-xl bg-gradient-to-r from-[#2d4a2d] to-[#3d6b3d] hover:from-[#3d6b3d] hover:to-[#4a824a] text-[#fdf6e3] font-bold text-base tracking-wide shadow-lg shadow-green-900/30 transition-all duration-200 active:scale-[0.98] disabled:opacity-60 flex items-center justify-center gap-2 mt-2"
                     >
                         <svg x-cloak x-show="loading" class="animate-spin w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24">
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
                         </svg>
-                        <span x-text="loading ? 'Memproses...' : 'Log In'"></span>
+                        <span x-text="loading ? 'Memproses...' : 'Daftar Sekarang'"></span>
                     </button>
 
-                    <div class="text-center mt-4">
-                        <p class="text-xs text-stone-500">
-                            Belum punya akun admin? 
-                            <a href="{{ route('admin.register') }}" class="font-bold text-amber-700 hover:text-amber-900 hover:underline transition">Daftar di sini</a>
-                        </p>
-                    </div>
-
-                </div>{{-- /space-y-5 --}}
-
-                {{-- footer note --}}
-                <p class="text-center text-stone-400 text-xs mt-6 leading-relaxed">
-                    Dengan melanjutkan, kamu setuju dengan aturan<br/>penggunaan aplikasi ini.
-                </p>
-
-                {{-- ornament bawah --}}
-                <div class="flex justify-center mt-4 opacity-30">
-                    <svg width="72" height="16" viewBox="0 0 72 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M2 12 Q12 2 22 8 Q27 0 36 6 Q44 0 50 8 Q60 2 70 12" stroke="#d97706" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-                    </svg>
                 </div>
 
-            </div>{{-- /px-10 py-10 --}}
-        </div>{{-- /card --}}
-    </div>{{-- /form wrapper --}}
+                {{-- back to login --}}
+                <div class="text-center mt-6">
+                    <p class="text-xs text-stone-500">
+                        Sudah punya akun? 
+                        <a href="{{ route('admin.login') }}" class="font-bold text-amber-700 hover:text-amber-900 hover:underline transition">Masuk di sini</a>
+                    </p>
+                </div>
 
+            </div>
+        </div>
+    </div>
 
     {{-- ══════════════════════════════════════════════════════════
-         MODAL OVERLAY
+         MODAL OVERLAY (Success / Failure)
          ══════════════════════════════════════════════════════════ --}}
     <div
         x-cloak
@@ -198,13 +210,9 @@
 
         {{-- ── Modal SUCCESS ──────────────────────────────────── --}}
         <div
-            id="modalLoginSuccess"
             x-cloak
             x-show="view === 'success'"
-            x-transition:enter="transition duration-300 ease-out"
-            x-transition:enter-start="opacity-0 scale-90"
-            x-transition:enter-end="opacity-100 scale-100"
-            class="relative w-full max-w-xs bg-white rounded-2xl shadow-2xl p-8 text-center"
+            class="relative w-full max-w-sm bg-white rounded-2xl shadow-2xl p-8 text-center"
         >
             <div class="mx-auto w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-4 relative">
                 <div class="absolute inset-0 bg-green-200 rounded-full animate-ping opacity-20"></div>
@@ -214,22 +222,20 @@
                     </svg>
                 </div>
             </div>
-            <h2 class="text-xl font-bold text-gray-800">Log In Berhasil</h2>
-            <p class="text-gray-400 text-sm mt-1 mb-3">Mengalihkan ke dashboard…</p>
-            {{-- progress bar --}}
-            <div class="h-1 rounded-full bg-gray-100 overflow-hidden">
-                <div class="h-full bg-[#34c759] rounded-full" style="animation: grow 1.6s ease-in-out forwards;"></div>
-            </div>
+            <h2 class="text-xl font-bold text-gray-800">Pendaftaran Berhasil</h2>
+            <p class="text-gray-500 text-sm mt-2 mb-4" x-text="successMessage"></p>
+            <a
+                href="{{ route('admin.login') }}"
+                class="inline-block px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold text-sm transition"
+            >
+                Ke Halaman Login
+            </a>
         </div>
 
         {{-- ── Modal FAILED ───────────────────────────────────── --}}
         <div
-            id="modalLoginFailed"
             x-cloak
             x-show="view === 'failed'"
-            x-transition:enter="transition duration-300 ease-out"
-            x-transition:enter-start="opacity-0 scale-90"
-            x-transition:enter-end="opacity-100 scale-100"
             class="relative w-full max-w-xs bg-white rounded-2xl shadow-2xl p-8 text-center"
         >
             <div class="mx-auto w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mb-4 relative">
@@ -240,66 +246,52 @@
                     </svg>
                 </div>
             </div>
-            <h2 class="text-xl font-bold text-gray-800 mb-1">Log In Gagal</h2>
-            <p class="text-gray-400 text-sm mb-4" x-text="errorMessage"></p>
+            <h2 class="text-xl font-bold text-gray-800 mb-1">Registrasi Gagal</h2>
+            <p class="text-gray-500 text-sm mb-4" x-text="errorMessage"></p>
             <button
-                onclick="showLoginManualForm()"
+                @click="view = 'form'"
                 class="text-blue-500 font-bold hover:text-blue-700 transition text-sm"
             >
                 Coba Lagi
             </button>
         </div>
 
-    </div>{{-- /modal overlay --}}
+    </div>
 
-</div>{{-- /root --}}
+</div>
 
-
-{{-- ── CUSTOM STYLES ────────────────────────────────────────────── --}}
-<style>
-    @keyframes grow {
-        from { width: 0%; }
-        to   { width: 100%; }
-    }
-    @keyframes spin_reverse {
-        from { transform: rotate(360deg); }
-        to   { transform: rotate(0deg); }
-    }
-</style>
-
-
-{{-- ── ALPINE.JS ────────────────────────────────────────────────── --}}
-{{-- Hapus baris ini jika Alpine sudah di-load lewat app.js / layouts --}}
 <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
 <script>
-    // ── Dipanggil dari tombol "Coba Lagi" di modal failed ──
-    function showLoginManualForm() {
-        // Alpine meng-handle ini via retry(), tapi agar kompatibel
-        // dengan pola onclick langsung dari HTML modal:
-        const root = document.querySelector('[x-data]');
-        if (root && root._x_dataStack) {
-            root._x_dataStack[0].retry();
-        }
-    }
-
-    function loginApp() {
+    function registerApp() {
         return {
-            email    : '',
-            password : '',
-            errorMessage : 'Email atau password tidak valid.',
-            showPass : false,
-            loading  : false,
-            view     : 'form',   // 'form' | 'success' | 'failed'
+            name: '',
+            gender: '',
+            phone: '',
+            email: '',
+            password: '',
+            loading: false,
+            view: 'form',
+            errorMessage: '',
+            successMessage: '',
 
-            async doLogin() {
-                if (this.loading) return;
+            async doRegister() {
+                if (!this.name || !this.gender || !this.phone || !this.email || !this.password) {
+                    this.errorMessage = 'Semua field wajib diisi.';
+                    this.view = 'failed';
+                    return;
+                }
+                if (this.password.length < 6) {
+                    this.errorMessage = 'Password minimal 6 karakter.';
+                    this.view = 'failed';
+                    return;
+                }
+
                 this.loading = true;
-
                 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
 
                 try {
-                    const response = await fetch('/admin/login', {
+                    const response = await fetch('{{ route("admin.register.post") }}', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -307,6 +299,9 @@
                             'X-CSRF-TOKEN': csrfToken,
                         },
                         body: JSON.stringify({
+                            name: this.name.trim(),
+                            gender: this.gender,
+                            phone: this.phone.trim(),
                             email: this.email.trim(),
                             password: this.password,
                         }),
@@ -316,26 +311,24 @@
                     const data = await response.json();
 
                     if (response.ok) {
+                        this.successMessage = data.message;
                         this.view = 'success';
-                        setTimeout(() => {
-                            window.location.href = data.redirect || '/admin/dashboard';
-                        }, 1800);
                     } else {
-                        this.errorMessage = data.message || 'Email atau password tidak valid.';
+                        // Extract validation messages if any
+                        let msg = data.message || 'Pendaftaran gagal.';
+                        if (data.errors) {
+                            msg = Object.values(data.errors).flat().join(' ');
+                        }
+                        this.errorMessage = msg;
                         this.view = 'failed';
                     }
                 } catch (err) {
                     this.loading = false;
-                    this.errorMessage = 'Terjadi kesalahan koneksi.';
+                    this.errorMessage = 'Terjadi kesalahan jaringan.';
                     this.view = 'failed';
-                    console.error('Login error:', err);
+                    console.error('Registration error:', err);
                 }
-            },
-
-            retry() {
-                this.view     = 'form';
-                this.password = '';
-            },
+            }
         };
     }
 </script>

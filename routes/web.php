@@ -6,19 +6,7 @@ use App\Http\Controllers\ReservasiController;
 
 Route::get('/', [LandingController::class, 'index'])->name('home');
 
-Route::get('/setup-admin-landeuh-rahasia', function () {
-    \App\Models\User::updateOrCreate(
-        ['email' => 'admin@landeuh.com'],
-        [
-            'name' => 'Admin Landeuh',
-            'phone' => '081234567890',
-            'password' => \Illuminate\Support\Facades\Hash::make('admin12345'),
-            'role' => 'admin',
-            'email_verified_at' => now(),
-        ]
-    );
-    return 'Berhasil! Akun Admin telah dibuat di Database. Silakan login ke /admin/login menggunakan Email: admin@landeuh.com dan Password: admin12345';
-});
+
 
 Route::get('/akomodasi', [LandingController::class, 'akomodasi'])->name('akomodasi.index');
 Route::get('/paket-corporate', [LandingController::class, 'corporate'])->name('akomodasi.corporate');
@@ -241,6 +229,15 @@ Route::prefix('admin')->group(function () {
     Route::post('/login', [AuthController::class, 'adminLogin'])->name('admin.login.post');
     Route::post('/logout', [AuthController::class, 'adminLogout'])->name('admin.logout.post');
 
+    Route::get('/register', function () {
+        if (Auth::guard('admin')->check() && Auth::guard('admin')->user()->role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        }
+        return view('admin.auth.register');
+    })->name('admin.register');
+
+    Route::post('/register', [AuthController::class, 'adminRegister'])->name('admin.register.post');
+
     Route::get('/dashboard', [UnitController::class, 'index'])->name('admin.dashboard');
 
     Route::get('/unit', [UnitController::class, 'index'])->name('admin.unit.index');
@@ -367,5 +364,21 @@ Route::prefix('admin')->group(function () {
 
         return response()->json($sortedNotifications);
     })->name('admin.api.notifications');
+});
+
+// ══════════════════════════════════════════════════════════════
+// SUPERADMIN Routes
+// ══════════════════════════════════════════════════════════════
+Route::prefix('superadmin')->group(function () {
+    Route::get('/login', [\App\Http\Controllers\Superadmin\SuperadminController::class, 'showLogin'])->name('superadmin.login');
+    Route::post('/login', [\App\Http\Controllers\Superadmin\SuperadminController::class, 'login'])->name('superadmin.login.post');
+    Route::post('/logout', [\App\Http\Controllers\Superadmin\SuperadminController::class, 'logout'])->name('superadmin.logout');
+
+    Route::middleware('superadmin')->group(function () {
+        Route::get('/dashboard', [\App\Http\Controllers\Superadmin\SuperadminController::class, 'dashboard'])->name('superadmin.dashboard');
+        Route::post('/admins/{id}/approve', [\App\Http\Controllers\Superadmin\SuperadminController::class, 'approve'])->name('superadmin.admins.approve');
+        Route::post('/admins/{id}/reject', [\App\Http\Controllers\Superadmin\SuperadminController::class, 'reject'])->name('superadmin.admins.reject');
+        Route::delete('/admins/{id}', [\App\Http\Controllers\Superadmin\SuperadminController::class, 'destroy'])->name('superadmin.admins.destroy');
+    });
 });
 

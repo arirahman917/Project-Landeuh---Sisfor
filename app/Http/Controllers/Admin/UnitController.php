@@ -105,6 +105,8 @@ class UnitController extends Controller
 
         Accommodation::create($data);
 
+        \App\Models\ActivityLog::log("Menambah unit akomodasi baru: " . $data['judul']);
+
         return response()->json(['success' => true]);
     }
 
@@ -166,12 +168,19 @@ class UnitController extends Controller
 
         $unit->update($data);
 
+        \App\Models\ActivityLog::log("Mengubah detail unit akomodasi: " . $unit->judul);
+
         return response()->json(['success' => true]);
     }
 
     public function destroy($id)
     {
-        Accommodation::findOrFail($id)->delete();
+        $unit = Accommodation::findOrFail($id);
+        $judul = $unit->judul;
+        $unit->delete();
+
+        \App\Models\ActivityLog::log("Menghapus unit akomodasi: " . $judul);
+
         return response()->json(['success' => true]);
     }
 
@@ -201,6 +210,8 @@ class UnitController extends Controller
                     $accom->save();
                 }
 
+                \App\Models\ActivityLog::log("Meliburkan unit kamar (" . implode(', ', $accommodations->pluck('judul')->toArray()) . "): " . $validated['name']);
+
                 return response()->json([
                     'success' => true,
                     'message' => 'Kamar berhasil diliburkan untuk periode yang dipilih.'
@@ -221,6 +232,8 @@ class UnitController extends Controller
 
                 $accom->blocked_dates = $blocked;
                 $accom->save();
+
+                \App\Models\ActivityLog::log("Menghapus libur kamar " . $accom->judul);
 
                 return response()->json([
                     'success' => true,
@@ -247,6 +260,8 @@ class UnitController extends Controller
 
                 $accom->blocked_dates = $blocked;
                 $accom->save();
+
+                \App\Models\ActivityLog::log("Mengubah detail libur kamar " . $accom->judul . " menjadi: " . $validated['name']);
 
                 return response()->json([
                     'success' => true,

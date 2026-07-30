@@ -181,6 +181,8 @@ class PesananController extends Controller
             $booking->malam = $nights;
             $booking->save();
 
+            \App\Models\ActivityLog::log("Melakukan Force Reschedule pesanan #" . $booking->no_pesanan . " ke tanggal " . $booking->check_in_date . " s/d " . $booking->check_out_date);
+
             // Regenerate PDF invoice
             try {
                 $invoiceName = 'Invoice_' . $booking->no_pesanan . '.pdf';

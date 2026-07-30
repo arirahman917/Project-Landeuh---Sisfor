@@ -67,6 +67,8 @@ class TanggalController extends Controller
             }
         }
 
+        \App\Models\ActivityLog::log("Memperbarui pengaturan kalender & libur global (Weekday, Weekend, Highseason, Libur Landeuh)");
+
         return response()->json(['message' => 'Tanggal berhasil diperbarui']);
     }
 

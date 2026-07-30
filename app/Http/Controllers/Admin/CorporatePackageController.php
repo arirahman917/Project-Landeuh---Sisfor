@@ -66,6 +66,8 @@ class CorporatePackageController extends Controller
 
         CorporatePackage::create($validated);
 
+        \App\Models\ActivityLog::log("Menambah paket corporate baru: " . $validated['judul']);
+
         return response()->json(['success' => true, 'message' => 'Paket corporate berhasil ditambahkan.']);
     }
 
@@ -126,13 +128,19 @@ class CorporatePackageController extends Controller
 
         $package->update($validated);
 
+        \App\Models\ActivityLog::log("Mengubah detail paket corporate: " . $package->judul);
+
         return response()->json(['success' => true, 'message' => 'Paket corporate berhasil diperbarui.']);
     }
 
     public function destroy($id)
     {
         $package = CorporatePackage::findOrFail($id);
+        $judul = $package->judul;
         $package->delete();
+
+        \App\Models\ActivityLog::log("Menghapus paket corporate: " . $judul);
+
         return response()->json(['success' => true, 'message' => 'Paket corporate berhasil dihapus.']);
     }
 
@@ -162,6 +170,8 @@ class CorporatePackageController extends Controller
                     $pkg->save();
                 }
 
+                \App\Models\ActivityLog::log("Meliburkan paket corporate (" . implode(', ', $packages->pluck('judul')->toArray()) . "): " . $validated['name']);
+
                 return response()->json([
                     'success' => true,
                     'message' => 'Paket corporate berhasil diliburkan untuk periode yang dipilih.'
@@ -182,6 +192,8 @@ class CorporatePackageController extends Controller
 
                 $pkg->blocked_dates = $blocked;
                 $pkg->save();
+
+                \App\Models\ActivityLog::log("Menghapus libur paket corporate " . $pkg->judul);
 
                 return response()->json([
                     'success' => true,
@@ -208,6 +220,8 @@ class CorporatePackageController extends Controller
 
                 $pkg->blocked_dates = $blocked;
                 $pkg->save();
+
+                \App\Models\ActivityLog::log("Mengubah detail libur paket corporate " . $pkg->judul . " menjadi: " . $validated['name']);
 
                 return response()->json([
                     'success' => true,

@@ -215,6 +215,16 @@ class ReservasiController extends Controller
 
             $booking->save();
 
+            if (auth()->guard('admin')->check()) {
+                if ($validated['status'] === 'rescheduled') {
+                    \App\Models\ActivityLog::log("Menyetujui pengajuan reschedule pesanan #" . $booking->no_pesanan);
+                } elseif ($validated['status'] === 'reschedule_rejected') {
+                    \App\Models\ActivityLog::log("Menolak pengajuan reschedule pesanan #" . $booking->no_pesanan);
+                } else {
+                    \App\Models\ActivityLog::log("Mengubah status pesanan #" . $booking->no_pesanan . " menjadi " . $validated['status']);
+                }
+            }
+
             // Tindakan otomatis HANYA jika status berubah dari pending ke success
             if ($isTransitioning) {
                 // 1. Generate PDF (Memory only)
