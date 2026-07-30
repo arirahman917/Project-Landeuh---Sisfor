@@ -6,6 +6,7 @@
 
 <div
     x-data="{
+        sidebarOpen: false,
         showLogs: false,
         activeAdminName: '',
         activeAdminLogs: [],
@@ -15,11 +16,41 @@
             this.showLogs = true;
         }
     }"
-    class="min-h-screen bg-[#f5eed9] text-stone-800 font-sans flex"
+    class="min-h-screen bg-[#f5eed9] text-stone-800 font-sans flex flex-col md:flex-row"
 >
 
+    {{-- ── MOBILE HEADER ──────────────────────────────────────── --}}
+    <div class="md:hidden flex items-center justify-between bg-stone-900 text-stone-100 px-6 py-4 border-b border-stone-850 z-20 shadow-md">
+        <div class="flex items-center gap-3">
+            <img src="{{ asset('images/logo-landeuh.png') }}" alt="Logo" class="w-8 h-8 object-contain rounded-full bg-white p-1">
+            <div>
+                <h2 class="font-extrabold text-stone-100 tracking-tight leading-tight text-sm">Landeuh Village</h2>
+                <span class="text-[9px] text-amber-500 uppercase tracking-widest font-bold block">Superadmin</span>
+            </div>
+        </div>
+        <button @click="sidebarOpen = !sidebarOpen" class="w-9 h-9 flex items-center justify-center text-stone-300 hover:text-white bg-stone-800 hover:bg-stone-750 rounded-xl transition duration-200" aria-label="Toggle Sidebar">
+            <iconify-icon icon="lucide:menu" class="text-xl"></iconify-icon>
+        </button>
+    </div>
+
+    {{-- Mobile Sidebar Overlay --}}
+    <div
+        x-show="sidebarOpen"
+        @click="sidebarOpen = false"
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+        class="fixed inset-0 z-30 bg-black/60 md:hidden"
+    ></div>
+
     {{-- ── SIDEBAR ────────────────────────────────────────────── --}}
-    <aside class="w-64 bg-stone-900 text-stone-300 flex flex-col justify-between shrink-0 border-r border-stone-800">
+    <aside
+        :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'"
+        class="fixed inset-y-0 left-0 z-40 w-64 bg-stone-900 text-stone-300 flex flex-col justify-between shrink-0 border-r border-stone-800 transition-transform duration-300 md:static md:translate-x-0"
+    >
         <div>
             {{-- Logo / Brand --}}
             <div class="px-6 py-6 border-b border-stone-800 flex items-center gap-3">
@@ -68,7 +99,7 @@
     </aside>
 
     {{-- ── MAIN CONTENT ────────────────────────────────────────── --}}
-    <main class="flex-1 overflow-y-auto px-8 py-8">
+    <main class="flex-1 overflow-y-auto px-4 md:px-8 py-6 md:py-8">
 
         {{-- ── TOP HEADER ──────────────────────────────────────── --}}
         <header class="flex justify-between items-center mb-8 border-b border-stone-300 pb-4">
@@ -190,7 +221,7 @@
                                         @csrf
                                         <button
                                             type="submit"
-                                            class="px-3.5 py-1.5 bg-red-650 hover:bg-red-700 text-white rounded-lg font-bold text-[11px] transition shadow-sm"
+                                            class="px-3.5 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg font-bold text-[11px] transition shadow-sm"
                                         >
                                             Tolak
                                         </button>
