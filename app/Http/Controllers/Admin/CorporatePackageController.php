@@ -14,7 +14,8 @@ class CorporatePackageController extends Controller
     {
         $packages = CorporatePackage::all();
         $accommodations = Accommodation::orderBy('jenis')->orderBy('judul')->get(['id', 'judul', 'jenis']);
-        return view('admin.corporate.index', compact('packages', 'accommodations'));
+        $dateSettings = \App\Models\DateSetting::all();
+        return view('admin.corporate.index', compact('packages', 'accommodations', 'dateSettings'));
     }
 
     public function store(Request $request)
@@ -133,5 +134,94 @@ class CorporatePackageController extends Controller
         $package = CorporatePackage::findOrFail($id);
         $package->delete();
         return response()->json(['success' => true, 'message' => 'Paket corporate berhasil dihapus.']);
+    }
+
+    public function updateBlockedDates(Request $request)
+    {
+        try {
+            $action = $request->input('action', 'create');
+
+            if ($action === 'create') {
+                $validated = $request->validate([
+                    'corporate_package_ids' => 'required|array',
+                    'corporate_package_ids.*' => 'exists:corporate_packages,id',
+                    'name' => 'required|string|max:255',
+                    'dates' => 'required|string',
+                ]);
+
+                $packages = CorporatePackage::whereIn('id', $validated['corporate_package_ids'])->get();
+                foreach ($packages as $pkg) {
+                    $blocked = $pkg->blocked_dates ?? [];
+                    $blocked[] = [
+                        'id' => uniqid(),
+                        'name' => $validated['name'],
+                        'dates' => $validated['dates'],
+                        'created_at' => now()->toDateTimeString(),
+                    ];
+                    $pkg->blocked_dates = $blocked;
+                    $pkg->save();
+                }
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Paket corporate berhasil diliburkan untuk periode yang dipilih.'
+                ]);
+
+            } elseif ($action === 'delete') {
+                $validated = $request->validate([
+                    'corporate_package_id' => 'required|exists:corporate_packages,id',
+                    'block_id' => 'required|string',
+                ]);
+
+                $pkg = CorporatePackage::findOrFail($validated['corporate_package_id']);
+                $blocked = $pkg->blocked_dates ?? [];
+                
+                $blocked = array_values(array_filter($blocked, function($b) use ($validated) {
+                    return ($b['id'] ?? '') !== $validated['block_id'];
+                }));
+
+                $pkg->blocked_dates = $blocked;
+                $pkg->save();
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Periode libur berhasil dihapus.'
+                ]);
+
+            } elseif ($action === 'edit') {
+                $validated = $request->validate([
+                    'corporate_package_id' => 'required|exists:corporate_packages,id',
+                    'block_id' => 'required|string',
+                    'name' => 'required|string|max:255',
+                    'dates' => 'required|string',
+                ]);
+
+                $pkg = CorporatePackage::findOrFail($validated['corporate_package_id']);
+                $blocked = $pkg->blocked_dates ?? [];
+
+                foreach ($blocked as &$b) {
+                    if (($b['id'] ?? '') === $validated['block_id']) {
+                        $b['name'] = $validated['name'];
+                        $b['dates'] = $validated['dates'];
+                    }
+                }
+
+                $pkg->blocked_dates = $blocked;
+                $pkg->save();
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Periode libur berhasil diperbarui.'
+                ]);
+            }
+
+            return response()->json(['success' => false, 'message' => 'Aksi tidak dikenal.'], 400);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengelola tanggal libur: ' . $e->getMessage()
+            ], 400);
+        }
     }
 }

@@ -944,9 +944,33 @@
             end.setDate(end.getDate() + 1);
         }
 
-        // Loop through each night of the stay (from check-in up to check-out - 1 day)
         for (let dt = new Date(start); dt < end; dt.setDate(dt.getDate() + 1)) {
             const checkTime = dt.getTime();
+
+            // Check global and specific blocked/libur dates
+            const y = dt.getFullYear();
+            const m = String(dt.getMonth() + 1).padStart(2, '0');
+            const r = String(dt.getDate()).padStart(2, '0');
+            const dateStr = `${y}-${m}-${r}`;
+
+            const globalLibur = (typeof DATE_SETTINGS !== 'undefined' ? DATE_SETTINGS : []).filter(s => s.type === 'libur_landeuh');
+            let isLibur = false;
+            for (let gl of globalLibur) {
+                if (gl.dates && gl.dates.includes(dateStr)) {
+                    isLibur = true;
+                    break;
+                }
+            }
+            if (isLibur) return true;
+
+            const specificBlocked = akomodasi.blocked_dates || [];
+            for (let sb of specificBlocked) {
+                if (sb.dates && sb.dates.includes(dateStr)) {
+                    isLibur = true;
+                    break;
+                }
+            }
+            if (isLibur) return true;
 
             // Count active bookings on this specific night
             let activeBookingsCount = 0;

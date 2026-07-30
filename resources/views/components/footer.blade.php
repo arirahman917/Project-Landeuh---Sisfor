@@ -176,9 +176,9 @@
         <div class="flex flex-col sm:flex-row items-center justify-between gap-3 text-[#2C1810]/60 text-xs">
             <p>© {{ date('Y') }} Landeuh Village Riverside. All rights reserved.</p>
             <div class="flex items-center gap-4">
-                <a href="#" class="hover:text-[#2C1810]/85 transition-colors duration-200">Privasi</a>
+                <a href="javascript:void(0)" onclick="openFooterModal('privasi')" class="hover:text-[#2C1810]/85 transition-colors duration-200">Privasi</a>
                 <span class="opacity-40">·</span>
-                <a href="#" class="hover:text-[#2C1810]/85 transition-colors duration-200">Syarat</a>
+                <a href="javascript:void(0)" onclick="openFooterModal('syarat')" class="hover:text-[#2C1810]/85 transition-colors duration-200">Syarat</a>
             </div>
         </div>
 
@@ -275,7 +275,50 @@
     .footer-map-wrap:hover {
         box-shadow: 0 4px 28px rgba(90,50,20,0.18), 0 0 0 2px rgba(181,121,58,0.4) !important;
     }
+
+    /* Custom Scrollbar for Modal content */
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: rgba(181, 121, 58, 0.3);
+        border-radius: 3px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: rgba(181, 121, 58, 0.5);
+    }
 </style>
+
+{{-- ══ MODALS FOR PRIVACY AND TERMS ══ --}}
+<div id="footer-modal-overlay" class="fixed inset-0 bg-[#2C1810]/85 backdrop-blur-sm z-[9999] flex items-center justify-center p-4 opacity-0 pointer-events-none transition-all duration-300">
+    <div id="footer-modal-container" class="bg-white border border-[#B5793A]/40 w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden transform scale-95 opacity-0 transition-all duration-300 max-h-[85vh] flex flex-col">
+        
+        {{-- Modal Header --}}
+        <div class="px-6 py-4 bg-[#FAF7F0] border-b border-[#B5793A]/20 flex items-center justify-between">
+            <h3 id="footer-modal-title" class="text-stone-950 font-bold text-lg font-serif"></h3>
+            <button onclick="closeFooterModal()" class="w-8 h-8 rounded-full flex items-center justify-center text-stone-500 hover:text-stone-950 hover:bg-stone-100 transition-all duration-200">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+
+        {{-- Modal Body --}}
+        <div id="footer-modal-content" class="p-6 overflow-y-auto text-sm text-stone-900 space-y-4 leading-relaxed custom-scrollbar">
+            {{-- Content injected here --}}
+        </div>
+
+        {{-- Modal Footer --}}
+        <div class="px-6 py-3 bg-[#FAF7F0] border-t border-[#B5793A]/10 flex justify-end">
+            <button onclick="closeFooterModal()" class="px-5 py-2 bg-[#B5793A] hover:bg-[#8B4A1A] text-white text-xs font-bold rounded-xl transition duration-200 shadow-md">
+                Tutup
+            </button>
+        </div>
+    </div>
+</div>
 
 <script>
 (function () {
@@ -288,4 +331,124 @@
     }, { threshold: 0.1 });
     cols.forEach(c => io.observe(c));
 })();
+
+function openFooterModal(type) {
+    const overlay = document.getElementById('footer-modal-overlay');
+    const container = document.getElementById('footer-modal-container');
+    const title = document.getElementById('footer-modal-title');
+    const content = document.getElementById('footer-modal-content');
+
+    if (type === 'privasi') {
+        title.innerText = 'Kebijakan Privasi Landeuh Village';
+        content.innerHTML = `
+            <div class="space-y-4">
+                <p class="font-semibold text-[#B5793A]">Terakhir Diperbarui: ${new Date().toLocaleDateString('id-ID', {year: 'numeric', month: 'long', day: 'numeric'})}</p>
+                
+                <p class="text-stone-800">Selamat datang di Landeuh Village Riverside. Kami berkomitmen untuk melindungi dan menghormati privasi data pribadi Anda saat menggunakan layanan reservasi kami.</p>
+                
+                <div class="space-y-2">
+                    <h4 class="font-bold text-stone-950">1. Pengumpulan Informasi Pribadi</h4>
+                    <p class="text-stone-800">Kami mengumpulkan data pribadi yang Anda berikan secara langsung saat membuat pesanan, termasuk namun tidak terbatas pada:</p>
+                    <ul class="list-disc list-inside pl-2 space-y-1 text-stone-800">
+                        <li>Nama Lengkap (Pemesan dan Tamu)</li>
+                        <li>Nomor Telepon / WhatsApp Aktif</li>
+                        <li>Alamat Email</li>
+                        <li>Detail Pembayaran & Pilihan Akomodasi</li>
+                    </ul>
+                </div>
+
+                <div class="space-y-2">
+                    <h4 class="font-bold text-stone-950">2. Penggunaan Informasi Anda</h4>
+                    <p class="text-stone-800">Informasi yang kami kumpulkan digunakan untuk tujuan berikut:</p>
+                    <ul class="list-disc list-inside pl-2 space-y-1 text-stone-800">
+                        <li>Memproses reservasi kamar atau paket corporate Anda.</li>
+                        <li>Verifikasi status pembayaran secara realtime.</li>
+                        <li>Mengirimkan E-Ticket resmi dan invoice PDF ke WhatsApp/Email Anda.</li>
+                        <li>Mempermudah koordinasi apabila Anda mengajukan pemindahan jadwal (reschedule).</li>
+                    </ul>
+                </div>
+
+                <div class="space-y-2">
+                    <h4 class="font-bold text-stone-950">3. Perlindungan & Keamanan Data</h4>
+                    <p class="text-stone-800">Kami menerapkan standar keamanan enkripsi digital untuk melindungi data pribadi Anda dari akses yang tidak sah, penyalahgunaan, atau kebocoran. Kami menjamin tidak akan menyebarluaskan, menyewakan, atau menjual informasi pribadi Anda kepada pihak ketiga.</p>
+                </div>
+
+                <div class="space-y-2">
+                    <h4 class="font-bold text-stone-950">4. Cookie & Log Browser</h4>
+                    <p class="text-stone-800">Situs kami dapat menggunakan cookie untuk meningkatkan kualitas browsing Anda, mengingat preferensi pemesanan Anda, serta menganalisis performa website kami.</p>
+                </div>
+            </div>
+        `;
+    } else if (type === 'syarat') {
+        title.innerText = 'Syarat & Ketentuan Layanan';
+        content.innerHTML = `
+            <div class="space-y-4">
+                <p class="text-stone-800">Syarat & ketentuan berikut mengatur penggunaan sistem pemesanan online dan aturan menginap di Landeuh Village Riverside. Dengan melakukan reservasi, Anda dianggap telah menyetujui seluruh ketentuan ini.</p>
+                
+                <div class="p-4 bg-[#FFFDF6] border border-[#EEDC9A] rounded-xl space-y-2.5">
+                    <h4 class="font-bold text-[#8B4A1A] flex items-center gap-2">
+                        <span>⚠️</span>
+                        INFORMASI PENTING (Kebijakan Reschedule & Pembatalan)
+                    </h4>
+                    <ul class="list-disc list-inside space-y-1.5 text-xs text-stone-900 leading-relaxed">
+                        <li class="font-semibold">Seluruh pesanan yang telah dikonfirmasi dan dibayar bersifat <span class="text-rose-600 font-bold">TIDAK DAPAT DIBATALKAN / DI-REFUND</span> dengan alasan apa pun.</li>
+                        <li>Pelanggan <span class="text-emerald-700 font-bold">DAPAT mengajukan pemindahan jadwal (Reschedule)</span> tanggal menginap.</li>
+                        <li>Pengajuan reschedule wajib diajukan oleh pelanggan <span class="font-bold">minimal H-3</span> sebelum tanggal check-in.</li>
+                        <li>Persetujuan reschedule didasarkan pada ketersediaan akomodasi di tanggal baru serta memerlukan persetujuan resmi dari pihak Admin.</li>
+                        <li>Reschedule hanya berlaku dengan <span class="font-bold">durasi menginap (jumlah malam) yang sama</span> dengan pemesanan awal.</li>
+                    </ul>
+                </div>
+
+                <div class="space-y-2">
+                    <h4 class="font-bold text-stone-950">1. Ketentuan Check-In & Check-Out</h4>
+                    <ul class="list-disc list-inside pl-2 space-y-1 text-stone-800">
+                        <li>Waktu Check-In resmi: pukul 14.00 – 21.00 WIB.</li>
+                        <li>Waktu Check-Out maksimal: pukul 12.00 WIB.</li>
+                        <li>Check-in di luar jam operasional standar wajib diinformasikan terlebih dahulu ke pihak pengelola.</li>
+                    </ul>
+                </div>
+
+                <div class="space-y-2">
+                    <h4 class="font-bold text-stone-950">2. Aturan Umum Penginapan</h4>
+                    <ul class="list-disc list-inside pl-2 space-y-1 text-stone-800">
+                        <li>Dilarang keras membawa senjata tajam, senjata api, narkoba, bahan kimia berbahaya, dan hewan peliharaan ke dalam area Landeuh Village.</li>
+                        <li>Tamu berkewajiban menjaga kebersihan, ketertiban, dan ketenangan demi kenyamanan bersama serta tidak merusak keasrian alam sekitar sungai.</li>
+                        <li>Kerusakan fasilitas atau barang milik Landeuh Village akibat kelalaian tamu akan dikenakan denda sesuai dengan nilai kerusakan.</li>
+                    </ul>
+                </div>
+
+                <div class="space-y-2">
+                    <h4 class="font-bold text-stone-950">3. Pembayaran & Konfirmasi</h4>
+                    <p class="text-stone-800">Reservasi Anda hanya dianggap sah setelah pembayaran diverifikasi oleh sistem kami. Segala bentuk keterlambatan pembayaran di luar batas waktu sistem dapat menyebabkan reservasi dibatalkan otomatis.</p>
+                </div>
+            </div>
+        `;
+    }
+
+    // Show modal with animations
+    overlay.classList.remove('pointer-events-none', 'opacity-0');
+    overlay.classList.add('opacity-100');
+    container.classList.remove('scale-95', 'opacity-0');
+    container.classList.add('scale-100', 'opacity-100');
+}
+
+function closeFooterModal() {
+    const overlay = document.getElementById('footer-modal-overlay');
+    const container = document.getElementById('footer-modal-container');
+
+    overlay.classList.add('pointer-events-none', 'opacity-0');
+    overlay.classList.remove('opacity-100');
+    container.classList.add('scale-95', 'opacity-0');
+    container.classList.remove('scale-100', 'opacity-100');
+}
+
+// Close on overlay click
+document.addEventListener('DOMContentLoaded', () => {
+    const overlay = document.getElementById('footer-modal-overlay');
+    if (overlay) {
+        overlay.addEventListener('click', function(e) {
+            if (e.target === this) closeFooterModal();
+        });
+    }
+});
 </script>

@@ -78,7 +78,7 @@
 .ov-btn-lanjut:hover{background:#2c402c}
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:100;display:none;align-items:center;justify-content:center}
 .modal-overlay.show{display:flex}
-.modal-box{background:#fff;border-radius:1rem;padding:1.5rem;max-width:400px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.2)}
+.modal-box{background:#fff;border-radius:1rem;padding:1.5rem;max-width:550px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.2);max-height:80vh;overflow-y:auto}
 .modal-box h4{font-size:1rem;font-weight:800;margin-bottom:0.75rem}
 .modal-box p{font-size:0.85rem;color:#555;margin-bottom:0.5rem}
 .modal-box .close{text-align:right}
@@ -249,9 +249,46 @@
     {{-- Modal Kebijakan --}}
     <div class="modal-overlay" id="modalKebijakan">
         <div class="modal-box">
-            <h4>Kebijakan</h4>
-            <p>Pemesanan hanya dapat dijadwalkan ulang (reschedule) dan tidak dapat dibatalkan.</p>
-            <p>Pembayaran yang telah dilakukan tidak dapat dikembalikan (non-refundable).</p>
+            <h4>Syarat & Ketentuan Layanan</h4>
+            <div style="font-size: 0.85rem; color: #333; line-height: 1.6; text-align: left; margin: 1rem 0 1.5rem 0;">
+                <p>Syarat & ketentuan berikut mengatur penggunaan sistem pemesanan online dan aturan menginap di Landeuh Village Riverside. Dengan melakukan reservasi, Anda dianggap telah menyetujui seluruh ketentuan ini.</p>
+                
+                <div style="padding: 1rem; background-color: #FFFDF6; border: 1px solid #EEDC9A; border-radius: 0.75rem; margin: 1rem 0;">
+                    <h5 style="font-weight: 800; color: #8B4A1A; display: flex; align-items: center; gap: 0.5rem; margin-top: 0; margin-bottom: 0.5rem; font-size: 0.8rem;">
+                        <span>⚠️</span> INFORMASI PENTING (Reschedule & Pembatalan)
+                    </h5>
+                    <ul style="list-style-type: disc; padding-left: 1.25rem; font-size: 0.75rem; color: #1c1917; margin: 0;">
+                        <li style="font-weight: 600; margin-bottom: 0.25rem;">Seluruh pesanan yang telah dikonfirmasi dan dibayar bersifat <span style="color: #dc2626; font-weight: 800;">TIDAK DAPAT DIBATALKAN / DI-REFUND</span> dengan alasan apa pun.</li>
+                        <li style="margin-bottom: 0.25rem;">Pelanggan <span style="color: #047857; font-weight: 800;">DAPAT mengajukan reschedule</span> tanggal menginap.</li>
+                        <li style="margin-bottom: 0.25rem;">Pengajuan reschedule wajib diajukan oleh pelanggan <strong>minimal H-3</strong> sebelum tanggal check-in.</li>
+                        <li style="margin-bottom: 0.25rem;">Persetujuan reschedule didasarkan pada ketersediaan akomodasi di tanggal baru serta memerlukan persetujuan resmi dari pihak Admin.</li>
+                        <li style="margin-bottom: 0;">Reschedule hanya berlaku dengan <strong>durasi menginap (jumlah malam) yang sama</strong> dengan pemesanan awal.</li>
+                    </ul>
+                </div>
+
+                <div style="margin-bottom: 1rem;">
+                    <h5 style="font-weight: 700; color: #000; margin-bottom: 0.25rem; font-size: 0.8rem;">1. Ketentuan Check-In & Check-Out</h5>
+                    <ul style="list-style-type: disc; padding-left: 1.25rem; font-size: 0.75rem; color: #444; margin: 0;">
+                        <li>Waktu Check-In resmi: pukul 14.00 – 21.00 WIB.</li>
+                        <li>Waktu Check-Out maksimal: pukul 12.00 WIB.</li>
+                        <li>Check-in di luar jam operasional standar wajib diinformasikan terlebih dahulu ke pihak pengelola.</li>
+                    </ul>
+                </div>
+
+                <div style="margin-bottom: 1rem;">
+                    <h5 style="font-weight: 700; color: #000; margin-bottom: 0.25rem; font-size: 0.8rem;">2. Aturan Umum Penginapan</h5>
+                    <ul style="list-style-type: disc; padding-left: 1.25rem; font-size: 0.75rem; color: #444; margin: 0;">
+                        <li>Dilarang keras membawa senjata tajam, senjata api, narkoba, bahan kimia berbahaya, dan hewan peliharaan ke dalam area Landeuh Village.</li>
+                        <li>Tamu berkewajiban menjaga kebersihan, ketertiban, dan ketenangan demi kenyamanan bersama.</li>
+                        <li>Kerusakan fasilitas akibat kelalaian tamu akan dikenakan denda sesuai dengan nilai kerusakan.</li>
+                    </ul>
+                </div>
+
+                <div style="margin-bottom: 0;">
+                    <h5 style="font-weight: 700; color: #000; margin-bottom: 0.25rem; font-size: 0.8rem;">3. Pembayaran & Konfirmasi</h5>
+                    <p style="font-size: 0.75rem; color: #444; margin: 0;">Reservasi Anda hanya dianggap sah setelah pembayaran diverifikasi oleh sistem kami. Segala bentuk keterlambatan pembayaran dapat menyebabkan reservasi dibatalkan otomatis.</p>
+                </div>
+            </div>
             <div class="close"><button onclick="document.getElementById('modalKebijakan').classList.remove('show')">Tutup</button></div>
         </div>
     </div>

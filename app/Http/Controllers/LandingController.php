@@ -42,11 +42,22 @@ class LandingController extends Controller
             ];
         }
 
-        $accommodations->transform(function ($item) use ($corpDatesByJenis) {
+        $corpPackages = \App\Models\CorporatePackage::all();
+
+        $accommodations->transform(function ($item) use ($corpDatesByJenis, $corpPackages) {
             $item->hargaWeekday    = $item->harga_weekday;
             $item->hargaWeekend    = $item->harga_weekend;
             $item->hargaHighseason = $item->harga_highseason;
             $item->maxOrang        = $item->max_orang;
+
+            $myBlockedDates = $item->blocked_dates ?: [];
+            foreach ($corpPackages as $cp) {
+                if (in_array($item->id, $cp->accommodation_ids ?? [])) {
+                    $cpBlocked = $cp->blocked_dates ?: [];
+                    $myBlockedDates = array_merge($myBlockedDates, $cpBlocked);
+                }
+            }
+            $item->blocked_dates = $myBlockedDates;
 
             // Inject corporate bookings: if there's a corp booking for this jenis,
             // those dates should count as the FULL slot being occupied.

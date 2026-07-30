@@ -391,6 +391,11 @@
 <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
 <script>
 (function(){
+    @php
+        $liburLandeuh = \App\Models\DateSetting::where('type', 'libur_landeuh')->get();
+    @endphp
+    var LIBUR_LANDEUH = @json($liburLandeuh);
+
     /* ── Backend data ─────────────────────────────── */
     var CORP = {};
     @foreach($accommodations as $pkg)
@@ -399,6 +404,15 @@
         $jenisName = $pkg->jenis_akomodasi ?: 'Unit';
         $maxUnits = $pkg->slot;
         $indB = isset($indBookingsPerPackage[$pkg->id]) ? $indBookingsPerPackage[$pkg->id]->map(function($b){ return ['ci'=>(string)$b->check_in_date,'co'=>(string)$b->check_out_date,'st'=>$b->status]; })->toArray() : [];
+        
+        $pkgBlocked = $pkg->blocked_dates ?: [];
+        $assocAccomBlocked = \App\Models\Accommodation::whereIn('id', $pkg->accommodation_ids ?? [])
+            ->get()
+            ->pluck('blocked_dates')
+            ->filter()
+            ->flatten(1)
+            ->toArray();
+        $mergedBlocked = array_merge($pkgBlocked, $assocAccomBlocked);
     @endphp
     CORP['{{ $k }}'] = {
         id: {{ $pkg->id }},
@@ -408,7 +422,8 @@
         maxUnits: {{ $maxUnits }},
         images: @json(is_array($pkg->gambar) ? $pkg->gambar : (json_decode($pkg->gambar ?? '[]', true) ?: [])),
         bookings: @json($pkg->bookings->map(function($b){ return ['ci'=>(string)$b->check_in_date,'co'=>(string)$b->check_out_date,'st'=>$b->status]; })->toArray()),
-        indBookings: @json($indB)
+        indBookings: @json($indB),
+        blockedDates: @json($mergedBlocked)
     };
     @endforeach
 
@@ -438,6 +453,29 @@
         var bks=CORP[t].bookings||[];
         for(var dt=new Date(s); dt<e; dt.setDate(dt.getDate()+1)){
             var tp=dt.getTime();
+
+            // Blocked check
+            var y = dt.getFullYear();
+            var m = String(dt.getMonth() + 1).padStart(2, '0');
+            var r = String(dt.getDate()).padStart(2, '0');
+            var dateStr = y + '-' + m + '-' + r;
+
+            // Check global Libur Landeuh
+            var isLibur = false;
+            for (var idx = 0; idx < LIBUR_LANDEUH.length; idx++) {
+                var gl = LIBUR_LANDEUH[idx];
+                if (gl.dates && gl.dates.indexOf(dateStr) !== -1) { isLibur = true; break; }
+            }
+            if (isLibur) return true;
+
+            // Check specific package and unit blocked dates
+            var blocked = CORP[t].blockedDates || [];
+            for (var idx2 = 0; idx2 < blocked.length; idx2++) {
+                var sb = blocked[idx2];
+                if (sb.dates && sb.dates.indexOf(dateStr) !== -1) { isLibur = true; break; }
+            }
+            if (isLibur) return true;
+
             // Check direct corporate bookings
             for(var i=0;i<bks.length;i++){
                 var b=bks[i];
@@ -487,6 +525,25 @@
 
     function isDayBooked(t, dateObj){
         var d=new Date(dateObj); d.setHours(12,0,0,0); var tp=d.getTime();
+
+        var y = d.getFullYear();
+        var m = String(d.getMonth() + 1).padStart(2, '0');
+        var r = String(d.getDate()).padStart(2, '0');
+        var dateStr = y + '-' + m + '-' + r;
+
+        // Check global Libur Landeuh
+        for (var idx = 0; idx < LIBUR_LANDEUH.length; idx++) {
+            var gl = LIBUR_LANDEUH[idx];
+            if (gl.dates && gl.dates.indexOf(dateStr) !== -1) return true;
+        }
+
+        // Check specific package and unit blocked dates
+        var blocked = CORP[t].blockedDates || [];
+        for (var idx2 = 0; idx2 < blocked.length; idx2++) {
+            var sb = blocked[idx2];
+            if (sb.dates && sb.dates.indexOf(dateStr) !== -1) return true;
+        }
+
         var bks=CORP[t].bookings||[];
         // Check direct corporate bookings
         for(var i=0;i<bks.length;i++){

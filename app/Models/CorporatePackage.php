@@ -25,6 +25,7 @@ class CorporatePackage extends Model
         'harga_weekend',
         'harga_highseason',
         'gambar',
+        'blocked_dates',
     ];
 
     protected $casts = [
@@ -33,6 +34,7 @@ class CorporatePackage extends Model
         'catatan'           => 'array',
         'gambar'            => 'array',
         'accommodation_ids' => 'array',
+        'blocked_dates'     => 'array',
     ];
 
     public function bookings()

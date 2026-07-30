@@ -314,6 +314,10 @@ Route::prefix('admin')->group(function () {
 
     Route::get('/tanggal', [App\Http\Controllers\Admin\TanggalController::class, 'index'])->name('admin.tanggal.index');
     Route::post('/tanggal', [App\Http\Controllers\Admin\TanggalController::class, 'updateAll'])->name('admin.tanggal.updateAll');
+    Route::post('/tanggal/check-conflicts', [App\Http\Controllers\Admin\TanggalController::class, 'checkConflicts'])->name('admin.tanggal.checkConflicts');
+    Route::post('/pesanan/force-reschedule', [App\Http\Controllers\Admin\PesananController::class, 'forceReschedule'])->name('admin.pesanan.force-reschedule');
+    Route::post('/unit/blocked-dates', [App\Http\Controllers\Admin\UnitController::class, 'updateBlockedDates'])->name('admin.unit.blocked-dates');
+    Route::post('/corporate/blocked-dates', [App\Http\Controllers\Admin\CorporatePackageController::class, 'updateBlockedDates'])->name('admin.corporate.blocked-dates');
 
     // API endpoint for notifications (AJAX Polling)
     Route::get('/api/notifications', function () {

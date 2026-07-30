@@ -10,6 +10,7 @@
 @include('admin.unit._modal-tambah')
 @include('admin.unit._modal-edit')
 @include('admin.unit._modal-delete')
+@include('admin.unit._modal-libur')
 
 {{-- ── STAT CARDS ────────────────────────────────────────────── --}}
 <div class="grid grid-cols-2 gap-4 mb-6">
@@ -96,6 +97,13 @@
 
     {{-- Spacer --}}
     <div class="flex-1 hidden sm:block"></div>
+
+    {{-- Liburkan Kamar --}}
+    <button onclick="openModalLiburkanKamar()"
+        class="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm text-red-700 bg-red-50 border border-red-200 hover:bg-red-100 transition-all active:scale-[0.98] whitespace-nowrap shadow-sm mr-2">
+        <iconify-icon icon="lucide:calendar-off" class="text-base text-red-500"></iconify-icon>
+        Liburkan Kamar
+    </button>
 
     {{-- Tambah Kamar --}}
     <button onclick="openModalTambah()"
@@ -260,6 +268,7 @@
 <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
 <script>
     const AKOMODASI_DATA = @json($accommodations);
+    const DATE_SETTINGS = @json($dateSettings ?? []);
 </script>
 <script>
 (function () {
@@ -494,14 +503,21 @@
             <div class="flex-1 p-4 md:p-5 flex flex-col gap-3 min-w-0">
                 <div class="flex items-start justify-between gap-2">
                     <h3 class="text-base font-bold text-stone-900">${item.judul}</h3>
-                    <span class="text-[11px] font-semibold px-2.5 py-1 rounded-lg shrink-0
-                        ${item.jenis === 'Cabin'
-                            ? 'bg-blue-50 text-blue-700'
-                            : item.jenis === 'Glamping'
-                            ? 'bg-emerald-50 text-emerald-700'
-                            : 'bg-orange-50 text-orange-700'}">
-                        ${item.jenis}
-                    </span>
+                    <div class="flex items-center gap-1.5 shrink-0">
+                        <span class="text-[11px] font-semibold px-2.5 py-1 rounded-lg
+                            ${item.jenis === 'Cabin'
+                                ? 'bg-blue-50 text-blue-700'
+                                : item.jenis === 'Glamping'
+                                ? 'bg-emerald-50 text-emerald-700'
+                                : 'bg-orange-50 text-orange-700'}">
+                            ${item.jenis}
+                        </span>
+                        ${checkIsCurrentlyLibur(item) ? `
+                            <span class="inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-1 rounded-lg bg-red-50 text-red-700 border border-red-200 shadow-sm whitespace-nowrap">
+                                <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>Libur / Blokir
+                            </span>
+                        ` : ''}
+                    </div>
                 </div>
 
                 {{-- Availability badges --}}
@@ -517,6 +533,7 @@
                         </div>
                     </div>
                     ${currentAndFutureBookings.length > 0 ? `<div class="flex flex-col gap-2">${bookedBadgesHtml}</div>` : ''}
+                    ${renderBlockedPeriodsHtml(item)}
                 </div>
 
                 {{-- Detail table --}}
@@ -933,6 +950,607 @@
     document.getElementById('modalKalender')?.addEventListener('click', function(e) {
         if (e.target === this) closeKalenderModal();
     });
+
+    // ── Blocked/Libur Kamar Logic ──────────────────────────────
+    let liburKamarFp = null;
+    let pendingLiburKamarCallback = null;
+    window.currentLiburKamarDates = null;
+    window.currentLiburKamarAccomIds = null;
+
+    window.checkIsCurrentlyLibur = function(item) {
+        const today = parseToLocalDate(new Date());
+        const y = today.getFullYear();
+        const m = String(today.getMonth() + 1).padStart(2, '0');
+        const r = String(today.getDate()).padStart(2, '0');
+        const todayStr = `${y}-${m}-${r}`;
+
+        const globalLibur = (DATE_SETTINGS || []).filter(d => d.type === 'libur_landeuh');
+        for (let gl of globalLibur) {
+            if (gl.dates) {
+                const datesArr = typeof gl.dates === 'string' ? gl.dates.split(',').map(d => d.trim()) : (Array.isArray(gl.dates) ? gl.dates : []);
+                if (datesArr.includes(todayStr)) return true;
+            }
+        }
+
+        const specificBlocked = item.blocked_dates || [];
+        for (let sb of specificBlocked) {
+            if (sb.dates) {
+                const datesArr = typeof sb.dates === 'string' ? sb.dates.split(',').map(d => d.trim()) : (Array.isArray(sb.dates) ? sb.dates : []);
+                if (datesArr.includes(todayStr)) return true;
+            }
+        }
+
+        return false;
+    };
+
+    window.renderBlockedPeriodsHtml = function(item) {
+        const globalLibur = (DATE_SETTINGS || []).filter(d => d.type === 'libur_landeuh');
+        const specificLibur = item.blocked_dates || [];
+
+        const allLibur = [];
+        globalLibur.forEach(gl => {
+            let datesVal = '';
+            if (typeof gl.dates === 'string') {
+                datesVal = gl.dates;
+            } else if (Array.isArray(gl.dates)) {
+                datesVal = gl.dates.join(', ');
+            }
+            allLibur.push({
+                id: gl.id,
+                name: gl.name || 'Libur Landeuh (Global)',
+                dates: datesVal,
+                is_global: true
+            });
+        });
+        specificLibur.forEach(sl => {
+            let datesVal = '';
+            if (typeof sl.dates === 'string') {
+                datesVal = sl.dates;
+            } else if (Array.isArray(sl.dates)) {
+                datesVal = sl.dates.join(', ');
+            }
+            allLibur.push({
+                id: sl.id,
+                name: sl.name,
+                dates: datesVal,
+                is_from_package: sl.is_from_package || false,
+                package_id: sl.package_id
+            });
+        });
+
+        if (allLibur.length === 0) return '';
+
+        const groups = {};
+        allLibur.forEach(lib => {
+            if (!lib.dates) return;
+            const datesStr = typeof lib.dates === 'string' ? lib.dates : (Array.isArray(lib.dates) ? lib.dates.join(', ') : '');
+            const dateList = datesStr.split(',').map(d => d.trim()).filter(Boolean).sort();
+            if (dateList.length === 0) return;
+            
+            const firstDate = parseToLocalDate(dateList[0]);
+            const key = `${firstDate.getFullYear()}-${String(firstDate.getMonth()).padStart(2, '0')}`;
+            if (!groups[key]) {
+                groups[key] = {
+                    month: firstDate.getMonth(),
+                    year: firstDate.getFullYear(),
+                    items: []
+                };
+            }
+            
+            let rangeLabel = '';
+            if (dateList.length === 1) {
+                rangeLabel = formatDateStr(dateList[0]);
+            } else {
+                rangeLabel = `${formatDateStr(dateList[0])} s.d ${formatDateStr(dateList[dateList.length - 1])}`;
+            }
+
+            groups[key].items.push({
+                ...lib,
+                rangeLabel: rangeLabel,
+                firstDateObj: firstDate
+            });
+        });
+
+        function formatDateStr(dateStr) {
+            const p = dateStr.split('-');
+            return p.length === 3 ? `${p[2]}-${p[1]}-${p[0]}` : dateStr;
+        }
+
+        const MONTH_COLORS = [
+            { name: 'Januari',   bg: '#FFE0E0', text: '#CC3333', border: '#FFBBBB' },
+            { name: 'Februari',  bg: '#DDEAFF', text: '#335599', border: '#B8D0FF' },
+            { name: 'Maret',     bg: '#DDFCE0', text: '#1E8C30', border: '#B0E8B8' },
+            { name: 'April',     bg: '#FFF6DD', text: '#BB7711', border: '#FFE8AA' },
+            { name: 'Mei',       bg: '#E6FFDD', text: '#3D9900', border: '#C0F0A0' },
+            { name: 'Juni',      bg: '#EEDDFF', text: '#7733BB', border: '#DDBBFF' },
+            { name: 'Juli',      bg: '#DDF0FF', text: '#2266AA', border: '#AADDFF' },
+            { name: 'Agustus',   bg: '#FFE5EE', text: '#CC2266', border: '#FFBBCC' },
+            { name: 'September', bg: '#FFF0DD', text: '#CC6600', border: '#FFDDAA' },
+            { name: 'Oktober',   bg: '#FCFCE0', text: '#7A7A00', border: '#EEE8A0' },
+            { name: 'November',  bg: '#FFDDF5', text: '#BB2288', border: '#FFBBDD' },
+            { name: 'Desember',  bg: '#DEE0FF', text: '#4444CC', border: '#C0C8FF' },
+        ];
+        const MONTH_SHORT = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agt','Sep','Okt','Nov','Des'];
+
+        const accordionsHtml = Object.keys(groups).sort().map(key => {
+            const g = groups[key];
+            const c = MONTH_COLORS[g.month];
+            const monthLabel = `${MONTH_SHORT[g.month]} ${g.year}`;
+            
+            // Collapsed (hidden) by default!
+            const isOpen = false;
+
+            const itemsHtml = g.items.map(lib => {
+                let deleteBtn = '';
+                if (lib.is_global) {
+                    return `
+                        <div class="flex items-center justify-between gap-2 p-2 rounded-xl bg-amber-50 border border-amber-200 text-amber-700 text-[10px] font-semibold w-full">
+                            <span>🌍 Libur Global: <strong>${lib.name}</strong> (${lib.rangeLabel})</span>
+                        </div>
+                    `;
+                } else if (lib.is_from_package) {
+                    return `
+                        <div class="flex items-center justify-between gap-2 p-2 rounded-xl bg-indigo-50 border border-indigo-200 text-indigo-700 text-[10px] font-semibold w-full">
+                            <span>📦 ${lib.name} (${lib.rangeLabel})</span>
+                            <span class="text-[9px] bg-indigo-100 px-1 py-0.5 rounded text-indigo-800">Dari Paket</span>
+                        </div>
+                    `;
+                } else {
+                    deleteBtn = `
+                        <button onclick="deleteBlockedPeriod(${item.id}, '${lib.id}')" 
+                                class="w-6 h-6 rounded-lg bg-red-100 hover:bg-red-200 text-red-600 flex items-center justify-center transition shrink-0">
+                            <iconify-icon icon="lucide:trash" class="text-xs"></iconify-icon>
+                        </button>
+                    `;
+                    return `
+                        <div class="flex items-center justify-between gap-2 p-2 rounded-xl bg-red-50 border border-red-150 text-red-700 text-[10px] font-semibold w-full">
+                            <span>🚫 Libur Spesifik: <strong>${lib.name}</strong> (${lib.rangeLabel})</span>
+                            ${deleteBtn}
+                        </div>
+                    `;
+                }
+            }).join('');
+
+            return `
+            <div class="border border-stone-200/60 rounded-xl overflow-hidden bg-white/40 shadow-sm mt-1.5">
+                <div class="px-3 py-2 bg-stone-50/80 cursor-pointer flex justify-between items-center hover:bg-stone-100 transition" 
+                     onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('.chevron').classList.toggle('rotate-180')">
+                    <div class="flex items-center gap-2">
+                        <span style="background:${c.text}; color:#fff;" class="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[9px] font-bold tracking-wide whitespace-nowrap shadow-sm">
+                            <iconify-icon icon="lucide:calendar-clock" class="text-[10px]"></iconify-icon>${monthLabel}
+                        </span>
+                        <span class="text-[11px] font-bold text-red-600">${g.items.length} libur/blokir</span>
+                    </div>
+                    <iconify-icon icon="lucide:chevron-down" class="chevron text-stone-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}"></iconify-icon>
+                </div>
+                <div class="${isOpen ? '' : 'hidden'} border-t border-stone-100 p-2 flex flex-col gap-1.5">
+                    ${itemsHtml}
+                </div>
+            </div>`;
+        }).join('');
+
+        return `<div class="flex flex-col gap-1 mt-1">${accordionsHtml}</div>`;
+    };
+
+    window.openModalLiburkanKamar = function() {
+        const checkboxes = document.getElementById('liburKamarCheckboxes');
+        checkboxes.innerHTML = AKOMODASI_DATA.map(accom => `
+            <label class="flex items-center gap-2 cursor-pointer text-stone-700 hover:text-[#3a523a] text-xs font-semibold">
+                <input type="checkbox" name="libur_accom_ids[]" value="${accom.id}" class="rounded border-stone-300 text-red-600 focus:ring-red-500 w-4 h-4 cursor-pointer">
+                <span>${accom.judul}</span>
+            </label>
+        `).join('');
+
+        document.getElementById('liburKamar_name').value = '';
+        document.getElementById('liburKamar_dates').value = '';
+        document.getElementById('btnOpenKalenderLibur').innerHTML = `<iconify-icon icon="lucide:calendar-plus" class="text-xl"></iconify-icon> Pilih Tanggal Blokir`;
+
+        if (liburKamarFp) liburKamarFp.destroy();
+        liburKamarFp = flatpickr("#btnOpenKalenderLibur", {
+            mode: "multiple",
+            minDate: "today",
+            onChange: function(selectedDates, dateStr) {
+                document.getElementById('liburKamar_dates').value = dateStr;
+                document.getElementById('btnOpenKalenderLibur').innerHTML = `<iconify-icon icon="lucide:calendar" class="text-xl"></iconify-icon> ${dateStr}`;
+            }
+        });
+
+        document.getElementById('liburKamarFormWrap').classList.remove('hidden');
+        document.getElementById('liburKamarConflictWrap').classList.add('hidden');
+        document.getElementById('btnSaveLiburKamar').classList.remove('hidden');
+        document.getElementById('btnSaveAfterLiburKamarConflictsCleared').classList.add('hidden');
+
+        document.getElementById('modalLiburkanKamar').classList.remove('hidden');
+    };
+
+    window.closeLiburKamarModal = function() {
+        if (liburKamarFp) { liburKamarFp.close(); liburKamarFp.destroy(); liburKamarFp = null; }
+        document.getElementById('modalLiburkanKamar').classList.add('hidden');
+        pendingLiburKamarCallback = null;
+    };
+
+    window.submitLiburKamar = function() {
+        const checkedBoxes = document.querySelectorAll('input[name="libur_accom_ids[]"]:checked');
+        const accommodationIds = Array.from(checkedBoxes).map(cb => parseInt(cb.value));
+        const name = document.getElementById('liburKamar_name').value.trim();
+        const dates = document.getElementById('liburKamar_dates').value.trim();
+
+        if (accommodationIds.length === 0) {
+            alert('Pilih minimal satu kamar yang ingin diliburkan.');
+            return;
+        }
+        if (!name) {
+            alert('Masukkan nama periode atau alasan libur.');
+            return;
+        }
+        if (!dates) {
+            alert('Pilih tanggal libur.');
+            return;
+        }
+
+        const proceedSave = () => {
+            const btn = document.getElementById('btnSaveLiburKamar');
+            btn.disabled = true;
+            btn.innerHTML = '<iconify-icon icon="lucide:loader-2" class="animate-spin"></iconify-icon> Memproses...';
+
+            fetch('/admin/unit/blocked-dates', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({
+                    action: 'create',
+                    accommodation_ids: accommodationIds,
+                    name: name,
+                    dates: dates
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.reload();
+                } else {
+                    alert('Gagal menyimpan: ' + data.message);
+                    btn.disabled = false;
+                    btn.innerHTML = '<iconify-icon icon="lucide:check"></iconify-icon> Terapkan Libur';
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert('Terjadi kesalahan jaringan.');
+                btn.disabled = false;
+                btn.innerHTML = '<iconify-icon icon="lucide:check"></iconify-icon> Terapkan Libur';
+            });
+        };
+
+        if (pendingLiburKamarCallback) {
+            proceedSave();
+            return;
+        }
+
+        fetch('/admin/tanggal/check-conflicts', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({
+                dates: dates,
+                accommodation_ids: accommodationIds
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.conflicts && data.conflicts.length > 0) {
+                showLiburKamarConflict(data.conflicts, dates, accommodationIds, proceedSave);
+            } else {
+                proceedSave();
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert('Gagal memeriksa konflik pesanan.');
+        });
+    };
+
+    function showLiburKamarConflict(conflicts, datesStr, accommodationIds, onClearCallback) {
+        pendingLiburKamarCallback = onClearCallback;
+        window.currentLiburKamarDates = datesStr;
+        window.currentLiburKamarAccomIds = accommodationIds;
+
+        renderLiburKamarConflictsList(conflicts);
+
+        document.getElementById('liburKamarFormWrap').classList.add('hidden');
+        document.getElementById('liburKamarConflictWrap').classList.remove('hidden');
+        document.getElementById('btnSaveLiburKamar').classList.add('hidden');
+        document.getElementById('btnSaveAfterLiburKamarConflictsCleared').classList.remove('hidden');
+        document.getElementById('btnSaveAfterLiburKamarConflictsCleared').disabled = true;
+    }
+
+    function renderLiburKamarConflictsList(conflicts) {
+        const container = document.getElementById('liburKamarConflictList');
+        const saveBtn = document.getElementById('btnSaveAfterLiburKamarConflictsCleared');
+
+        if (conflicts.length === 0) {
+            container.innerHTML = `
+                <div class="text-center py-4 text-green-600 bg-green-50 rounded-xl border border-green-200">
+                    <iconify-icon icon="lucide:check-circle" class="text-2xl mb-1"></iconify-icon>
+                    <p class="text-xs font-bold">Semua konflik telah terselesaikan!</p>
+                </div>
+            `;
+            saveBtn.disabled = false;
+            saveBtn.className = 'w-full py-3 rounded-xl font-bold text-xs text-white bg-green-600 hover:bg-green-700 transition shadow-sm';
+            return;
+        }
+
+        saveBtn.disabled = true;
+        saveBtn.className = 'w-full py-3 rounded-xl font-bold text-xs text-stone-400 bg-stone-100 cursor-not-allowed';
+
+        container.innerHTML = conflicts.map(p => {
+            const cleanPhone = p.pemesanTelp.replace(/^0/, '62').replace(/[-+\s]/g, '');
+            const waMsg = encodeURIComponent(`Halo Kak ${p.pemesanNama}, kami dari Landeuh Village. Mengenai pemesanan Kakak dengan nomor #${p.noPesanan} untuk akomodasi ${p.akomodasi} pada tanggal ${p.checkin} s.d ${p.checkout}, kami ingin menginfokan bahwa kamar tersebut sedang dalam perawatan/diliburkan. Apakah boleh kami bantu untuk reschedule ke tanggal alternatif? Terima kasih.`);
+            const waUrl = `https://wa.me/${cleanPhone}?text=${waMsg}`;
+
+            return `
+                <div class="p-3 rounded-xl border border-stone-200 bg-stone-50 flex flex-col gap-2">
+                    <div class="flex justify-between items-start gap-2">
+                        <div>
+                            <span class="text-[9px] font-extrabold text-red-500 bg-red-50 px-1.5 py-0.5 rounded border border-red-200 uppercase">${p.noPesanan}</span>
+                            <h4 class="text-xs font-bold text-stone-800 mt-1">${p.pemesanNama} <span class="font-normal text-[10px] text-stone-500">(${p.pemesanTelp})</span></h4>
+                            <p class="text-[10px] text-stone-600">Akomodasi: <strong>${p.akomodasi}</strong> · Tanggal: <strong>${p.checkin} &rarr; ${p.checkout}</strong></p>
+                        </div>
+                        <div class="flex gap-1">
+                            <a href="${waUrl}" target="_blank" class="px-2 py-1 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-[10px] flex items-center gap-0.5 transition shadow-sm">
+                                <iconify-icon icon="lucide:message-square"></iconify-icon> WA
+                            </a>
+                            <button onclick="initLiburReschedule(${p.id}, '${p.checkin}', '${p.checkout}', ${p.accommodation_id || 'null'}, ${p.corporate_package_id || 'null'}, ${p.is_corporate ? 1 : 0})" class="px-2 py-1 rounded-lg bg-amber-500 hover:bg-amber-600 text-white font-bold text-[10px] flex items-center gap-0.5 transition shadow-sm">
+                                <iconify-icon icon="lucide:calendar-range"></iconify-icon> Reschedule
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="libur-resched-form-${p.id}" class="hidden p-2 rounded-lg bg-white border border-stone-200 mt-1 flex flex-col gap-2">
+                        <div class="flex items-center gap-1.5">
+                            <span class="text-[10px] font-bold text-stone-600">Pilih Tanggal:</span>
+                            <input type="text" id="libur-resched-input-${p.id}" class="hidden">
+                            <button type="button" id="btn-libur-resched-picker-${p.id}" class="px-2 py-1 border border-stone-300 rounded text-[10px] font-semibold text-stone-700 bg-stone-50 hover:bg-stone-100 flex items-center gap-1 transition">
+                                <iconify-icon icon="lucide:calendar"></iconify-icon> Pilih Check-in & Check-out
+                            </button>
+                        </div>
+                        <div class="flex justify-end gap-1.5">
+                            <button onclick="document.getElementById('libur-resched-form-${p.id}').classList.add('hidden')" class="px-2 py-1 rounded text-[10px] font-bold bg-stone-100 text-stone-600">Batal</button>
+                            <button id="btn-libur-resched-save-${p.id}" disabled onclick="saveLiburReschedule(${p.id})" class="px-2 py-1 rounded text-[10px] font-bold bg-stone-300 text-stone-500 cursor-not-allowed">Simpan</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    window.initLiburReschedule = function(bookingId, checkin, checkout, accomId, pkgId, isCorp) {
+        const startOrig = new Date(checkin);
+        const endOrig = new Date(checkout);
+        const origNights = Math.round((endOrig - startOrig) / (1000 * 60 * 60 * 24));
+        window[`origNights_${bookingId}`] = origNights;
+
+        const form = document.getElementById(`libur-resched-form-${bookingId}`);
+        form.classList.toggle('hidden');
+        if (form.classList.contains('hidden')) return;
+
+        const input = document.getElementById(`libur-resched-input-${bookingId}`);
+        const btn = document.getElementById(`btn-libur-resched-picker-${bookingId}`);
+        const saveBtn = document.getElementById(`btn-libur-resched-save-${bookingId}`);
+
+        const targetId = isCorp ? pkgId : accomId;
+
+        fetch(`/reservasi/booked-dates/${targetId}?exclude_booking_id=${bookingId}&is_corporate=${isCorp ? 1 : 0}`)
+        .then(res => res.json())
+        .then(data => {
+            const disabledDates = data.booked_dates || [];
+
+            if (window[`fp_libur_resched_${bookingId}`]) window[`fp_libur_resched_${bookingId}`].destroy();
+
+            window[`fp_libur_resched_${bookingId}`] = flatpickr(input, {
+                mode: 'range',
+                minDate: 'today',
+                positionElement: btn,
+                disable: [
+                    function(date) {
+                        let y = date.getFullYear();
+                        let m = String(date.getMonth() + 1).padStart(2, '0');
+                        let d = String(date.getDate()).padStart(2, '0');
+                        let dateStr = `${y}-${m}-${d}`;
+
+                        const fpInstance = window[`fp_libur_resched_${bookingId}`];
+                        const selected = (fpInstance && fpInstance.selectedDates) ? fpInstance.selectedDates : [];
+
+                        if (selected && selected.length === 1) {
+                            const start = new Date(selected[0]);
+                            start.setHours(0, 0, 0, 0);
+                            const cur = new Date(date);
+                            cur.setHours(0, 0, 0, 0);
+
+                            if (cur <= start) return true;
+
+                            for (let dt = new Date(start); dt < cur; dt.setDate(dt.getDate() + 1)) {
+                                let sy = dt.getFullYear();
+                                let sm = String(dt.getMonth() + 1).padStart(2, '0');
+                                let sd = String(dt.getDate()).padStart(2, '0');
+                                let sStr = `${sy}-${sm}-${sd}`;
+                                if (disabledDates.includes(sStr)) return true;
+                            }
+                            return false;
+                        }
+                        return disabledDates.includes(dateStr);
+                    }
+                ],
+                onDayCreate: function(dObj, dStr, fp, dayElem) {
+                    let y = dayElem.dateObj.getFullYear();
+                    let m = String(dayElem.dateObj.getMonth() + 1).padStart(2, '0');
+                    let d = String(dayElem.dateObj.getDate()).padStart(2, '0');
+                    let dateStr = `${y}-${m}-${d}`;
+                    if (disabledDates.includes(dateStr)) {
+                        dayElem.classList.add('booked-date');
+                    }
+                },
+                onChange: function(selectedDates, dateStr, instance) {
+                    btn.innerHTML = `<iconify-icon icon="lucide:calendar"></iconify-icon> ${dateStr}`;
+                    if (selectedDates.length === 2) {
+                        let start = new Date(selectedDates[0]);
+                        start.setHours(12,0,0,0);
+                        let end = new Date(selectedDates[1]);
+                        end.setHours(12,0,0,0);
+                        
+                        let hasBlockedDate = false;
+                        for (let dt = new Date(start); dt < end; dt.setDate(dt.getDate() + 1)) {
+                            let sy = dt.getFullYear();
+                            let sm = String(dt.getMonth() + 1).padStart(2, '0');
+                            let sd = String(dt.getDate()).padStart(2, '0');
+                            let sStr = `${sy}-${sm}-${sd}`;
+                            if (disabledDates.includes(sStr)) {
+                                hasBlockedDate = true;
+                                break;
+                            }
+                        }
+
+                        if (hasBlockedDate) {
+                            alert('Beberapa tanggal di dalam rentang yang Anda pilih sudah terisi. Silakan pilih rentang tanggal lain.');
+                            saveBtn.disabled = true;
+                            saveBtn.className = 'px-2 py-1 rounded text-[10px] font-bold bg-stone-300 text-stone-500 cursor-not-allowed';
+                        } else {
+                            saveBtn.disabled = false;
+                            saveBtn.className = 'px-2 py-1 rounded text-[10px] font-bold bg-green-600 text-white hover:bg-green-700 transition shadow-sm';
+                        }
+                    } else {
+                        saveBtn.disabled = true;
+                        saveBtn.className = 'px-2 py-1 rounded text-[10px] font-bold bg-stone-300 text-stone-500 cursor-not-allowed';
+                    }
+                }
+            });
+
+            window[`fp_libur_resched_${bookingId}`].jumpToDate(checkin);
+
+            btn.onclick = function(e) {
+                e.stopPropagation();
+                window[`fp_libur_resched_${bookingId}`].toggle();
+            };
+
+            setTimeout(() => {
+                window[`fp_libur_resched_${bookingId}`].open();
+            }, 50);
+        })
+        .catch(err => {
+            console.error(err);
+            alert('Gagal mengambil tanggal ketersediaan.');
+        });
+    };
+
+    window.saveLiburReschedule = function(bookingId) {
+        const input = document.getElementById(`libur-resched-input-${bookingId}`);
+        const dates = input.value.split(' to ');
+        if (dates.length !== 2) {
+            alert('Pilih tanggal check-in dan check-out yang valid.');
+            return;
+        }
+
+        const start = new Date(dates[0]);
+        const end = new Date(dates[1]);
+        const selectedNights = Math.round((end - start) / (1000 * 60 * 60 * 24));
+        const origNights = window[`origNights_${bookingId}`];
+
+        if (selectedNights !== origNights) {
+            alert(`Durasi menginap harus sama dengan pesanan awal yaitu ${origNights} malam. Saat ini Anda memilih ${selectedNights} malam.`);
+            return;
+        }
+
+        const saveBtn = document.getElementById(`btn-libur-resched-save-${bookingId}`);
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<iconify-icon icon="lucide:loader-2" class="animate-spin text-[10px]"></iconify-icon>';
+
+        fetch('/admin/pesanan/force-reschedule', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({
+                booking_id: bookingId,
+                check_in_date: dates[0],
+                check_out_date: dates[1]
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                recheckLiburKamarConflicts();
+            } else {
+                alert('Gagal memindahkan jadwal: ' + data.message);
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = 'Simpan';
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert('Terjadi kesalahan jaringan.');
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = 'Simpan';
+        });
+    };
+
+    function recheckLiburKamarConflicts() {
+        const dates = window.currentLiburKamarDates;
+        const accommodationIds = window.currentLiburKamarAccomIds;
+
+        fetch('/admin/tanggal/check-conflicts', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({
+                dates: dates,
+                accommodation_ids: accommodationIds
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            renderLiburKamarConflictsList(data.conflicts);
+        })
+        .catch(err => {
+            console.error(err);
+            alert('Gagal menyegarkan daftar bentrokan.');
+        });
+    }
+
+    window.deleteBlockedPeriod = function(accommodationId, blockId) {
+        if (!confirm('Apakah Anda yakin ingin membuka kembali kamar pada periode libur ini?')) return;
+
+        fetch('/admin/unit/blocked-dates', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({
+                action: 'delete',
+                accommodation_id: accommodationId,
+                block_id: blockId
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                window.location.reload();
+            } else {
+                alert('Gagal menghapus: ' + data.message);
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert('Kesalahan jaringan.');
+        });
+    };
 
     applyFilter(true); // true = keep page from URL hash on first load
 })();

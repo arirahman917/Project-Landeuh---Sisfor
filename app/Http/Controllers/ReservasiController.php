@@ -73,22 +73,8 @@ class ReservasiController extends Controller
                         })
                         ->count();
 
-                    if ($corpBookingsCount + 1 > $totalSlots) {
+                    if ($corpBookingsCount >= 1) {
                         $isAvailable = false;
-                    } else {
-                        // Cek apakah seluruh unit reguler (misal: 13 Glamping atau 8 Cabin) sudah habis dibooking
-                        $targetJenis = $target->jenis_akomodasi ?? '';
-                        if ($targetJenis) {
-                            $maxUnits = Accommodation::where('jenis', $targetJenis)->sum('slot') ?: (strtolower($targetJenis) === 'glamping' ? 13 : 8);
-                            $regularBookedCount = Booking::whereHas('accommodation', function($q) use ($targetJenis) {
-                                    $q->where('jenis', $targetJenis);
-                                })
-                                ->whereNotIn('status', ['failed', 'refunded'])
-                                ->where('check_in_date', '<=', $currentDate)
-                                ->where('check_out_date', '>', $currentDate)
-                                ->count();
-                            if ($regularBookedCount >= $maxUnits) $isAvailable = false;
-                        }
                     }
                 } else {
                     // Cek ketersediaan untuk akomodasi reguler
@@ -647,8 +633,41 @@ class ReservasiController extends Controller
         $startDate = Carbon::now()->startOfDay();
         $endDate = $startDate->copy()->addDays(365);
 
+        $globalLibur = \App\Models\DateSetting::where('type', 'libur_landeuh')->get();
+        $pkgBlocked = [];
+        if ($isCorporate) {
+            $pkgBlocked = $accommodation->blocked_dates ?: [];
+        } else {
+            $pkgBlocked = $accommodation->blocked_dates ?: [];
+            $relatedCorpBlocked = \App\Models\CorporatePackage::get()
+                ->filter(function($cp) use ($accommodation) {
+                    return in_array($accommodation->id, $cp->accommodation_ids ?? []);
+                })
+                ->pluck('blocked_dates')
+                ->filter()
+                ->flatten(1)
+                ->toArray();
+            $pkgBlocked = array_merge($pkgBlocked, $relatedCorpBlocked);
+        }
+
         for ($d = $startDate->copy(); $d->lte($endDate); $d->addDay()) {
             $currentDate = $d->format('Y-m-d');
+
+            $isLibur = false;
+            foreach ($globalLibur as $gl) {
+                if (!empty($gl->dates) && str_contains($gl->dates, $currentDate)) {
+                    $isLibur = true;
+                    break;
+                }
+            }
+            if (!$isLibur) {
+                foreach ($pkgBlocked as $bp) {
+                    if (!empty($bp['dates']) && str_contains($bp['dates'], $currentDate)) {
+                        $isLibur = true;
+                        break;
+                    }
+                }
+            }
 
             $count = $bookings->filter(function($b) use ($currentDate, $excludeId) {
                 if ($excludeId && $b->id == $excludeId) return false;
@@ -659,24 +678,8 @@ class ReservasiController extends Controller
             $isBooked = false;
 
             if ($isCorporate) {
-                if ($count >= $totalSlots) {
+                if ($count >= 1) {
                     $isBooked = true;
-                } else {
-                    $targetJenis = $accommodation->jenis_akomodasi ?? '';
-                    if ($targetJenis) {
-                        $maxUnits = Accommodation::where('jenis', $targetJenis)->sum('slot') ?: (strtolower($targetJenis) === 'glamping' ? 13 : 8);
-                        $regularBookedCount = Booking::whereHas('accommodation', function($q) use ($targetJenis) {
-                                $q->where('jenis', $targetJenis);
-                            })
-                            ->whereNotIn('status', ['failed', 'refunded'])
-                            ->when($excludeId, function($q) use ($excludeId) {
-                                return $q->where('id', '!=', $excludeId);
-                            })
-                            ->where('check_in_date', '<=', $currentDate)
-                            ->where('check_out_date', '>', $currentDate)
-                            ->count();
-                        if ($regularBookedCount >= $maxUnits) $isBooked = true;
-                    }
                 }
             } else {
                 $accomJenis = $accommodation->jenis;
@@ -695,6 +698,10 @@ class ReservasiController extends Controller
                 } else {
                     if ($count >= $totalSlots) $isBooked = true;
                 }
+            }
+
+            if ($isLibur) {
+                $isBooked = true;
             }
 
             if ($isBooked) {

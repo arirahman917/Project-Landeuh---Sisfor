@@ -29,13 +29,23 @@ class UnitController extends Controller
             });
 
             // Inject corporate bookings into the item's bookings collection
+            $myBlockedDates = $item->blocked_dates ?: [];
             foreach ($relatedCorporatePackages as $cp) {
                 foreach ($cp->bookings as $cb) {
                     $cb->is_corporate = true;
                     $cb->corporate_label = $cp->judul;
                     $item->bookings->push($cb);
                 }
+                
+                $cpBlocked = $cp->blocked_dates ?: [];
+                foreach ($cpBlocked as &$bBlock) {
+                    $bBlock['name'] = 'Paket: ' . ($bBlock['name'] ?: $cp->judul);
+                    $bBlock['is_from_package'] = true;
+                    $bBlock['package_id'] = $cp->id;
+                }
+                $myBlockedDates = array_merge($myBlockedDates, $cpBlocked);
             }
+            $item->blocked_dates = $myBlockedDates;
 
             // Map keys for JS compatibility
             $item->hargaWeekday = $item->harga_weekday;
@@ -45,7 +55,8 @@ class UnitController extends Controller
             return $item;
         });
 
-        return view('admin.unit.index', compact('accommodations'));
+        $dateSettings = \App\Models\DateSetting::all();
+        return view('admin.unit.index', compact('accommodations', 'dateSettings'));
     }
 
     public function store(Request $request)
@@ -162,5 +173,94 @@ class UnitController extends Controller
     {
         Accommodation::findOrFail($id)->delete();
         return response()->json(['success' => true]);
+    }
+
+    public function updateBlockedDates(Request $request)
+    {
+        try {
+            $action = $request->input('action', 'create');
+
+            if ($action === 'create') {
+                $validated = $request->validate([
+                    'accommodation_ids' => 'required|array',
+                    'accommodation_ids.*' => 'exists:accommodations,id',
+                    'name' => 'required|string|max:255',
+                    'dates' => 'required|string',
+                ]);
+
+                $accommodations = Accommodation::whereIn('id', $validated['accommodation_ids'])->get();
+                foreach ($accommodations as $accom) {
+                    $blocked = $accom->blocked_dates ?? [];
+                    $blocked[] = [
+                        'id' => uniqid(),
+                        'name' => $validated['name'],
+                        'dates' => $validated['dates'],
+                        'created_at' => now()->toDateTimeString(),
+                    ];
+                    $accom->blocked_dates = $blocked;
+                    $accom->save();
+                }
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Kamar berhasil diliburkan untuk periode yang dipilih.'
+                ]);
+
+            } elseif ($action === 'delete') {
+                $validated = $request->validate([
+                    'accommodation_id' => 'required|exists:accommodations,id',
+                    'block_id' => 'required|string',
+                ]);
+
+                $accom = Accommodation::findOrFail($validated['accommodation_id']);
+                $blocked = $accom->blocked_dates ?? [];
+                
+                $blocked = array_values(array_filter($blocked, function($b) use ($validated) {
+                    return ($b['id'] ?? '') !== $validated['block_id'];
+                }));
+
+                $accom->blocked_dates = $blocked;
+                $accom->save();
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Periode libur berhasil dihapus.'
+                ]);
+
+            } elseif ($action === 'edit') {
+                $validated = $request->validate([
+                    'accommodation_id' => 'required|exists:accommodations,id',
+                    'block_id' => 'required|string',
+                    'name' => 'required|string|max:255',
+                    'dates' => 'required|string',
+                ]);
+
+                $accom = Accommodation::findOrFail($validated['accommodation_id']);
+                $blocked = $accom->blocked_dates ?? [];
+
+                foreach ($blocked as &$b) {
+                    if (($b['id'] ?? '') === $validated['block_id']) {
+                        $b['name'] = $validated['name'];
+                        $b['dates'] = $validated['dates'];
+                    }
+                }
+
+                $accom->blocked_dates = $blocked;
+                $accom->save();
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Periode libur berhasil diperbarui.'
+                ]);
+            }
+
+            return response()->json(['success' => false, 'message' => 'Aksi tidak dikenal.'], 400);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengelola tanggal libur: ' . $e->getMessage()
+            ], 400);
+        }
     }
 }

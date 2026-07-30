@@ -23,6 +23,7 @@ class Accommodation extends Model
         'harga_weekend',
         'harga_highseason',
         'gambar',
+        'blocked_dates',
     ];
 
     protected $casts = [
@@ -31,6 +32,7 @@ class Accommodation extends Model
         'catatan' => 'array',
         'merokok' => 'boolean',
         'gambar' => 'array',
+        'blocked_dates' => 'array',
     ];
 
     public function bookings()
