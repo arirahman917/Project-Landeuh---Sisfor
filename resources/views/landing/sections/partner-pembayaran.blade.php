@@ -5,11 +5,10 @@
     <div class="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#D9C49A]/50 to-transparent"></div>
 
     <!-- Batik Ornaments -->
-    <!-- Batik Ornaments -->
     <div class="absolute inset-0 pointer-events-none select-none z-0" aria-hidden="true">
-        <img loading="lazy" src="{{ asset('images/assets_lain/batik.png') }}" alt=""
+        <img loading="lazy" decoding="async" src="{{ asset('images/assets_lain/batik.png') }}" alt=""
              class="absolute top-0 right-10 w-40 md:w-56 opacity-50 translate-y-4 rotate-[15deg]">
-        <img loading="lazy" src="{{ asset('images/assets_lain/batik.png') }}" alt=""
+        <img loading="lazy" decoding="async" src="{{ asset('images/assets_lain/batik.png') }}" alt=""
              class="absolute bottom-4 left-10 w-32 md:w-48 opacity-40 -rotate-[15deg] scale-x-[-1]">
     </div>
 

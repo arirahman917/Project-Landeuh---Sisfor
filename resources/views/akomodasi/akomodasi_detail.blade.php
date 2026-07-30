@@ -40,27 +40,18 @@
                         </svg>
                     </div>
                 </div>
-                <!-- Dropdown -->
-                <div class="absolute top-[calc(100%+0.5rem)] right-0 mt-2 w-[calc(100vw-2rem)] md:w-72 bg-white rounded-2xl shadow-[0_15px_40px_-10px_rgba(0,0,0,0.2)] border border-gray-100 p-5 hidden z-50 transform" id="guestPickerDropdown" onclick="event.stopPropagation()">
-                    <div class="flex items-center justify-between mb-2">
-                        <div class="flex items-center gap-3 text-gray-800 font-semibold text-md">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
-                            Tamu
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <button type="button" class="w-8 h-8 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center hover:bg-blue-100" id="btnDecDewasa">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15" /></svg>
-                            </button>
-                            <span class="w-5 text-center font-bold text-gray-800" id="valDewasa">2</span>
-                            <button type="button" class="w-8 h-8 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center hover:bg-blue-100" id="btnIncDewasa">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="flex justify-end pt-5 border-t border-gray-100 mt-4">
-                        <button type="button" class="text-blue-500 font-bold text-md hover:text-blue-600 transition" id="btnSelesaiGuest">Selesai</button>
+                <!-- Dropdown List -->
+                <div class="absolute top-[calc(100%+0.5rem)] right-0 w-full min-w-[200px] bg-white rounded-2xl shadow-[0_15px_40px_-10px_rgba(0,0,0,0.2)] border border-gray-100 py-2 hidden z-50" id="guestPickerDropdown" onclick="event.stopPropagation()">
+                    <div class="flex flex-col">
+                        <button class="guest-opt w-full text-left px-5 py-3 hover:bg-blue-600 hover:text-white transition-colors text-gray-700 text-sm font-medium" data-value="Semua Tamu" data-guests="0">Semua Tamu</button>
+                        <button class="guest-opt w-full text-left px-5 py-3 hover:bg-blue-600 hover:text-white transition-colors text-gray-700 text-sm font-medium" data-value="2 Tamu" data-guests="2">2 Tamu</button>
+                        <button class="guest-opt w-full text-left px-5 py-3 hover:bg-blue-600 hover:text-white transition-colors text-gray-700 text-sm font-medium" data-value="3 Tamu" data-guests="3">3 Tamu</button>
+                        <button class="guest-opt w-full text-left px-5 py-3 hover:bg-blue-600 hover:text-white transition-colors text-gray-700 text-sm font-medium" data-value="4 Tamu" data-guests="4">4 Tamu</button>
+                        <button class="guest-opt w-full text-left px-5 py-3 hover:bg-blue-600 hover:text-white transition-colors text-gray-700 text-sm font-medium" data-value="5 Tamu" data-guests="5">5 Tamu</button>
+                        <button class="guest-opt w-full text-left px-5 py-3 hover:bg-blue-600 hover:text-white transition-colors text-gray-700 text-sm font-medium" data-value="8 Tamu" data-guests="8">8 Tamu</button>
                     </div>
                 </div>
+                <input type="hidden" id="filterGuests" value="2">
             </div>
         </div>
     </div>
@@ -812,62 +803,7 @@
         currentPage=page;render();
     };
 
-    // Guest Picker Logic
-    const params = new URLSearchParams(window.location.search);
-    let valDewasa = parseInt(params.get('dewasa')) || 2;
 
-    const trigger = document.getElementById('guestPickerTrigger');
-    const dropdown = document.getElementById('guestPickerDropdown');
-    const label = document.getElementById('guestPickerLabel');
-    const guestContainer = document.getElementById('guestPickerContainer');
-
-    // Sync UI value on load
-    if (document.getElementById('valDewasa')) {
-        document.getElementById('valDewasa').innerText = valDewasa;
-    }
-
-    if (guestContainer && dropdown) {
-        guestContainer.addEventListener('click', (e) => {
-            if (dropdown.contains(e.target)) return;
-            e.stopPropagation();
-            const akoDp = document.getElementById('akomodasiPickerDropdown');
-            const akoCv = document.getElementById('akomodasiPickerChevron');
-            if (akoDp) {
-                akoDp.classList.add('hidden');
-                if(akoCv) akoCv.classList.remove('rotate-180');
-            }
-            dropdown.classList.toggle('hidden');
-        });
-    }
-
-    const btnSelesai = document.getElementById('btnSelesaiGuest');
-    if (btnSelesai) {
-        btnSelesai.addEventListener('click', (e) => {
-            e.stopPropagation();
-            if (dropdown) dropdown.classList.add('hidden');
-            doFilter(); // Auto-filter on guest change
-        });
-    }
-
-    document.addEventListener('click', (e) => {
-        if(guestContainer && !guestContainer.contains(e.target) && dropdown) {
-            dropdown.classList.add('hidden');
-        }
-    });
-
-    function updateGuestLabel() {
-        label.innerText = `${valDewasa} Tamu`;
-    }
-
-    document.getElementById('btnDecDewasa').addEventListener('click', () => {
-        if(valDewasa > 1) { valDewasa--; document.getElementById('valDewasa').innerText = valDewasa; updateGuestLabel(); doFilter(); }
-    });
-    document.getElementById('btnIncDewasa').addEventListener('click', () => {
-        valDewasa++; document.getElementById('valDewasa').innerText = valDewasa; updateGuestLabel(); doFilter();
-    });
-
-    // Call on load to initialize label
-    updateGuestLabel();
 
     window.getAvailableSlots = function(akomodasi, flatpickrDates) {
         let maxBooked = 0;
@@ -1000,8 +936,9 @@
     }
 
     function doFilter() {
-        const j = document.getElementById('filterJenis').value;
-        const targetDewasa = parseInt(document.getElementById('valDewasa').innerText);
+        const j = document.getElementById('filterJenis') ? document.getElementById('filterJenis').value : 'Semua Akomodasi';
+        const guestInput = document.getElementById('filterGuests');
+        const targetDewasa = guestInput ? parseInt(guestInput.value) || 0 : 0;
 
         filteredData = AKOMODASI_DATA.filter(d => {
             // Jenis
@@ -1010,7 +947,10 @@
                 matchJenis = (d.jenis === j);
             }
             // Tamu (Kapasitas Akomodasi >= Jumlah Tamu)
-            let matchTamu = (d.maxOrang >= targetDewasa);
+            let matchTamu = true;
+            if (targetDewasa > 0) {
+                matchTamu = (d.maxOrang >= targetDewasa);
+            }
 
             return matchJenis && matchTamu;
         });
@@ -1071,6 +1011,25 @@
         });
     });
 
+    document.querySelectorAll('.guest-opt').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const val = btn.getAttribute('data-value');
+            const count = parseInt(btn.getAttribute('data-guests')) || 0;
+            const guestLabel = document.getElementById('guestPickerLabel');
+            const guestInput = document.getElementById('filterGuests');
+            const guestDropdown = document.getElementById('guestPickerDropdown');
+            const guestChevron = document.getElementById('guestPickerChevron');
+
+            if (guestLabel) guestLabel.innerText = val;
+            if (guestInput) guestInput.value = count;
+            if (guestDropdown) guestDropdown.classList.add('hidden');
+            if (guestChevron) guestChevron.classList.remove('rotate-180');
+            doFilter(); // Auto-filter on selection
+        });
+    });
+
     document.addEventListener('click', (e) => {
         const akoContainer = document.getElementById('akomodasiPickerContainer');
         const guestContainer = document.getElementById('guestPickerContainer');
@@ -1111,11 +1070,12 @@
         }
     }
     if (paramDewasa) {
-        valDewasa = parseInt(paramDewasa) || 2;
-        const valDewasaEl = document.getElementById('valDewasa');
-        if (valDewasaEl) valDewasaEl.innerText = valDewasa;
+        const dVal = parseInt(paramDewasa) || 0;
+        const guestInput = document.getElementById('filterGuests');
+        const guestLabel = document.getElementById('guestPickerLabel');
+        if (guestInput) guestInput.value = dVal;
+        if (guestLabel) guestLabel.innerText = dVal > 0 ? `${dVal} Tamu` : 'Semua Tamu';
     }
-    updateGuestLabel();
 
     if (paramTgl) {
         const parts = paramTgl.split(' to ');

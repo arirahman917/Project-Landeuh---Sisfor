@@ -2,13 +2,13 @@
 
     {{-- ══ Batik ornaments ══ --}}
     <div class="absolute inset-0 pointer-events-none select-none z-0" aria-hidden="true">
-        <img src="{{ asset('images/assets_lain/batik.png') }}" alt=""
+        <img src="{{ asset('images/assets_lain/batik.png') }}" alt="" loading="lazy" decoding="async"
              class="absolute -top-20 -right-10 w-48 md:w-64 opacity-50 rotate-[20deg] scale-x-[-1]">
-        <img src="{{ asset('images/assets_lain/batik.png') }}" alt=""
+        <img src="{{ asset('images/assets_lain/batik.png') }}" alt="" loading="lazy" decoding="async"
              class="absolute bottom-10 -left-15 w-40 md:w-56 opacity-40 rotate-[-15deg]">
-        <img src="{{ asset('images/assets_lain/batik.png') }}" alt=""
+        <img src="{{ asset('images/assets_lain/batik.png') }}" alt="" loading="lazy" decoding="async"
              class="absolute top-1/2 left-1/3 -translate-x-1/2 -translate-y-1/2 w-64 md:w-96 opacity-[0.15] rotate-[45deg]">
-             
+              
         {{-- Subtle warm glow center --}}
         <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-48 opacity-30 pointer-events-none"
              style="background: radial-gradient(ellipse at center bottom, #D4A853 0%, transparent 70%);"></div>
@@ -27,7 +27,8 @@
                 <div class="flex flex-row lg:flex-col items-center lg:items-start gap-4 lg:gap-5">
                     <a href="{{ url('/') }}" class="inline-block w-fit group shrink-0">
                         <img src="{{ asset('images/logo-landeuh.png') }}"
-                             alt="Landeuh Village Riverside"
+                             alt="Landeuh Village Riverside Logo"
+                             loading="lazy" decoding="async"
                              class="h-12 lg:h-16 w-auto object-contain
                                     group-hover:opacity-90 transition-opacity duration-300">
                     </a>

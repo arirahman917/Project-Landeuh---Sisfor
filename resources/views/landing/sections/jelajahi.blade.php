@@ -3,13 +3,13 @@
 
     {{-- Batik Background Ornaments --}}
     <div class="absolute inset-0 pointer-events-none select-none z-0" aria-hidden="true">
-        <img loading="lazy" src="{{ asset('images/assets_lain/batik.png') }}" alt=""
+        <img loading="lazy" decoding="async" src="{{ asset('images/assets_lain/batik.png') }}" alt=""
              class="absolute top-0 left-0 w-52 opacity-40 -translate-x-6 -translate-y-6 rotate-[-12deg]">
-        <img loading="lazy" src="{{ asset('images/assets_lain/batik.png') }}" alt=""
+        <img loading="lazy" decoding="async" src="{{ asset('images/assets_lain/batik.png') }}" alt=""
              class="absolute bottom-0 left-0 w-48 opacity-40 -translate-x-4 translate-y-4 rotate-[8deg]">
-        <img loading="lazy" src="{{ asset('images/assets_lain/batik.png') }}" alt=""
+        <img loading="lazy" decoding="async" src="{{ asset('images/assets_lain/batik.png') }}" alt=""
              class="absolute top-0 right-0 w-52 opacity-40 translate-x-6 -translate-y-6 rotate-[12deg] scale-x-[-1]">
-        <img loading="lazy" src="{{ asset('images/assets_lain/batik.png') }}" alt=""
+        <img loading="lazy" decoding="async" src="{{ asset('images/assets_lain/batik.png') }}" alt=""
              class="absolute bottom-0 right-0 w-48 opacity-40 translate-x-4 translate-y-4 rotate-[-8deg] scale-x-[-1]">
     </div>
 
@@ -27,73 +27,88 @@
                 </div>
             </div>
 
-            {{-- Right: Cards --}}
-            <div class="jelajahi-cards flex gap-5 overflow-x-auto md:overflow-visible pb-2 md:pb-0 snap-x snap-mandatory md:snap-none w-full md:w-auto">
+            {{-- Right: Cards Container with Nav Buttons --}}
+            <div class="relative w-full md:w-auto flex-1">
+                {{-- Prev/Next Nav Buttons --}}
+                <button id="jelajahiPrevBtn" onclick="scrollJelajahiCards('left')" type="button" aria-label="Scroll Kiri" class="flex absolute -left-3 md:-left-5 top-1/2 -translate-y-1/2 z-30 w-9 h-9 md:w-10 md:h-10 rounded-full bg-white/90 text-[#2C1810] shadow-lg border border-[#B5793A]/30 items-center justify-center hover:bg-[#B5793A] hover:text-white transition duration-300 cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                    </svg>
+                </button>
 
-                @php
-                    $items = [
-                        [
-                            'label' => 'Cabin',
-                            'image' => asset('images/akomodasi/cabin1/a.webp'),
-                            'href'  => '/akomodasi?jenis=Cabin',
-                        ],
-                        [
-                            'label' => 'Rumah Industrial',
-                            'image' => asset('images/akomodasi/industrial2/a.webp'),
-                            'href'  => '/akomodasi?jenis=Rumah Industrial',
-                        ],
-                        [
-                            'label' => 'Glamping',
-                            'image' => asset('images/akomodasi/glamping_vip/c.webp'),
-                            'href'  => '/akomodasi?jenis=Glamping',
-                        ],
-                        [
-                            'label' => 'Paket Corporate',
-                            'image' => asset('images/akomodasi/paket_corporate/b.webp'),
-                            'href'  => '/paket-corporate',
-                        ],
-                    ];
-                @endphp
+                <div id="jelajahiCards" class="jelajahi-cards flex gap-5 overflow-x-auto pb-4 pt-1 snap-x snap-mandatory w-full scroll-smooth select-none cursor-grab active:cursor-grabbing">
 
-                @foreach ($items as $index => $item)
-                    <a href="{{ $item['href'] }}"
-                       class="jelajahi-card group relative flex-shrink-0 snap-center
-                              w-[220px] md:w-[240px] h-[200px] md:h-[220px]
-                              rounded-2xl overflow-hidden cursor-pointer
-                              shadow-md hover:shadow-xl
-                              transition-shadow duration-400"
-                       style="animation-delay: {{ $index * 120 }}ms"
-                       data-jelajahi-card>
+                    @php
+                        $items = [
+                            [
+                                'label' => 'Cabin',
+                                'image' => asset('images/akomodasi/cabin1/a.webp'),
+                                'href'  => '/akomodasi?jenis=Cabin',
+                            ],
+                            [
+                                'label' => 'Rumah Industrial',
+                                'image' => asset('images/akomodasi/industrial2/a.webp'),
+                                'href'  => '/akomodasi?jenis=Rumah Industrial',
+                            ],
+                            [
+                                'label' => 'Glamping',
+                                'image' => asset('images/akomodasi/glamping_vip/c.webp'),
+                                'href'  => '/akomodasi?jenis=Glamping',
+                            ],
+                            [
+                                'label' => 'Paket Corporate',
+                                'image' => asset('images/akomodasi/paket_corporate/b.webp'),
+                                'href'  => '/paket-corporate',
+                            ],
+                        ];
+                    @endphp
 
-                        {{-- Image --}}
-                        <img loading="lazy" src="{{ $item['image'] }}"
-                             alt="{{ $item['label'] }}"
-                             class="absolute inset-0 w-full h-full object-cover
-                                    scale-100 group-hover:scale-105
-                                    transition-transform duration-500 ease-out">
+                    @foreach ($items as $index => $item)
+                        <a href="{{ $item['href'] }}"
+                           class="jelajahi-card group relative flex-shrink-0 snap-center
+                                  w-[220px] md:w-[240px] h-[200px] md:h-[220px]
+                                  rounded-2xl overflow-hidden cursor-pointer
+                                  shadow-md hover:shadow-xl
+                                  transition-shadow duration-400"
+                           style="animation-delay: {{ $index * 120 }}ms"
+                           data-jelajahi-card>
 
-                        {{-- Gradient overlay --}}
-                        <div class="absolute inset-0 bg-gradient-to-t
-                                    from-black/60 via-black/10 to-transparent
-                                    group-hover:from-black/70
-                                    transition-all duration-400"></div>
+                            {{-- Image --}}
+                            <img loading="lazy" decoding="async" src="{{ $item['image'] }}"
+                                 alt="{{ $item['label'] }}"
+                                 class="absolute inset-0 w-full h-full object-cover
+                                        scale-100 group-hover:scale-105
+                                        transition-transform duration-500 ease-out">
 
-                        {{-- Label --}}
-                        <div class="absolute bottom-0 left-0 right-0 px-4 pb-4 text-center">
-                            <span class="jelajahi-label block font-sans text-white text-lg font-semibold
-                                         drop-shadow-md tracking-wide
-                                         translate-y-0 group-hover:-translate-y-1
-                                         transition-transform duration-300">
-                                {{ $item['label'] }}
-                            </span>
-                        </div>
+                            {{-- Gradient overlay --}}
+                            <div class="absolute inset-0 bg-gradient-to-t
+                                        from-black/60 via-black/10 to-transparent
+                                        group-hover:from-black/70
+                                        transition-all duration-400"></div>
 
-                        {{-- Warm tint on hover --}}
-                        <div class="absolute inset-0 bg-[#B5793A]/0 group-hover:bg-[#B5793A]/10
-                                    transition-colors duration-400 rounded-2xl"></div>
-                    </a>
-                @endforeach
+                            {{-- Label --}}
+                            <div class="absolute bottom-0 left-0 right-0 px-4 pb-4 text-center">
+                                <span class="jelajahi-label block font-sans text-white text-lg font-semibold
+                                             drop-shadow-md tracking-wide
+                                             translate-y-0 group-hover:-translate-y-1
+                                             transition-transform duration-300">
+                                    {{ $item['label'] }}
+                                </span>
+                            </div>
 
+                            {{-- Warm tint on hover --}}
+                            <div class="absolute inset-0 bg-[#B5793A]/0 group-hover:bg-[#B5793A]/10
+                                        transition-colors duration-400 rounded-2xl"></div>
+                        </a>
+                    @endforeach
+
+                </div>
+
+                <button id="jelajahiNextBtn" onclick="scrollJelajahiCards('right')" type="button" aria-label="Scroll Kanan" class="flex absolute -right-3 md:-right-5 top-1/2 -translate-y-1/2 z-30 w-9 h-9 md:w-10 md:h-10 rounded-full bg-white/90 text-[#2C1810] shadow-lg border border-[#B5793A]/30 items-center justify-center hover:bg-[#B5793A] hover:text-white transition duration-300 cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                </button>
             </div>
         </div>
     </div>
@@ -139,9 +154,21 @@
             transform: translateY(0) scale(1);
         }
 
-        /* Scrollbar hide on mobile */
-        .jelajahi-cards::-webkit-scrollbar { display: none; }
-        .jelajahi-cards { -ms-overflow-style: none; scrollbar-width: none; }
+        /* Custom smooth horizontal scrollbar */
+        .jelajahi-cards::-webkit-scrollbar {
+            height: 6px;
+        }
+        .jelajahi-cards::-webkit-scrollbar-track {
+            background: rgba(181, 121, 58, 0.1);
+            border-radius: 4px;
+        }
+        .jelajahi-cards::-webkit-scrollbar-thumb {
+            background: rgba(181, 121, 58, 0.4);
+            border-radius: 4px;
+        }
+        .jelajahi-cards::-webkit-scrollbar-thumb:hover {
+            background: rgba(181, 121, 58, 0.7);
+        }
     </style>
     @endpush
 @endonce
@@ -150,6 +177,15 @@
 @once
     @push('scripts')
     <script>
+        // Global Arrow Scroll Function
+        window.scrollJelajahiCards = function(direction) {
+            const slider = document.getElementById('jelajahiCards');
+            if (!slider) return;
+            const cardWidth = 260; // 240px card + 20px gap
+            const shift = direction === 'left' ? -cardWidth : cardWidth;
+            slider.scrollBy({ left: shift, behavior: 'smooth' });
+        };
+
         (function () {
             const io = new IntersectionObserver(
                 (entries) => entries.forEach(e => {
@@ -164,6 +200,38 @@
             document
                 .querySelectorAll('[data-jelajahi-title], [data-jelajahi-card]')
                 .forEach(el => io.observe(el));
+
+            // Horizontal Scroll & Drag Logic
+            const slider = document.getElementById('jelajahiCards');
+
+            if (slider) {
+                // 1. Mouse wheel horizontal scrolling
+                slider.addEventListener('wheel', (e) => {
+                    if (e.deltaY !== 0) {
+                        e.preventDefault();
+                        slider.scrollLeft += e.deltaY;
+                    }
+                }, { passive: false });
+
+                // 2. Drag to scroll with mouse
+                let isDown = false;
+                let startX, scrollLeft;
+
+                slider.addEventListener('mousedown', (e) => {
+                    isDown = true;
+                    startX = e.pageX - slider.offsetLeft;
+                    scrollLeft = slider.scrollLeft;
+                });
+                slider.addEventListener('mouseleave', () => { isDown = false; });
+                slider.addEventListener('mouseup', () => { isDown = false; });
+                slider.addEventListener('mousemove', (e) => {
+                    if (!isDown) return;
+                    e.preventDefault();
+                    const x = e.pageX - slider.offsetLeft;
+                    const walk = (x - startX) * 1.8;
+                    slider.scrollLeft = scrollLeft - walk;
+                });
+            }
         })();
     </script>
     @endpush

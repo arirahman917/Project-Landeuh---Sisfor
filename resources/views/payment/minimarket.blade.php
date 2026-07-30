@@ -389,10 +389,27 @@ const MM_DATA = {
 
 function goToKonfirmasi(status) {
     sessionStorage.setItem('res_payment_status', status);
-    if (!sessionStorage.getItem('res_booking_no')) {
-        sessionStorage.setItem('res_booking_no', 'LDH-' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).substring(2,6).toUpperCase());
+    const bookingNo = sessionStorage.getItem('res_booking_no');
+    const method = sessionStorage.getItem('res_payment_method') || sessionStorage.getItem('res_minimarket') || 'Minimarket';
+
+    if (bookingNo) {
+        fetch('/reservasi/update-status', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({
+                no_pesanan: bookingNo,
+                status: 'success',
+                metode_pembayaran: method
+            })
+        }).finally(() => {
+            window.location.href = '/reservasi/konfirmasi';
+        });
+    } else {
+        window.location.href = '/reservasi/konfirmasi';
     }
-    window.location.href = '/reservasi/konfirmasi';
 }
 
 </script>

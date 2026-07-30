@@ -345,116 +345,36 @@ function processPayment() {
     // Ambil No Pesanan yang tersimpan dari database MySQL
     const bookingNo = sessionStorage.getItem('res_booking_no');
 
-    if (bookingNo) {
-        // Tampilkan loading indicator
-        const payBtn = document.querySelector('.pay-btn');
-        const origText = payBtn.innerHTML;
-        payBtn.disabled = true;
-        payBtn.innerHTML = 'Memproses Pembayaran...';
-
-        // Panggil backend untuk mendapatkan Snap Token khusus metode yang dipilih
-        fetch('/reservasi/get-snap-token', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            },
-            body: JSON.stringify({
-                no_pesanan: bookingNo,
-                metode_pembayaran: method
-            })
-        })
-        .then(response => {
-            if(!response.ok) {
-                throw new Error('Gagal memuat token');
-            }
-            return response.json();
-        })
-        .then(data => {
-            payBtn.disabled = false;
-            payBtn.innerHTML = origText;
-
-            if (data.success && data.snap_token) {
-                // Tampilkan pop-up Snap Midtrans khusus metode tersebut
-                snap.pay(data.snap_token, {
-                    onSuccess: function(result) {
-                        sessionStorage.setItem('res_payment_status', 'success');
-                        
-                        let actualMethod = method; // Default ke pilihan UI (misal: 'Mandiri Virtual Account')
-                        if (result.va_numbers && result.va_numbers.length > 0) {
-                            const bankName = result.va_numbers[0].bank.toUpperCase();
-                            actualMethod = bankName + ' Virtual Account';
-                        } else if (result.payment_type === 'qris' || result.payment_type === 'gopay' || result.payment_type === 'shopeepay') {
-                            actualMethod = result.payment_type.toUpperCase();
-                        }
-                        
-                        sessionStorage.setItem('res_payment_method', actualMethod);
-                        window.location.href = '/reservasi/konfirmasi';
-                    },
-                    onPending: function(result) {
-                        sessionStorage.setItem('res_payment_status', 'pending');
-                        
-                        let actualMethod = method;
-                        if (result.va_numbers && result.va_numbers.length > 0) {
-                            const bankName = result.va_numbers[0].bank.toUpperCase();
-                            actualMethod = bankName + ' Virtual Account';
-                        } else if (result.payment_type === 'qris' || result.payment_type === 'gopay' || result.payment_type === 'shopeepay') {
-                            actualMethod = result.payment_type.toUpperCase();
-                        }
-                        
-                        sessionStorage.setItem('res_payment_method', actualMethod);
-                        window.location.href = '/reservasi/konfirmasi';
-                    },
-                    onError: function(result) {
-                        sessionStorage.setItem('res_payment_status', 'failed');
-                        window.location.href = '/reservasi/konfirmasi';
-                    },
-                    onClose: function() {
-                        alert('Anda menutup popup pembayaran sebelum menyelesaikan transaksi.');
-                    }
-                });
-            } else {
-                // FALLBACK JIKA CREDENTIALS MIDTRANS BELUM DISET (Mockup Mode)
-                console.log('Menggunakan Fallback Mockup Payment karena Midtrans Key belum terpasang.');
-                useFallbackPayment(method, akoId);
-            }
-        })
-        .catch(err => {
-            console.error('Error fetching snap token:', err);
-            payBtn.disabled = false;
-            payBtn.innerHTML = origText;
-            // FALLBACK JIKA ERROR (Mockup Mode)
-            useFallbackPayment(method, akoId);
-        });
-    } else {
-        useFallbackPayment(method, akoId);
-    }
+    // Langsung arahkan ke halaman Simulator Pembayaran sesuai metode yang dipilih
+    useFallbackPayment(method, akoId);
 }
 
-// Fungsi Helper untuk Fallback Pembayaran Mockup Bawaan
+// Fungsi Helper untuk Halaman Simulator Pembayaran Kustom
 function useFallbackPayment(method, akoId) {
-    // Redirect ke halaman VA jika user memilih Virtual Account
-    if(method.toLowerCase().includes('virtual account') || method.toLowerCase().includes('va')) {
+    const m = method.toLowerCase();
+    sessionStorage.setItem('res_payment_method', method);
+
+    // Redirect ke halaman VA jika user memilih Virtual Account / Bank Transfer
+    if(m.includes('virtual account') || m.includes('va') || m.includes('kartu') || m.includes('credit') || m.includes('debit')) {
         sessionStorage.setItem('res_va', method);
         window.location.href = '/payment/virtual-account';
     } 
     // Redirect ke halaman ATM jika user memilih ATM
-    else if(method.toLowerCase() === 'atm') {
-        sessionStorage.setItem('res_payment_method', 'ATM');
+    else if(m === 'atm') {
         window.location.href = '/payment/atm';
     } 
     // Redirect ke halaman Minimarket jika user memilih Alfamart/Indomaret
-    else if(method.toLowerCase().includes('alfamart') || method.toLowerCase().includes('indomaret')) {
+    else if(m.includes('alfamart') || m.includes('indomaret') || m.includes('minimarket')) {
         sessionStorage.setItem('res_minimarket', method);
         window.location.href = '/payment/minimarket';
     } 
-    // Redirect ke halaman QRIS jika user memilih QRIS
-    else if(method.toLowerCase().includes('qris')) {
-        sessionStorage.setItem('res_payment_method', 'QRIS');
+    // Redirect ke halaman QRIS jika user memilih QRIS / E-Wallet
+    else if(m.includes('qris') || m.includes('gopay') || m.includes('shopeepay') || m.includes('dana') || m.includes('ovo') || m.includes('e-wallet')) {
         window.location.href = '/payment/qris';
     } 
     else {
-        alert('Pembayaran menggunakan ' + method + ' akan diintegrasikan dengan Midtrans.');
+        sessionStorage.setItem('res_va', method);
+        window.location.href = '/payment/virtual-account';
     }
 }
 // Countdown timer

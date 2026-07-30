@@ -86,34 +86,28 @@
                               <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
                             </svg>
                         </div>
-                        <div class="w-full pl-8 pr-8 py-1 md:py-2 text-sm md:text-base text-gray-600 select-none" id="guestPickerLabel">
+                        <div class="w-full pl-8 pr-8 py-1 md:py-2 text-sm md:text-base text-gray-600 select-none truncate" id="guestPickerLabel">
                             2 Tamu
+                        </div>
+                        <div class="absolute inset-y-0 right-0 flex items-center pointer-events-none text-gray-400 transition-transform duration-300" id="guestPickerChevron">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                            </svg>
                         </div>
                     </div>
 
-                    <!-- Guest Picker Dropdown -->
-                    <div class="absolute top-[calc(100%+0.5rem)] left-0 md:right-0 mt-2 w-[calc(100vw-2rem)] max-w-[320px] bg-white rounded-2xl shadow-[0_15px_40px_-10px_rgba(0,0,0,0.2)] border border-gray-100 p-5 opacity-0 invisible translate-y-[-10px] transition-all duration-300 ease-out z-50 transform md:left-auto" id="guestPickerDropdown">
-                        <!-- Tamu -->
-                        <div class="flex items-center justify-between mb-2">
-                            <div class="flex items-center gap-3 text-gray-800 font-semibold text-md">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
-                                Tamu
-                            </div>
-                            <div class="flex items-center gap-4">
-                                <button type="button" class="w-10 h-10 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center hover:bg-blue-100 disabled:opacity-40 disabled:cursor-not-allowed transition" id="btnDecDewasa">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15" /></svg>
-                                </button>
-                                <span class="w-5 text-center font-bold text-gray-800 text-md" id="valDewasa">2</span>
-                                <button type="button" class="w-10 h-10 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center hover:bg-blue-100 transition" id="btnIncDewasa">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="flex justify-end pt-5 border-t border-gray-100 mt-4">
-                            <button type="button" class="text-blue-500 font-bold text-md hover:text-blue-600 transition tracking-wide" id="btnSelesaiGuest">Selesai</button>
+                    <!-- Custom Dropdown Menu -->
+                    <div class="absolute top-[calc(100%+0.5rem)] left-0 md:right-0 mt-2 w-full lg:min-w-[220px] bg-white rounded-xl shadow-[0_15px_40px_-10px_rgba(0,0,0,0.2)] border border-gray-100 py-2 opacity-0 invisible translate-y-[-10px] transition-all duration-300 ease-out z-50 transform md:left-auto" id="guestPickerDropdown">
+                        <div class="flex flex-col">
+                            <button type="button" class="hero-guest-opt w-full text-left px-5 py-3 hover:bg-blue-600 hover:text-white transition-colors text-gray-700 text-sm md:text-base font-medium" data-value="Semua Tamu" data-guests="0">Semua Tamu</button>
+                            <button type="button" class="hero-guest-opt w-full text-left px-5 py-3 hover:bg-blue-600 hover:text-white transition-colors text-gray-700 text-sm md:text-base font-medium" data-value="2 Tamu" data-guests="2">2 Tamu</button>
+                            <button type="button" class="hero-guest-opt w-full text-left px-5 py-3 hover:bg-blue-600 hover:text-white transition-colors text-gray-700 text-sm md:text-base font-medium" data-value="3 Tamu" data-guests="3">3 Tamu</button>
+                            <button type="button" class="hero-guest-opt w-full text-left px-5 py-3 hover:bg-blue-600 hover:text-white transition-colors text-gray-700 text-sm md:text-base font-medium" data-value="4 Tamu" data-guests="4">4 Tamu</button>
+                            <button type="button" class="hero-guest-opt w-full text-left px-5 py-3 hover:bg-blue-600 hover:text-white transition-colors text-gray-700 text-sm md:text-base font-medium" data-value="5 Tamu" data-guests="5">5 Tamu</button>
+                            <button type="button" class="hero-guest-opt w-full text-left px-5 py-3 hover:bg-blue-600 hover:text-white transition-colors text-gray-700 text-sm md:text-base font-medium" data-value="8 Tamu" data-guests="8">8 Tamu</button>
                         </div>
                     </div>
+                    <input type="hidden" name="dewasa" id="heroDewasaInput" value="2">
                 </div>
 
                 <!-- Tombol Cari -->

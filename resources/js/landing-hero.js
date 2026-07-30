@@ -203,29 +203,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const guestPickerDropdown = document.getElementById('guestPickerDropdown');
     const guestPickerChevron = document.getElementById('guestPickerChevron');
     const guestPickerLabel = document.getElementById('guestPickerLabel');
-    const btnSelesaiGuest = document.getElementById('btnSelesaiGuest');
+    const heroDewasaInput = document.getElementById('heroDewasaInput');
+    const heroGuestOptions = document.querySelectorAll('.hero-guest-opt');
 
     if (guestPickerTrigger && guestPickerDropdown && guestPickerContainer) {
-        // State
-        let dewasa = 2; 
-
-        const valDewasa = document.getElementById('valDewasa');
-        
-        // Ensure UI matches state on load
-        if(valDewasa) valDewasa.textContent = dewasa;
-        
-        const btnDecDewasa = document.getElementById('btnDecDewasa');
-        const btnIncDewasa = document.getElementById('btnIncDewasa');
-
-        const updateLabel = () => {
-            // Format: X Tamu
-            let labelText = `${dewasa} Tamu`;
-            if (guestPickerLabel) guestPickerLabel.textContent = labelText;
-            
-            // Handle disabled states
-            if (btnDecDewasa) btnDecDewasa.disabled = dewasa <= 1;
-        };
-
         // Toggle Dropdown Smoothly
         guestPickerTrigger.addEventListener('click', () => {
             guestPickerDropdown.classList.toggle('opacity-0');
@@ -234,21 +215,19 @@ document.addEventListener('DOMContentLoaded', () => {
             if (guestPickerChevron) guestPickerChevron.classList.toggle('rotate-180');
         });
 
-        // Event Listeners for Counters
-        if (btnIncDewasa && valDewasa) {
-            btnIncDewasa.addEventListener('click', (e) => { e.stopPropagation(); dewasa++; valDewasa.textContent = dewasa; updateLabel(); });
-        }
-        if (btnDecDewasa && valDewasa) {
-            btnDecDewasa.addEventListener('click', (e) => { e.stopPropagation(); if(dewasa > 1) { dewasa--; valDewasa.textContent = dewasa; updateLabel(); } });
-        }
+        // Option Selection
+        heroGuestOptions.forEach(option => {
+            option.addEventListener('click', (e) => {
+                const value = e.target.getAttribute('data-value');
+                const guests = e.target.getAttribute('data-guests');
+                if (guestPickerLabel) guestPickerLabel.textContent = value;
+                if (heroDewasaInput) heroDewasaInput.value = guests;
 
-        // Close on "Selesai"
-        if (btnSelesaiGuest) {
-            btnSelesaiGuest.addEventListener('click', () => {
+                // Close Dropdown
                 guestPickerDropdown.classList.add('opacity-0', 'invisible', 'translate-y-[-10px]');
                 if (guestPickerChevron) guestPickerChevron.classList.remove('rotate-180');
             });
-        }
+        });
 
         // Close when clicking outside
         document.addEventListener('click', (e) => {
@@ -257,8 +236,5 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (guestPickerChevron) guestPickerChevron.classList.remove('rotate-180');
             }
         });
-
-        // Initialize
-        updateLabel();
     }
 });

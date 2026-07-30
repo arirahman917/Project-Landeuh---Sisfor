@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="id" class="overflow-x-clip w-full max-w-[100vw]">
+<html lang="id" class="overflow-x-hidden w-full">
 <head>
     <link rel="icon" type="image/png" href="{{ asset('images/logo-landeuh.png') }}">
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="@yield('meta_description', 'Landeuh Village Riverside - Penginapan dan Wisata Alam Terbaik di Tepian Sungai dengan Suasana Asri dan Fasilitas Lengkap.')">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Landeuh Village Riverside')</title>
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -15,7 +16,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
 </head>
-<body class="bg-[#F8EDD8] font-sans text-gray-800 antialiased overflow-x-clip w-full max-w-[100vw]">
+<body class="bg-[#F8EDD8] font-sans text-gray-800 antialiased overflow-x-hidden w-full">
     @include('components.header')
     
     <main>
