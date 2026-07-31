@@ -344,38 +344,87 @@ function processPayment() {
 
     // Ambil No Pesanan yang tersimpan dari database MySQL
     const bookingNo = sessionStorage.getItem('res_booking_no');
+    
+    if(!bookingNo) {
+        alert("Terjadi kesalahan. Nomor pesanan tidak ditemukan.");
+        return;
+    }
 
-    // Langsung arahkan ke halaman Simulator Pembayaran sesuai metode yang dipilih
-    useFallbackPayment(method, akoId);
+    const btn = document.querySelector('.pay-btn');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = 'Memproses...';
+    btn.disabled = true;
+    btn.style.opacity = '0.7';
+
+    // Fetch Snap Token ke Backend
+    fetch('/reservasi/get-snap-token', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({
+            no_pesanan: bookingNo,
+            metode_pembayaran: method
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+        btn.style.opacity = '1';
+        
+        if(data.success && data.snap_token) {
+            // Panggil Popup Midtrans Snap
+            window.snap.pay(data.snap_token, {
+                onSuccess: function(result){
+                    updateBookingStatus(bookingNo, 'success', method, result);
+                },
+                onPending: function(result){
+                    updateBookingStatus(bookingNo, 'pending', method, result);
+                },
+                onError: function(result){
+                    updateBookingStatus(bookingNo, 'failed', method, result);
+                },
+                onClose: function(){
+                    alert('Anda menutup halaman pembayaran sebelum menyelesaikannya.');
+                }
+            });
+        } else {
+            // Jika gagal mendapatkan token (Misal key Midtrans belum diset / salah)
+            if (confirm("Gagal terhubung ke Midtrans Simulator!\n\nKemungkinan API Key Midtrans (Server/Client Key) di pengaturan (.env) Anda belum terkonfigurasi atau salah.\n\nPesan Error: " + (data.message || "Unknown error") + "\n\nApakah Anda ingin diarahkan ke halaman Konfirmasi dengan status 'pending'?")) {
+                window.location.href = `/reservasi/konfirmasi?booking_no=${bookingNo}&status=pending`;
+            }
+        }
+    })
+    .catch(err => {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+        btn.style.opacity = '1';
+        if (confirm("Terjadi kesalahan sistem saat menghubungi server Midtrans: " + err.message + "\n\nApakah Anda ingin diarahkan ke halaman Konfirmasi dengan status 'pending'?")) {
+             window.location.href = `/reservasi/konfirmasi?booking_no=${bookingNo}&status=pending`;
+        }
+    });
 }
 
-// Fungsi Helper untuk Halaman Simulator Pembayaran Kustom
-function useFallbackPayment(method, akoId) {
-    const m = method.toLowerCase();
-    sessionStorage.setItem('res_payment_method', method);
-
-    // Redirect ke halaman VA jika user memilih Virtual Account / Bank Transfer
-    if(m.includes('virtual account') || m.includes('va') || m.includes('kartu') || m.includes('credit') || m.includes('debit')) {
-        sessionStorage.setItem('res_va', method);
-        window.location.href = '/payment/virtual-account';
-    } 
-    // Redirect ke halaman ATM jika user memilih ATM
-    else if(m === 'atm') {
-        window.location.href = '/payment/atm';
-    } 
-    // Redirect ke halaman Minimarket jika user memilih Alfamart/Indomaret
-    else if(m.includes('alfamart') || m.includes('indomaret') || m.includes('minimarket')) {
-        sessionStorage.setItem('res_minimarket', method);
-        window.location.href = '/payment/minimarket';
-    } 
-    // Redirect ke halaman QRIS jika user memilih QRIS / E-Wallet
-    else if(m.includes('qris') || m.includes('gopay') || m.includes('shopeepay') || m.includes('dana') || m.includes('ovo') || m.includes('e-wallet')) {
-        window.location.href = '/payment/qris';
-    } 
-    else {
-        sessionStorage.setItem('res_va', method);
-        window.location.href = '/payment/virtual-account';
-    }
+// Fungsi untuk update status ke backend ketika Midtrans selesai
+function updateBookingStatus(bookingNo, status, method, result) {
+    fetch('/reservasi/update-status', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({
+            no_pesanan: bookingNo,
+            status: status,
+            metode_pembayaran: method
+        })
+    }).then(res => res.json()).then(data => {
+        window.location.href = `/reservasi/konfirmasi?booking_no=${bookingNo}&status=${status}`;
+    }).catch(err => {
+        window.location.href = `/reservasi/konfirmasi?booking_no=${bookingNo}&status=${status}`;
+    });
 }
 // Countdown timer
 (function(){
