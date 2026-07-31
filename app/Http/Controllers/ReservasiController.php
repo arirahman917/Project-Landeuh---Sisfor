@@ -342,6 +342,8 @@ class ReservasiController extends Controller
                     ? $booking->corporatePackage->judul 
                     : ($booking->accommodation ? $booking->accommodation->judul : 'Akomodasi Landeuh');
 
+                $finishUrl = url('/reservasi/konfirmasi?booking_no=' . $booking->no_pesanan . '&from=midtrans');
+
                 $params = [
                     'transaction_details' => [
                         'order_id' => $booking->no_pesanan . '-' . time(),
@@ -359,6 +361,9 @@ class ReservasiController extends Controller
                         'first_name' => $booking->pemesan_nama,
                         'email' => $booking->pemesan_email,
                         'phone' => $booking->pemesan_telp,
+                    ],
+                    'callbacks' => [
+                        'finish' => $finishUrl,
                     ],
                 ];
 

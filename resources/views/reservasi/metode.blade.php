@@ -409,6 +409,27 @@ function processPayment() {
 
 // Fungsi untuk update status ke backend ketika Midtrans selesai
 function updateBookingStatus(bookingNo, status, method, result) {
+    // Tampilkan loading overlay
+    let overlay = document.createElement('div');
+    overlay.id = 'paymentProcessingOverlay';
+    overlay.style.position = 'fixed';
+    overlay.style.top = '0';
+    overlay.style.left = '0';
+    overlay.style.width = '100vw';
+    overlay.style.height = '100vh';
+    overlay.style.backgroundColor = 'rgba(255, 255, 255, 0.9)';
+    overlay.style.zIndex = '99999';
+    overlay.style.display = 'flex';
+    overlay.style.flexDirection = 'column';
+    overlay.style.justifyContent = 'center';
+    overlay.style.alignItems = 'center';
+    overlay.innerHTML = `
+        <iconify-icon icon="lucide:loader-2" class="animate-spin text-green-700" style="font-size: 3rem; margin-bottom: 1rem;"></iconify-icon>
+        <h2 class="text-xl font-bold text-gray-800">Memverifikasi Pembayaran...</h2>
+        <p class="text-gray-500 mt-2 text-center px-4">Mohon tunggu sebentar, kami sedang memproses pesanan Anda dan mengirimkan e-ticket.</p>
+    `;
+    document.body.appendChild(overlay);
+
     fetch('/reservasi/update-status', {
         method: 'POST',
         headers: {

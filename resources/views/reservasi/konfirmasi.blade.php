@@ -769,7 +769,34 @@
     @endif
 
     // ── Baca sessionStorage ───────────────────────────────────────────────
-    const status   = sessionStorage.getItem('res_payment_status') || 'success';
+    // URL query params take priority (e.g., from Midtrans redirect or updateBookingStatus)
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlStatus = urlParams.get('status');
+    const fromPesanan = urlParams.get('from') === 'pesanan';
+    const fromMidtrans = urlParams.get('from') === 'midtrans';
+    const midtransStatus = urlParams.get('transaction_status'); // Midtrans redirect adds this
+    
+    // Determine the actual payment status
+    let status = 'success'; // default
+    if (urlStatus) {
+        // Came from our own updateBookingStatus redirect
+        status = urlStatus;
+    } else if (midtransStatus) {
+        // Came from Midtrans redirect (finish URL)
+        if (midtransStatus === 'settlement' || midtransStatus === 'capture') {
+            status = 'success';
+        } else if (midtransStatus === 'pending') {
+            status = 'pending';
+        } else {
+            status = 'failed';
+        }
+    } else {
+        status = sessionStorage.getItem('res_payment_status') || 'success';
+    }
+    
+    // Update sessionStorage with the resolved status
+    sessionStorage.setItem('res_payment_status', status);
+    
     const dNama    = sessionStorage.getItem('res_nama')    || 'Ari Rahman';
     const dHp      = sessionStorage.getItem('res_hp')      || '081512345678';
     const dEmail   = sessionStorage.getItem('res_email')   || 'arirahman@gmail.com';
@@ -779,10 +806,6 @@
     const dBooking = sessionStorage.getItem('res_booking_no') || 'XXXXXXXXXX';
     const akoId    = parseInt(sessionStorage.getItem('res_akoId')) || 1;
     const dMalam   = parseInt(sessionStorage.getItem('res_malam')) || 1;
-    
-    // Parse URL query parameters to check if accessed from My Bookings history page
-    const urlParams = new URLSearchParams(window.location.search);
-    const fromPesanan = urlParams.get('from') === 'pesanan';
 
     // Kirim update status ke database MySQL secara real-time
     const selectedMethod = sessionStorage.getItem('res_va') 
@@ -790,7 +813,9 @@
                         || sessionStorage.getItem('res_minimarket') 
                         || 'Virtual Account';
 
-    if (dBooking && dBooking !== 'XXXXXXXXXX' && !fromPesanan) {
+    // Only send update if NOT from pesanan history page AND NOT from Midtrans redirect
+    // (Midtrans redirect status is already handled by the updateBookingStatus in metode.blade.php or by Midtrans notification)
+    if (dBooking && dBooking !== 'XXXXXXXXXX' && !fromPesanan && !fromMidtrans && !urlStatus) {
         fetch('/reservasi/update-status', {
             method: 'POST',
             headers: {
@@ -799,7 +824,7 @@
             },
             body: JSON.stringify({
                 no_pesanan: dBooking,
-                status: status === 'success' ? 'success' : 'failed',
+                status: status === 'success' ? 'success' : (status === 'pending' ? 'pending' : 'failed'),
                 metode_pembayaran: selectedMethod
             })
         })
@@ -809,6 +834,29 @@
         })
         .catch(err => {
             console.error('Failed to update status in MySQL:', err);
+        });
+    }
+    
+    // If came from Midtrans redirect, also update the booking status
+    if (fromMidtrans && dBooking && dBooking !== 'XXXXXXXXXX') {
+        fetch('/reservasi/update-status', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({
+                no_pesanan: dBooking,
+                status: status === 'success' ? 'success' : (status === 'pending' ? 'pending' : 'failed'),
+                metode_pembayaran: selectedMethod
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Midtrans redirect - Status updated in MySQL:', data);
+        })
+        .catch(err => {
+            console.error('Midtrans redirect - Failed to update status:', err);
         });
     }
 
