@@ -30,7 +30,7 @@
             {{-- Right: Cards Container --}}
             <div class="relative w-full md:w-auto flex-1 min-w-0">
 
-                <div id="jelajahiCards" class="jelajahi-cards flex gap-5 overflow-x-auto pb-4 pt-1 snap-x snap-mandatory w-full scroll-smooth select-none cursor-grab active:cursor-grabbing">
+                <div id="jelajahiCards" class="jelajahi-cards flex gap-5 overflow-x-auto overflow-y-hidden pb-4 pt-1 snap-x snap-mandatory w-full scroll-smooth select-none cursor-grab active:cursor-grabbing">
 
                     @php
                         $items = [

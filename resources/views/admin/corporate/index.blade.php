@@ -30,27 +30,32 @@
 
 {{-- ── TOOLBAR ─────────────────────────────────────────────────── --}}
 <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mb-5">
-    <div class="relative flex-1 max-w-xs">
-        <span class="absolute inset-y-0 left-3.5 flex items-center text-stone-400 pointer-events-none">
-            <iconify-icon icon="lucide:search" class="text-base"></iconify-icon>
-        </span>
-        <input type="text" id="corpSearchInput" placeholder="Cari paket…"
-            class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-stone-200 bg-white/80 text-stone-800 text-sm
-                   placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition"/>
+    
+    <div class="grid grid-cols-5 gap-2 w-full sm:flex sm:w-auto sm:flex-1">
+        <div class="relative col-span-3 sm:flex-1 sm:max-w-xs shrink-0">
+            <span class="absolute inset-y-0 left-3.5 flex items-center text-stone-400 pointer-events-none">
+                <iconify-icon icon="lucide:search" class="text-base"></iconify-icon>
+            </span>
+            <input type="text" id="corpSearchInput" placeholder="Cari paket…"
+                class="w-full pl-9 pr-3 py-2.5 rounded-xl border border-stone-200 bg-white/80 text-stone-800 text-sm
+                       placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition"/>
+        </div>
+        
+        {{-- Liburkan Paket --}}
+        <button onclick="openModalLiburkanPaket()"
+            class="col-span-2 flex items-center justify-center gap-1.5 sm:w-auto px-2 sm:px-5 py-2.5 rounded-xl font-bold text-[11px] sm:text-sm text-red-700 bg-red-50 border border-red-200 hover:bg-red-100 transition-all active:scale-[0.98] whitespace-nowrap shadow-sm">
+            <iconify-icon icon="lucide:calendar-off" class="text-sm sm:text-base text-red-500"></iconify-icon>
+            <span class="truncate">Liburkan Paket</span>
+        </button>
     </div>
+
     <div class="flex-1 hidden sm:block"></div>
-    {{-- Liburkan Paket --}}
-    <button onclick="openModalLiburkanPaket()"
-        class="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm text-red-700 bg-red-50 border border-red-200 hover:bg-red-100 transition-all active:scale-[0.98] whitespace-nowrap shadow-sm mr-2">
-        <iconify-icon icon="lucide:calendar-off" class="text-base text-red-500"></iconify-icon>
-        Liburkan Paket
-    </button>
 
     <button onclick="openModalTambahCorp()"
-        class="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm text-[#fdf6e3]
+        class="flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm text-[#fdf6e3]
                bg-gradient-to-r from-[#2d4a2d] to-[#3d6b3d]
                hover:from-[#3d6b3d] hover:to-[#4a824a]
-               shadow-lg shadow-green-900/20 transition-all active:scale-[0.98] whitespace-nowrap">
+               shadow-lg shadow-green-900/20 transition-all active:scale-[0.98] whitespace-nowrap w-full sm:w-auto">
         <iconify-icon icon="lucide:plus" class="text-base"></iconify-icon>
         Tambah Paket
     </button>
@@ -159,7 +164,7 @@ function renderCorpList(data) {
             </div>
             <div class="flex-1 flex flex-col justify-between gap-2 min-w-0">
                 <div>
-                    <div class="flex items-start justify-between gap-3">
+                    <div class="flex flex-col md:flex-row md:items-start justify-between gap-3">
                         <div>
                             <h3 class="text-base font-bold text-stone-800 leading-tight">${pkg.judul}</h3>
                             <div class="flex items-center gap-2 mt-1 flex-wrap">
@@ -175,7 +180,7 @@ function renderCorpList(data) {
                                 ` : ''}
                             </div>
                         </div>
-                        <div class="flex gap-2 shrink-0">
+                        <div class="flex flex-wrap gap-2 shrink-0">
                             <button onclick="openModalEditCorp(${pkg.id})" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-blue-700 bg-blue-50 border border-blue-200 hover:bg-blue-100 transition shadow-sm">
                                 <iconify-icon icon="lucide:pencil" class="text-xs"></iconify-icon> Edit
                             </button>

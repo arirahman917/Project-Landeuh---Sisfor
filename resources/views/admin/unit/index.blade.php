@@ -535,7 +535,7 @@
                         </span>
                         ${checkIsCurrentlyLibur(item) ? `
                             <span class="inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-1 rounded-lg bg-red-50 text-red-700 border border-red-200 shadow-sm whitespace-nowrap">
-                                <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>Sedang Libur
+                                <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>Lagi Libur
                             </span>
                         ` : ''}
                     </div>

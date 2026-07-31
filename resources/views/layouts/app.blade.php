@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id" class="overflow-x-hidden w-full">
+<html lang="id" class="overflow-x-clip w-full">
 <head>
     <link rel="icon" type="image/png" href="{{ asset('images/logo-landeuh.png') }}">
     <meta charset="UTF-8">
@@ -16,7 +16,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
 </head>
-<body class="bg-[#F8EDD8] font-sans text-gray-800 antialiased overflow-x-hidden w-full min-h-screen flex flex-col">
+<body class="bg-[#F8EDD8] font-sans text-gray-800 antialiased overflow-x-clip w-full min-h-screen flex flex-col">
     @include('components.header')
     
     <main class="flex-1">

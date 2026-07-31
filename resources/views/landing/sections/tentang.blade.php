@@ -81,18 +81,18 @@
                 
                 <!-- Bottom Timeline Progress -->
                 <div class="w-full mt-6 md:mt-10">
-                    <div class="flex w-full gap-1 sm:gap-2 md:gap-4 justify-between items-end pb-2">
+                    <div class="flex w-full gap-1 sm:gap-2 md:gap-4 justify-between items-start pb-2">
                         @php
-                            $segments = ['Tepi Sungai', 'Cabin & R. Industrial', 'Glamping', 'Paket Corporate', 'Kedai'];
+                            $segments = ['Tepi Sungai', 'Cabin & Rumah Industrial', 'Glamping', 'Paket Corporate', 'Kedai'];
                         @endphp
                         @foreach ($segments as $i => $label)
                         <div class="tentang-segment flex-1 min-w-0 cursor-pointer select-none group"
                              data-segment="{{ $i }}"
                              onclick="window._tentangTimeline?.jumpTo({{ $i }})">
                             <div class="w-full h-[2px] md:h-[3px] bg-[#d5cebd] relative overflow-hidden mb-1.5 md:mb-2 rounded-full">
-                                <div class="tentang-progress-bar absolute top-0 left-0 h-full bg-[#1b1b18] rounded-full"
+                                <div class="tentang-progress-bar absolute top-0 left-0 w-full h-full bg-[#1b1b18] rounded-full origin-left"
                                      id="tentang-progress-{{ $i + 1 }}"
-                                     style="width: 0%; transition: none;"></div>
+                                     style="transform: scaleX(0); transition: none;"></div>
                             </div>
                             <span class="tentang-seg-label text-[9px] sm:text-[10px] md:text-sm font-medium text-gray-400 block text-center md:text-left leading-tight tracking-tighter sm:tracking-normal group-hover:text-gray-600"
                                   id="tentang-label-{{ $i + 1 }}">
@@ -114,14 +114,42 @@
     let currentActiveIndex = -1;
     const container = document.getElementById('tentang-container');
 
+    // Cache elements for performance
+    const textEls = [];
+    const imgEls = [];
+    const labelEls = [];
+    const barEls = [];
+
+    document.addEventListener('DOMContentLoaded', () => {
+        for (let i = 1; i <= TOTAL; i++) {
+            textEls.push(document.getElementById('tentang-text-' + i));
+            imgEls.push(document.getElementById('tentang-img-' + i));
+            labelEls.push(document.getElementById('tentang-label-' + i));
+            barEls.push(document.getElementById('tentang-progress-' + i));
+        }
+
+        let ticking = false;
+        window.addEventListener('scroll', () => {
+            if (!ticking) {
+                window.requestAnimationFrame(() => {
+                    updateTimelineOnScroll();
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        }, { passive: true });
+
+        // Initial run
+        updateTimelineOnScroll();
+    });
+
     // ── Show a specific segment (text + image + labels) ──
     function showSegment(index) {
-        for (let i = 1; i <= TOTAL; i++) {
-            const textEl  = document.getElementById('tentang-text-'  + i);
-            const imgEl   = document.getElementById('tentang-img-'   + i);
-            const labelEl = document.getElementById('tentang-label-' + i);
-
-            const isActive = (i === index + 1);
+        for (let i = 0; i < TOTAL; i++) {
+            const isActive = (i === index);
+            const textEl = textEls[i];
+            const imgEl = imgEls[i];
+            const labelEl = labelEls[i];
 
             if (textEl) {
                 if (isActive) {
@@ -177,18 +205,18 @@
             currentActiveIndex = activeIndex;
         }
         
-        // Update progress bars smoothly based on scroll
+        // Update progress bars smoothly based on scroll using GPU accelerated scaleX
         for (let i = 0; i < TOTAL; i++) {
-            const bar = document.getElementById('tentang-progress-' + (i + 1));
+            const bar = barEls[i];
             if (!bar) continue;
             bar.style.transition = 'none';
             if (i < activeIndex) {
-                bar.style.width = '100%';
+                bar.style.transform = 'scaleX(1)';
             } else if (i === activeIndex) {
-                const segmentProgress = (overallProgress - activeIndex) * 100;
-                bar.style.width = segmentProgress + '%';
+                const segmentProgress = (overallProgress - activeIndex);
+                bar.style.transform = `scaleX(${segmentProgress})`;
             } else {
-                bar.style.width = '0%';
+                bar.style.transform = 'scaleX(0)';
             }
         }
     }
@@ -196,19 +224,12 @@
     // ── Jump to a specific segment (user click) ──
     function jumpTo(index) {
         if (!container) return;
-        const winH = window.innerHeight;
-        const scrollDistance = container.offsetHeight - winH;
-        // Calculate offset to scroll to (start of the selected segment + a tiny buffer)
-        const targetScrollY = container.offsetTop + (index / TOTAL) * scrollDistance + 5;
+        const scrollDistance = container.offsetHeight - window.innerHeight;
+        // Calculate target scroll using document offset
+        const containerTop = window.scrollY + container.getBoundingClientRect().top;
+        const targetScrollY = containerTop + (index / TOTAL) * scrollDistance + 5;
         window.scrollTo({ top: targetScrollY, behavior: 'smooth' });
     }
-
-    // Initialize
-    document.addEventListener('DOMContentLoaded', () => {
-        window.addEventListener('scroll', updateTimelineOnScroll, { passive: true });
-        // Initial run
-        updateTimelineOnScroll();
-    });
 
     // Expose jumpTo for onclick
     window._tentangTimeline = { jumpTo };
