@@ -13,7 +13,7 @@ class CorporatePackageController extends Controller
     public function index()
     {
         $packages = CorporatePackage::all();
-        $accommodations = Accommodation::orderBy('jenis')->orderBy('judul')->get(['id', 'judul', 'jenis']);
+        $accommodations = Accommodation::orderBy('jenis')->orderBy('judul')->get(['id', 'judul', 'jenis', 'slot']);
         $dateSettings = \App\Models\DateSetting::all();
         return view('admin.corporate.index', compact('packages', 'accommodations', 'dateSettings'));
     }
@@ -35,7 +35,7 @@ class CorporatePackageController extends Controller
             'harga_highseason'  => 'required|numeric|min:0',
         ]);
 
-        $validated['slot'] = count($validated['accommodation_ids']);
+        $validated['slot'] = \App\Models\Accommodation::whereIn('id', $validated['accommodation_ids'])->sum('slot');
 
         $gambarArray = [];
         if ($request->hasFile('gambar')) {
@@ -90,7 +90,7 @@ class CorporatePackageController extends Controller
             'harga_highseason'  => 'required|numeric|min:0',
         ]);
 
-        $validated['slot'] = count($validated['accommodation_ids']);
+        $validated['slot'] = \App\Models\Accommodation::whereIn('id', $validated['accommodation_ids'])->sum('slot');
 
         $gambarArray = [];
         if ($request->has('existing_gambar')) {

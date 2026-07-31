@@ -143,19 +143,30 @@
 
 {{-- Template Keterangan / Legend (Akan disuntikkan ke dalam kalender) --}}
 <template id="kalenderLegendTemplate">
-    <div class="mt-2 pt-4 border-t border-stone-200 w-full px-4 pb-4">
-        <div class="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
-            <div class="flex items-center gap-2">
-                <div class="w-4 h-4 rounded-full bg-[#e5e7eb] shrink-0 relative flex items-center justify-center">
-                    <div class="w-full h-px bg-[#9ca3af] absolute"></div>
+    <div class="mt-2 pt-3 border-t border-stone-200 w-full px-4 pb-3">
+        <div class="flex flex-col items-center gap-2">
+            <div class="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+                <div class="flex items-center gap-1.5">
+                    <div class="w-4 h-4 rounded-full bg-[#e5e7eb] shrink-0 relative flex items-center justify-center">
+                        <div class="w-full h-px bg-[#9ca3af] absolute"></div>
+                    </div>
+                    <span class="text-[11px] text-stone-600 font-medium leading-tight">Pesanan Reguler</span>
                 </div>
-                <span class="text-xs text-stone-600 font-medium leading-tight">Unit tidak tersedia karena Layanan Reguler</span>
+                <div class="flex items-center gap-1.5">
+                    <div class="w-4 h-4 rounded-full bg-indigo-100 shrink-0 relative flex items-center justify-center">
+                        <div class="w-full h-px bg-indigo-700 absolute"></div>
+                    </div>
+                    <span class="text-[11px] text-stone-600 font-medium leading-tight">Paket Corporate</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <div class="w-4 h-4 rounded-full bg-red-100 shrink-0 relative flex items-center justify-center">
+                        <div class="w-full h-px bg-red-500 absolute"></div>
+                    </div>
+                    <span class="text-[11px] text-stone-600 font-medium leading-tight">Libur / Diblokir</span>
+                </div>
             </div>
-            <div class="flex items-center gap-2">
-                <div class="w-4 h-4 rounded-full bg-indigo-100 shrink-0 relative flex items-center justify-center">
-                    <div class="w-full h-px bg-indigo-700 absolute"></div>
-                </div>
-                <span class="text-xs text-stone-600 font-medium leading-tight">Unit tidak tersedia karena Layanan Paket Corporate</span>
+            <div class="text-[10px] text-stone-400 italic">
+                * Unit tidak tersedia untuk dipesan pada tanggal yang ditandai
             </div>
         </div>
     </div>
@@ -223,6 +234,10 @@
 .flatpickr-day.flatpickr-disabled.corporate-booked-date {
     background-color: #e0e7ff !important; /* indigo-100 */
     color: #4338ca !important; /* indigo-700 */
+}
+.flatpickr-day.flatpickr-disabled.holiday-booked-date {
+    background-color: #fee2e2 !important; /* red-100 */
+    color: #ef4444 !important; /* red-500 */
 }
 #kalenderInline .flatpickr-calendar {
     box-shadow: none !important;
@@ -504,6 +519,12 @@
                 <div class="flex items-start justify-between gap-2">
                     <h3 class="text-base font-bold text-stone-900">${item.judul}</h3>
                     <div class="flex items-center gap-1.5 shrink-0">
+                        ${hasBlockedPeriods(item) ? `
+                        <button onclick="openModalListLibur(${item.id})"
+                            class="inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-1 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 shadow-sm whitespace-nowrap transition cursor-pointer active:scale-95">
+                            <iconify-icon icon="lucide:calendar-off" class="text-xs"></iconify-icon> Tanggal Libur/Blokir
+                        </button>
+                        ` : ''}
                         <span class="text-[11px] font-semibold px-2.5 py-1 rounded-lg
                             ${item.jenis === 'Cabin'
                                 ? 'bg-blue-50 text-blue-700'
@@ -514,7 +535,7 @@
                         </span>
                         ${checkIsCurrentlyLibur(item) ? `
                             <span class="inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-1 rounded-lg bg-red-50 text-red-700 border border-red-200 shadow-sm whitespace-nowrap">
-                                <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>Libur / Blokir
+                                <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>Sedang Libur
                             </span>
                         ` : ''}
                     </div>
@@ -533,7 +554,6 @@
                         </div>
                     </div>
                     ${currentAndFutureBookings.length > 0 ? `<div class="flex flex-col gap-2">${bookedBadgesHtml}</div>` : ''}
-                    ${renderBlockedPeriodsHtml(item)}
                 </div>
 
                 {{-- Detail table --}}
@@ -857,7 +877,33 @@
 
         // Helper: check if a date is fully booked for this accommodation
         function getBookingStatusForDate(dateObj) {
-            if (!item.bookings || item.bookings.length === 0) return { booked: false, corporate: false };
+            const y = dateObj.getFullYear();
+            const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const r = String(dateObj.getDate()).padStart(2, '0');
+            const dStr = `${y}-${m}-${r}`;
+
+            let isHoliday = false;
+            const globalLibur = (DATE_SETTINGS || []).filter(d => d.type === 'libur_landeuh');
+            for (let gl of globalLibur) {
+                if (gl.dates) {
+                    const datesArr = typeof gl.dates === 'string' ? gl.dates.split(',').map(d => d.trim()) : (Array.isArray(gl.dates) ? gl.dates : []);
+                    if (datesArr.includes(dStr)) { isHoliday = true; break; }
+                }
+            }
+            if (!isHoliday) {
+                const specificBlocked = item.blocked_dates || [];
+                for (let sb of specificBlocked) {
+                    if (sb.dates) {
+                        const datesArr = typeof sb.dates === 'string' ? sb.dates.split(',').map(d => d.trim()) : (Array.isArray(sb.dates) ? sb.dates : []);
+                        if (datesArr.includes(dStr)) { isHoliday = true; break; }
+                    }
+                }
+            }
+            if (isHoliday) {
+                return { booked: true, corporate: false, holiday: true };
+            }
+
+            if (!item.bookings || item.bookings.length === 0) return { booked: false, corporate: false, holiday: false };
             let checkTime = new Date(dateObj);
             checkTime.setHours(12, 0, 0, 0);
             checkTime = checkTime.getTime();
@@ -878,7 +924,8 @@
             });
             return {
                 booked: count >= item.slot,
-                corporate: hasCorporate
+                corporate: hasCorporate,
+                holiday: false
             };
         }
 
@@ -901,7 +948,9 @@
                     const status = getBookingStatusForDate(dayElem.dateObj);
                     if (status.booked) {
                         dayElem.classList.add('booked-date');
-                        if (status.corporate) {
+                        if (status.holiday) {
+                            dayElem.classList.add('holiday-booked-date');
+                        } else if (status.corporate) {
                             dayElem.classList.add('corporate-booked-date');
                         }
                     }
@@ -981,6 +1030,25 @@
         }
 
         return false;
+    };
+
+    window.hasBlockedPeriods = function(item) {
+        const globalLibur = (DATE_SETTINGS || []).filter(d => d.type === 'libur_landeuh');
+        const specificLibur = item.blocked_dates || [];
+        return globalLibur.length > 0 || specificLibur.length > 0;
+    };
+
+    window.openModalListLibur = function(id) {
+        const item = AKOMODASI_DATA.find(d => d.id === id);
+        if (!item) return;
+        const html = renderBlockedPeriodsHtml(item);
+        document.getElementById('modalListLiburTitle').innerText = `Tanggal Libur/Blokir: ${item.judul}`;
+        document.getElementById('modalListLiburContent').innerHTML = html || '<p class="text-sm text-stone-500">Tidak ada jadwal libur/blokir.</p>';
+        document.getElementById('modalListLibur').classList.remove('hidden');
+    };
+
+    window.closeModalListLibur = function() {
+        document.getElementById('modalListLibur').classList.add('hidden');
     };
 
     window.renderBlockedPeriodsHtml = function(item) {
@@ -1104,7 +1172,7 @@
                     `;
                     return `
                         <div class="flex items-center justify-between gap-2 p-2 rounded-xl bg-red-50 border border-red-150 text-red-700 text-[10px] font-semibold w-full">
-                            <span>🚫 Libur Spesifik: <strong>${lib.name}</strong> (${lib.rangeLabel})</span>
+                            <span>🚫 Libur Unit: <strong>${lib.name}</strong> (${lib.rangeLabel})</span>
                             ${deleteBtn}
                         </div>
                     `;
@@ -1268,6 +1336,8 @@
         document.getElementById('btnSaveAfterLiburKamarConflictsCleared').disabled = true;
     }
 
+    function fmtDate(d) { if (!d) return d; const p = d.split('-'); return p.length === 3 ? `${p[2]}-${p[1]}-${p[0]}` : d; }
+
     function renderLiburKamarConflictsList(conflicts) {
         const container = document.getElementById('liburKamarConflictList');
         const saveBtn = document.getElementById('btnSaveAfterLiburKamarConflictsCleared');
@@ -1289,16 +1359,16 @@
 
         container.innerHTML = conflicts.map(p => {
             const cleanPhone = p.pemesanTelp.replace(/^0/, '62').replace(/[-+\s]/g, '');
-            const waMsg = encodeURIComponent(`Halo Kak ${p.pemesanNama}, kami dari Landeuh Village. Mengenai pemesanan Kakak dengan nomor #${p.noPesanan} untuk akomodasi ${p.akomodasi} pada tanggal ${p.checkin} s.d ${p.checkout}, kami ingin menginfokan bahwa kamar tersebut sedang dalam perawatan/diliburkan. Apakah boleh kami bantu untuk reschedule ke tanggal alternatif? Terima kasih.`);
+            const waMsg = encodeURIComponent(`Halo Kak ${p.pemesanNama}, kami dari Landeuh Village. Mengenai pemesanan Kakak dengan nomor #${p.noPesanan} untuk akomodasi ${p.akomodasi} pada tanggal ${fmtDate(p.checkin)} s.d ${fmtDate(p.checkout)}, kami ingin menginfokan bahwa kamar tersebut sedang dalam perawatan/diliburkan. Apakah boleh kami bantu untuk reschedule ke tanggal alternatif? Terima kasih.`);
             const waUrl = `https://wa.me/${cleanPhone}?text=${waMsg}`;
 
             return `
                 <div class="p-3 rounded-xl border border-stone-200 bg-stone-50 flex flex-col gap-2">
                     <div class="flex justify-between items-start gap-2">
                         <div>
-                            <span class="text-[9px] font-extrabold text-red-500 bg-red-50 px-1.5 py-0.5 rounded border border-red-200 uppercase">${p.noPesanan}</span>
+                            <span class="text-[10px] font-bold text-white bg-red-500 px-2 py-0.5 rounded shadow-sm uppercase">${p.noPesanan}</span>
                             <h4 class="text-xs font-bold text-stone-800 mt-1">${p.pemesanNama} <span class="font-normal text-[10px] text-stone-500">(${p.pemesanTelp})</span></h4>
-                            <p class="text-[10px] text-stone-600">Akomodasi: <strong>${p.akomodasi}</strong> · Tanggal: <strong>${p.checkin} &rarr; ${p.checkout}</strong></p>
+                            <p class="text-[10px] text-stone-600">Akomodasi: <strong>${p.akomodasi}</strong> · Tanggal: <strong>${fmtDate(p.checkin)} &rarr; ${fmtDate(p.checkout)}</strong></p>
                         </div>
                         <div class="flex gap-1">
                             <a href="${waUrl}" target="_blank" class="px-2 py-1 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-[10px] flex items-center gap-0.5 transition shadow-sm">
@@ -1555,6 +1625,22 @@
     applyFilter(true); // true = keep page from URL hash on first load
 })();
 </script>
+
+{{-- MODAL LIST LIBUR --}}
+<div id="modalListLibur" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm hidden" onclick="if(event.target===this) closeModalListLibur()">
+    <div class="relative w-full max-w-lg mx-4 bg-[#fdf6e3] rounded-3xl shadow-2xl border border-amber-200/60 overflow-hidden animate-[modalIn_0.25s_ease-out_forwards]" style="font-family:'Georgia',serif;">
+        <div class="h-1.5 w-full bg-gradient-to-r from-red-400 via-rose-500 to-red-600"></div>
+        <div class="flex items-center justify-between px-6 pt-5 pb-0">
+            <h2 class="text-lg font-bold text-stone-800 tracking-tight" id="modalListLiburTitle">Tanggal Libur/Blokir</h2>
+            <button onclick="closeModalListLibur()" class="p-2 rounded-xl text-stone-400 hover:bg-stone-200/60 hover:text-stone-600 transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+        <div class="px-6 pt-2 pb-6 max-h-[60vh] overflow-y-auto" id="modalListLiburContent">
+            <!-- Content injected here -->
+        </div>
+    </div>
+</div>
 
 {{-- Lightbox --}}
 <div id="lightbox" class="fixed inset-0 z-[200] bg-black/80 hidden items-center justify-center" onclick="closeLightbox(event)">

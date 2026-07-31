@@ -53,4 +53,16 @@ class CorporatePackage extends Model
         }
         return Accommodation::whereIn('id', $ids);
     }
+
+    /**
+     * Dynamically calculate the total slots based on associated accommodations.
+     */
+    public function getSlotAttribute()
+    {
+        $ids = $this->accommodation_ids ?? [];
+        if (empty($ids)) {
+            return 0;
+        }
+        return Accommodation::whereIn('id', $ids)->sum('slot');
+    }
 }

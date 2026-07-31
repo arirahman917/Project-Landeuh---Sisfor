@@ -30,11 +30,12 @@ class SecurityHeaders
         // Content Security Policy
         // Directives configured for app resources (Midtrans, Bunny Fonts, Iconify, Flatpickr, Vite, etc.)
         $csp = "default-src 'self'; " .
-               "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://npmcdn.com https://code.iconify.design https://app.sandbox.midtrans.com https://app.midtrans.com; " .
-               "style-src 'self' 'unsafe-inline' https://fonts.bunny.net https://cdn.jsdelivr.net; " .
+               "script-src 'self' 'unsafe-inline' 'unsafe-eval' http://localhost:5173 http://127.0.0.1:5173 http://[::1]:5173 https://cdn.jsdelivr.net https://npmcdn.com https://unpkg.com https://code.iconify.design https://app.sandbox.midtrans.com https://app.midtrans.com; " .
+               "style-src 'self' 'unsafe-inline' http://localhost:5173 http://127.0.0.1:5173 http://[::1]:5173 https://unpkg.com https://fonts.bunny.net https://cdn.jsdelivr.net; " .
                "font-src 'self' https://fonts.bunny.net data:; " .
                "img-src 'self' data: https: blob: placehold.co res.cloudinary.com; " .
-               "connect-src 'self' https: wss:; " .
+               "connect-src 'self' https: wss: ws://localhost:5173 ws://127.0.0.1:5173 ws://[::1]:5173 http://localhost:5173 http://127.0.0.1:5173 http://[::1]:5173; " .
+               "worker-src 'self' blob:; " .
                "frame-src 'self' https://app.sandbox.midtrans.com https://app.midtrans.com https://www.google.com https://maps.google.com;";
 
         $response->headers->set('Content-Security-Policy', $csp);

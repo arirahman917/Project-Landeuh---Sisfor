@@ -27,14 +27,8 @@
                 </div>
             </div>
 
-            {{-- Right: Cards Container with Nav Buttons --}}
-            <div class="relative w-full md:w-auto flex-1">
-                {{-- Prev/Next Nav Buttons --}}
-                <button id="jelajahiPrevBtn" onclick="scrollJelajahiCards('left')" type="button" aria-label="Scroll Kiri" class="flex absolute -left-3 md:-left-5 top-1/2 -translate-y-1/2 z-30 w-9 h-9 md:w-10 md:h-10 rounded-full bg-white/90 text-[#2C1810] shadow-lg border border-[#B5793A]/30 items-center justify-center hover:bg-[#B5793A] hover:text-white transition duration-300 cursor-pointer">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-                    </svg>
-                </button>
+            {{-- Right: Cards Container --}}
+            <div class="relative w-full md:w-auto flex-1 min-w-0">
 
                 <div id="jelajahiCards" class="jelajahi-cards flex gap-5 overflow-x-auto pb-4 pt-1 snap-x snap-mandatory w-full scroll-smooth select-none cursor-grab active:cursor-grabbing">
 
@@ -103,12 +97,6 @@
                     @endforeach
 
                 </div>
-
-                <button id="jelajahiNextBtn" onclick="scrollJelajahiCards('right')" type="button" aria-label="Scroll Kanan" class="flex absolute -right-3 md:-right-5 top-1/2 -translate-y-1/2 z-30 w-9 h-9 md:w-10 md:h-10 rounded-full bg-white/90 text-[#2C1810] shadow-lg border border-[#B5793A]/30 items-center justify-center hover:bg-[#B5793A] hover:text-white transition duration-300 cursor-pointer">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-                    </svg>
-                </button>
             </div>
         </div>
     </div>
@@ -177,14 +165,6 @@
 @once
     @push('scripts')
     <script>
-        // Global Arrow Scroll Function
-        window.scrollJelajahiCards = function(direction) {
-            const slider = document.getElementById('jelajahiCards');
-            if (!slider) return;
-            const cardWidth = 260; // 240px card + 20px gap
-            const shift = direction === 'left' ? -cardWidth : cardWidth;
-            slider.scrollBy({ left: shift, behavior: 'smooth' });
-        };
 
         (function () {
             const io = new IntersectionObserver(

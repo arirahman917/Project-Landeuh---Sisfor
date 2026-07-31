@@ -55,7 +55,7 @@
                         class="grid grid-cols-2 gap-2 p-3 rounded-xl border border-stone-200 bg-white/80 max-h-40 overflow-y-auto text-sm">
                         <p class="text-stone-400 text-xs col-span-2">Pilih jenis paket terlebih dahulu…</p>
                     </div>
-                    <p class="text-[10px] text-stone-400 mt-1">Slot = jumlah unit yang dipilih</p>
+                    <p class="text-[10px] text-stone-400 mt-1">Total unit terkait akan dihitung dari jumlah slot unit yang dipilih</p>
                 </div>
 
                 {{-- Max Orang --}}

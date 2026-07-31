@@ -5,10 +5,8 @@
      PENENTUAN TANGGAL — Weekday / Weekend / Highseason
      ============================================================ --}}
 
-{{-- ── MODAL EDIT TANGGAL ─────────────────────────────────────── --}}
 <div id="modalEditTanggal"
     class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm hidden"
-    onclick="if(event.target===this) closeModalTanggal()"
 >
     <div class="relative w-full max-w-xl mx-4 bg-[#fdf6e3] rounded-3xl shadow-2xl border border-amber-200/60
                 animate-[modalIn_0.25s_ease-out_forwards]" style="font-family:'Georgia',serif;">
@@ -74,8 +72,8 @@
         <div class="h-1.5 w-full rounded-t-3xl bg-red-500"></div>
         <div class="flex items-center justify-between px-8 pt-6 pb-0">
             <div>
-                <h2 class="text-xl font-bold text-stone-800 tracking-tight">⚠️ Tabrakan Pesanan Ditemukan</h2>
-                <p class="text-xs text-red-500 mt-0.5">Tanggal yang dipilih memiliki pesanan aktif. Selesaikan konflik sebelum melanjutkan.</p>
+                <h2 class="text-xl font-bold text-stone-800 tracking-tight">Tabrakan Pesanan Ditemukan</h2>
+                <p class="text-xs text-stone-400 mt-0.5">Selesaikan konflik pesanan di bawah ini sebelum melanjutkan.</p>
             </div>
             <button onclick="closeConflictModal()" class="p-2 rounded-xl text-stone-400 hover:bg-stone-100 hover:text-stone-600 transition">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -83,7 +81,11 @@
         </div>
         
         <div class="px-8 py-5 max-h-[60vh] overflow-y-auto">
-            <div id="conflictList" class="space-y-4">
+            <div class="p-3 bg-red-50 text-red-700 rounded-xl border border-red-200 text-xs font-semibold mb-4 flex items-start gap-2">
+                <iconify-icon icon="lucide:triangle-alert" class="text-base shrink-0 mt-0.5"></iconify-icon>
+                <p class="leading-relaxed">Tanggal yang dipilih memiliki pesanan aktif. Silakan reschedule/hubungi tamu terlebih dahulu.</p>
+            </div>
+            <div id="conflictList" class="space-y-3">
                 <!-- Conflict items will be rendered dynamically here -->
             </div>
         </div>
@@ -544,6 +546,8 @@
         const proceedBtn = document.getElementById('btnForceProceedConflict');
         const countLabel = document.getElementById('conflictCountLabel');
 
+        function fmtDate(d) { if (!d) return d; const p = d.split('-'); return p.length === 3 ? `${p[2]}-${p[1]}-${p[0]}` : d; }
+
         countLabel.textContent = `Tersisa ${conflicts.length} bentrokan`;
 
         if (conflicts.length === 0) {
@@ -564,16 +568,16 @@
 
         container.innerHTML = conflicts.map(p => {
             const cleanPhone = p.pemesanTelp.replace(/^0/, '62').replace(/[-+\s]/g, '');
-            const waMsg = encodeURIComponent(`Halo Kak ${p.pemesanNama}, kami dari Landeuh Village. Mengenai pemesanan Kakak dengan nomor #${p.noPesanan} untuk akomodasi ${p.akomodasi} pada tanggal ${p.checkin} s.d ${p.checkout}, kami ingin menginfokan bahwa terdapat agenda libur kawasan pada tanggal tersebut. Apakah boleh kami bantu untuk reschedule ke tanggal alternatif? Terima kasih.`);
+            const waMsg = encodeURIComponent(`Halo Kak ${p.pemesanNama}, kami dari Landeuh Village. Mengenai pemesanan Kakak dengan nomor #${p.noPesanan} untuk akomodasi ${p.akomodasi} pada tanggal ${fmtDate(p.checkin)} s.d ${fmtDate(p.checkout)}, kami ingin menginfokan bahwa terdapat agenda libur kawasan pada tanggal tersebut. Apakah boleh kami bantu untuk reschedule ke tanggal alternatif? Terima kasih.`);
             const waUrl = `https://wa.me/${cleanPhone}?text=${waMsg}`;
 
             return `
                 <div class="p-4 rounded-2xl border border-stone-200 bg-stone-50 flex flex-col gap-3">
                     <div class="flex justify-between items-start">
                         <div>
-                            <span class="text-[10px] font-extrabold text-red-500 uppercase bg-red-50 px-2 py-0.5 rounded border border-red-200">${p.noPesanan}</span>
+                            <span class="text-[10px] font-bold text-white bg-red-500 px-2 py-0.5 rounded shadow-sm uppercase">${p.noPesanan}</span>
                             <h4 class="text-sm font-bold text-stone-800 mt-1.5">${p.pemesanNama} <span class="font-normal text-xs text-stone-500">(${p.pemesanTelp})</span></h4>
-                            <p class="text-xs text-stone-600 mt-1">Unit: <strong>${p.akomodasi}</strong> · Jadwal: <strong>${p.checkin} &rarr; ${p.checkout}</strong></p>
+                            <p class="text-xs text-stone-600 mt-1">Unit: <strong>${p.akomodasi}</strong> · Jadwal: <strong>${fmtDate(p.checkin)} &rarr; ${fmtDate(p.checkout)}</strong></p>
                         </div>
                         <div class="flex gap-2">
                             <a href="${waUrl}" target="_blank" class="px-3 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs flex items-center gap-1 transition shadow-sm">

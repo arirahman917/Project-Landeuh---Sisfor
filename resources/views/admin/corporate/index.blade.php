@@ -176,13 +176,17 @@ function renderCorpList(data) {
                             </div>
                         </div>
                         <div class="flex gap-2 shrink-0">
-                            <button onclick="openModalEditCorp(${pkg.id})"
-                                class="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 transition">
-                                <iconify-icon icon="lucide:pencil" class="text-sm"></iconify-icon> Edit
+                            <button onclick="openModalEditCorp(${pkg.id})" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-blue-700 bg-blue-50 border border-blue-200 hover:bg-blue-100 transition shadow-sm">
+                                <iconify-icon icon="lucide:pencil" class="text-xs"></iconify-icon> Edit
                             </button>
+                            ${hasBlockedPeriodsCorp(pkg) ? `
+                                <button onclick="openModalListLiburCorp(${pkg.id})" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-rose-700 bg-rose-50 border border-rose-200 hover:bg-rose-100 transition shadow-sm">
+                                    <iconify-icon icon="lucide:calendar-off" class="text-xs"></iconify-icon> Tanggal Libur/Blokir
+                                </button>
+                            ` : ''}
                             <button onclick="openModalDeleteCorp(${pkg.id}, '${pkg.judul.replace(/'/g,"\\'")}' )"
-                                class="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 transition">
-                                <iconify-icon icon="lucide:trash-2" class="text-sm"></iconify-icon> Hapus
+                                class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-red-700 bg-red-50 border border-red-200 hover:bg-red-100 transition shadow-sm">
+                                <iconify-icon icon="lucide:trash-2" class="text-xs"></iconify-icon> Hapus
                             </button>
                         </div>
                     </div>
@@ -190,7 +194,6 @@ function renderCorpList(data) {
                         <span class="font-semibold text-stone-600">Unit:</span> ${accNames}
                     </div>
                     ${fas.length ? `<div class="mt-1.5 flex flex-wrap gap-1">${fas.slice(0,4).map(f=>`<span class="text-[10px] px-2 py-0.5 rounded-full bg-stone-100 text-stone-600 border border-stone-200">${f}</span>`).join('')}${fas.length>4?`<span class="text-[10px] text-stone-400">+${fas.length-4} lainnya</span>`:''}</div>` : ''}
-                    ${renderBlockedPeriodsHtmlCorp(pkg)}
                 </div>
                 <div class="flex flex-wrap gap-3 pt-2 border-t border-stone-200/60 text-xs font-semibold text-stone-600">
                     <span>Weekday: <span class="text-[#3a523a] font-bold">${fmtRp(pkg.harga_weekday)}/pax</span></span>
@@ -256,7 +259,7 @@ function renderAccomCheckboxes(containerId, selectedIds, jenisAkomodasi) {
         <label class="flex items-center gap-2 cursor-pointer text-stone-700 hover:text-[#3a523a] text-xs font-medium">
             <input type="checkbox" value="${a.id}" ${selectedInts.includes(parseInt(a.id)) ? 'checked' : ''}
                 class="rounded accent-[#3a523a] w-3.5 h-3.5 cursor-pointer">
-            <span>${a.judul}</span>
+            <span>${a.judul} (${a.slot} unit)</span>
         </label>`).join('');
 }
 
@@ -676,7 +679,26 @@ window.submitDeleteCorp = async function() {
         return false;
     };
 
-    window.renderBlockedPeriodsHtmlCorp = function(pkg) {
+    window.hasBlockedPeriodsCorp = function(pkg) {
+        const globalLibur = (DATE_SETTINGS || []).filter(d => d.type === 'libur_landeuh');
+        const specificLibur = pkg.blocked_dates || [];
+        return globalLibur.length > 0 || specificLibur.length > 0;
+    };
+
+    window.openModalListLiburCorp = function(id) {
+        const pkg = CORP_DATA.find(d => d.id === id);
+        if (!pkg) return;
+        const html = renderBlockedPeriodsHtml(pkg);
+        document.getElementById('modalListLiburCorpTitle').innerText = `Tanggal Libur/Blokir: ${pkg.judul}`;
+        document.getElementById('modalListLiburCorpContent').innerHTML = html || '<p class="text-sm text-stone-500">Tidak ada jadwal libur/blokir.</p>';
+        document.getElementById('modalListLiburCorp').classList.remove('hidden');
+    };
+
+    window.closeModalListLiburCorp = function() {
+        document.getElementById('modalListLiburCorp').classList.add('hidden');
+    };
+
+    window.renderBlockedPeriodsHtml = function(pkg) {
         const globalLibur = (DATE_SETTINGS || []).filter(d => d.type === 'libur_landeuh');
         const specificLibur = pkg.blocked_dates || [];
 
@@ -788,7 +810,7 @@ window.submitDeleteCorp = async function() {
                     `;
                     return `
                         <div class="flex items-center justify-between gap-2 p-2 rounded-xl bg-red-50 border border-red-150 text-red-700 text-[10px] font-semibold w-full">
-                            <span>🚫 Libur Spesifik: <strong>${lib.name}</strong> (${lib.rangeLabel})</span>
+                            <span>🚫 Libur Paket: <strong>${lib.name}</strong> (${lib.rangeLabel})</span>
                             ${deleteBtn}
                         </div>
                     `;
@@ -952,6 +974,8 @@ window.submitDeleteCorp = async function() {
         document.getElementById('btnSaveAfterLiburPaketConflictsCleared').disabled = true;
     }
 
+    function fmtDate(d) { if (!d) return d; const p = d.split('-'); return p.length === 3 ? `${p[2]}-${p[1]}-${p[0]}` : d; }
+
     function renderLiburPaketConflictsList(conflicts) {
         const container = document.getElementById('liburPaketConflictList');
         const saveBtn = document.getElementById('btnSaveAfterLiburPaketConflictsCleared');
@@ -973,16 +997,16 @@ window.submitDeleteCorp = async function() {
 
         container.innerHTML = conflicts.map(p => {
             const cleanPhone = p.pemesanTelp.replace(/^0/, '62').replace(/[-+\s]/g, '');
-            const waMsg = encodeURIComponent(`Halo Kak ${p.pemesanNama}, kami dari Landeuh Village. Mengenai pemesanan Kakak dengan nomor #${p.noPesanan} untuk akomodasi ${p.akomodasi} pada tanggal ${p.checkin} s.d ${p.checkout}, kami ingin menginfokan bahwa paket/kawasan tersebut sedang diliburkan. Apakah boleh kami bantu untuk reschedule ke tanggal alternatif? Terima kasih.`);
+            const waMsg = encodeURIComponent(`Halo Kak ${p.pemesanNama}, kami dari Landeuh Village. Mengenai pemesanan Kakak dengan nomor #${p.noPesanan} untuk akomodasi ${p.akomodasi} pada tanggal ${fmtDate(p.checkin)} s.d ${fmtDate(p.checkout)}, kami ingin menginfokan bahwa paket/kawasan tersebut sedang diliburkan. Apakah boleh kami bantu untuk reschedule ke tanggal alternatif? Terima kasih.`);
             const waUrl = `https://wa.me/${cleanPhone}?text=${waMsg}`;
 
             return `
                 <div class="p-3 rounded-xl border border-stone-200 bg-stone-50 flex flex-col gap-2">
                     <div class="flex justify-between items-start gap-2">
                         <div>
-                            <span class="text-[9px] font-extrabold text-red-500 bg-red-50 px-1.5 py-0.5 rounded border border-red-200 uppercase">${p.noPesanan}</span>
+                            <span class="text-[10px] font-bold text-white bg-red-500 px-2 py-0.5 rounded shadow-sm uppercase">${p.noPesanan}</span>
                             <h4 class="text-xs font-bold text-stone-800 mt-1">${p.pemesanNama} <span class="font-normal text-[10px] text-stone-500">(${p.pemesanTelp})</span></h4>
-                            <p class="text-[10px] text-stone-600">Akomodasi: <strong>${p.akomodasi}</strong> · Tanggal: <strong>${p.checkin} &rarr; ${p.checkout}</strong></p>
+                            <p class="text-[10px] text-stone-600">Akomodasi: <strong>${p.akomodasi}</strong> · Tanggal: <strong>${fmtDate(p.checkin)} &rarr; ${fmtDate(p.checkout)}</strong></p>
                         </div>
                         <div class="flex gap-1">
                             <a href="${waUrl}" target="_blank" class="px-2 py-1 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-[10px] flex items-center gap-0.5 transition shadow-sm">
@@ -1239,5 +1263,21 @@ window.submitDeleteCorp = async function() {
 /* ── Init ─────────────────────────────────────────────── */
 renderCorpList(allCorpData);
 </script>
+
+{{-- MODAL LIST LIBUR --}}
+<div id="modalListLiburCorp" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm hidden" onclick="if(event.target===this) closeModalListLiburCorp()">
+    <div class="relative w-full max-w-lg mx-4 bg-[#fdf6e3] rounded-3xl shadow-2xl border border-amber-200/60 overflow-hidden animate-[modalIn_0.25s_ease-out_forwards]" style="font-family:'Georgia',serif;">
+        <div class="h-1.5 w-full bg-gradient-to-r from-red-400 via-rose-500 to-red-600"></div>
+        <div class="flex items-center justify-between px-6 pt-5 pb-0">
+            <h2 class="text-lg font-bold text-stone-800 tracking-tight" id="modalListLiburCorpTitle">Tanggal Libur/Blokir</h2>
+            <button onclick="closeModalListLiburCorp()" class="p-2 rounded-xl text-stone-400 hover:bg-stone-200/60 hover:text-stone-600 transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+        <div class="px-6 pt-2 pb-6 max-h-[60vh] overflow-y-auto" id="modalListLiburCorpContent">
+            <!-- Content injected here -->
+        </div>
+    </div>
+</div>
 @endpush
 @endsection

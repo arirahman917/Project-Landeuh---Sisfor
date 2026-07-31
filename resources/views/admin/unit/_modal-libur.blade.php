@@ -1,7 +1,6 @@
 {{-- MODAL LIBURKAN KAMAR --}}
 <div id="modalLiburkanKamar"
     class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm hidden"
-    onclick="if(event.target===this) closeLiburKamarModal()"
 >
     <div class="relative w-full max-w-xl mx-4 bg-[#fdf6e3] rounded-3xl shadow-2xl border border-amber-200/60
                 animate-[modalIn_0.25s_ease-out_forwards]" style="font-family:'Georgia',serif;">
@@ -41,8 +40,9 @@
 
         {{-- Conflict Content (Shown only if conflict exists) --}}
         <div id="liburKamarConflictWrap" class="px-8 pt-5 pb-3 hidden">
-            <div class="p-3 bg-red-50 text-red-700 rounded-xl border border-red-200 text-xs font-semibold mb-4 leading-relaxed">
-                ⚠️ Ditemukan pesanan aktif pada kamar & tanggal terpilih. Silakan reschedule/hubungi tamu terlebih dahulu.
+            <div class="p-3 bg-red-50 text-red-700 rounded-xl border border-red-200 text-xs font-semibold mb-4 flex items-start gap-2">
+                <iconify-icon icon="lucide:triangle-alert" class="text-base shrink-0 mt-0.5"></iconify-icon>
+                <p class="leading-relaxed">Ditemukan pesanan aktif pada kamar & tanggal terpilih. Silakan reschedule/hubungi tamu terlebih dahulu.</p>
             </div>
             <div id="liburKamarConflictList" class="space-y-3 max-h-[220px] overflow-y-auto p-1">
                 <!-- Conflicts list -->

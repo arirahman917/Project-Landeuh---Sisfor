@@ -38,7 +38,7 @@
         </div>
 
         {{-- Body --}}
-        <div class="px-8 pt-6 pb-7 max-h-[75vh] overflow-y-auto">
+        <div class="px-8 pt-6 pb-7 max-h-[60vh] overflow-y-auto">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
 
                 {{-- Nama Kamar --}}

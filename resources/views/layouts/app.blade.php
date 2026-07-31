@@ -16,10 +16,10 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
 </head>
-<body class="bg-[#F8EDD8] font-sans text-gray-800 antialiased overflow-x-hidden w-full">
+<body class="bg-[#F8EDD8] font-sans text-gray-800 antialiased overflow-x-hidden w-full min-h-screen flex flex-col">
     @include('components.header')
     
-    <main>
+    <main class="flex-1">
         @yield('content')
     </main>
     

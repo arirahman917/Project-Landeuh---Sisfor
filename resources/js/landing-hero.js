@@ -198,43 +198,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 4. Guest Picker Logic
+    // NOTE: The counter-based guest picker UI and its toggle/button logic
+    // is now handled by the inline <script> in hero.blade.php.
+    // This section only handles the outside-click-to-close behavior
+    // to avoid duplicate event listeners.
     const guestPickerContainer = document.getElementById('guestPickerContainer');
-    const guestPickerTrigger = document.getElementById('guestPickerTrigger');
     const guestPickerDropdown = document.getElementById('guestPickerDropdown');
     const guestPickerChevron = document.getElementById('guestPickerChevron');
-    const guestPickerLabel = document.getElementById('guestPickerLabel');
-    const heroDewasaInput = document.getElementById('heroDewasaInput');
-    const heroGuestOptions = document.querySelectorAll('.hero-guest-opt');
-
-    if (guestPickerTrigger && guestPickerDropdown && guestPickerContainer) {
-        // Toggle Dropdown Smoothly
-        guestPickerTrigger.addEventListener('click', () => {
-            guestPickerDropdown.classList.toggle('opacity-0');
-            guestPickerDropdown.classList.toggle('invisible');
-            guestPickerDropdown.classList.toggle('translate-y-[-10px]');
-            if (guestPickerChevron) guestPickerChevron.classList.toggle('rotate-180');
-        });
-
-        // Option Selection
-        heroGuestOptions.forEach(option => {
-            option.addEventListener('click', (e) => {
-                const value = e.target.getAttribute('data-value');
-                const guests = e.target.getAttribute('data-guests');
-                if (guestPickerLabel) guestPickerLabel.textContent = value;
-                if (heroDewasaInput) heroDewasaInput.value = guests;
-
-                // Close Dropdown
-                guestPickerDropdown.classList.add('opacity-0', 'invisible', 'translate-y-[-10px]');
-                if (guestPickerChevron) guestPickerChevron.classList.remove('rotate-180');
-            });
-        });
-
-        // Close when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!guestPickerContainer.contains(e.target)) {
-                guestPickerDropdown.classList.add('opacity-0', 'invisible', 'translate-y-[-10px]');
-                if (guestPickerChevron) guestPickerChevron.classList.remove('rotate-180');
-            }
-        });
-    }
 });

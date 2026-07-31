@@ -79,7 +79,7 @@
 
                 <!-- Tamu -->
                 <div class="col-span-1 order-2 md:order-3 flex-1 w-full px-3 md:px-5 py-3 md:py-4 bg-white md:bg-transparent rounded-xl md:rounded-none shadow-md md:shadow-none border border-gray-100 md:border-0 md:border-r md:border-gray-300 relative" id="guestPickerContainer">
-                    <label class="block text-xs md:text-sm font-semibold text-gray-800 mb-1">Jumlah Tamu</label>
+                    <label class="block text-xs md:text-sm font-semibold text-gray-800 mb-1">Tamu & Kamar</label>
                     <div class="relative cursor-pointer" id="guestPickerTrigger">
                         <div class="absolute inset-y-0 left-0 flex items-center pointer-events-none text-gray-600">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
@@ -96,15 +96,28 @@
                         </div>
                     </div>
 
-                    <!-- Custom Dropdown Menu -->
-                    <div class="absolute top-[calc(100%+0.5rem)] left-0 md:right-0 mt-2 w-full lg:min-w-[220px] bg-white rounded-xl shadow-[0_15px_40px_-10px_rgba(0,0,0,0.2)] border border-gray-100 py-2 opacity-0 invisible translate-y-[-10px] transition-all duration-300 ease-out z-50 transform md:left-auto" id="guestPickerDropdown">
-                        <div class="flex flex-col">
-                            <button type="button" class="hero-guest-opt w-full text-left px-5 py-3 hover:bg-blue-600 hover:text-white transition-colors text-gray-700 text-sm md:text-base font-medium" data-value="Semua Tamu" data-guests="0">Semua Tamu</button>
-                            <button type="button" class="hero-guest-opt w-full text-left px-5 py-3 hover:bg-blue-600 hover:text-white transition-colors text-gray-700 text-sm md:text-base font-medium" data-value="2 Tamu" data-guests="2">2 Tamu</button>
-                            <button type="button" class="hero-guest-opt w-full text-left px-5 py-3 hover:bg-blue-600 hover:text-white transition-colors text-gray-700 text-sm md:text-base font-medium" data-value="3 Tamu" data-guests="3">3 Tamu</button>
-                            <button type="button" class="hero-guest-opt w-full text-left px-5 py-3 hover:bg-blue-600 hover:text-white transition-colors text-gray-700 text-sm md:text-base font-medium" data-value="4 Tamu" data-guests="4">4 Tamu</button>
-                            <button type="button" class="hero-guest-opt w-full text-left px-5 py-3 hover:bg-blue-600 hover:text-white transition-colors text-gray-700 text-sm md:text-base font-medium" data-value="5 Tamu" data-guests="5">5 Tamu</button>
-                            <button type="button" class="hero-guest-opt w-full text-left px-5 py-3 hover:bg-blue-600 hover:text-white transition-colors text-gray-700 text-sm md:text-base font-medium" data-value="8 Tamu" data-guests="8">8 Tamu</button>
+                    <!-- Custom Dropdown Menu (Traveloka Style) -->
+                    <div class="absolute top-[calc(100%+0.5rem)] left-0 md:right-0 mt-2 w-full lg:min-w-[320px] bg-white rounded-xl shadow-[0_15px_40px_-10px_rgba(0,0,0,0.2)] border border-gray-100 py-4 px-4 hidden z-50 md:left-auto" id="guestPickerDropdown">
+                        <div class="flex flex-col gap-4">
+                            <!-- Tamu -->
+                            <div class="flex items-center justify-between">
+                                <div class="flex flex-col">
+                                    <span class="text-sm font-semibold text-gray-800">Tamu</span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <button type="button" id="btn-min-dewasa" class="w-8 h-8 flex items-center justify-center rounded-full border border-gray-300 text-gray-500 hover:bg-gray-50 transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 12H4" /></svg>
+                                    </button>
+                                    <span class="text-sm font-semibold w-4 text-center" id="val-dewasa">2</span>
+                                    <button type="button" id="btn-plus-dewasa" class="w-8 h-8 flex items-center justify-center rounded-full border border-[#3a523a] text-[#3a523a] hover:bg-[#3a523a]/10 transition cursor-pointer">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" /></svg>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-2 text-right border-t border-gray-100 pt-3">
+                                <button type="button" id="btn-selesai-guest" class="text-sm font-bold text-[#3a523a] hover:text-[#2c402c] transition">Selesai</button>
+                            </div>
                         </div>
                     </div>
                     <input type="hidden" name="dewasa" id="heroDewasaInput" value="2">
@@ -128,17 +141,76 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        const guestPickerTrigger = document.getElementById('guestPickerTrigger');
+        const guestPickerDropdown = document.getElementById('guestPickerDropdown');
+        const guestPickerContainer = document.getElementById('guestPickerContainer');
+        const guestPickerLabel = document.getElementById('guestPickerLabel');
+        const guestPickerChevron = document.getElementById('guestPickerChevron');
+        
+        const heroDewasaInput = document.getElementById('heroDewasaInput');
+
+        const valDewasa = document.getElementById('val-dewasa');
+
+        const btnMinDewasa = document.getElementById('btn-min-dewasa');
+        const btnPlusDewasa = document.getElementById('btn-plus-dewasa');
+        const btnSelesaiGuest = document.getElementById('btn-selesai-guest');
+
+        function updateGuestLabel() {
+            let label = `${heroDewasaInput.value} Tamu`;
+            if(guestPickerLabel) guestPickerLabel.innerText = label;
+        }
+
+        function updateButtons() {
+            if(btnMinDewasa) btnMinDewasa.disabled = heroDewasaInput.value <= 1;
+            if(btnPlusDewasa) btnPlusDewasa.disabled = heroDewasaInput.value >= 10;
+        }
+
+        function toggleGuestDropdown() {
+            if (guestPickerDropdown) {
+                guestPickerDropdown.classList.toggle('hidden');
+                if (guestPickerChevron) guestPickerChevron.classList.toggle('rotate-180');
+            }
+        }
+
+        if (guestPickerTrigger) {
+            guestPickerTrigger.addEventListener('click', function(e) {
+                e.stopPropagation();
+                toggleGuestDropdown();
+            });
+        }
+        
+        if (guestPickerDropdown) {
+            guestPickerDropdown.addEventListener('click', function(e) {
+                e.stopPropagation(); 
+            });
+        }
+
+        if (btnSelesaiGuest) {
+            btnSelesaiGuest.addEventListener('click', function(e) {
+                e.preventDefault();
+                toggleGuestDropdown();
+            });
+        }
+
+        document.addEventListener('click', function(e) {
+            if (guestPickerDropdown && guestPickerContainer && !guestPickerContainer.contains(e.target)) {
+                guestPickerDropdown.classList.add('hidden');
+                if(guestPickerChevron) guestPickerChevron.classList.remove('rotate-180');
+            }
+        });
+
+        if(btnMinDewasa) btnMinDewasa.addEventListener('click', () => { if(heroDewasaInput.value > 1) { heroDewasaInput.value--; valDewasa.innerText = heroDewasaInput.value; updateGuestLabel(); updateButtons(); }});
+        if(btnPlusDewasa) btnPlusDewasa.addEventListener('click', () => { if(heroDewasaInput.value < 10) { heroDewasaInput.value++; valDewasa.innerText = heroDewasaInput.value; updateGuestLabel(); updateButtons(); }});
+        
         const btnCariHero = document.getElementById('btnCariHero');
         if (btnCariHero) {
             btnCariHero.addEventListener('click', function(e) {
                 e.preventDefault();
                 const jenisInput = document.getElementById('jenisAkomodasiInput');
                 const tglInput = document.getElementById('dateRangePicker');
-                const dewasaVal = document.getElementById('valDewasa');
 
                 const jenis = jenisInput ? jenisInput.value : 'Semua Akomodasi';
                 
-                // Get standard YYYY-MM-DD formatted date range from Flatpickr
                 let tgl = '';
                 const fp = tglInput ? tglInput._flatpickr : null;
                 if (fp && fp.selectedDates && fp.selectedDates.length > 0) {
@@ -152,10 +224,9 @@
                     tgl = tglInput ? tglInput.value : '';
                 }
 
-                const dewasa = dewasaVal ? dewasaVal.innerText : '2';
-                const kamar = '1';
+                const dewasa = heroDewasaInput ? heroDewasaInput.value : '2';
                 
-                const url = `/akomodasi?jenis=${encodeURIComponent(jenis)}&tgl=${encodeURIComponent(tgl)}&dewasa=${encodeURIComponent(dewasa)}&kamar=${encodeURIComponent(kamar)}`;
+                const url = `/akomodasi?jenis=${encodeURIComponent(jenis)}&tgl=${encodeURIComponent(tgl)}&dewasa=${encodeURIComponent(dewasa)}`;
                 window.location.href = url;
             });
         }

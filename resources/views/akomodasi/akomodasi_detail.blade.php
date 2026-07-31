@@ -40,18 +40,31 @@
                         </svg>
                     </div>
                 </div>
-                <!-- Dropdown List -->
-                <div class="absolute top-[calc(100%+0.5rem)] right-0 w-full min-w-[200px] bg-white rounded-2xl shadow-[0_15px_40px_-10px_rgba(0,0,0,0.2)] border border-gray-100 py-2 hidden z-50" id="guestPickerDropdown" onclick="event.stopPropagation()">
-                    <div class="flex flex-col">
-                        <button class="guest-opt w-full text-left px-5 py-3 hover:bg-blue-600 hover:text-white transition-colors text-gray-700 text-sm font-medium" data-value="Semua Tamu" data-guests="0">Semua Tamu</button>
-                        <button class="guest-opt w-full text-left px-5 py-3 hover:bg-blue-600 hover:text-white transition-colors text-gray-700 text-sm font-medium" data-value="2 Tamu" data-guests="2">2 Tamu</button>
-                        <button class="guest-opt w-full text-left px-5 py-3 hover:bg-blue-600 hover:text-white transition-colors text-gray-700 text-sm font-medium" data-value="3 Tamu" data-guests="3">3 Tamu</button>
-                        <button class="guest-opt w-full text-left px-5 py-3 hover:bg-blue-600 hover:text-white transition-colors text-gray-700 text-sm font-medium" data-value="4 Tamu" data-guests="4">4 Tamu</button>
-                        <button class="guest-opt w-full text-left px-5 py-3 hover:bg-blue-600 hover:text-white transition-colors text-gray-700 text-sm font-medium" data-value="5 Tamu" data-guests="5">5 Tamu</button>
-                        <button class="guest-opt w-full text-left px-5 py-3 hover:bg-blue-600 hover:text-white transition-colors text-gray-700 text-sm font-medium" data-value="8 Tamu" data-guests="8">8 Tamu</button>
+                <!-- Custom Dropdown Menu (Traveloka Style) -->
+                <div class="absolute top-[calc(100%+0.5rem)] right-0 w-full min-w-[320px] bg-white rounded-2xl shadow-[0_15px_40px_-10px_rgba(0,0,0,0.2)] border border-gray-100 py-4 px-4 hidden z-50 cursor-default" id="guestPickerDropdown" onclick="event.stopPropagation()">
+                    <div class="flex flex-col gap-4">
+                        <!-- Tamu -->
+                        <div class="flex items-center justify-between">
+                            <div class="flex flex-col">
+                                <span class="text-sm font-semibold text-gray-800">Tamu</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <button type="button" id="ako-btn-min-dewasa" onclick="changeGuest('dewasa', -1)" class="w-8 h-8 flex items-center justify-center rounded-full border border-gray-300 text-gray-500 hover:bg-gray-50 transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 12H4" /></svg>
+                                </button>
+                                <span class="text-sm font-semibold w-4 text-center" id="ako-val-dewasa">2</span>
+                                <button type="button" id="ako-btn-plus-dewasa" onclick="changeGuest('dewasa', 1)" class="w-8 h-8 flex items-center justify-center rounded-full border border-[#3a523a] text-[#3a523a] hover:bg-[#3a523a]/10 transition cursor-pointer">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" /></svg>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-2 text-right border-t border-gray-100 pt-3">
+                            <button type="button" onclick="closeGuestDropdownAndFilter(event)" class="text-sm font-bold text-[#3a523a] hover:text-[#2c402c] transition">Selesai</button>
+                        </div>
                     </div>
                 </div>
-                <input type="hidden" id="filterGuests" value="2">
+                <input type="hidden" id="filterGuestsDewasa" value="2">
             </div>
         </div>
     </div>
@@ -937,8 +950,8 @@
 
     function doFilter() {
         const j = document.getElementById('filterJenis') ? document.getElementById('filterJenis').value : 'Semua Akomodasi';
-        const guestInput = document.getElementById('filterGuests');
-        const targetDewasa = guestInput ? parseInt(guestInput.value) || 0 : 0;
+        const guestDewasaInput = document.getElementById('filterGuestsDewasa');
+        const targetDewasa = guestDewasaInput ? parseInt(guestDewasaInput.value) || 0 : 0;
 
         filteredData = AKOMODASI_DATA.filter(d => {
             // Jenis
@@ -1011,24 +1024,55 @@
         });
     });
 
-    document.querySelectorAll('.guest-opt').forEach(btn => {
-        btn.addEventListener('click', (e) => {
+    window.changeGuest = function(type, delta) {
+        let valEl = document.getElementById(`ako-val-${type}`);
+        let inputEl = document.getElementById('filterGuestsDewasa');
+        let minBtn = document.getElementById(`ako-btn-min-${type}`);
+        let plusBtn = document.getElementById(`ako-btn-plus-${type}`);
+        
+        let current = parseInt(inputEl.value) || 0;
+        let next = current + delta;
+
+        if(type === 'dewasa' && (next < 1 || next > 10)) return;
+
+        inputEl.value = next;
+        valEl.innerText = next;
+
+        // Update buttons state
+        if(type === 'dewasa') {
+            minBtn.disabled = next <= 1;
+            plusBtn.disabled = next >= 10;
+        }
+        
+        updateAkoGuestLabel();
+    };
+
+    function updateAkoGuestLabel() {
+        const guestLabel = document.getElementById('guestPickerLabel');
+        const dw = document.getElementById('filterGuestsDewasa').value;
+        
+        let lbl = `${dw} Tamu`;
+        if(guestLabel) guestLabel.innerText = lbl;
+    }
+
+    window.closeGuestDropdownAndFilter = function(e) {
+        if(e) {
             e.preventDefault();
             e.stopPropagation();
-            const val = btn.getAttribute('data-value');
-            const count = parseInt(btn.getAttribute('data-guests')) || 0;
-            const guestLabel = document.getElementById('guestPickerLabel');
-            const guestInput = document.getElementById('filterGuests');
-            const guestDropdown = document.getElementById('guestPickerDropdown');
-            const guestChevron = document.getElementById('guestPickerChevron');
-
-            if (guestLabel) guestLabel.innerText = val;
-            if (guestInput) guestInput.value = count;
-            if (guestDropdown) guestDropdown.classList.add('hidden');
-            if (guestChevron) guestChevron.classList.remove('rotate-180');
-            doFilter(); // Auto-filter on selection
-        });
-    });
+        }
+        const guestDropdown = document.getElementById('guestPickerDropdown');
+        const guestChevron = document.getElementById('guestPickerChevron');
+        if (guestDropdown) guestDropdown.classList.add('hidden');
+        if (guestChevron) guestChevron.classList.remove('rotate-180');
+        
+        // Update URL to match traveloka style
+        const dw = document.getElementById('filterGuestsDewasa').value;
+        const urlParams = new URLSearchParams(window.location.search);
+        urlParams.set('dewasa', dw);
+        window.history.replaceState({}, '', `${window.location.pathname}?${urlParams}`);
+        
+        doFilter();
+    };
 
     document.addEventListener('click', (e) => {
         const akoContainer = document.getElementById('akomodasiPickerContainer');
@@ -1044,8 +1088,11 @@
         if (guestContainer && !guestContainer.contains(e.target)) {
             const guestDropdown = document.getElementById('guestPickerDropdown');
             const guestChevron = document.getElementById('guestPickerChevron');
-            if (guestDropdown) guestDropdown.classList.add('hidden');
-            if (guestChevron) guestChevron.classList.remove('rotate-180');
+            if (guestDropdown && !guestDropdown.classList.contains('hidden')) {
+                guestDropdown.classList.add('hidden');
+                if (guestChevron) guestChevron.classList.remove('rotate-180');
+                doFilter();
+            }
         }
     });
 
@@ -1053,7 +1100,6 @@
     const urlParams = new URLSearchParams(window.location.search);
     const paramJenis = urlParams.get('jenis');
     const paramDewasa = urlParams.get('dewasa');
-    const paramKamar = urlParams.get('kamar');
     const paramTgl = urlParams.get('tgl');
 
     if (paramJenis) {
@@ -1069,13 +1115,18 @@
             bannerWrap.classList.remove('hidden');
         }
     }
-    if (paramDewasa) {
-        const dVal = parseInt(paramDewasa) || 0;
-        const guestInput = document.getElementById('filterGuests');
-        const guestLabel = document.getElementById('guestPickerLabel');
-        if (guestInput) guestInput.value = dVal;
-        if (guestLabel) guestLabel.innerText = dVal > 0 ? `${dVal} Tamu` : 'Semua Tamu';
-    }
+    
+    // Initialize guests from URL params
+    const dVal = paramDewasa ? parseInt(paramDewasa) : 2;
+    
+    document.getElementById('filterGuestsDewasa').value = dVal;
+    document.getElementById('ako-val-dewasa').innerText = dVal;
+    
+    updateAkoGuestLabel();
+    
+    // Initial button states
+    document.getElementById('ako-btn-min-dewasa').disabled = dVal <= 1;
+    document.getElementById('ako-btn-plus-dewasa').disabled = dVal >= 10;
 
     if (paramTgl) {
         const parts = paramTgl.split(' to ');
