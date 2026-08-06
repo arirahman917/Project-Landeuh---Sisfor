@@ -745,33 +745,101 @@ window.submitDeleteCorp = async function() {
             const dateList = datesStr.split(',').map(d => d.trim()).filter(Boolean).sort();
             if (dateList.length === 0) return;
             
-            const firstDate = parseToLocalDate(dateList[0]);
-            const key = `${firstDate.getFullYear()}-${String(firstDate.getMonth()).padStart(2, '0')}`;
-            if (!groups[key]) {
-                groups[key] = {
-                    month: firstDate.getMonth(),
-                    year: firstDate.getFullYear(),
-                    items: []
-                };
-            }
-            
-            let rangeLabel = '';
-            if (dateList.length === 1) {
-                rangeLabel = formatDateStr(dateList[0]);
-            } else {
-                rangeLabel = `${formatDateStr(dateList[0])} s.d ${formatDateStr(dateList[dateList.length - 1])}`;
-            }
+            let rangeLabel = formatHolidayDates(datesStr);
 
-            groups[key].items.push({
-                ...lib,
-                rangeLabel: rangeLabel,
-                firstDateObj: firstDate
+            // Group under each unique month-year present in dateList
+            const monthKeys = new Set();
+            dateList.forEach(dStr => {
+                const parsed = parseToLocalDate(dStr);
+                const k = `${parsed.getFullYear()}-${String(parsed.getMonth()).padStart(2, '0')}`;
+                monthKeys.add(k);
+            });
+
+            monthKeys.forEach(key => {
+                const [yearStr, monthStr] = key.split('-');
+                const y = parseInt(yearStr, 10);
+                const m = parseInt(monthStr, 10);
+                
+                if (!groups[key]) {
+                    groups[key] = {
+                        month: m,
+                        year: y,
+                        items: []
+                    };
+                }
+
+                groups[key].items.push({
+                    ...lib,
+                    rangeLabel: rangeLabel,
+                    firstDateObj: parseToLocalDate(dateList[0])
+                });
             });
         });
 
         function formatDateStr(dateStr) {
             const p = dateStr.split('-');
             return p.length === 3 ? `${p[2]}-${p[1]}-${p[0]}` : dateStr;
+        }
+
+        function formatHolidayDates(datesString) {
+            if (!datesString) return '';
+            const monthIdNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+            
+            let dates = datesString.split(',').map(s => s.trim()).filter(s => s);
+            let parsedDates = [];
+            
+            dates.forEach(dStr => {
+                let parts = dStr.split('-');
+                if (parts.length === 3) {
+                    let y = parseInt(parts[0], 10);
+                    let m = parseInt(parts[1], 10);
+                    let d = parseInt(parts[2], 10);
+                    if (!isNaN(y) && !isNaN(m) && !isNaN(d)) {
+                        parsedDates.push({ y: y, m: m, d: d, time: new Date(y, m-1, d).getTime() });
+                    }
+                }
+            });
+            
+            if (parsedDates.length === 0) return datesString;
+            
+            parsedDates.sort((a, b) => a.time - b.time);
+            
+            let groups = [];
+            parsedDates.forEach(pd => {
+                let key = `${pd.y}-${pd.m}`;
+                let g = groups.find(x => x.key === key);
+                if (!g) {
+                    g = { key: key, y: pd.y, m: pd.m, days: [] };
+                    groups.push(g);
+                }
+                if (!g.days.includes(pd.d)) {
+                    g.days.push(pd.d);
+                }
+            });
+            
+            let groupStrings = [];
+            groups.forEach(g => {
+                g.days.sort((a, b) => a - b);
+                let ranges = [];
+                let start = g.days[0];
+                let end = g.days[0];
+                
+                for (let i = 1; i < g.days.length; i++) {
+                    if (g.days[i] === end + 1) {
+                        end = g.days[i];
+                    } else {
+                        ranges.push(start === end ? `${start}` : `${start}-${end}`);
+                        start = g.days[i];
+                        end = g.days[i];
+                    }
+                }
+                ranges.push(start === end ? `${start}` : `${start}-${end}`);
+                
+                let monthName = monthIdNames[g.m - 1];
+                groupStrings.push(`${ranges.join(', ')} ${monthName} ${g.y}`);
+            });
+            
+            return groupStrings.join(' dan ');
         }
 
         const MONTH_COLORS = [
