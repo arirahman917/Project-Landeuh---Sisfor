@@ -17,19 +17,22 @@ mkdir -p /var/www/html/storage/framework/sessions
 mkdir -p /var/www/html/storage/framework/views
 mkdir -p /var/www/html/storage/framework/cache
 mkdir -p /var/www/html/storage/logs
-chown -R www-data:www-data /var/www/html/storage
-chmod -R 775 /var/www/html/storage
 
-# Cache Laravel config, routes, and views for production
+# Cache Laravel config, routes, and views for production (runs as root, might create logs)
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 
-# Run Laravel migrations
+# Run Laravel migrations (runs as root, might create logs)
 php artisan migrate --force
 
+# Fix permissions AFTER running artisan commands, in case they created logs as root
+chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+
 # Start queue worker in background to process emails without freezing the UI
-php artisan queue:work --tries=3 --timeout=90 &
+# Run as www-data to avoid creating log files as root
+su -s /bin/bash www-data -c "php artisan queue:work --tries=3 --timeout=90 &"
 
 # Start Apache in foreground
 exec apache2-foreground
