@@ -23,6 +23,49 @@ fs.copyFileSync(
     path.join(buildDir, '.htaccess')
 );
 
+// ── Copy folder public/images ke public/build/images ──
+// Agar logo pembayaran, favicon, dll ikut tersalin ke public_html
+function copyDirRecursive(src, dest) {
+    if (!fs.existsSync(src)) return;
+    if (!fs.existsSync(dest)) fs.mkdirSync(dest, { recursive: true });
+
+    const entries = fs.readdirSync(src, { withFileTypes: true });
+    for (const entry of entries) {
+        const srcPath = path.join(src, entry.name);
+        const destPath = path.join(dest, entry.name);
+        if (entry.isDirectory()) {
+            copyDirRecursive(srcPath, destPath);
+        } else {
+            fs.copyFileSync(srcPath, destPath);
+        }
+    }
+}
+
+copyDirRecursive(
+    path.join(root, 'public', 'images'),
+    path.join(buildDir, 'images')
+);
+
+// Copy folder public/js jika ada
+copyDirRecursive(
+    path.join(root, 'public', 'js'),
+    path.join(buildDir, 'js')
+);
+
+// Copy robots.txt jika ada
+const robotsSrc = path.join(root, 'public', 'robots.txt');
+if (fs.existsSync(robotsSrc)) {
+    fs.copyFileSync(robotsSrc, path.join(buildDir, 'robots.txt'));
+}
+
+// Copy favicon.ico jika ada
+const faviconSrc = path.join(root, 'public', 'favicon.ico');
+if (fs.existsSync(faviconSrc)) {
+    fs.copyFileSync(faviconSrc, path.join(buildDir, 'favicon.ico'));
+}
+
 console.log('✅ File deploy Hostinger berhasil disalin ke public/build/');
 console.log('   - index.php (dengan path ../laravel/)');
-console.log('   - .htaccess (versi Laravel lengkap)');
+console.log('   - .htaccess (versi Laravel lengkap + PHP 8.4)');
+console.log('   - images/ (logo pembayaran, logo landeuh, dll)');
+console.log('   - js/, robots.txt, favicon.ico');
