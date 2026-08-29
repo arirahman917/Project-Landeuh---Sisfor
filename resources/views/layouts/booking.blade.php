@@ -9,7 +9,7 @@
     <title>@yield('title', 'Reservasi - Landeuh Village Riverside')</title>
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700" rel="stylesheet" />
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite(['resources/css/app.css', 'resources/js/app.js'], str_contains(public_path(), 'public_html') ? '' : 'build')
     @stack('styles')
 </head>
 <body class="bg-[#F8EDD8] font-sans text-gray-800 antialiased overflow-x-hidden w-full min-h-screen">

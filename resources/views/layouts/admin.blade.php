@@ -7,7 +7,7 @@
     <meta name="description" content="Admin Panel Landeuh Village Riverside - Sistem Informasi & Manajemen Penginapan">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Admin Panel — Landeuh Village')</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite(['resources/css/app.css', 'resources/js/app.js'], str_contains(public_path(), 'public_html') ? '' : 'build')
     <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <style>
