@@ -17,6 +17,14 @@ fs.copyFileSync(
     path.join(buildDir, 'index.php')
 );
 
+// Copy manifest ke folder build/ agar Laravel menemukannya di public_html/build/manifest.json
+const manifestSrc = path.join(buildDir, 'manifest.json');
+const nestedBuildDir = path.join(buildDir, 'build');
+if (fs.existsSync(manifestSrc)) {
+    fs.mkdirSync(nestedBuildDir, { recursive: true });
+    fs.copyFileSync(manifestSrc, path.join(nestedBuildDir, 'manifest.json'));
+}
+
 // Copy .htaccess khusus Hostinger
 fs.copyFileSync(
     path.join(root, 'deploy', 'hostinger-htaccess'),
