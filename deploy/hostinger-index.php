@@ -19,5 +19,6 @@ $app = require_once __DIR__.'/../laravel/bootstrap/app.php';
 
 // Adjust public path for Hostinger deployment
 $app->usePublicPath(__DIR__);
+app(\Illuminate\Foundation\Vite::class)->useBuildDirectory('');
 
 $app->handleRequest(Request::capture());
