@@ -26,7 +26,10 @@ class AppServiceProvider extends ServiceProvider
             \Illuminate\Support\Facades\URL::forceScheme('https');
         }
 
-
+        // Hostinger deployment fix: output Vite asset URLs without /build/ directory
+        if (str_contains(public_path(), 'public_html') || config('app.env') === 'production') {
+            \Illuminate\Support\Facades\Vite::useBuildDirectory('');
+        }
 
         // Register Brevo (Sendinblue) as custom mail transport
         Mail::extend('brevo', function (array $config) {
