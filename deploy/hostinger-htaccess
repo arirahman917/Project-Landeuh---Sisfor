@@ -23,7 +23,7 @@
     RewriteRule ^ %1 [L,R=301]
 
     # Fix for Vite assets path on Hostinger
-    RewriteRule ^build/(.*)$ $1 [L]
+    RewriteRule ^build/(.*)$ /$1 [L]
 
     # Send Requests To Front Controller...
     RewriteCond %{REQUEST_FILENAME} !-d
