@@ -18,7 +18,10 @@ class WhatsAppWebhookController extends Controller
         $token = $request->query('hub_verify_token') ?? $request->query('hub.verify_token') ?? $request->input('hub_verify_token') ?? $request->input('hub.verify_token');
         $challenge = $request->query('hub_challenge') ?? $request->query('hub.challenge') ?? $request->input('hub_challenge') ?? $request->input('hub.challenge');
         
-        $verifyToken = env('WA_WEBHOOK_VERIFY_TOKEN', 'LandeuhVillageWA2026');
+        $verifyToken = env('WA_WEBHOOK_VERIFY_TOKEN');
+        if (empty($verifyToken)) {
+            $verifyToken = 'LandeuhVillageWA2026';
+        }
 
         if ($mode && $token) {
             if ($mode === 'subscribe' && $token === $verifyToken) {
