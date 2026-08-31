@@ -15,6 +15,12 @@ return Application::configure(basePath: dirname(__DIR__))
         // Trust all reverse proxies (required for Railway, Heroku, etc.)
         $middleware->trustProxies(at: '*');
 
+        // Pengecualian CSRF untuk Webhook Meta WhatsApp
+        $middleware->validateCsrfTokens(except: [
+            'api/*',
+            'api/webhook/whatsapp',
+        ]);
+
         // Global security headers
         $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
 
