@@ -17,11 +17,19 @@ require __DIR__.'/../laravel/vendor/autoload.php';
 /** @var Application $app */
 $app = require_once __DIR__.'/../laravel/bootstrap/app.php';
 
-// Force clear OPcache and View Cache on Hostinger to ensure Blade changes take effect
-$cacheFlag = __DIR__.'/../laravel/storage/framework/views/.cleared_v2';
+// Force clear all caches on Hostinger to ensure new routes & config take effect
+$cacheFlag = __DIR__.'/../laravel/storage/framework/views/.cleared_v3';
 if (!file_exists($cacheFlag)) {
+    // Clear view cache
     $views = glob(__DIR__.'/../laravel/storage/framework/views/*.php');
     if ($views) foreach ($views as $v) @unlink($v);
+    // Clear route cache
+    $routeCache = __DIR__.'/../laravel/bootstrap/cache/routes-v7.php';
+    if (file_exists($routeCache)) @unlink($routeCache);
+    // Clear config cache
+    $configCache = __DIR__.'/../laravel/bootstrap/cache/config.php';
+    if (file_exists($configCache)) @unlink($configCache);
+    // Clear OPcache
     if (function_exists('opcache_reset')) @opcache_reset();
     @file_put_contents($cacheFlag, '1');
 }
