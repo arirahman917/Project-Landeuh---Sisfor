@@ -20,7 +20,7 @@ class WhatsAppWebhookController extends Controller
         
         $verifyToken = env('WA_WEBHOOK_VERIFY_TOKEN');
         if (empty($verifyToken)) {
-            $verifyToken = 'LandeuhVillageWA2026';
+            $verifyToken = 'LandeuhVillageRiverside290826';
         }
 
         if ($mode && $token) {
