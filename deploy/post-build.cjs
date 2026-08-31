@@ -72,8 +72,86 @@ if (fs.existsSync(faviconSrc)) {
     fs.copyFileSync(faviconSrc, path.join(buildDir, 'favicon.ico'));
 }
 
-console.log('✅ File deploy Hostinger berhasil disalin ke public/build/');
-console.log('   - index.php (dengan path ../laravel/)');
-console.log('   - .htaccess (versi Laravel lengkap + PHP 8.4)');
-console.log('   - images/ (logo pembayaran, logo landeuh, dll)');
-console.log('   - js/, robots.txt, favicon.ico');
+console.log('✅ File frontend & deploy Hostinger berhasil disalin ke public/build/');
+
+// ══════════════════════════════════════════════════════════════════
+// 🚀 AUTO-SYNC BACKEND LARAVEL PADA SETIAP DEPLOYMENT HOSTINGER
+// ══════════════════════════════════════════════════════════════════
+function findServerLaravelDir() {
+    const candidates = [
+        path.resolve(root, '..', 'laravel'),
+        path.resolve(root, '..', '..', 'laravel'),
+        path.resolve(root, '..', '..', '..', 'laravel'),
+        '/home/u974535831/domains/landeuhvillage.com/laravel',
+        '/home/u974535831/laravel',
+    ];
+
+    for (const candidate of candidates) {
+        if (candidate !== root && fs.existsSync(candidate) && fs.existsSync(path.join(candidate, 'artisan'))) {
+            return candidate;
+        }
+    }
+    return null;
+}
+
+const serverLaravelDir = findServerLaravelDir();
+
+if (serverLaravelDir) {
+    console.log(`\n🔄 Ditemukan folder backend server di: ${serverLaravelDir}`);
+    console.log('📦 Memulai sinkronisasi otomatis file backend...');
+
+    // 1. Sync app/
+    copyDirRecursive(path.join(root, 'app'), path.join(serverLaravelDir, 'app'));
+    console.log('   - app/ (Controllers, Services, Models, dll) ✅');
+
+    // 2. Sync routes/
+    copyDirRecursive(path.join(root, 'routes'), path.join(serverLaravelDir, 'routes'));
+    console.log('   - routes/ (web.php, api.php, admin.php, dll) ✅');
+
+    // 3. Sync resources/views/
+    copyDirRecursive(path.join(root, 'resources', 'views'), path.join(serverLaravelDir, 'resources', 'views'));
+    console.log('   - resources/views/ (Blade templates) ✅');
+
+    // 4. Sync config/
+    copyDirRecursive(path.join(root, 'config'), path.join(serverLaravelDir, 'config'));
+    console.log('   - config/ ✅');
+
+    // 5. Sync database/
+    copyDirRecursive(path.join(root, 'database'), path.join(serverLaravelDir, 'database'));
+    console.log('   - database/ (migrations, seeders) ✅');
+
+    // 6. Sync bootstrap/app.php
+    const bootstrapSrc = path.join(root, 'bootstrap', 'app.php');
+    const bootstrapDest = path.join(serverLaravelDir, 'bootstrap', 'app.php');
+    if (fs.existsSync(bootstrapSrc)) {
+        fs.copyFileSync(bootstrapSrc, bootstrapDest);
+        console.log('   - bootstrap/app.php ✅');
+    }
+
+    // 7. Bersihkan View Cache & Route Cache di server
+    const viewsCacheDir = path.join(serverLaravelDir, 'storage', 'framework', 'views');
+    if (fs.existsSync(viewsCacheDir)) {
+        const cachedViews = fs.readdirSync(viewsCacheDir);
+        for (const file of cachedViews) {
+            if (file.endsWith('.php') || file.startsWith('.')) {
+                try { fs.unlinkSync(path.join(viewsCacheDir, file)); } catch (e) {}
+            }
+        }
+        console.log('   - storage/framework/views cache cleared ✅');
+    }
+
+    const bootstrapCacheDir = path.join(serverLaravelDir, 'bootstrap', 'cache');
+    if (fs.existsSync(bootstrapCacheDir)) {
+        const cachedFiles = fs.readdirSync(bootstrapCacheDir);
+        for (const file of cachedFiles) {
+            if (file.endsWith('.php')) {
+                try { fs.unlinkSync(path.join(bootstrapCacheDir, file)); } catch (e) {}
+            }
+        }
+        console.log('   - bootstrap/cache cleared ✅');
+    }
+
+    console.log('🎉 SINKRONISASI BACKEND SELESAI OTOMATIS!\n');
+} else {
+    console.log('ℹ️  Build lokal: Folder backend server tidak terdeteksi (Normal saat build di laptop).');
+}
