@@ -384,7 +384,10 @@ Route::prefix('superadmin')->group(function () {
 
 // ─── WhatsApp Webhook (Meta Cloud API) ─────────────────────────────
 // Diletakkan di web.php agar pasti ter-load di semua environment.
-// withoutMiddleware VerifyCsrfToken agar Meta bisa POST tanpa CSRF token.
+// withoutMiddleware ValidateCsrfToken agar Meta bisa POST tanpa CSRF token.
 Route::get('/api/webhook/whatsapp', [\App\Http\Controllers\WhatsAppWebhookController::class, 'verify']);
 Route::post('/api/webhook/whatsapp', [\App\Http\Controllers\WhatsAppWebhookController::class, 'handle'])
-    ->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class);
+    ->withoutMiddleware([
+        \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,
+        \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class,
+    ]);
