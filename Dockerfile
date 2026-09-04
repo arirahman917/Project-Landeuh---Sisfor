@@ -43,8 +43,8 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 # Get latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Enable mod_rewrite
-RUN a2enmod rewrite
+# Enable mod_rewrite & set ServerName to suppress AH00558 warning
+RUN a2enmod rewrite && echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
 # Change document root for Apache to Laravel's public directory
 ENV APACHE_DOCUMENT_ROOT="/var/www/html/public"
