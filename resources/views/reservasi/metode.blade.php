@@ -329,7 +329,11 @@ function handlePaymentChange(radio) {
     }
 }
 
+let isSubmittingPayment = false;
+
 function processPayment() {
+    if (isSubmittingPayment) return;
+
     const selected = document.querySelector('input[name="paymentMethod"]:checked');
     if(!selected) {
         alert('Pilih metode pembayaran terlebih dahulu!');
@@ -350,11 +354,19 @@ function processPayment() {
         return;
     }
 
+    isSubmittingPayment = true;
     const btn = document.querySelector('.pay-btn');
-    const originalText = btn.innerHTML;
+    const originalText = 'Bayar';
     btn.innerHTML = 'Memproses...';
     btn.disabled = true;
     btn.style.opacity = '0.7';
+
+    function resetBtn() {
+        isSubmittingPayment = false;
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+        btn.style.opacity = '1';
+    }
 
     // Fetch Snap Token ke Backend
     fetch('/reservasi/get-snap-token', {
@@ -370,27 +382,33 @@ function processPayment() {
     })
     .then(res => res.json())
     .then(data => {
-        btn.innerHTML = originalText;
-        btn.disabled = false;
-        btn.style.opacity = '1';
-        
         if(data.success && data.snap_token) {
             // Panggil Popup Midtrans Snap
-            window.snap.pay(data.snap_token, {
-                onSuccess: function(result){
-                    updateBookingStatus(bookingNo, 'success', method, result);
-                },
-                onPending: function(result){
-                    updateBookingStatus(bookingNo, 'pending', method, result);
-                },
-                onError: function(result){
-                    updateBookingStatus(bookingNo, 'failed', method, result);
-                },
-                onClose: function(){
-                    alert('Anda menutup halaman pembayaran sebelum menyelesaikannya.');
-                }
-            });
+            try {
+                window.snap.pay(data.snap_token, {
+                    onSuccess: function(result){
+                        resetBtn();
+                        updateBookingStatus(bookingNo, 'success', method, result);
+                    },
+                    onPending: function(result){
+                        resetBtn();
+                        updateBookingStatus(bookingNo, 'pending', method, result);
+                    },
+                    onError: function(result){
+                        resetBtn();
+                        updateBookingStatus(bookingNo, 'failed', method, result);
+                    },
+                    onClose: function(){
+                        resetBtn();
+                        alert('Anda menutup halaman pembayaran sebelum menyelesaikannya.');
+                    }
+                });
+            } catch (snapErr) {
+                console.warn("Snap pay error:", snapErr);
+                resetBtn();
+            }
         } else {
+            resetBtn();
             // Jika gagal mendapatkan token (Misal key Midtrans belum diset / salah)
             if (confirm("Gagal terhubung ke Midtrans Simulator!\n\nKemungkinan API Key Midtrans (Server/Client Key) di pengaturan (.env) Anda belum terkonfigurasi atau salah.\n\nPesan Error: " + (data.message || "Unknown error") + "\n\nApakah Anda ingin diarahkan ke halaman Konfirmasi dengan status 'pending'?")) {
                 window.location.href = `/reservasi/konfirmasi?booking_no=${bookingNo}&status=pending`;
@@ -398,9 +416,7 @@ function processPayment() {
         }
     })
     .catch(err => {
-        btn.innerHTML = originalText;
-        btn.disabled = false;
-        btn.style.opacity = '1';
+        resetBtn();
         if (confirm("Terjadi kesalahan sistem saat menghubungi server Midtrans: " + err.message + "\n\nApakah Anda ingin diarahkan ke halaman Konfirmasi dengan status 'pending'?")) {
              window.location.href = `/reservasi/konfirmasi?booking_no=${bookingNo}&status=pending`;
         }
