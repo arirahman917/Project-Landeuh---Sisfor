@@ -363,10 +363,10 @@ class ReservasiController extends Controller
                 ];
 
                 // Pasang filter Enabled Payments khusus berdasarkan input metode dari frontend
-                // $enabledPayments = $this->getMidtransEnabledPayments($validated['metode_pembayaran']);
-                // if (!empty($enabledPayments)) {
-                //     $params['enabled_payments'] = $enabledPayments;
-                // }
+                $enabledPayments = $this->getMidtransEnabledPayments($validated['metode_pembayaran']);
+                if (!empty($enabledPayments)) {
+                    $params['enabled_payments'] = $enabledPayments;
+                }
 
                 $snapToken = \Midtrans\Snap::getSnapToken($params);
             }
@@ -387,10 +387,11 @@ class ReservasiController extends Controller
 
     /**
      * Memetakan nama metode pembayaran dari frontend ke filter enabled_payments Midtrans Snap.
+     * Midtrans Snap akan langsung melompati halaman seleksi umum (direct) jika enabled_payments berisi tepat 1 metode.
      */
     private function getMidtransEnabledPayments($methodName)
     {
-        $methodName = strtolower($methodName);
+        $methodName = strtolower(trim($methodName));
         
         if (str_contains($methodName, 'bca')) {
             return ['bca_va'];
@@ -407,26 +408,41 @@ class ReservasiController extends Controller
         if (str_contains($methodName, 'bsi')) {
             return ['bsi_va'];
         }
+        if (str_contains($methodName, 'permata')) {
+            return ['permata_va'];
+        }
+        if (str_contains($methodName, 'cimb')) {
+            return ['cimb_va'];
+        }
+        if (str_contains($methodName, 'atm')) {
+            return ['other_va'];
+        }
+        if (str_contains($methodName, 'kartu kredit') || str_contains($methodName, 'credit') || str_contains($methodName, 'debit') || str_contains($methodName, 'cc')) {
+            return ['credit_card'];
+        }
+        if (str_contains($methodName, 'gopay')) {
+            return ['gopay'];
+        }
+        if (str_contains($methodName, 'shopeepay')) {
+            return ['shopeepay'];
+        }
+        if (str_contains($methodName, 'dana')) {
+            return ['dana'];
+        }
+        if (str_contains($methodName, 'ovo')) {
+            return ['ovo'];
+        }
         if (str_contains($methodName, 'qris')) {
-            return ['qris', 'gopay', 'shopeepay'];
+            return ['other_qris'];
         }
-        if (str_contains($methodName, 'dana') || str_contains($methodName, 'gopay') || str_contains($methodName, 'ovo') || str_contains($methodName, 'shopeepay') || str_contains($methodName, 'wallet')) {
-            return ['qris', 'gopay', 'shopeepay']; // QRIS supports e-wallets
-        }
-        if (str_contains($methodName, 'alfamart')) {
+        if (str_contains($methodName, 'alfamart') || str_contains($methodName, 'alfamidi')) {
             return ['alfamart'];
         }
         if (str_contains($methodName, 'indomaret')) {
             return ['indomaret'];
         }
-        if (str_contains($methodName, 'atm')) {
-            return ['other_va'];
-        }
-        if (str_contains($methodName, 'kartu kredit') || str_contains($methodName, 'credit card') || str_contains($methodName, 'cc')) {
-            return ['credit_card'];
-        }
         
-        return []; // Jika kosong, tampilkan semua
+        return []; // Jika kosong atau tidak cocok, tampilkan pilihan umum
     }
 
     /**
