@@ -12,7 +12,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'], str_contains(public_path(), 'public_html') ? '' : 'build')
     @stack('styles')
 </head>
-<body class="bg-[#F8EDD8] font-sans text-gray-800 antialiased overflow-x-hidden w-full min-h-screen">
+<body class="bg-[#F8EDD8] font-sans text-gray-800 antialiased w-full min-h-screen">
     <main>
         @yield('content')
     </main>

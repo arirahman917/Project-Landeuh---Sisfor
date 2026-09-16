@@ -2,8 +2,8 @@
 @section('title', 'Metode Pembayaran - Landeuh Village Riverside')
 @section('content')
 <style>
-.pay-page{background:#F8EDD8;min-height:100vh;position:relative;overflow-x:hidden;width:100%;max-width:100vw}
-.pay-header{background:transparent;backdrop-filter:blur(10px);border-bottom:1px solid rgba(0,0,0,0.08);padding:0.75rem 1rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.pay-page{background:#F8EDD8;min-height:100vh;position:relative;overflow-x:clip;width:100%;max-width:100vw}
+.pay-header{background:rgba(248,237,216,0.97);border-bottom:1px solid rgba(0,0,0,0.08);padding:0.75rem 1rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;transform:translateZ(0);will-change:transform}
 @media(min-width:768px){.pay-header{padding:1rem 1.5rem}}
 .pay-logo{display:flex;align-items:center}
 .pay-logo img{height:36px;object-fit:contain}
@@ -57,7 +57,7 @@
 @media(min-width:768px){.sidebar-card-cream{padding:1.5rem}}
 .sidebar-card-cream h3{font-size:clamp(0.95rem, 3.5vw, 1.15rem);font-weight:800;display:flex;align-items:center;gap:0.5rem;margin-bottom:1rem;color:#222;white-space:nowrap;text-transform:capitalize}
 /* Check-in/Check-out highlight — glass with border-radius: 0 */
-.ov-checkin-highlight{background:rgba(255,255,255,0.55);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.7);border-radius:0;padding:0.75rem 0.65rem;margin-bottom:0.85rem}
+.ov-checkin-highlight{background:#ffffff;border:1px solid rgba(223,212,190,0.7);border-radius:0;padding:0.75rem 0.65rem;margin-bottom:0.85rem}
 @media(min-width:768px){.ov-checkin-highlight{padding:0.85rem 1rem}}
 .ov-checkin-row{display:flex;justify-content:space-between;align-items:center;position:relative;gap:0.25rem}
 .ov-checkin-row .ci-label{font-size:0.65rem;color:#e53e3e;font-weight:700;text-transform:uppercase;letter-spacing:0.5px}
@@ -68,7 +68,7 @@
 .ov-checkin-row .ci-mid .arrow{font-size:1.1rem;color:#999;line-height:1}
 .sb-bed{display:flex;align-items:center;gap:0.8rem;font-size:0.8rem;color:#444;border-bottom:1px solid #dfd4be;padding-bottom:0.85rem;margin-bottom:0.85rem;font-weight:600}
 .sb-bed div{display:flex;align-items:center;gap:0.4rem}
-.sb-fasilitas{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.5rem;font-size:0.75rem;color:#444;margin-bottom:1rem}
+.sb-fasilitas{display:grid;grid-template-columns:1.15fr 1fr;gap:0.75rem;font-size:0.75rem;color:#444;margin-bottom:1rem}
 .sb-fasilitas .col-title{font-weight:700;color:#333;margin-bottom:0.4rem}
 .sb-fasilitas ul{list-style-type:disc;margin-left:1rem}
 .sb-fasilitas ul li{margin-bottom:0.2rem}
@@ -261,12 +261,6 @@
                             <ul id="dynFasilitas1">
                                 <li>TV kabel</li>
                                 <li>Meja</li>
-                            </ul>
-                        </div>
-                        <div style="padding-top:1.4rem">
-                            <ul id="dynFasilitas2">
-                                <li>Ruang tamu</li>
-                                <li>Balkon</li>
                             </ul>
                         </div>
                         <div>
@@ -634,9 +628,10 @@ function updateBookingStatus(bookingNo, status, method, result) {
         const corpFasilitas = JSON.parse(sessionStorage.getItem('res_corp_fasilitas') || '[]');
         const corpMakanan  = JSON.parse(sessionStorage.getItem('res_corp_makanan') || '[]');
         
-        const fasLen = Math.ceil(corpFasilitas.length / 2);
-        document.getElementById('dynFasilitas1').innerHTML = corpFasilitas.slice(0, fasLen).map(f => `<li>${f}</li>`).join('');
-        document.getElementById('dynFasilitas2').innerHTML = corpFasilitas.slice(fasLen).map(f => `<li>${f}</li>`).join('');
+        const elFas1 = document.getElementById('dynFasilitas1');
+        if (elFas1) elFas1.innerHTML = corpFasilitas.map(f => `<li>${f}</li>`).join('');
+        const elFas2 = document.getElementById('dynFasilitas2');
+        if (elFas2) elFas2.innerHTML = '';
         document.getElementById('dynMakanan').innerHTML = corpMakanan.map(m => `<li>${m}</li>`).join('');
     } else {
         // Parse accommodation ID from URL
@@ -651,10 +646,11 @@ function updateBookingStatus(bookingNo, status, method, result) {
             smokingEl.innerHTML = `<iconify-icon icon="${akoItem.merokok ? 'lucide:cigarette' : 'lucide:cigarette-off'}" class="text-lg"></iconify-icon> ${akoItem.merokok ? 'Boleh merokok di kamar' : 'Dilarang merokok'}`;
         }
         
-        // Pecah fasilitas jadi dua kolom
-        const fasLen = Math.ceil(akoItem.fasilitas.length / 2);
-        document.getElementById('dynFasilitas1').innerHTML = akoItem.fasilitas.slice(0, fasLen).map(f => `<li>${f}</li>`).join('');
-        document.getElementById('dynFasilitas2').innerHTML = akoItem.fasilitas.slice(fasLen).map(f => `<li>${f}</li>`).join('');
+        // Seluruh fasilitas kamar di kebawahkan (1 kolom)
+        const elFas1 = document.getElementById('dynFasilitas1');
+        if (elFas1) elFas1.innerHTML = akoItem.fasilitas.map(f => `<li>${f}</li>`).join('');
+        const elFas2 = document.getElementById('dynFasilitas2');
+        if (elFas2) elFas2.innerHTML = '';
         document.getElementById('dynMakanan').innerHTML = akoItem.makanan.map(m => `<li>${m}</li>`).join('');
     }
     

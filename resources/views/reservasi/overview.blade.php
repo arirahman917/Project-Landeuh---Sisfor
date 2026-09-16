@@ -2,8 +2,8 @@
 @section('title', 'Overview Reservasi - Landeuh Village Riverside')
 @section('content')
 <style>
-.ov-page{background:#F8EDD8;min-height:100vh;position:relative;overflow-x:hidden}
-.ov-header{background:transparent;border-bottom:1px solid rgba(0,0,0,0.08);padding:0.75rem 1rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;backdrop-filter:blur(10px)}
+.ov-page{background:#F8EDD8;min-height:100vh;position:relative;overflow-x:clip}
+.ov-header{background:rgba(248,237,216,0.97);border-bottom:1px solid rgba(0,0,0,0.08);padding:0.75rem 1rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;transform:translateZ(0);will-change:transform}
 @media(min-width:768px){.ov-header{padding:1rem 1.5rem}}
 .ov-logo{display:flex;align-items:center}
 .ov-logo img{height:36px;object-fit:contain}
@@ -37,14 +37,15 @@
 .ov-catatan .item{display:flex;align-items:flex-start;gap:0.5rem;font-size:0.75rem;color:#666;margin-bottom:0.35rem}
 .ov-btn-simpan{background:#3a523a;color:#fff;border:none;padding:0.8rem 2.5rem;border-radius:0.75rem;font-size:0.95rem;font-weight:700;cursor:pointer;transition:0.2s;display:block;margin:1.5rem auto 0}
 .ov-btn-simpan:hover{background:#2c402c}
-.ov-sidebar{position:sticky;top:80px}
+.ov-sidebar{position:static}
+@media(min-width:768px){.ov-sidebar{position:sticky;top:80px}}
 
 /* Left container card */
-.ov-left-container{background:rgba(253,246,227,0.7);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.4);border-radius:1rem;padding:0.85rem 1rem;box-shadow:0 2px 12px rgba(0,0,0,0.06);margin-bottom:1rem}
+.ov-left-container{background:#FAF2E4;border:1px solid rgba(223,212,190,0.8);border-radius:1rem;padding:0.85rem 1rem;box-shadow:0 2px 10px rgba(0,0,0,0.04);margin-bottom:1rem;transform:translateZ(0)}
 @media(min-width:768px){.ov-left-container{padding:1.25rem 1.5rem}}
 
 /* RIGHT Sidebar Cards — cream */
-.ov-card{background:rgba(253,246,227,0.7);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.4);border-radius:1rem;box-shadow:0 2px 12px rgba(0,0,0,0.06);margin-bottom:1rem;overflow:hidden}
+.ov-card{background:#FAF2E4;border:1px solid rgba(223,212,190,0.8);border-radius:1rem;box-shadow:0 2px 10px rgba(0,0,0,0.04);margin-bottom:1rem;overflow:hidden;transform:translateZ(0)}
 .ov-card-inner{padding:0.85rem 1rem}
 @media(min-width:768px){.ov-card-inner{padding:1.15rem 1.25rem}}
 .ov-card h3{font-size:1.05rem;font-weight:800;display:flex;align-items:center;gap:0.5rem;margin-top:0.5rem;margin-bottom:1rem}
@@ -53,8 +54,8 @@
 .ov-ribbon{background:#c0392b;color:#fff;padding:0.5rem 0.85rem;font-size:0.75rem;font-weight:600;border-radius:0.75rem 0.75rem 0 0}
 @media(min-width:768px){.ov-ribbon{padding:0.55rem 1.15rem;font-size:0.78rem}}
 
-/* Check-in/Check-out highlight — glass with border-radius: 0 */
-.ov-checkin-highlight{background:rgba(255,255,255,0.55);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.7);border-radius:0;padding:0.75rem 0.65rem;margin-bottom:0.75rem}
+/* Check-in/Check-out highlight — clean fast rendering */
+.ov-checkin-highlight{background:#ffffff;border:1px solid rgba(223,212,190,0.7);border-radius:0;padding:0.75rem 0.65rem;margin-bottom:0.75rem}
 @media(min-width:768px){.ov-checkin-highlight{padding:0.85rem 1rem}}
 .ov-checkin-row{display:flex;justify-content:space-between;align-items:center;position:relative;gap:0.25rem}
 .ov-checkin-row .ci-label{font-size:0.65rem;color:#e53e3e;font-weight:700;text-transform:uppercase;letter-spacing:0.5px}
@@ -65,8 +66,8 @@
 .ov-checkin-row .ci-mid .arrow{font-size:1.1rem;color:#999;line-height:1}
 .ov-guest-info{font-size:0.8rem;color:#555;margin:0.6rem 0 0;display:flex;align-items:center;gap:0.4rem}
 
-/* Price highlight — glass with border-radius: 0 */
-.ov-price-highlight{background:rgba(255,255,255,0.55);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.7);border-radius:0;padding:0.75rem 0.85rem;margin-bottom:0.75rem}
+/* Price highlight — clean fast rendering */
+.ov-price-highlight{background:#ffffff;border:1px solid rgba(223,212,190,0.7);border-radius:0;padding:0.75rem 0.85rem;margin-bottom:0.75rem}
 @media(min-width:768px){.ov-price-highlight{padding:1rem}}
 .ov-price-row{display:flex;justify-content:space-between;align-items:center;gap:0.75rem;font-size:0.8rem;color:#555;padding:0.2rem 0}
 .ov-price-row span:last-child{white-space:nowrap;text-align:right;flex-shrink:0}
@@ -85,14 +86,14 @@
 .modal-loading{background:#fdf6e3;border-radius:1rem;padding:2rem;text-align:center;max-width:320px;width:90%}
 .modal-loading h4{font-weight:800;font-size:1rem;margin-bottom:0.5rem}
 .modal-loading p{color:#666;font-size:0.9rem}
-@media(max-width:768px){.ov-form-row{grid-template-columns:1fr}.ov-main-grid{flex-direction:column!important}}
+@media(max-width:768px){.ov-form-row{grid-template-columns:1fr}.ov-main-grid{flex-direction:column!important;gap:0!important}}
 </style>
 
 <div class="ov-page">
     {{-- Batik Ornaments --}}
-    <img src="{{ asset('images/assets_lain/batik.png') }}" class="absolute top-20 -left-8 w-36 opacity-20 pointer-events-none rotate-12 z-0" alt="">
-    <img src="{{ asset('images/assets_lain/batik.png') }}" class="absolute top-1/3 -right-10 w-40 opacity-15 pointer-events-none -rotate-12 scale-x-[-1] z-0" alt="">
-    <img src="{{ asset('images/assets_lain/batik.png') }}" class="absolute bottom-10 left-1/4 w-32 opacity-10 pointer-events-none rotate-45 z-0" alt="">
+    <img src="{{ asset('images/assets_lain/batik.png') }}" class="absolute top-20 -left-8 w-36 opacity-20 pointer-events-none rotate-12 z-0" style="transform:translateZ(0)" alt="">
+    <img src="{{ asset('images/assets_lain/batik.png') }}" class="absolute top-1/3 -right-10 w-40 opacity-15 pointer-events-none -rotate-12 scale-x-[-1] z-0" style="transform:translateZ(0)" alt="">
+    <img src="{{ asset('images/assets_lain/batik.png') }}" class="absolute bottom-10 left-1/4 w-32 opacity-10 pointer-events-none rotate-45 z-0" style="transform:translateZ(0)" alt="">
 
     {{-- Header --}}
     <div class="ov-header">
