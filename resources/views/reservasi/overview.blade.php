@@ -22,7 +22,7 @@
 @media(min-width:768px){.ov-service-title h1{font-size:1.25rem}}
 .ov-back{display:flex;align-items:center;gap:0.5rem;font-weight:700;font-size:0.95rem;cursor:pointer;color:#333;margin:0.5rem 0 0.75rem}
 .ov-back:hover{color:#3a523a}
-.ov-section-title{display:flex;align-items:center;gap:0.5rem;font-size:1.1rem;font-weight:800;color:#333;margin-bottom:0.65rem}
+.ov-section-title{display:flex;align-items:center;gap:0.5rem;font-size:1.1rem;font-weight:800;color:#333;margin-top:0.5rem;margin-bottom:0.65rem}
 .ov-form-group{margin-bottom:0.85rem}
 .ov-form-group label{display:block;font-size:0.82rem;font-weight:600;color:#444;margin-bottom:0.25rem}
 .ov-form-group label .req{color:#e53e3e}
@@ -47,14 +47,14 @@
 .ov-card{background:rgba(253,246,227,0.7);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.4);border-radius:1rem;box-shadow:0 2px 12px rgba(0,0,0,0.06);margin-bottom:1rem;overflow:hidden}
 .ov-card-inner{padding:0.85rem 1rem}
 @media(min-width:768px){.ov-card-inner{padding:1.15rem 1.25rem}}
-.ov-card h3{font-size:1.05rem;font-weight:800;display:flex;align-items:center;gap:0.5rem;margin-bottom:0.65rem}
+.ov-card h3{font-size:1.05rem;font-weight:800;display:flex;align-items:center;gap:0.5rem;margin-top:0.5rem;margin-bottom:0.65rem}
 
 /* Ribbon alert */
 .ov-ribbon{background:#c0392b;color:#fff;padding:0.5rem 0.85rem;font-size:0.75rem;font-weight:600;border-radius:0.75rem 0.75rem 0 0}
 @media(min-width:768px){.ov-ribbon{padding:0.55rem 1.15rem;font-size:0.78rem}}
 
-/* Check-in/Check-out highlight — glass */
-.ov-checkin-highlight{background:rgba(255,255,255,0.55);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.7);border-radius:0.75rem;padding:0.75rem 0.65rem;margin-bottom:0.75rem}
+/* Check-in/Check-out highlight — glass with border-radius: 0 */
+.ov-checkin-highlight{background:rgba(255,255,255,0.55);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.7);border-radius:0;padding:0.75rem 0.65rem;margin-bottom:0.75rem}
 @media(min-width:768px){.ov-checkin-highlight{padding:0.85rem 1rem}}
 .ov-checkin-row{display:flex;justify-content:space-between;align-items:center;position:relative;gap:0.25rem}
 .ov-checkin-row .ci-label{font-size:0.65rem;color:#e53e3e;font-weight:700;text-transform:uppercase;letter-spacing:0.5px}
@@ -65,8 +65,8 @@
 .ov-checkin-row .ci-mid .arrow{font-size:1.1rem;color:#999;line-height:1}
 .ov-guest-info{font-size:0.8rem;color:#555;margin:0.6rem 0 0;display:flex;align-items:center;gap:0.4rem}
 
-/* Price highlight — glass */
-.ov-price-highlight{background:rgba(255,255,255,0.55);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.7);border-radius:0.75rem;padding:0.75rem 0.85rem;margin-bottom:0.75rem}
+/* Price highlight — glass with border-radius: 0 */
+.ov-price-highlight{background:rgba(255,255,255,0.55);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.7);border-radius:0;padding:0.75rem 0.85rem;margin-bottom:0.75rem}
 @media(min-width:768px){.ov-price-highlight{padding:1rem}}
 .ov-price-row{display:flex;justify-content:space-between;align-items:center;gap:0.75rem;font-size:0.8rem;color:#555;padding:0.2rem 0}
 .ov-price-row span:last-child{white-space:nowrap;text-align:right;flex-shrink:0}
@@ -212,12 +212,12 @@
                     
                     {{-- Kebijakan Reservasi --}}
                     <div class="mt-4 mb-2">
-                        <label class="flex items-center gap-2 cursor-pointer select-none">
-                            <input type="checkbox" id="chkKebijakan" class="w-4 h-4 rounded accent-[#3a523a] cursor-pointer shrink-0">
-                            <span class="text-xs sm:text-sm font-semibold text-gray-800 whitespace-nowrap">Setujui Kebijakan Reservasi</span>
+                        <label class="flex items-center gap-2.5 cursor-pointer select-none">
+                            <input type="checkbox" id="chkKebijakan" class="w-5 h-5 rounded accent-[#3a523a] cursor-pointer shrink-0">
+                            <span class="text-sm sm:text-base font-bold text-gray-800 whitespace-nowrap">Setujui Kebijakan Reservasi</span>
                         </label>
-                        <div class="pl-6 pt-1">
-                            <a onclick="document.getElementById('modalKebijakan').classList.add('show')" class="text-xs text-blue-600 hover:text-blue-800 underline cursor-pointer inline-block font-medium">Klik baca kebijakan</a>
+                        <div class="pl-7 pt-1">
+                            <a onclick="document.getElementById('modalKebijakan').classList.add('show')" class="text-xs sm:text-sm text-blue-600 hover:text-blue-800 underline cursor-pointer inline-block font-medium">Klik baca kebijakan</a>
                         </div>
                     </div>
                 </div>
@@ -620,18 +620,18 @@
             const mNamesShort = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
             const formattedDate = `${d.getDate()} ${mNamesShort[d.getMonth()]}`;
             
-            let badgeStyle = 'bg-emerald-50 text-emerald-700 border-emerald-200/70';
+            let fontColor = '#f97316'; // Weekday (Orange)
             if (night.label === 'Weekend') {
-                badgeStyle = 'bg-blue-50 text-blue-700 border-blue-200/70';
+                fontColor = '#3b82f6'; // Weekend (Blue)
             } else if (night.label === 'Highseason') {
-                badgeStyle = 'bg-rose-50 text-rose-700 border-rose-200/70';
+                fontColor = '#ef4444'; // Highseason (Red)
             }
             
             breakdown += `
             <div class="flex items-center justify-between text-xs py-0.5">
-                <div class="flex items-center gap-1.5 min-w-0">
+                <div class="flex items-center gap-2 min-w-0">
                     <span class="text-stone-700 font-medium whitespace-nowrap text-[11px] sm:text-xs">${formattedDate}</span>
-                    <span class="text-[10px] px-1.5 py-0.2 rounded border font-semibold ${badgeStyle} shrink-0">${night.label}</span>
+                    <span style="color:${fontColor}; background:rgba(255,255,255,0.65); backdrop-filter:blur(4px); border:1px solid rgba(255,255,255,0.85); box-shadow:0 1px 2px rgba(0,0,0,0.03);" class="text-[10px] px-2 py-0.5 rounded-md font-bold shrink-0">${night.label}</span>
                 </div>
                 <span class="text-stone-600 font-semibold whitespace-nowrap text-right ml-2 text-[11px] sm:text-xs">${fmt(night.price)}</span>
             </div>`;
@@ -643,9 +643,9 @@
             const subAnak = anak * anakPrice * malam;
             total += subAnak;
             breakdown += `
-            <div class="flex items-start justify-between gap-2 text-xs py-1.5 px-2 rounded-lg bg-amber-50/70 border border-amber-200/60 my-1.5">
+            <div class="flex items-start justify-between gap-2 text-xs py-1.5 px-1 border-t border-gray-200/50 my-1">
                 <div class="min-w-0">
-                    <div class="font-semibold text-gray-800 text-xs">Ekstra: Anak (&gt;5 thn)</div>
+                    <div class="font-semibold text-gray-800 text-xs">Tambahan: Anak (&gt;5 thn)</div>
                     <div class="text-[10px] text-gray-500">${anak} orang × ${malam} malam</div>
                 </div>
                 <span class="font-bold text-gray-800 whitespace-nowrap text-right shrink-0 text-xs">${fmt(subAnak)}</span>
@@ -655,9 +655,9 @@
             const subDewasa = dewasa * dewasaPrice * malam;
             total += subDewasa;
             breakdown += `
-            <div class="flex items-start justify-between gap-2 text-xs py-1.5 px-2 rounded-lg bg-amber-50/70 border border-amber-200/60 my-1.5">
+            <div class="flex items-start justify-between gap-2 text-xs py-1.5 px-1 border-t border-gray-200/50 my-1">
                 <div class="min-w-0">
-                    <div class="font-semibold text-gray-800 text-xs">Ekstra: Dewasa (&gt;17 thn)</div>
+                    <div class="font-semibold text-gray-800 text-xs">Tambahan: Dewasa (&gt;17 thn)</div>
                     <div class="text-[10px] text-gray-500">${dewasa} orang × ${malam} malam</div>
                 </div>
                 <span class="font-bold text-gray-800 whitespace-nowrap text-right shrink-0 text-xs">${fmt(subDewasa)}</span>
