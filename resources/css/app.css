@@ -14,6 +14,12 @@
     display: none !important;
 }
 
+html, body {
+    overflow-x: hidden;
+    max-width: 100vw;
+    width: 100%;
+}
+
 /* Custom Flatpickr Modern Styles */
 .flatpickr-calendar {
     border-radius: 1.2rem !important;

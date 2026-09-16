@@ -3,7 +3,7 @@
 <head>
     <link rel="icon" type="image/png" href="{{ asset('images/logo-landeuh.png') }}">
     <meta charset='UTF-8'>
-    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no'>
     <meta name="description" content="Admin Panel Landeuh Village Riverside - Sistem Informasi & Manajemen Penginapan">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Admin Panel — Landeuh Village')</title>

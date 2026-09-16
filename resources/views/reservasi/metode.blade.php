@@ -2,7 +2,7 @@
 @section('title', 'Metode Pembayaran - Landeuh Village Riverside')
 @section('content')
 <style>
-.pay-page{background:#F8EDD8;min-height:100vh;position:relative}
+.pay-page{background:#F8EDD8;min-height:100vh;position:relative;overflow-x:hidden;width:100%;max-width:100vw}
 .pay-header{background:transparent;backdrop-filter:blur(10px);border-bottom:1px solid rgba(0,0,0,0.08);padding:0.75rem 1rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
 @media(min-width:768px){.pay-header{padding:1rem 1.5rem}}
 .pay-logo{display:flex;align-items:center}
@@ -20,13 +20,15 @@
 .pay-service-title h1{font-size:1.05rem;font-weight:800;color:#222;line-height:1.35}
 @media(min-width:768px){.pay-service-title h1{font-size:1.25rem}}
 .pay-back{display:flex;align-items:center;gap:0.5rem;font-weight:700;font-size:0.95rem;cursor:pointer;color:#333;margin:0.5rem 0 0.75rem}
-.pay-timer-bar{background:#3a523a;color:#fff;padding:0.6rem 1.2rem;border-radius:0.75rem;font-size:0.85rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:0.5rem}
-.pay-timer-bar .timer{background:#c0392b;padding:0.2rem 0.6rem;border-radius:0.4rem;font-weight:700;font-family:monospace;font-size:0.95rem}
+.pay-timer-bar{background:#3a523a;color:#fff;padding:0.6rem 0.85rem;border-radius:0.75rem;font-size:clamp(0.75rem, 2.7vw, 0.85rem);margin-bottom:1.2rem;display:flex;align-items:center;justify-content:space-between;gap:0.4rem;white-space:nowrap}
+@media(min-width:640px){.pay-timer-bar{padding:0.6rem 1.2rem;gap:0.6rem;font-size:0.85rem}}
+.pay-timer-bar .timer{background:#c0392b;padding:0.2rem 0.55rem;border-radius:0.4rem;font-weight:700;font-family:monospace;font-size:clamp(0.8rem, 2.8vw, 0.95rem);flex-shrink:0}
 .pay-method-container{background:#f1e5cc;border-radius:0.75rem;border:1px solid #dfd4be;margin-bottom:1rem;overflow:hidden}
-.pm-main-title{display:flex;align-items:center;gap:0.8rem;padding:1.2rem 1.5rem;font-size:1.05rem;font-weight:800;border-bottom:1px solid #dfd4be;color:#333}
+.pm-main-title{display:flex;align-items:center;gap:0.6rem;padding:1rem 1.15rem;font-size:clamp(0.88rem, 3.2vw, 1.05rem);font-weight:800;border-bottom:1px solid #dfd4be;color:#333;white-space:nowrap;text-transform:capitalize}
+@media(min-width:768px){.pm-main-title{gap:0.8rem;padding:1.2rem 1.5rem}}
 .pay-method-row{border-bottom:1px solid #dfd4be;transition:background 0.3s}
 .pay-method-row:last-child{border-bottom:none}
-.pay-method-header{display:flex;align-items:center;justify-content:space-between;padding:0 1rem;min-height:70px;cursor:pointer;font-size:0.95rem;font-weight:600;user-select:none}
+.pay-method-header{display:flex;align-items:center;justify-content:space-between;padding:0 1rem;min-height:65px;cursor:pointer;font-size:0.95rem;font-weight:600;user-select:none}
 .pay-method-header:hover{background:rgba(0,0,0,0.03)}
 .pay-method-header .chevron{transition:transform 0.3s}
 .pay-method-row.open .chevron{transform:rotate(180deg)}
@@ -37,12 +39,13 @@
 .pay-method-content{display:none;padding:0 1rem 1rem 1rem}
 .pay-method-row.open .accordion-content{display:block}
 .pay-method-row.selected .direct-content{display:block}
-.pay-radio{display:flex;align-items:center;justify-content:space-between;padding:0 1rem;min-height:70px;border:1px solid #dfd4be;border-radius:0.6rem;margin-bottom:0.5rem;cursor:pointer;transition:0.2s;background:#fff}
+.pay-radio{display:flex;align-items:center;justify-content:space-between;padding:0 0.85rem;min-height:58px;border:1px solid #dfd4be;border-radius:0.6rem;margin-bottom:0.5rem;cursor:pointer;transition:0.2s;background:#fff;gap:0.4rem}
+@media(min-width:640px){.pay-radio{padding:0 1rem;min-height:68px;gap:0.6rem}}
 .pay-radio:hover{border-color:#3a523a;background:#f9f9f5}
-.pay-radio input[type=radio]{accent-color:#3a523a;margin-right:0.6rem}
-.pay-radio .logo-wrapper{display:flex;justify-content:flex-end;align-items:center}
-.pay-radio img{object-fit:contain;object-position:right center}
-.pay-radio label{flex:1;font-size:0.85rem;font-weight:500;cursor:pointer}
+.pay-radio input[type=radio]{accent-color:#3a523a;margin-right:0.3rem;flex-shrink:0}
+.pay-radio .logo-wrapper{display:flex;justify-content:flex-end;align-items:center;flex-shrink:0;width:82px}
+.pay-radio img{object-fit:contain;object-position:right center;max-height:28px}
+.pay-radio label{flex:1;min-width:0;font-size:clamp(0.72rem, 2.5vw, 0.85rem);font-weight:600;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pay-info-box{background:#fff;border:1px solid #eee;border-radius:0.75rem;padding:0.8rem 1rem;font-size:0.78rem;color:#666;margin-bottom:0.75rem}
 .pay-info-box ul{margin:0.3rem 0 0 1rem;list-style:disc}
 .pay-info-box ul li{margin-bottom:0.2rem}
@@ -51,16 +54,20 @@
 .cc-fields input:focus{border-color:#3a523a}
 .cc-fields .row{display:flex;gap:0.75rem}
 .cc-fields .row input{flex:1}
-.sidebar-card-cream{background:#f1e5cc;border-radius:1rem;border:1px solid #dfd4be;padding:1.5rem;margin-bottom:1rem;box-shadow:0 10px 25px rgba(0,0,0,0.05);overflow:hidden}
-.sidebar-card-cream h3{font-size:1.15rem;font-weight:800;display:flex;align-items:center;gap:0.5rem;margin-bottom:1.2rem;color:#222}
-.sb-checkin{display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.4);backdrop-filter:blur(5px);margin:0 -1.5rem 1rem -1.5rem;padding:1rem 1.5rem;border-bottom:1px solid #dfd4be;border-top:1px solid #dfd4be}
-.sb-checkin .label{font-size:0.75rem;font-weight:700;margin-bottom:0.2rem}
-.sb-checkin .label.green{color:#27ae60}
-.sb-checkin .label.red{color:#c0392b}
-.sb-checkin .date{font-weight:700;font-size:0.9rem;color:#333}
-.sb-checkin .time{color:#888;font-size:0.65rem;margin-top:0.2rem}
-.sb-bed{display:flex;align-items:center;gap:0.8rem;font-size:0.8rem;color:#444;border-bottom:1px solid #dfd4be;padding-bottom:1rem;margin-bottom:1rem;font-weight:600}
-.sb-bed .divider{width:1px;height:16px;background:#c2b59b}
+.sidebar-card-cream{background:#f1e5cc;border-radius:1rem;border:1px solid #dfd4be;padding:1rem 1.15rem;margin-bottom:1rem;box-shadow:0 10px 25px rgba(0,0,0,0.05);overflow:hidden}
+@media(min-width:768px){.sidebar-card-cream{padding:1.5rem}}
+.sidebar-card-cream h3{font-size:clamp(0.95rem, 3.5vw, 1.15rem);font-weight:800;display:flex;align-items:center;gap:0.5rem;margin-bottom:1rem;color:#222;white-space:nowrap;text-transform:capitalize}
+/* Check-in/Check-out highlight — glass with border-radius: 0 */
+.ov-checkin-highlight{background:rgba(255,255,255,0.55);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.7);border-radius:0;padding:0.75rem 0.65rem;margin-bottom:0.85rem}
+@media(min-width:768px){.ov-checkin-highlight{padding:0.85rem 1rem}}
+.ov-checkin-row{display:flex;justify-content:space-between;align-items:center;position:relative;gap:0.25rem}
+.ov-checkin-row .ci-label{font-size:0.65rem;color:#e53e3e;font-weight:700;text-transform:uppercase;letter-spacing:0.5px}
+.ov-checkin-row .ci-date{font-size:0.78rem;font-weight:700;color:#333;line-height:1.25}
+@media(min-width:768px){.ov-checkin-row .ci-date{font-size:0.85rem}}
+.ov-checkin-row .ci-time{font-size:0.65rem;color:#999;margin-top:2px}
+.ov-checkin-row .ci-mid{text-align:center;font-size:0.75rem;color:#666;flex-shrink:0;padding:0 0.25rem}
+.ov-checkin-row .ci-mid .arrow{font-size:1.1rem;color:#999;line-height:1}
+.sb-bed{display:flex;align-items:center;gap:0.8rem;font-size:0.8rem;color:#444;border-bottom:1px solid #dfd4be;padding-bottom:0.85rem;margin-bottom:0.85rem;font-weight:600}
 .sb-bed div{display:flex;align-items:center;gap:0.4rem}
 .sb-fasilitas{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.5rem;font-size:0.75rem;color:#444;margin-bottom:1rem}
 .sb-fasilitas .col-title{font-weight:700;color:#333;margin-bottom:0.4rem}
@@ -69,12 +76,14 @@
 .sb-guest{display:flex;align-items:center;gap:0.5rem;font-size:0.8rem;font-weight:600;color:#444;border-bottom:1px solid #dfd4be;padding-bottom:1rem;margin-bottom:1rem}
 .sb-identity{display:flex;justify-content:space-between;font-size:0.8rem;color:#333}
 .sb-identity .title{font-size:0.75rem;color:#666;margin-bottom:0.5rem}
-.sb-identity .row{display:flex;align-items:flex-start;gap:0.5rem;font-weight:500}
+.sb-identity .row{display:flex;align-items:center;gap:0.5rem;font-weight:500}
 .sb-identity .details{display:flex;flex-direction:column;gap:0.15rem}
-.pay-bottom-cream{background:#f1e5cc;border-radius:1rem;border:1px solid #dfd4be;padding:1.5rem;box-shadow:0 10px 25px rgba(0,0,0,0.05)}
-.pay-bottom-cream .pb-top{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;margin-bottom:1rem}
-.pay-bottom-cream .pay-with{font-size:0.95rem;color:#444;flex:1;min-width:0}
-.pay-bottom-cream .pay-amount{font-size:1.4rem;font-weight:800;color:#c0392b;white-space:nowrap;flex-shrink:0;text-align:right}
+.pay-bottom-cream{background:#f1e5cc;border-radius:1rem;border:1px solid #dfd4be;padding:1rem 1.15rem;box-shadow:0 10px 25px rgba(0,0,0,0.05)}
+@media(min-width:768px){.pay-bottom-cream{padding:1.5rem}}
+.pay-bottom-cream .pb-top{display:flex;justify-content:space-between;align-items:center;gap:0.75rem;margin-bottom:1rem}
+.pay-bottom-cream .pay-with{font-size:0.78rem;color:#444;flex:1;min-width:0;line-height:1.35}
+@media(min-width:768px){.pay-bottom-cream .pay-with{font-size:0.88rem}}
+.pay-bottom-cream .pay-amount{font-size:clamp(1rem, 3.8vw, 1.35rem);font-weight:800;color:#c0392b;white-space:nowrap;flex-shrink:0;text-align:right}
 .pay-bottom-cream .pay-btn{width:100%;background:#3a523a;color:#fff;border:none;padding:0.85rem;border-radius:0.5rem;font-size:1rem;font-weight:700;cursor:pointer;transition:0.2s}
 .pay-bottom-cream .pay-btn:hover{background:#2c402c}
 @media(max-width:768px){.pay-grid{flex-direction:column!important}}
@@ -105,7 +114,7 @@
 
     <div class="max-w-7xl mx-auto px-4 py-1 relative z-10">
         <div class="pay-back" onclick="window.location.href = '/pesanan'">← Kembali</div>
-        <div class="pay-timer-bar">Harga sudah kami amankan. Selesaikan pembayaran dalam <span class="timer" id="countdownTimer">00:30:00</span></div>
+        <div class="pay-timer-bar"><span class="whitespace-nowrap">Selesaikan pembayaran dalam</span> <span class="timer shrink-0" id="countdownTimer">00:30:00</span></div>
 
         <div class="pay-grid" style="display:flex;gap:1.5rem;align-items:flex-start">
             {{-- LEFT --}}
@@ -113,11 +122,11 @@
                 @php
                 $methods = [
                     ['key'=>'va','title'=>'Virtual Account','type'=>'accordion','items'=>[
-                        ['val'=>'BCA Virtual Account','logo'=>'bca.png', 'w'=>70,  'h'=>18],
-                        ['val'=>'Mandiri Virtual Account','logo'=>'mandiri.png', 'w'=>380,  'h'=>66],
-                        ['val'=>'BRI Virtual Account','logo'=>'bri.png', 'w'=>160,  'h'=>39],
-                        ['val'=>'BNI Virtual Account','logo'=>'bni.png', 'w'=>74,  'h'=>18],
-                        ['val'=>'BSI Virtual Account','logo'=>'bsi.png', 'w'=>180,  'h'=>62],
+                        ['val'=>'BCA Virtual Account','logo'=>'bca.png', 'w'=>68,  'h'=>18],
+                        ['val'=>'Mandiri Virtual Account','logo'=>'mandiri.png', 'w'=>72,  'h'=>24, 'shift'=>true],
+                        ['val'=>'BRI Virtual Account','logo'=>'bri.png', 'w'=>60,  'h'=>22, 'shift'=>true],
+                        ['val'=>'BNI Virtual Account','logo'=>'bni.png', 'w'=>68,  'h'=>18],
+                        ['val'=>'BSI Virtual Account','logo'=>'bsi.png', 'w'=>74,  'h'=>22],
                         // ['val'=>'Virtual Account Lainnya','logo'=>'va.png', 'w'=>180,  'h'=>60],
                     ]],
                     ['key'=>'atm','title'=>'ATM','type'=>'direct','logos'=>[
@@ -131,22 +140,22 @@
                         ['file'=>'qris.png', 'h'=>42]
                     ]],
                     ['key'=>'ewallet','title'=>'E-Wallet','type'=>'accordion','items'=>[
-                        ['val'=>'DANA','logo'=>'dana.png', 'w'=>155,  'h'=>35],
-                        ['val'=>'GoPay','logo'=>'gopay.png', 'w'=>170,  'h'=>45],
-                        ['val'=>'OVO','logo'=>'ovo.png', 'w'=>125,  'h'=>23],
-                        ['val'=>'ShopeePay','logo'=>'shopeepay.png', 'w'=>175,  'h'=>45],
+                        ['val'=>'DANA','logo'=>'dana.png', 'w'=>72,  'h'=>20],
+                        ['val'=>'GoPay','logo'=>'gopay.png', 'w'=>72,  'h'=>22, 'shift'=>true],
+                        ['val'=>'OVO','logo'=>'ovo.png', 'w'=>62,  'h'=>18],
+                        ['val'=>'ShopeePay','logo'=>'shopeepay.png', 'w'=>74,  'h'=>22],
                     ]],
                     ['key'=>'minimarket','title'=>'Minimarket','type'=>'accordion','items'=>[
-                        ['val'=>'Alfamart / Alfamidi','logo'=>'alfamart.png', 'w'=>90,  'h'=>20],
-                        ['val'=>'Indomaret','logo'=>'indomaret.png', 'w'=>100,  'h'=>20],
+                        ['val'=>'Alfamart / Alfamidi','logo'=>'alfamart.png', 'w'=>78,  'h'=>18],
+                        ['val'=>'Indomaret','logo'=>'indomaret.png', 'w'=>82,  'h'=>18],
                     ]],
                 ];
                 @endphp
 
                 <div class="pay-method-container">
                     <div class="pm-main-title">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>
-                        Pilih metode pembayaran Anda
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="shrink-0"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>
+                        <span class="whitespace-nowrap">Pilih Metode Pembayaran Anda</span>
                     </div>
 
                     @foreach($methods as $m)
@@ -163,7 +172,7 @@
                                         <input type="radio" name="paymentMethod" value="{{$item['val']}}" id="radio-{{Str::slug($item['val'])}}" onchange="handlePaymentChange(this)">
                                         <label for="radio-{{Str::slug($item['val'])}}">{{$item['val']}}</label>
                                         <div class="logo-wrapper">
-                                            <img src="{{ asset('images/partner-pembayaran/'.$item['logo']) }}" onerror="this.style.display='none'" alt="{{$item['val']}}" style="{{ isset($item['w']) ? 'width:'.$item['w'].'px;' : '' }} {{ isset($item['h']) ? 'height:'.$item['h'].'px;' : '' }}">
+                                            <img src="{{ asset('images/partner-pembayaran/'.$item['logo']) }}" onerror="this.style.display='none'" alt="{{$item['val']}}" style="{{ isset($item['w']) ? 'width:'.$item['w'].'px;' : '' }} {{ isset($item['h']) ? 'height:'.$item['h'].'px;' : '' }} {{ !empty($item['shift']) ? 'transform: translateX(8px);' : '' }}">
                                         </div>
                                     </div>
                                     @endforeach
@@ -217,19 +226,31 @@
             <div style="flex:0.8;min-width:300px;position:sticky;top:80px">
                 <div class="sidebar-card-cream">
                     <h3>
-                        <iconify-icon icon="lucide:clipboard-list" class="text-xl"></iconify-icon> Rincian Reservasi
+                        <iconify-icon icon="lucide:clipboard-list" class="text-xl shrink-0"></iconify-icon> <span class="whitespace-nowrap">Rincian Reservasi</span>
                     </h3>
                     
-                    <div class="sb-checkin">
-                        <div><div class="label green">Check-in</div><div class="date" id="dynCheckin">Selasa, 28 April 2026</div><div class="time">Dari 14.00</div></div>
-                        <div style="text-align:center;color:#888"><div id="dynMalam" style="font-size:0.7rem;font-weight:600">1 malam</div><div style="font-size:1.2rem;margin-top:-4px">→</div></div>
-                        <div style="text-align:right"><div class="label red">Check-out</div><div class="date" id="dynCheckout">Rabu, 29 April 2026</div><div class="time">Hingga 12.00</div></div>
+                    {{-- Check-in / Check-out Highlight --}}
+                    <div class="ov-checkin-highlight">
+                        <div class="ov-checkin-row">
+                            <div class="flex-1 min-w-0">
+                                <div class="ci-label">Check-in</div>
+                                <div class="ci-date" id="dynCheckin">Selasa, 28 April 2026</div>
+                                <div class="ci-time">Dari 14.00</div>
+                            </div>
+                            <div class="ci-mid shrink-0 px-2 sm:px-3 text-center">
+                                <div id="malamText" class="whitespace-nowrap font-semibold text-[11px] sm:text-xs text-gray-600">1 malam</div>
+                                <div class="arrow">→</div>
+                            </div>
+                            <div class="flex-1 min-w-0 text-right">
+                                <div class="ci-label">Check-out</div>
+                                <div class="ci-date" id="dynCheckout">Rabu, 29 April 2026</div>
+                                <div class="ci-time">Hingga 12.00</div>
+                            </div>
+                        </div>
                     </div>
                     
                     <div class="sb-bed">
                         <div id="dynBed"><iconify-icon icon="lucide:bed-double" class="text-lg"></iconify-icon> Queen Bed (140×200)</div>
-                        <div class="divider"></div>
-                        <div id="dynSmoking"><iconify-icon icon="lucide:cigarette" class="text-lg"></iconify-icon> Boleh merokok di kamar</div>
                     </div>
                     
                     <div class="sb-fasilitas">
@@ -273,11 +294,11 @@
                         </div>
                         <div style="text-align:right">
                             <div class="title">Nama Tamu:</div>
-                            <div class="row" style="justify-content:flex-end">
-                                <iconify-icon icon="lucide:book-user" class="text-base mt-0.5"></iconify-icon>
+                            <div class="row" style="justify-content:flex-end;align-items:center;gap:0.4rem">
                                 <div class="details">
                                     <div id="dynTamu">M. Akbar R.</div>
                                 </div>
+                                <iconify-icon icon="lucide:book-user" class="text-base shrink-0 text-gray-700"></iconify-icon>
                             </div>
                         </div>
                     </div>
@@ -621,9 +642,12 @@ function updateBookingStatus(bookingNo, status, method, result) {
         const akoId = parseInt(urlParts[urlParts.length - 1]) || 1;
         const akoItem = AKOMODASI_DATA.find(d => d.id === akoId) || AKOMODASI_DATA[0];
 
-        // Populasikan rincian bed, smoking, dan fasilitas
+        // Populasikan rincian bed dan fasilitas
         document.getElementById('dynBed').innerHTML = `<iconify-icon icon="lucide:bed-double" class="text-lg"></iconify-icon> ${akoItem.kasur}`;
-        document.getElementById('dynSmoking').innerHTML = `<iconify-icon icon="${akoItem.merokok ? 'lucide:cigarette' : 'lucide:cigarette-off'}" class="text-lg"></iconify-icon> ${akoItem.merokok ? 'Boleh merokok di kamar' : 'Dilarang merokok'}`;
+        const smokingEl = document.getElementById('dynSmoking');
+        if (smokingEl) {
+            smokingEl.innerHTML = `<iconify-icon icon="${akoItem.merokok ? 'lucide:cigarette' : 'lucide:cigarette-off'}" class="text-lg"></iconify-icon> ${akoItem.merokok ? 'Boleh merokok di kamar' : 'Dilarang merokok'}`;
+        }
         
         // Pecah fasilitas jadi dua kolom
         const fasLen = Math.ceil(akoItem.fasilitas.length / 2);
@@ -651,7 +675,8 @@ function updateBookingStatus(bookingNo, status, method, result) {
     if(dTamu) document.getElementById('dynTamu').textContent = dTamu;
     if(dGuest) document.getElementById('dynGuestInfo').textContent = dGuest;
     if(dTotal) document.getElementById('dynTotalHarga').textContent = dTotal;
-    if(dMalam) document.getElementById('dynMalam').textContent = `${dMalam} malam`;
+    const elMalam = document.getElementById('malamText') || document.getElementById('dynMalam');
+    if(elMalam && dMalam) elMalam.textContent = `${dMalam} malam`;
     if(dCheckin) document.getElementById('dynCheckin').textContent = dCheckin;
     if(dCheckout) document.getElementById('dynCheckout').textContent = dCheckout;
     
