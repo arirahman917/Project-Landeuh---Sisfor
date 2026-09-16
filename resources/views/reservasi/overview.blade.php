@@ -97,17 +97,15 @@
 .modal-box p{font-size:0.85rem;color:#555;margin-bottom:0.5rem}
 .modal-box .close{text-align:right}
 .modal-box .close button{background:#3a523a;color:#fff;border:none;padding:0.5rem 1.5rem;border-radius:0.5rem;cursor:pointer;font-weight:600}
-.modal-loading{background:#fdf6e3;border-radius:1rem;padding:2rem;text-align:center;max-width:320px;width:90%}
-.modal-loading h4{font-weight:800;font-size:1rem;margin-bottom:0.5rem}
-.modal-loading p{color:#666;font-size:0.9rem}
 .modal-validate-overlay{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.25s ease}
 .modal-validate-overlay.show{opacity:1;pointer-events:auto}
 .modal-validate-overlay .mv-backdrop{position:absolute;inset:0;background:rgba(0,0,0,0.4)}
-.modal-validate-overlay .mv-card{position:relative;z-index:1;background:#fff;border-radius:1.25rem;box-shadow:0 25px 60px rgba(0,0,0,0.2);width:90%;max-width:360px;padding:2rem 1.5rem 1.5rem;text-align:center;transform:scale(0.92);transition:transform 0.25s cubic-bezier(0.34,1.56,0.64,1)}
+.modal-validate-overlay .mv-card{position:relative;z-index:1;background:#fff;border-radius:1.25rem;box-shadow:0 25px 60px rgba(0,0,0,0.2);width:90%;max-width:360px;padding:2.2rem 1.5rem 1.75rem;text-align:center;transform:scale(0.92);transition:transform 0.25s cubic-bezier(0.34,1.56,0.64,1)}
 .modal-validate-overlay.show .mv-card{transform:scale(1)}
-.mv-icon{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem}
-.mv-icon.warn{background:#fef3c7;color:#d97706}
-.mv-title{font-size:1.1rem;font-weight:800;color:#1f2937;margin-bottom:0.4rem}
+.mv-icon{display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;color:#dc2626}
+.mv-icon.warn{background:transparent;color:#dc2626}
+.mv-icon svg{width:48px;height:48px}
+.mv-title{font-size:1.15rem;font-weight:800;color:#1f2937;margin-bottom:0.4rem}
 .mv-msg{font-size:0.88rem;color:#6b7280;line-height:1.5;margin-bottom:1.5rem}
 .mv-btn{width:100%;border:none;padding:0.8rem;border-radius:0.75rem;font-size:0.95rem;font-weight:700;cursor:pointer;transition:background 0.2s}
 .mv-btn-primary{background:#3a523a;color:#fff}
@@ -239,12 +237,14 @@
                     </div>
                     
                     {{-- Kebijakan Reservasi --}}
-                    <div class="mt-4 mb-2 flex items-center justify-between flex-wrap gap-2">
+                    <div class="mt-4 mb-2 flex flex-col md:flex-row md:items-center md:justify-between gap-1 md:gap-2">
                         <label class="flex items-center gap-2.5 cursor-pointer select-none">
                             <input type="checkbox" id="chkKebijakan" class="w-5 h-5 rounded accent-[#3a523a] cursor-pointer shrink-0">
                             <span class="text-sm sm:text-base font-bold text-gray-800 whitespace-nowrap">Setujui Kebijakan Reservasi</span>
                         </label>
-                        <a onclick="document.getElementById('modalKebijakan').classList.add('show')" class="text-xs sm:text-sm text-blue-600 hover:text-blue-800 underline cursor-pointer font-medium whitespace-nowrap ml-auto">Klik baca kebijakan</a>
+                        <div class="pl-7 md:pl-0">
+                            <a onclick="document.getElementById('modalKebijakan').classList.add('show')" class="text-xs sm:text-sm text-blue-600 hover:text-blue-800 underline cursor-pointer font-medium whitespace-nowrap inline-block">Klik baca kebijakan</a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -363,11 +363,15 @@
         </div>
     </div>
 
-    {{-- Modal Loading --}}
-    <div class="modal-overlay" id="modalLoading">
-        <div class="modal-loading">
-            <h4>Mohon Tunggu</h4>
-            <p>Kami sedang memproses permintaan anda</p>
+    {{-- Modal Loading Modern --}}
+    <div class="modal-validate-overlay" id="modalLoading">
+        <div class="mv-backdrop"></div>
+        <div class="mv-card" style="padding: 2.25rem 1.5rem;">
+            <div class="mv-icon" style="margin: 0 auto 1.25rem; color: #3a523a;">
+                <iconify-icon icon="lucide:loader-2" class="animate-spin text-4xl"></iconify-icon>
+            </div>
+            <div class="mv-title">Mohon Tunggu</div>
+            <div class="mv-msg" style="margin-bottom: 0;">Kami sedang memproses permintaan anda</div>
         </div>
     </div>
 
@@ -376,7 +380,7 @@
         <div class="mv-backdrop" onclick="closeValidationModal()"></div>
         <div class="mv-card">
             <div class="mv-icon warn">
-                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
             </div>
