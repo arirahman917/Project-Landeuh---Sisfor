@@ -568,12 +568,8 @@
             <div class="flex-1 p-4 md:p-5 flex flex-col justify-between gap-2">
                 <div>
                     <h3 class="text-lg font-bold text-gray-900">${item.judul}</h3>
-                    <div class="flex items-center gap-3 text-xs text-gray-600 mt-2 flex-wrap font-medium pb-3 border-b border-gray-200">
-                        <span class="flex items-center gap-1.5 px-2 py-0.5 rounded bg-blue-50 text-blue-700"><iconify-icon icon="lucide:bed-double" class="text-base"></iconify-icon> ${item.kasur}</span>
-                        <div class="w-px h-3 bg-gray-300"></div>
-                        <span class="flex items-center gap-1.5 px-2 py-0.5 rounded ${item.merokok?'bg-green-50 text-green-700':'bg-red-50 text-red-700'}">
-                            ${item.merokok?'<iconify-icon icon="lucide:cigarette" class="text-base"></iconify-icon> Boleh merokok':'<iconify-icon icon="lucide:cigarette-off" class="text-base"></iconify-icon> Tidak boleh merokok'}
-                        </span>
+                    <div class="flex items-center mt-2 pb-3 border-b border-gray-200 min-w-0">
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-blue-50 text-blue-700 font-medium text-[11px] sm:text-xs whitespace-nowrap max-w-full"><iconify-icon icon="${(item.jenis && item.jenis.toLowerCase().includes('glamping')) || (item.kasur && item.kasur.toLowerCase().includes('tenda')) ? 'lucide:tent' : 'lucide:bed-double'}" class="text-sm shrink-0"></iconify-icon><span class="truncate">${item.kasur}</span></span>
                     </div>
                     <div class="relative overflow-hidden transition-[max-height] duration-500 ease-in-out max-h-[140px] md:max-h-none" id="collapse-content-${item.id}">
                         <div class="flex flex-col md:flex-row gap-6 mt-3">

@@ -478,9 +478,6 @@
         const tableRows = [
             ['Jenis Akomodasi',    item.jenis],
             ['Jenis Kasur',        item.kasur],
-            ['Boleh merokok di kamar', item.merokok
-                ? '<span style="color:#16a34a;font-weight:600">Ya</span>'
-                : '<span style="color:#dc2626;font-weight:600">Tidak</span>'],
             ['Fasilitas Kamar',    item.fasilitas.join(', ')],
             ['Makanan & Minuman',  item.makanan.join(', ')],
             ['Untuk berapa orang', `Maks ${item.max_orang} Dewasa`],
