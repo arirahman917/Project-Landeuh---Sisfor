@@ -7,14 +7,14 @@
 @section('content')
 {{-- Search Bar Fixed --}}
 <div id="searchBarFixed" class="sticky top-0 z-40">
-    <div class="max-w-6xl mx-auto px-4">
-        <div class="flex flex-row items-stretch gap-2 md:gap-3 backdrop-blur-md bg-white/40 rounded-b-2xl px-4 md:px-6 py-4 border-x border-b border-gray-200 shadow-sm transition-all duration-300">
-            <div class="flex-1 bg-gray-50 rounded-xl px-3 md:px-4 py-2.5 border border-gray-200 relative cursor-pointer" id="akomodasiPickerContainer" onclick="toggleAkoDropdown(event)">
-                <div class="flex items-center gap-2 h-full" id="akomodasiPickerTrigger">
+    <div class="max-w-6xl mx-auto px-2 sm:px-4">
+        <div class="flex flex-row items-stretch gap-1.5 sm:gap-2 md:gap-3 backdrop-blur-md bg-white/40 rounded-b-2xl px-2.5 sm:px-4 md:px-6 py-2.5 sm:py-3 md:py-4 border-x border-b border-gray-200 shadow-sm transition-all duration-300">
+            <div class="flex-1 min-w-0 bg-gray-50 rounded-xl px-2.5 sm:px-4 py-2 sm:py-2.5 border border-gray-200 relative cursor-pointer" id="akomodasiPickerContainer" onclick="toggleAkoDropdown(event)">
+                <div class="flex items-center gap-1.5 sm:gap-2 h-full min-w-0" id="akomodasiPickerTrigger">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg>
-                    <div class="flex-1 text-sm text-gray-700 select-none truncate" id="akomodasiPickerLabel">Semua Akomodasi</div>
-                    <div class="flex items-center text-gray-400 transition-transform duration-300" id="akomodasiPickerChevron">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                    <div class="flex-1 text-xs sm:text-sm text-gray-700 select-none truncate" id="akomodasiPickerLabel">Semua Akomodasi</div>
+                    <div class="flex items-center text-gray-400 transition-transform duration-300 shrink-0" id="akomodasiPickerChevron">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5 sm:w-4 sm:h-4">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                         </svg>
                     </div>
@@ -30,18 +30,18 @@
                 <input type="hidden" id="filterJenis" value="Semua Akomodasi">
             </div>
             
-            <div class="flex-1 bg-gray-50 rounded-xl px-3 md:px-4 py-2.5 border border-gray-200 relative cursor-pointer" id="guestPickerContainer" onclick="toggleGuestDropdown(event)">
-                <div class="flex items-center gap-2 h-full" id="guestPickerTrigger">
+            <div class="flex-1 min-w-0 bg-gray-50 rounded-xl px-2.5 sm:px-4 py-2 sm:py-2.5 border border-gray-200 relative cursor-pointer" id="guestPickerContainer" onclick="toggleGuestDropdown(event)">
+                <div class="flex items-center gap-1.5 sm:gap-2 h-full min-w-0" id="guestPickerTrigger">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
-                    <span class="flex-1 text-sm text-gray-700 select-none truncate" id="guestPickerLabel">2 Tamu</span>
-                    <div class="flex items-center text-gray-400 transition-transform duration-300" id="guestPickerChevron">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                    <span class="flex-1 text-xs sm:text-sm text-gray-700 select-none truncate" id="guestPickerLabel">2 Tamu</span>
+                    <div class="flex items-center text-gray-400 transition-transform duration-300 shrink-0" id="guestPickerChevron">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5 sm:w-4 sm:h-4">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                         </svg>
                     </div>
                 </div>
                 <!-- Custom Dropdown Menu (Traveloka Style) -->
-                <div class="absolute top-[calc(100%+0.5rem)] right-0 w-full min-w-[320px] bg-white rounded-2xl shadow-[0_15px_40px_-10px_rgba(0,0,0,0.2)] border border-gray-100 py-4 px-4 hidden z-50 cursor-default" id="guestPickerDropdown" onclick="event.stopPropagation()">
+                <div class="absolute top-[calc(100%+0.5rem)] right-0 w-full min-w-[280px] sm:min-w-[320px] max-w-[90vw] bg-white rounded-2xl shadow-[0_15px_40px_-10px_rgba(0,0,0,0.2)] border border-gray-100 py-4 px-4 hidden z-50 cursor-default" id="guestPickerDropdown" onclick="event.stopPropagation()">
                     <div class="flex flex-col gap-4">
                         <!-- Tamu -->
                         <div class="flex items-center justify-between">
@@ -50,11 +50,11 @@
                             </div>
                             <div class="flex items-center gap-3">
                                 <button type="button" id="ako-btn-min-dewasa" onclick="changeGuest('dewasa', -1)" class="w-8 h-8 flex items-center justify-center rounded-full border border-gray-300 text-gray-500 hover:bg-gray-50 transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 12H4" /></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 12H4" /></svg>
                                 </button>
                                 <span class="text-sm font-semibold w-4 text-center" id="ako-val-dewasa">2</span>
                                 <button type="button" id="ako-btn-plus-dewasa" onclick="changeGuest('dewasa', 1)" class="w-8 h-8 flex items-center justify-center rounded-full border border-[#3a523a] text-[#3a523a] hover:bg-[#3a523a]/10 transition cursor-pointer">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" /></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" /></svg>
                                 </button>
                             </div>
                         </div>
@@ -350,19 +350,16 @@
             const makananSarapanItems = document.querySelectorAll(`#makanan-list-${item.id} .makanan-sarapan`);
             
             if (rate.label === 'Weekday') {
-                // Remove breakfast badge if exists
-                if (breakfastContainer) breakfastContainer.remove();
+                if (breakfastContainer) {
+                    breakfastContainer.classList.add('hidden');
+                    breakfastContainer.classList.remove('inline-flex');
+                }
                 // Hide sarapan from makanan & minuman list
                 makananSarapanItems.forEach(el => el.style.display = 'none');
             } else {
-                // Add breakfast badge under rate badge if not exists
-                const badgeContainer = document.getElementById(`badge-container-${item.id}`);
-                if (badgeContainer && !document.getElementById(`breakfast-badge-${item.id}`)) {
-                    const badge = document.createElement('div');
-                    badge.id = `breakfast-badge-${item.id}`;
-                    badge.className = 'inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-amber-50 border border-amber-200/60 whitespace-nowrap';
-                    badge.innerHTML = `<span class="text-[9px]">🍳</span><span class="text-[9px] font-semibold text-amber-700">Free Breakfast</span>`;
-                    badgeContainer.appendChild(badge);
+                if (breakfastContainer) {
+                    breakfastContainer.classList.remove('hidden');
+                    breakfastContainer.classList.add('inline-flex');
                 }
                 // Show sarapan from makanan & minuman list
                 makananSarapanItems.forEach(el => el.style.display = 'block');
@@ -543,7 +540,7 @@
         const selectedDates = window.akoDateState[item.id] || [];
         const availableSlots = window.getAvailableSlots ? window.getAvailableSlots(item, selectedDates) : item.slot;
 
-        const slotHtml = item.slot > 1 ? `<span id="slot-badge-${item.id}" class="flex items-center gap-1.5 font-medium whitespace-nowrap"><iconify-icon icon="lucide:tent" class="text-lg"></iconify-icon> Sisa ${availableSlots} Unit Kamar</span>` : '';
+        const slotHtml = item.slot > 1 ? `<span id="slot-badge-${item.id}" class="flex items-center gap-1 font-medium whitespace-nowrap text-[10px] sm:text-[11px]"><iconify-icon icon="lucide:tent" class="text-sm"></iconify-icon> Sisa ${availableSlots} Unit</span>` : '';
 
         let fasHtml='<div class="columns-1 xl:columns-2 gap-x-6 space-y-1.5 text-xs text-gray-700">';
         safeFasilitas.forEach(f=>fasHtml+=`<div class="flex items-start gap-1.5 break-words leading-relaxed break-inside-avoid"><span class="flex-shrink-0 mr-1">•</span><span class="flex-1">${f}</span></div>`);fasHtml+='</div>';
@@ -593,12 +590,16 @@
                 </div>
                 <div class="flex flex-col pt-3 mt-1 border-t border-gray-100">
                     <!-- Top Row: Info Unit & Malam -->
-                    <div class="flex flex-wrap items-center gap-2 md:gap-4 text-xs text-gray-700 font-medium">
-                        <span class="flex items-center gap-1.5 whitespace-nowrap"><iconify-icon icon="lucide:user-check" class="text-base"></iconify-icon> Maks ${item.maxOrang} Dewasa</span>
+                    <div class="flex flex-wrap items-center gap-1.5 sm:gap-2 text-[10.5px] sm:text-xs text-gray-700 font-medium">
+                        <span class="flex items-center gap-1 whitespace-nowrap"><iconify-icon icon="lucide:user-check" class="text-sm text-gray-500"></iconify-icon> Maks ${item.maxOrang} Dewasa</span>
                         ${slotHtml}
-                        <span class="flex items-center gap-1.5 whitespace-nowrap text-blue-700 bg-blue-50 px-2 py-0.5 rounded font-bold text-xs" id="date-display-${item.id}">
-                            <iconify-icon icon="lucide:moon" class="text-base"></iconify-icon> 
+                        <span class="flex items-center gap-1 whitespace-nowrap text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded font-bold text-[10px] sm:text-[11px]" id="date-display-${item.id}">
+                            <iconify-icon icon="lucide:moon" class="text-xs"></iconify-icon> 
                             <span id="date-text-${item.id}">Belum pilih tanggal</span>
+                        </span>
+                        <span id="breakfast-badge-${item.id}" class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-amber-50 border border-amber-200/60 whitespace-nowrap text-[9.5px] sm:text-[10px] ${getActiveRate(item).label === 'Weekday' ? 'hidden' : ''}">
+                            <span class="text-[9px]">🍳</span>
+                            <span class="font-semibold text-amber-700">Free Breakfast</span>
                         </span>
                     </div>
 
@@ -607,21 +608,20 @@
                         <!-- Kiri: Sesuaikan Tanggal -->
                         <div class="shrink min-w-0">
                             <div style="display:none"><input type="hidden" id="fp-input-${item.id}"></div>
-                            <button type="button" id="btn-dates-${item.id}" class="bg-white hover:bg-gray-50 border border-gray-300 text-gray-700 text-[11px] sm:text-xs font-bold px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg transition shadow-sm flex items-center gap-1.5 whitespace-nowrap">
-                                <iconify-icon icon="lucide:calendar-days" class="text-sm shrink-0"></iconify-icon>
-                                <span id="btn-dates-text-${item.id}" class="truncate">Sesuaikan Tanggal</span>
+                            <button type="button" id="btn-dates-${item.id}" class="bg-white hover:bg-gray-50 border border-gray-300 text-gray-700 text-[10px] sm:text-[11px] font-bold px-2 sm:px-2.5 py-1.5 rounded-lg transition shadow-sm flex items-center gap-1 sm:gap-1.5 whitespace-nowrap">
+                                <iconify-icon icon="lucide:calendar-days" class="text-xs shrink-0"></iconify-icon>
+                                <span id="btn-dates-text-${item.id}" class="truncate text-[10px] sm:text-[11px]">Sesuaikan Tanggal</span>
                             </button>
                         </div>
 
                         <!-- Kanan: Harga -->
                         <div class="flex flex-col items-end text-right shrink-0">
-                            <div id="badge-container-${item.id}" class="mb-1 flex flex-col items-end gap-1">
+                            <div class="mb-0.5 flex items-center justify-end">
                                 <span id="rate-badge-${item.id}" class="text-[9px] font-bold text-white px-1.5 py-0.5 rounded shadow-xs whitespace-nowrap" style="background-color:${getActiveRate(item).color}">${getActiveRate(item).label}</span>
-                                ${getActiveRate(item).label !== 'Weekday' ? `<div id="breakfast-badge-${item.id}" class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-amber-50 border border-amber-200/60 whitespace-nowrap"><span class="text-[9px]">🍳</span><span class="text-[9px] font-semibold text-amber-700">Free Breakfast</span></div>` : ''}
                             </div>
                             <div class="flex items-center gap-1 sm:gap-1.5 mt-0.5 whitespace-nowrap">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-gray-400 cursor-pointer hover:text-[#B5793A] transition shrink-0" fill="currentColor" viewBox="0 0 24 24" onclick="openPriceInfoModal(${item.id})"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
-                                <div id="price-val-${item.id}" class="text-base sm:text-lg md:text-2xl font-extrabold text-[#e53e3e] leading-tight whitespace-nowrap">${fmt(calculateDynamicTotal(item, window.akoMalamState[item.id] || 1))}</div>
+                                <div id="price-val-${item.id}" class="text-lg sm:text-xl md:text-2xl lg:text-3xl font-extrabold text-[#e53e3e] leading-tight whitespace-nowrap">${fmt(calculateDynamicTotal(item, window.akoMalamState[item.id] || 1))}</div>
                             </div>
                             <div class="text-[9px] text-gray-400 italic mt-0.5">Total Harga</div>
                         </div>
