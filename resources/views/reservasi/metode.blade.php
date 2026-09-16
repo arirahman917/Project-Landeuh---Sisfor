@@ -3,8 +3,8 @@
 @section('content')
 <style>
 .pay-page{background:#F8EDD8;min-height:100vh;position:relative}
-.pay-header{background:transparent;backdrop-filter:blur(10px);border-bottom:1px solid rgba(0,0,0,0.08);padding:0.5rem 1rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
-@media(min-width:768px){.pay-header{padding:0.75rem 1.5rem}}
+.pay-header{background:transparent;backdrop-filter:blur(10px);border-bottom:1px solid rgba(0,0,0,0.08);padding:0.75rem 1rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+@media(min-width:768px){.pay-header{padding:1rem 1.5rem}}
 .pay-logo{display:flex;align-items:center}
 .pay-logo img{height:36px;object-fit:contain}
 @media(min-width:768px){.pay-logo img{height:42px}}

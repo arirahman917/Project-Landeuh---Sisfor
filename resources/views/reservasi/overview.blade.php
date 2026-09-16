@@ -3,8 +3,8 @@
 @section('content')
 <style>
 .ov-page{background:#F8EDD8;min-height:100vh;position:relative;overflow-x:hidden}
-.ov-header{background:transparent;border-bottom:1px solid rgba(0,0,0,0.08);padding:0.5rem 1rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;backdrop-filter:blur(10px)}
-@media(min-width:768px){.ov-header{padding:0.75rem 1.5rem}}
+.ov-header{background:transparent;border-bottom:1px solid rgba(0,0,0,0.08);padding:0.75rem 1rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;backdrop-filter:blur(10px)}
+@media(min-width:768px){.ov-header{padding:1rem 1.5rem}}
 .ov-logo{display:flex;align-items:center}
 .ov-logo img{height:36px;object-fit:contain}
 @media(min-width:768px){.ov-logo img{height:42px}}
@@ -22,7 +22,7 @@
 @media(min-width:768px){.ov-service-title h1{font-size:1.25rem}}
 .ov-back{display:flex;align-items:center;gap:0.5rem;font-weight:700;font-size:0.95rem;cursor:pointer;color:#333;margin:0.5rem 0 0.75rem}
 .ov-back:hover{color:#3a523a}
-.ov-section-title{display:flex;align-items:center;gap:0.5rem;font-size:1.1rem;font-weight:800;color:#333;margin-top:0.5rem;margin-bottom:0.65rem}
+.ov-section-title{display:flex;align-items:center;gap:0.5rem;font-size:1.1rem;font-weight:800;color:#333;margin-top:0.5rem;margin-bottom:1rem}
 .ov-form-group{margin-bottom:0.85rem}
 .ov-form-group label{display:block;font-size:0.82rem;font-weight:600;color:#444;margin-bottom:0.25rem}
 .ov-form-group label .req{color:#e53e3e}
@@ -47,7 +47,7 @@
 .ov-card{background:rgba(253,246,227,0.7);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.4);border-radius:1rem;box-shadow:0 2px 12px rgba(0,0,0,0.06);margin-bottom:1rem;overflow:hidden}
 .ov-card-inner{padding:0.85rem 1rem}
 @media(min-width:768px){.ov-card-inner{padding:1.15rem 1.25rem}}
-.ov-card h3{font-size:1.05rem;font-weight:800;display:flex;align-items:center;gap:0.5rem;margin-top:0.5rem;margin-bottom:0.65rem}
+.ov-card h3{font-size:1.05rem;font-weight:800;display:flex;align-items:center;gap:0.5rem;margin-top:0.5rem;margin-bottom:1rem}
 
 /* Ribbon alert */
 .ov-ribbon{background:#c0392b;color:#fff;padding:0.5rem 0.85rem;font-size:0.75rem;font-weight:600;border-radius:0.75rem 0.75rem 0 0}
@@ -631,7 +631,7 @@
             <div class="flex items-center justify-between text-xs py-0.5">
                 <div class="flex items-center gap-2 min-w-0">
                     <span class="text-stone-700 font-medium whitespace-nowrap text-[11px] sm:text-xs">${formattedDate}</span>
-                    <span style="color:${fontColor}; background:rgba(255,255,255,0.65); backdrop-filter:blur(4px); border:1px solid rgba(255,255,255,0.85); box-shadow:0 1px 2px rgba(0,0,0,0.03);" class="text-[10px] px-2 py-0.5 rounded-md font-bold shrink-0">${night.label}</span>
+                    <span style="color:${fontColor};" class="text-[10px] font-bold shrink-0">${night.label}</span>
                 </div>
                 <span class="text-stone-600 font-semibold whitespace-nowrap text-right ml-2 text-[11px] sm:text-xs">${fmt(night.price)}</span>
             </div>`;
