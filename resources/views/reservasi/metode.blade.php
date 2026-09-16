@@ -39,13 +39,12 @@
 .pay-method-content{display:none;padding:0 1rem 1rem 1rem}
 .pay-method-row.open .accordion-content{display:block}
 .pay-method-row.selected .direct-content{display:block}
-.pay-radio{display:flex;align-items:center;justify-content:space-between;padding:0 0.85rem;min-height:58px;border:1px solid #dfd4be;border-radius:0.6rem;margin-bottom:0.5rem;cursor:pointer;transition:0.2s;background:#fff;gap:0.4rem}
-@media(min-width:640px){.pay-radio{padding:0 1rem;min-height:68px;gap:0.6rem}}
+.pay-radio{display:flex;align-items:center;justify-content:space-between;padding:0 1rem;min-height:70px;border:1px solid #dfd4be;border-radius:0.6rem;margin-bottom:0.5rem;cursor:pointer;transition:0.2s;background:#fff}
 .pay-radio:hover{border-color:#3a523a;background:#f9f9f5}
-.pay-radio input[type=radio]{accent-color:#3a523a;margin-right:0.3rem;flex-shrink:0}
-.pay-radio .logo-wrapper{display:flex;justify-content:flex-end;align-items:center;flex-shrink:0;width:82px}
-.pay-radio img{object-fit:contain;object-position:right center;max-height:28px}
-.pay-radio label{flex:1;min-width:0;font-size:clamp(0.72rem, 2.5vw, 0.85rem);font-weight:600;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pay-radio input[type=radio]{accent-color:#3a523a;margin-right:0.6rem;flex-shrink:0}
+.pay-radio .logo-wrapper{display:flex;justify-content:flex-end;align-items:center}
+.pay-radio img{object-fit:contain;object-position:right center}
+.pay-radio label{flex:1;min-width:0;font-size:0.85rem;font-weight:500;cursor:pointer;white-space:nowrap}
 .pay-info-box{background:#fff;border:1px solid #eee;border-radius:0.75rem;padding:0.8rem 1rem;font-size:0.78rem;color:#666;margin-bottom:0.75rem}
 .pay-info-box ul{margin:0.3rem 0 0 1rem;list-style:disc}
 .pay-info-box ul li{margin-bottom:0.2rem}
@@ -86,7 +85,10 @@
 .pay-bottom-cream .pay-amount{font-size:clamp(1rem, 3.8vw, 1.35rem);font-weight:800;color:#c0392b;white-space:nowrap;flex-shrink:0;text-align:right}
 .pay-bottom-cream .pay-btn{width:100%;background:#3a523a;color:#fff;border:none;padding:0.85rem;border-radius:0.5rem;font-size:1rem;font-weight:700;cursor:pointer;transition:0.2s}
 .pay-bottom-cream .pay-btn:hover{background:#2c402c}
-@media(max-width:768px){.pay-grid{flex-direction:column!important}}
+@media(max-width:768px){
+    .pay-grid{flex-direction:column!important;align-items:stretch!important;width:100%!important}
+    .pay-grid > div{width:100%!important;min-width:0!important;max-width:100%!important}
+}
 </style>
 
 <div class="pay-page">
@@ -116,17 +118,17 @@
         <div class="pay-back" onclick="window.location.href = '/pesanan'">← Kembali</div>
         <div class="pay-timer-bar"><span class="whitespace-nowrap">Selesaikan pembayaran dalam</span> <span class="timer shrink-0" id="countdownTimer">00:30:00</span></div>
 
-        <div class="pay-grid" style="display:flex;gap:1.5rem;align-items:flex-start">
+        <div class="pay-grid" style="display:flex;gap:1.5rem;align-items:flex-start;width:100%">
             {{-- LEFT --}}
-            <div style="flex:1.4;">
+            <div style="flex:1.4;width:100%;min-width:0">
                 @php
                 $methods = [
                     ['key'=>'va','title'=>'Virtual Account','type'=>'accordion','items'=>[
-                        ['val'=>'BCA Virtual Account','logo'=>'bca.png', 'w'=>68,  'h'=>18],
-                        ['val'=>'Mandiri Virtual Account','logo'=>'mandiri.png', 'w'=>72,  'h'=>24, 'shift'=>true],
-                        ['val'=>'BRI Virtual Account','logo'=>'bri.png', 'w'=>60,  'h'=>22, 'shift'=>true],
-                        ['val'=>'BNI Virtual Account','logo'=>'bni.png', 'w'=>68,  'h'=>18],
-                        ['val'=>'BSI Virtual Account','logo'=>'bsi.png', 'w'=>74,  'h'=>22],
+                        ['val'=>'BCA Virtual Account','logo'=>'bca.png', 'w'=>70,  'h'=>18],
+                        ['val'=>'Mandiri Virtual Account','logo'=>'mandiri.png', 'w'=>380,  'h'=>66],
+                        ['val'=>'BRI Virtual Account','logo'=>'bri.png', 'w'=>160,  'h'=>39],
+                        ['val'=>'BNI Virtual Account','logo'=>'bni.png', 'w'=>74,  'h'=>18],
+                        ['val'=>'BSI Virtual Account','logo'=>'bsi.png', 'w'=>180,  'h'=>62],
                         // ['val'=>'Virtual Account Lainnya','logo'=>'va.png', 'w'=>180,  'h'=>60],
                     ]],
                     ['key'=>'atm','title'=>'ATM','type'=>'direct','logos'=>[
@@ -140,14 +142,14 @@
                         ['file'=>'qris.png', 'h'=>42]
                     ]],
                     ['key'=>'ewallet','title'=>'E-Wallet','type'=>'accordion','items'=>[
-                        ['val'=>'DANA','logo'=>'dana.png', 'w'=>72,  'h'=>20],
-                        ['val'=>'GoPay','logo'=>'gopay.png', 'w'=>72,  'h'=>22, 'shift'=>true],
-                        ['val'=>'OVO','logo'=>'ovo.png', 'w'=>62,  'h'=>18],
-                        ['val'=>'ShopeePay','logo'=>'shopeepay.png', 'w'=>74,  'h'=>22],
+                        ['val'=>'DANA','logo'=>'dana.png', 'w'=>155,  'h'=>35],
+                        ['val'=>'GoPay','logo'=>'gopay.png', 'w'=>170,  'h'=>45],
+                        ['val'=>'OVO','logo'=>'ovo.png', 'w'=>125,  'h'=>23],
+                        ['val'=>'ShopeePay','logo'=>'shopeepay.png', 'w'=>175,  'h'=>45],
                     ]],
                     ['key'=>'minimarket','title'=>'Minimarket','type'=>'accordion','items'=>[
-                        ['val'=>'Alfamart / Alfamidi','logo'=>'alfamart.png', 'w'=>78,  'h'=>18],
-                        ['val'=>'Indomaret','logo'=>'indomaret.png', 'w'=>82,  'h'=>18],
+                        ['val'=>'Alfamart / Alfamidi','logo'=>'alfamart.png', 'w'=>90,  'h'=>20],
+                        ['val'=>'Indomaret','logo'=>'indomaret.png', 'w'=>100,  'h'=>20],
                     ]],
                 ];
                 @endphp
@@ -172,7 +174,7 @@
                                         <input type="radio" name="paymentMethod" value="{{$item['val']}}" id="radio-{{Str::slug($item['val'])}}" onchange="handlePaymentChange(this)">
                                         <label for="radio-{{Str::slug($item['val'])}}">{{$item['val']}}</label>
                                         <div class="logo-wrapper">
-                                            <img src="{{ asset('images/partner-pembayaran/'.$item['logo']) }}" onerror="this.style.display='none'" alt="{{$item['val']}}" style="{{ isset($item['w']) ? 'width:'.$item['w'].'px;' : '' }} {{ isset($item['h']) ? 'height:'.$item['h'].'px;' : '' }} {{ !empty($item['shift']) ? 'transform: translateX(8px);' : '' }}">
+                                            <img src="{{ asset('images/partner-pembayaran/'.$item['logo']) }}" onerror="this.style.display='none'" alt="{{$item['val']}}" style="{{ isset($item['w']) ? 'width:'.$item['w'].'px;' : '' }} {{ isset($item['h']) ? 'height:'.$item['h'].'px;' : '' }}">
                                         </div>
                                     </div>
                                     @endforeach
