@@ -61,6 +61,50 @@ Route::get('/debug-email', function (\Illuminate\Http\Request $request) {
     }
 });
 
+Route::get('/debug-wa-status', function (\Illuminate\Http\Request $request) {
+    $token = env('WA_ACCESS_TOKEN');
+    $phoneId = env('WA_BUSINESS_PHONE_NUMBER_ID');
+    $wabaId = env('WA_BUSINESS_ACCOUNT_ID');
+    $adminNum = env('WA_ADMIN_NUMBER');
+    $verifyToken = env('WA_WEBHOOK_VERIFY_TOKEN');
+
+    $metaCheck = null;
+    if ($token && $phoneId) {
+        try {
+            $res = \Illuminate\Support\Facades\Http::withHeaders([
+                'Authorization' => 'Bearer ' . $token,
+            ])->get("https://graph.facebook.com/v20.0/{$phoneId}");
+            $metaCheck = [
+                'status' => $res->status(),
+                'data' => $res->json(),
+            ];
+        } catch (\Exception $e) {
+            $metaCheck = 'Exception: ' . $e->getMessage();
+        }
+    }
+
+    $logPath = storage_path('logs/laravel.log');
+    $logs = [];
+    if (file_exists($logPath)) {
+        $all = file($logPath);
+        $logs = array_slice($all, -80);
+    }
+
+    return response()->json([
+        'env_status' => [
+            'has_token' => !empty($token),
+            'token_length' => strlen($token ?? ''),
+            'token_preview' => $token ? substr($token, 0, 10) . '...' . substr($token, -6) : null,
+            'phone_id' => $phoneId,
+            'waba_id' => $wabaId,
+            'admin_number' => $adminNum,
+            'verify_token' => $verifyToken,
+        ],
+        'meta_graph_api_check' => $metaCheck,
+        'recent_logs' => $logs,
+    ]);
+});
+
 Route::get('/pesanan', function () {
     $bookings = [];
     if (Auth::check()) {

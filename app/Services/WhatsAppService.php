@@ -48,6 +48,8 @@ class WhatsAppService
                 'Content-Type' => 'application/json',
             ])->post("https://graph.facebook.com/v20.0/{$phoneId}/messages", $data);
 
+            Log::info("WhatsApp Meta API response: status={$response->status()} body={$response->body()}");
+
             if ($response->successful()) {
                 return true;
             }

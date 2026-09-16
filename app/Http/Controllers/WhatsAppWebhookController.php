@@ -42,6 +42,7 @@ class WhatsAppWebhookController extends Controller
     public function handle(Request $request)
     {
         $payload = $request->all();
+        Log::info("WhatsApp Webhook payload received: " . json_encode($payload));
 
         // Check if this is a WhatsApp Business Account event
         if (isset($payload['object']) && $payload['object'] === 'whatsapp_business_account') {
