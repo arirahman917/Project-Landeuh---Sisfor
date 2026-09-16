@@ -3,18 +3,24 @@
 @section('content')
 <style>
 .ov-page{background:#F8EDD8;min-height:100vh;position:relative;overflow-x:hidden}
-.ov-header{background:transparent;border-bottom:1px solid rgba(0,0,0,0.08);padding:0.75rem 1.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;backdrop-filter:blur(10px)}
-.ov-logo{display:flex;align-items:center;gap:1rem}
-.ov-logo img{height:40px}
-.ov-logo .divider{width:1px;height:30px;background:#ccc}
-.ov-logo h2{font-size:1.1rem;font-weight:700;color:#333}
-.ov-steps{display:flex;align-items:center;gap:0.5rem;font-size:0.85rem;font-weight:600}
+.ov-header{background:transparent;border-bottom:1px solid rgba(0,0,0,0.08);padding:0.5rem 1rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;backdrop-filter:blur(10px)}
+@media(min-width:768px){.ov-header{padding:0.75rem 1.5rem}}
+.ov-logo{display:flex;align-items:center}
+.ov-logo img{height:36px;object-fit:contain}
+@media(min-width:768px){.ov-logo img{height:42px}}
+.ov-steps{display:flex;align-items:center;gap:0.4rem;font-size:0.8rem;font-weight:600}
+@media(min-width:768px){.ov-steps{gap:0.5rem;font-size:0.85rem}}
 .ov-steps .step{display:flex;align-items:center;gap:0.35rem}
-.ov-steps .num{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;color:#fff}
+.ov-steps .num{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;color:#fff}
+@media(min-width:768px){.ov-steps .num{width:24px;height:24px}}
 .ov-steps .num.active{background:#3a523a}
 .ov-steps .num.inactive{background:#bbb}
-.ov-steps .line{width:40px;height:2px;background:#ccc}
-.ov-back{display:flex;align-items:center;gap:0.5rem;font-weight:700;font-size:0.95rem;cursor:pointer;color:#333;margin:1.5rem 0 1rem}
+.ov-steps .line{width:25px;height:2px;background:#ccc}
+@media(min-width:768px){.ov-steps .line{width:40px}}
+.ov-service-title{text-align:center;padding:0.75rem 1rem 0.25rem}
+.ov-service-title h1{font-size:1.05rem;font-weight:800;color:#222;line-height:1.35}
+@media(min-width:768px){.ov-service-title h1{font-size:1.25rem}}
+.ov-back{display:flex;align-items:center;gap:0.5rem;font-weight:700;font-size:0.95rem;cursor:pointer;color:#333;margin:0.5rem 0 0.75rem}
 .ov-back:hover{color:#3a523a}
 .ov-login-bar{background:#3a523a;color:#fff;padding:0.6rem 1.2rem;border-radius:0.75rem;font-size:0.85rem;margin-bottom:1rem}
 .ov-login-bar strong{font-weight:700}
@@ -98,9 +104,9 @@
     {{-- Header --}}
     <div class="ov-header">
         <div class="ov-logo">
-            <img src="{{ asset('images/logo-landeuh.png') }}" alt="Logo">
-            <div class="divider"></div>
-            <h2 id="headerTitle">Loading...</h2>
+            <a href="/" class="flex items-center">
+                <img src="{{ asset('images/logo-landeuh.png') }}" alt="Logo">
+            </a>
         </div>
         <div class="ov-steps">
             <div class="step"><div class="num active">1</div> Review</div>
@@ -109,7 +115,12 @@
         </div>
     </div>
 
-    <div class="max-w-7xl mx-auto px-4 py-2 relative z-10">
+    {{-- Nama Layanan Terpilih (Centered below top bar) --}}
+    <div class="ov-service-title relative z-10 max-w-7xl mx-auto px-4">
+        <h1 id="headerTitle">Loading...</h1>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 py-1 relative z-10">
         <div class="ov-back" onclick="window.history.back()">← Kembali</div>
         @auth
             <div class="ov-login-bar" id="dynLoginBar">Log-in sebagai <strong>{{ Auth::user()->name }} ({{ Auth::user()->email }})</strong></div>
@@ -649,7 +660,10 @@
         .then(data => {
             if (data.success) {
                 // Simpan data ke sessionStorage untuk dibaca di halaman pembayaran mockup
-                sessionStorage.setItem('res_judul', akoItem.judul);
+                const finalJudul = (akoItem.jenis && (akoItem.jenis === 'Corporate Glamping' || akoItem.jenis === 'Corporate Cabin') && pax)
+                    ? `${akoItem.judul} (${pax} pax)`
+                    : akoItem.judul;
+                sessionStorage.setItem('res_judul', finalJudul);
                 sessionStorage.setItem('res_nama', nama);
                 sessionStorage.setItem('res_hp', hp);
                 sessionStorage.setItem('res_email', em);

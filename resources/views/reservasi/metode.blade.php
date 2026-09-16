@@ -3,17 +3,23 @@
 @section('content')
 <style>
 .pay-page{background:#F8EDD8;min-height:100vh;position:relative}
-.pay-header{background:rgba(255,255,255,0.7);backdrop-filter:blur(10px);border-bottom:1px solid rgba(0,0,0,0.08);padding:0.75rem 1.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
-.pay-logo{display:flex;align-items:center;gap:1rem}
-.pay-logo img{height:40px}
-.pay-logo .divider{width:1px;height:30px;background:#ccc}
-.pay-logo h2{font-size:0.95rem;font-weight:700;color:#333}
-.pay-steps{display:flex;align-items:center;gap:0.5rem;font-size:0.85rem;font-weight:600}
-.pay-steps .num{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;color:#fff}
+.pay-header{background:transparent;backdrop-filter:blur(10px);border-bottom:1px solid rgba(0,0,0,0.08);padding:0.5rem 1rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+@media(min-width:768px){.pay-header{padding:0.75rem 1.5rem}}
+.pay-logo{display:flex;align-items:center}
+.pay-logo img{height:36px;object-fit:contain}
+@media(min-width:768px){.pay-logo img{height:42px}}
+.pay-steps{display:flex;align-items:center;gap:0.4rem;font-size:0.8rem;font-weight:600}
+@media(min-width:768px){.pay-steps{gap:0.5rem;font-size:0.85rem}}
+.pay-steps .num{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;color:#fff}
+@media(min-width:768px){.pay-steps .num{width:24px;height:24px}}
 .pay-steps .num.done{background:#3a523a}
 .pay-steps .num.active{background:#3a523a}
-.pay-steps .line{width:40px;height:2px;background:#3a523a}
-.pay-back{display:flex;align-items:center;gap:0.5rem;font-weight:700;font-size:0.95rem;cursor:pointer;color:#333;margin:1.5rem 0 1rem}
+.pay-steps .line{width:25px;height:2px;background:#3a523a}
+@media(min-width:768px){.pay-steps .line{width:40px}}
+.pay-service-title{text-align:center;padding:0.75rem 1rem 0.25rem}
+.pay-service-title h1{font-size:1.05rem;font-weight:800;color:#222;line-height:1.35}
+@media(min-width:768px){.pay-service-title h1{font-size:1.25rem}}
+.pay-back{display:flex;align-items:center;gap:0.5rem;font-weight:700;font-size:0.95rem;cursor:pointer;color:#333;margin:0.5rem 0 0.75rem}
 .pay-timer-bar{background:#3a523a;color:#fff;padding:0.6rem 1.2rem;border-radius:0.75rem;font-size:0.85rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:0.5rem}
 .pay-timer-bar .timer{background:#c0392b;padding:0.2rem 0.6rem;border-radius:0.4rem;font-weight:700;font-family:monospace;font-size:0.95rem}
 .pay-method-container{background:#f1e5cc;border-radius:0.75rem;border:1px solid #dfd4be;margin-bottom:1rem;overflow:hidden}
@@ -81,9 +87,9 @@
 
     <div class="pay-header">
         <div class="pay-logo">
-            <img src="{{ asset('images/logo-landeuh.png') }}" alt="Logo">
-            <div class="divider"></div>
-            <h2><span id="dynJudul">Cabin 1</span></h2>
+            <a href="/" class="flex items-center">
+                <img src="{{ asset('images/logo-landeuh.png') }}" alt="Logo">
+            </a>
         </div>
         <div class="pay-steps">
             <div style="display:flex;align-items:center;gap:0.35rem"><div class="num done">1</div> Review</div>
@@ -92,7 +98,12 @@
         </div>
     </div>
 
-    <div class="max-w-7xl mx-auto px-4 py-2 relative z-10">
+    {{-- Nama Layanan Terpilih (Centered below top bar) --}}
+    <div class="pay-service-title relative z-10 max-w-7xl mx-auto px-4">
+        <h1><span id="dynJudul">Cabin 1</span></h1>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 py-1 relative z-10">
         <div class="pay-back" onclick="window.location.href = '/pesanan'">← Kembali</div>
         <div class="pay-timer-bar">Harga sudah kami amankan. Selesaikan pembayaran dalam <span class="timer" id="countdownTimer">00:30:00</span></div>
 
