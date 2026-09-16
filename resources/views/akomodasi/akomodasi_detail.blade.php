@@ -9,10 +9,10 @@
 <div id="searchBarFixed" class="sticky top-0 z-40">
     <div class="max-w-6xl mx-auto px-2 sm:px-4">
         <div class="flex flex-row items-stretch gap-1.5 sm:gap-2 md:gap-3 backdrop-blur-md bg-white/40 rounded-b-2xl px-2.5 sm:px-4 md:px-6 py-2.5 sm:py-3 md:py-4 border-x border-b border-gray-200 shadow-sm transition-all duration-300">
-            <div class="flex-1 min-w-0 bg-gray-50 rounded-xl px-2.5 sm:px-4 py-2 sm:py-2.5 border border-gray-200 relative cursor-pointer" id="akomodasiPickerContainer" onclick="toggleAkoDropdown(event)">
+            <div class="w-[65%] min-w-0 bg-white rounded-xl px-2.5 sm:px-4 py-2 sm:py-2.5 border border-gray-200 relative cursor-pointer" id="akomodasiPickerContainer" onclick="toggleAkoDropdown(event)">
                 <div class="flex items-center gap-1.5 sm:gap-2 h-full min-w-0" id="akomodasiPickerTrigger">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg>
-                    <div class="flex-1 text-xs sm:text-sm text-gray-700 select-none truncate" id="akomodasiPickerLabel">Semua Akomodasi</div>
+                    <div class="flex-1 text-sm sm:text-base font-semibold text-gray-900 select-none truncate" id="akomodasiPickerLabel">Semua Akomodasi</div>
                     <div class="flex items-center text-gray-400 transition-transform duration-300 shrink-0" id="akomodasiPickerChevron">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5 sm:w-4 sm:h-4">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
@@ -30,10 +30,10 @@
                 <input type="hidden" id="filterJenis" value="Semua Akomodasi">
             </div>
             
-            <div class="flex-1 min-w-0 bg-gray-50 rounded-xl px-2.5 sm:px-4 py-2 sm:py-2.5 border border-gray-200 relative cursor-pointer" id="guestPickerContainer" onclick="toggleGuestDropdown(event)">
+            <div class="w-[35%] min-w-0 bg-white rounded-xl px-2.5 sm:px-4 py-2 sm:py-2.5 border border-gray-200 relative cursor-pointer" id="guestPickerContainer" onclick="toggleGuestDropdown(event)">
                 <div class="flex items-center gap-1.5 sm:gap-2 h-full min-w-0" id="guestPickerTrigger">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
-                    <span class="flex-1 text-xs sm:text-sm text-gray-700 select-none truncate" id="guestPickerLabel">2 Tamu</span>
+                    <span class="flex-1 text-sm sm:text-base font-semibold text-gray-900 select-none truncate" id="guestPickerLabel">2 Tamu</span>
                     <div class="flex items-center text-gray-400 transition-transform duration-300 shrink-0" id="guestPickerChevron">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5 sm:w-4 sm:h-4">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
@@ -41,7 +41,7 @@
                     </div>
                 </div>
                 <!-- Custom Dropdown Menu (Traveloka Style) -->
-                <div class="absolute top-[calc(100%+0.5rem)] right-0 w-full min-w-[280px] sm:min-w-[320px] max-w-[90vw] bg-white rounded-2xl shadow-[0_15px_40px_-10px_rgba(0,0,0,0.2)] border border-gray-100 py-4 px-4 hidden z-50 cursor-default" id="guestPickerDropdown" onclick="event.stopPropagation()">
+                <div class="absolute top-[calc(100%+0.5rem)] right-0 w-[220px] sm:w-[240px] bg-white rounded-2xl shadow-[0_15px_40px_-10px_rgba(0,0,0,0.2)] border border-gray-100 py-4 px-4 hidden z-50 cursor-default" id="guestPickerDropdown" onclick="event.stopPropagation()">
                     <div class="flex flex-col gap-4">
                         <!-- Tamu -->
                         <div class="flex items-center justify-between">
@@ -49,12 +49,12 @@
                                 <span class="text-sm font-semibold text-gray-800">Tamu</span>
                             </div>
                             <div class="flex items-center gap-3">
-                                <button type="button" id="ako-btn-min-dewasa" onclick="changeGuest('dewasa', -1)" class="w-8 h-8 flex items-center justify-center rounded-full border border-gray-300 text-gray-500 hover:bg-gray-50 transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 12H4" /></svg>
+                                <button type="button" id="ako-btn-min-dewasa" onclick="changeGuest('dewasa', -1)" class="w-8 h-8 flex items-center justify-center rounded-full border border-red-300 text-red-500 hover:bg-red-50 transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M20 12H4" /></svg>
                                 </button>
                                 <span class="text-sm font-semibold w-4 text-center" id="ako-val-dewasa">2</span>
-                                <button type="button" id="ako-btn-plus-dewasa" onclick="changeGuest('dewasa', 1)" class="w-8 h-8 flex items-center justify-center rounded-full border border-[#3a523a] text-[#3a523a] hover:bg-[#3a523a]/10 transition cursor-pointer">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" /></svg>
+                                <button type="button" id="ako-btn-plus-dewasa" onclick="changeGuest('dewasa', 1)" class="w-8 h-8 flex items-center justify-center rounded-full border border-emerald-400 text-emerald-600 hover:bg-emerald-50 transition cursor-pointer">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" /></svg>
                                 </button>
                             </div>
                         </div>
@@ -569,7 +569,7 @@
                 <div>
                     <h3 class="text-lg font-bold text-gray-900">${item.judul}</h3>
                     <div class="flex items-center mt-2 pb-3 border-b border-gray-200 min-w-0">
-                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-blue-50 text-blue-700 font-medium text-[11px] sm:text-xs whitespace-nowrap max-w-full"><iconify-icon icon="${(item.jenis && item.jenis.toLowerCase().includes('glamping')) || (item.kasur && item.kasur.toLowerCase().includes('tenda')) ? 'lucide:tent' : 'lucide:bed-double'}" class="text-sm shrink-0"></iconify-icon><span class="truncate">${item.kasur}</span></span>
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-blue-50 text-blue-700 font-medium text-[11px] sm:text-xs leading-relaxed"><iconify-icon icon="${(item.jenis && item.jenis.toLowerCase().includes('glamping')) || (item.kasur && item.kasur.toLowerCase().includes('tenda')) ? 'lucide:tent' : 'lucide:bed-double'}" class="text-sm shrink-0"></iconify-icon><span>${item.kasur}</span></span>
                     </div>
                     <div class="relative overflow-hidden transition-[max-height] duration-500 ease-in-out max-h-[140px] md:max-h-none" id="collapse-content-${item.id}">
                         <div class="flex flex-col md:flex-row gap-6 mt-3">

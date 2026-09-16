@@ -123,33 +123,51 @@
         // Navbar + SearchBar stack animation
         const header = document.getElementById('mainHeader');
         if (header) {
-            const headerH = () => header.offsetHeight;
             const searchBar = document.getElementById('searchBarFixed');
 
             const TRANSITION = 'transform 0.38s cubic-bezier(0.4,0,0.2,1)';
             header.style.transition = TRANSITION;
-            if (searchBar) searchBar.style.transition = TRANSITION;
+            if (searchBar) {
+                searchBar.style.transition = TRANSITION;
+                // Ensure searchBar sticks right below header
+                searchBar.style.position = 'sticky';
+                searchBar.style.zIndex = '40';
+            }
 
             let lastScrollY = window.scrollY;
             let ticking = false;
+            let headerVisible = true;
 
             window.addEventListener('scroll', () => {
                 if (!ticking) {
                     window.requestAnimationFrame(() => {
                         const currentY = window.scrollY;
+                        const hH = header.offsetHeight;
 
                         if (currentY <= 0) {
                             // At top
                             header.style.transform = 'translateY(0)';
-                            if (searchBar) searchBar.style.transform = 'translateY(0)';
+                            if (searchBar) {
+                                searchBar.style.top = '0px';
+                                searchBar.style.transform = 'translateY(0)';
+                            }
+                            headerVisible = true;
                         } else if (currentY > lastScrollY) {
-                            // Scroll down
+                            // Scroll down — hide header, searchBar sticks to top
                             header.style.transform = 'translateY(-100%)';
-                            if (searchBar) searchBar.style.transform = 'translateY(0)';
+                            if (searchBar) {
+                                searchBar.style.top = '0px';
+                                searchBar.style.transform = 'translateY(0)';
+                            }
+                            headerVisible = false;
                         } else {
-                            // Scroll up
+                            // Scroll up — show header, searchBar pushes below header
                             header.style.transform = 'translateY(0)';
-                            if (searchBar) searchBar.style.transform = `translateY(${header.offsetHeight}px)`;
+                            if (searchBar) {
+                                searchBar.style.top = hH + 'px';
+                                searchBar.style.transform = 'translateY(0)';
+                            }
+                            headerVisible = true;
                         }
 
                         lastScrollY = currentY;
