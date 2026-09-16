@@ -22,64 +22,57 @@
 @media(min-width:768px){.ov-service-title h1{font-size:1.25rem}}
 .ov-back{display:flex;align-items:center;gap:0.5rem;font-weight:700;font-size:0.95rem;cursor:pointer;color:#333;margin:0.5rem 0 0.75rem}
 .ov-back:hover{color:#3a523a}
-.ov-login-bar{background:#3a523a;color:#fff;padding:0.6rem 1.2rem;border-radius:0.75rem;font-size:0.85rem;margin-bottom:1rem}
-.ov-login-bar strong{font-weight:700}
-.ov-section-title{display:flex;align-items:center;gap:0.5rem;font-size:1.15rem;font-weight:800;color:#333;margin-bottom:0.75rem}
-.ov-form-group{margin-bottom:1rem}
-.ov-form-group label{display:block;font-size:0.85rem;font-weight:600;color:#444;margin-bottom:0.3rem}
+.ov-section-title{display:flex;align-items:center;gap:0.5rem;font-size:1.1rem;font-weight:800;color:#333;margin-bottom:0.65rem}
+.ov-form-group{margin-bottom:0.85rem}
+.ov-form-group label{display:block;font-size:0.82rem;font-weight:600;color:#444;margin-bottom:0.25rem}
 .ov-form-group label .req{color:#e53e3e}
-.ov-form-group input,.ov-form-group select{width:100%;padding:0.65rem 0.8rem;border:none;border-bottom:2px solid #ccc;background:transparent;font-size:0.9rem;outline:none;transition:border-color 0.2s}
+.ov-form-group input,.ov-form-group select{width:100%;padding:0.55rem 0.75rem;border:none;border-bottom:2px solid #ccc;background:transparent;font-size:0.9rem;outline:none;transition:border-color 0.2s}
 .ov-form-group input:focus{border-bottom-color:#3a523a}
-.ov-form-group .hint{font-size:0.72rem;color:#999;margin-top:0.2rem}
-.ov-form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
-.ov-checkbox{display:flex;align-items:center;gap:0.6rem;cursor:pointer;font-size:0.9rem;font-weight:600;margin:0.75rem 0}
-.ov-checkbox input[type=checkbox]{width:20px;height:20px;accent-color:#3a523a;cursor:pointer}
-.ov-tambahan{margin-top:0.5rem}
-.ov-tambahan .row{display:flex;align-items:center;gap:1rem;margin-bottom:0.5rem;font-size:0.85rem;color:#555}
-.ov-tambahan .row .icon{font-size:1.1rem}
-.ov-tambahan .row .controls{display:flex;align-items:center;gap:0.5rem;margin-left:auto}
-.ov-tambahan .row .controls button{width:28px;height:28px;border-radius:50%;border:none;font-size:1rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:0.2s}
-.ov-tambahan .row .controls .minus{background:#3a523a;color:#fff}
-.ov-tambahan .row .controls .plus{background:#c8a951;color:#fff}
-.ov-tambahan .row .controls span{font-weight:700;min-width:20px;text-align:center}
-.ov-catatan{background:linear-gradient(to right, rgb(248, 237, 216) 0%, transparent 100%);border-radius:0.75rem;padding:1rem;margin:1rem 0}
-.ov-catatan .item{display:flex;align-items:flex-start;gap:0.5rem;font-size:0.78rem;color:#666;margin-bottom:0.4rem}
-.ov-kebijakan{display:flex;align-items:center;gap:0.6rem;font-size:0.9rem;font-weight:600;margin:1rem 0}
-.ov-kebijakan a{color:#2563eb;font-size:0.78rem;cursor:pointer;text-decoration:underline}
+.ov-form-group .hint{font-size:0.7rem;color:#999;margin-top:0.2rem}
+.ov-form-row{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem}
+.ov-checkbox{display:flex;align-items:center;gap:0.6rem;cursor:pointer;font-size:0.85rem;font-weight:600;margin:0.65rem 0}
+.ov-checkbox input[type=checkbox]{width:18px;height:18px;accent-color:#3a523a;cursor:pointer}
+.ov-tambahan{margin-top:0.4rem}
+.ov-catatan{background:linear-gradient(to right, rgb(248, 237, 216) 0%, transparent 100%);border-radius:0.75rem;padding:0.75rem 0.85rem;margin:0.85rem 0}
+.ov-catatan .item{display:flex;align-items:flex-start;gap:0.5rem;font-size:0.75rem;color:#666;margin-bottom:0.35rem}
 .ov-btn-simpan{background:#3a523a;color:#fff;border:none;padding:0.8rem 2.5rem;border-radius:0.75rem;font-size:0.95rem;font-weight:700;cursor:pointer;transition:0.2s;display:block;margin:1.5rem auto 0}
 .ov-btn-simpan:hover{background:#2c402c}
 .ov-sidebar{position:sticky;top:80px}
 
 /* Left container card */
-.ov-left-container{background:rgba(253,246,227,0.7);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.4);border-radius:1rem;padding:1.5rem 2rem;box-shadow:0 2px 12px rgba(0,0,0,0.06);margin-bottom:1rem}
+.ov-left-container{background:rgba(253,246,227,0.7);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.4);border-radius:1rem;padding:0.85rem 1rem;box-shadow:0 2px 12px rgba(0,0,0,0.06);margin-bottom:1rem}
+@media(min-width:768px){.ov-left-container{padding:1.25rem 1.5rem}}
 
 /* RIGHT Sidebar Cards — cream */
 .ov-card{background:rgba(253,246,227,0.7);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.4);border-radius:1rem;box-shadow:0 2px 12px rgba(0,0,0,0.06);margin-bottom:1rem;overflow:hidden}
-.ov-card-inner{padding:1.5rem}
-.ov-card h3{font-size:1.05rem;font-weight:800;display:flex;align-items:center;gap:0.5rem;margin-bottom:1rem}
+.ov-card-inner{padding:0.85rem 1rem}
+@media(min-width:768px){.ov-card-inner{padding:1.15rem 1.25rem}}
+.ov-card h3{font-size:1.05rem;font-weight:800;display:flex;align-items:center;gap:0.5rem;margin-bottom:0.65rem}
 
 /* Ribbon alert */
-.ov-ribbon{background:#c0392b;color:#fff;padding:0.55rem 1.2rem;font-size:0.78rem;display:flex;align-items:center;gap:0.5rem;font-weight:600;border-radius:0.75rem 0.75rem 0 0}
-.ov-ribbon iconify-icon{font-size:1rem}
+.ov-ribbon{background:#c0392b;color:#fff;padding:0.5rem 0.85rem;font-size:0.75rem;font-weight:600;border-radius:0.75rem 0.75rem 0 0}
+@media(min-width:768px){.ov-ribbon{padding:0.55rem 1.15rem;font-size:0.78rem}}
 
 /* Check-in/Check-out highlight — glass */
-.ov-checkin-highlight{background:rgba(255,255,255,0.4);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.5);padding:1rem;margin-bottom:1rem}
-.ov-checkin-row{display:flex;justify-content:space-between;align-items:center;position:relative}
+.ov-checkin-highlight{background:rgba(255,255,255,0.55);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.7);border-radius:0.75rem;padding:0.75rem 0.65rem;margin-bottom:0.75rem}
+@media(min-width:768px){.ov-checkin-highlight{padding:0.85rem 1rem}}
+.ov-checkin-row{display:flex;justify-content:space-between;align-items:center;position:relative;gap:0.25rem}
 .ov-checkin-row .ci-label{font-size:0.65rem;color:#e53e3e;font-weight:700;text-transform:uppercase;letter-spacing:0.5px}
-.ov-checkin-row .ci-date{font-size:0.85rem;font-weight:700;color:#333}
-.ov-checkin-row .ci-time{font-size:0.65rem;color:#999}
-.ov-checkin-row .ci-mid{text-align:center;font-size:0.75rem;color:#888}
-.ov-checkin-row .ci-mid .arrow{font-size:1.2rem}
-.ov-guest-info{font-size:0.8rem;color:#555;margin:0.75rem 0 0;display:flex;align-items:center;gap:0.4rem}
+.ov-checkin-row .ci-date{font-size:0.78rem;font-weight:700;color:#333;line-height:1.25}
+@media(min-width:768px){.ov-checkin-row .ci-date{font-size:0.85rem}}
+.ov-checkin-row .ci-time{font-size:0.65rem;color:#999;margin-top:2px}
+.ov-checkin-row .ci-mid{text-align:center;font-size:0.75rem;color:#666;flex-shrink:0;padding:0 0.25rem}
+.ov-checkin-row .ci-mid .arrow{font-size:1.1rem;color:#999;line-height:1}
+.ov-guest-info{font-size:0.8rem;color:#555;margin:0.6rem 0 0;display:flex;align-items:center;gap:0.4rem}
 
 /* Price highlight — glass */
-.ov-price-highlight{background:rgba(255,255,255,0.4);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.5);padding:1rem;margin-bottom:0.75rem}
-.ov-price-row{display:flex;justify-content:space-between;gap:1rem;font-size:0.82rem;color:#555;padding:0.3rem 0}
+.ov-price-highlight{background:rgba(255,255,255,0.55);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.7);border-radius:0.75rem;padding:0.75rem 0.85rem;margin-bottom:0.75rem}
+@media(min-width:768px){.ov-price-highlight{padding:1rem}}
+.ov-price-row{display:flex;justify-content:space-between;align-items:center;gap:0.75rem;font-size:0.8rem;color:#555;padding:0.2rem 0}
 .ov-price-row span:last-child{white-space:nowrap;text-align:right;flex-shrink:0}
-.ov-price-total{display:flex;justify-content:space-between;align-items:center;border-top:2px solid #3a523a;padding-top:0.75rem;margin-top:0.5rem}
-.ov-price-total .label{font-size:0.9rem;font-weight:700}
-.ov-price-total .label small{display:block;font-size:0.7rem;color:#999;font-weight:400}
-.ov-price-total .amount{font-size:1.3rem;font-weight:800;color:#c0392b}
+.ov-price-total{border-top:2px solid #3a523a;padding-top:0.6rem;margin-top:0.5rem}
+.ov-price-total .amount{font-size:1.15rem;font-weight:800;color:#c0392b;white-space:nowrap}
+@media(min-width:768px){.ov-price-total .amount{font-size:1.35rem}}
 .ov-btn-lanjut{width:100%;background:#3a523a;color:#fff;border:none;padding:0.85rem;border-radius:0.75rem;font-size:1rem;font-weight:700;cursor:pointer;transition:0.2s;margin-top:0.75rem}
 .ov-btn-lanjut:hover{background:#2c402c}
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:100;display:none;align-items:center;justify-content:center}
@@ -122,11 +115,6 @@
 
     <div class="max-w-7xl mx-auto px-4 py-1 relative z-10">
         <div class="ov-back" onclick="window.history.back()">← Kembali</div>
-        @auth
-            <div class="ov-login-bar" id="dynLoginBar">Log-in sebagai <strong>{{ Auth::user()->name }} ({{ Auth::user()->email }})</strong></div>
-        @else
-            <div class="ov-login-bar" id="dynLoginBar">Kamu belum log-in. <a href="/" style="color:#fff;font-weight:700;text-decoration:underline">Daftar / Masuk disini</a></div>
-        @endauth
 
         <div class="ov-main-grid" style="display:flex;gap:1.5rem;align-items:flex-start">
             {{-- LEFT: All Content in Single Container --}}
@@ -169,25 +157,48 @@
 
                     <label class="ov-checkbox"><input type="checkbox" id="chkTambahan"> Apakah ada tambahan orang?</label>
 
-                    <div id="tambahanSection" style="display:none" class="ov-tambahan">
-                        <div class="row">
-                            <iconify-icon icon="lucide:baby" class="text-base text-gray-600"></iconify-icon>
-                            Anak di bawah 5 tahun Free <span style="color:#999;font-size:0.75rem;margin-left:0.5rem">(maks 2 anak)</span>
+                    <div id="tambahanSection" style="display:none" class="ov-tambahan mt-2 pt-2 border-t border-gray-100">
+                        <div class="flex items-center justify-between text-xs sm:text-sm text-gray-700 py-1.5 border-b border-gray-100/60">
+                            <div class="flex items-center gap-2 min-w-0">
+                                <iconify-icon icon="lucide:baby" class="text-base text-gray-500 shrink-0"></iconify-icon>
+                                <span class="font-medium text-gray-800">Anak di bawah 5 tahun <span class="text-emerald-700 font-bold">Free</span></span>
+                            </div>
+                            <span class="text-[11px] sm:text-xs text-gray-500 font-medium whitespace-nowrap shrink-0 ml-2">(maks 2 orang)</span>
                         </div>
-                        <div class="row">
-                            <iconify-icon icon="lucide:user" class="text-base text-gray-600"></iconify-icon>
-                            Anak di atas 5 tahun
-                            <div class="controls"><button class="minus" onclick="adj('anak',-1)">−</button><span id="valAnak">0</span><button class="plus" onclick="adj('anak',1)">+</button></div>
+                        <div class="flex items-center justify-between py-2 border-b border-gray-100/60">
+                            <div class="flex items-center gap-2 min-w-0">
+                                <iconify-icon icon="lucide:user" class="text-base text-gray-500 shrink-0"></iconify-icon>
+                                <span class="text-xs sm:text-sm font-medium text-gray-800">Anak di atas 5 tahun</span>
+                            </div>
+                            <div class="flex items-center gap-2.5 shrink-0">
+                                <button type="button" id="btn-min-anak" onclick="adj('anak',-1)" class="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full border border-red-300 text-red-500 hover:bg-red-50 transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed" disabled>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M20 12H4" /></svg>
+                                </button>
+                                <span class="text-xs sm:text-sm font-bold w-4 text-center text-gray-800" id="valAnak">0</span>
+                                <button type="button" id="btn-plus-anak" onclick="adj('anak',1)" class="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full border border-emerald-400 text-emerald-600 hover:bg-emerald-50 transition cursor-pointer">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" /></svg>
+                                </button>
+                            </div>
                         </div>
-                        <div class="row">
-                            <iconify-icon icon="lucide:users" class="text-base text-gray-600"></iconify-icon>
-                            Dewasa di atas 17 tahun
-                            <div class="controls"><button class="minus" onclick="adj('dewasa',-1)">−</button><span id="valDewasaTambahan">0</span><button class="plus" onclick="adj('dewasa',1)">+</button></div>
+                        <div class="flex items-center justify-between py-2">
+                            <div class="flex items-center gap-2 min-w-0">
+                                <iconify-icon icon="lucide:users" class="text-base text-gray-500 shrink-0"></iconify-icon>
+                                <span class="text-xs sm:text-sm font-medium text-gray-800">Dewasa di atas 17 tahun</span>
+                            </div>
+                            <div class="flex items-center gap-2.5 shrink-0">
+                                <button type="button" id="btn-min-dewasa" onclick="adj('dewasa',-1)" class="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full border border-red-300 text-red-500 hover:bg-red-50 transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed" disabled>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M20 12H4" /></svg>
+                                </button>
+                                <span class="text-xs sm:text-sm font-bold w-4 text-center text-gray-800" id="valDewasaTambahan">0</span>
+                                <button type="button" id="btn-plus-dewasa" onclick="adj('dewasa',1)" class="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full border border-emerald-400 text-emerald-600 hover:bg-emerald-50 transition cursor-pointer">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" /></svg>
+                                </button>
+                            </div>
                         </div>
                     </div>
 
                     {{-- Divider --}}
-                    <div style="border-top:1px solid rgba(0,0,0,0.1);margin:1.5rem 0"></div>
+                    <div style="border-top:1px solid rgba(0,0,0,0.1);margin:1.25rem 0"></div>
 
                     {{-- Catatan --}}
                     <div class="ov-section-title">
@@ -198,11 +209,17 @@
                         <div class="item"><iconify-icon icon="ph:hand-pointing-bold" class="text-sm mt-0.5 text-gray-500 shrink-0"></iconify-icon> Tambahan anak di atas 5 tahun 75k/orang (Include Extramattrass Lantai Ketebalan 5cm)</div>
                         <div class="item"><iconify-icon icon="ph:hand-pointing-bold" class="text-sm mt-0.5 text-gray-500 shrink-0"></iconify-icon> Tambahan dewasa di atas 17 tahun 100k/orang (Include Extramattrass Lantai Ketebalan 5cm)</div>
                     </div>
-                    <label class="ov-kebijakan">
-                        <input type="checkbox" id="chkKebijakan" style="width:20px;height:20px;accent-color:#3a523a">
-                        Setujui kebijakan reservasi
-                        <a onclick="document.getElementById('modalKebijakan').classList.add('show')">klik baca kebijakan</a>
-                    </label>
+                    
+                    {{-- Kebijakan Reservasi --}}
+                    <div class="mt-4 mb-2">
+                        <label class="flex items-center gap-2 cursor-pointer select-none">
+                            <input type="checkbox" id="chkKebijakan" class="w-4 h-4 rounded accent-[#3a523a] cursor-pointer shrink-0">
+                            <span class="text-xs sm:text-sm font-semibold text-gray-800 whitespace-nowrap">Setujui Kebijakan Reservasi</span>
+                        </label>
+                        <div class="pl-6 pt-1">
+                            <a onclick="document.getElementById('modalKebijakan').classList.add('show')" class="text-xs text-blue-600 hover:text-blue-800 underline cursor-pointer inline-block font-medium">Klik baca kebijakan</a>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -212,8 +229,10 @@
                 <div class="ov-card">
                     {{-- Red Ribbon --}}
                     <div class="ov-ribbon" id="redRibbonSlots">
-                        <iconify-icon icon="lucide:alert-triangle"></iconify-icon>
-                        Jangan sampai kehabisan! Tersisa <strong id="sisaKamar">{{ $remainingSlots ?? 3 }}</strong> kamar lagi
+                        <div class="flex items-center gap-2 w-full text-xs font-semibold whitespace-nowrap overflow-hidden">
+                            <iconify-icon icon="lucide:alert-triangle" class="text-sm shrink-0"></iconify-icon>
+                            <span class="truncate">Jangan sampai kehabisan! Sisa <strong id="sisaKamar">{{ $remainingSlots ?? 3 }}</strong> kamar lagi</span>
+                        </div>
                     </div>
                     <div class="ov-card-inner">
                         <h3>
@@ -222,9 +241,20 @@
                         {{-- Check-in / Check-out Highlight --}}
                         <div class="ov-checkin-highlight">
                             <div class="ov-checkin-row">
-                                <div><div class="ci-label">Check-in</div><div class="ci-date" id="dynCheckin">Selasa, 28 April 2026</div><div class="ci-time">Dari 14.00</div></div>
-                                <div class="ci-mid"><div id="malamText">1 malam</div><div class="arrow">→</div></div>
-                                <div style="text-align:right"><div class="ci-label">Check-out</div><div class="ci-date" id="dynCheckout">Rabu, 29 April 2026</div><div class="ci-time">Hingga 12.00</div></div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="ci-label">Check-in</div>
+                                    <div class="ci-date" id="dynCheckin">Selasa, 28 April 2026</div>
+                                    <div class="ci-time">Dari 14.00</div>
+                                </div>
+                                <div class="ci-mid shrink-0 px-2 sm:px-3 text-center">
+                                    <div id="malamText" class="whitespace-nowrap font-semibold text-[11px] sm:text-xs text-gray-600">1 malam</div>
+                                    <div class="arrow">→</div>
+                                </div>
+                                <div class="flex-1 min-w-0 text-right">
+                                    <div class="ci-label">Check-out</div>
+                                    <div class="ci-date" id="dynCheckout">Rabu, 29 April 2026</div>
+                                    <div class="ci-time">Hingga 12.00</div>
+                                </div>
                             </div>
                         </div>
                         <div class="ov-guest-info" id="guestInfo">
@@ -246,8 +276,11 @@
                                 <div class="ov-price-row"><span id="priceLabel">Harga kamar (1 malam)</span><span id="priceValue">IDR 1.200.000</span></div>
                             </div>
                             <div class="ov-price-total">
-                                <div class="label">Total<small id="totalMalamText">1 kamar, 1 malam</small></div>
-                                <div class="amount" id="totalHarga">IDR 1.200.000</div>
+                                <div class="text-sm font-bold text-gray-900 mb-0.5">Total</div>
+                                <div class="flex items-baseline justify-between gap-2">
+                                    <span id="totalMalamText" class="text-xs text-gray-500 font-medium whitespace-nowrap">1 kamar, 1 malam</span>
+                                    <span class="amount" id="totalHarga">IDR 1.200.000</span>
+                                </div>
                             </div>
                         </div>
                         <button class="ov-btn-lanjut" id="btnLanjutkan" type="button">Lanjutkan</button>
@@ -500,9 +533,17 @@
         if(type==='anak'){
             anak=Math.max(0,Math.min(5,anak+delta));
             document.getElementById('valAnak').textContent=anak;
+            const btnMin = document.getElementById('btn-min-anak');
+            const btnPlus = document.getElementById('btn-plus-anak');
+            if(btnMin) btnMin.disabled = (anak <= 0);
+            if(btnPlus) btnPlus.disabled = (anak >= 5);
         } else {
             dewasa=Math.max(0,Math.min(5,dewasa+delta));
             document.getElementById('valDewasaTambahan').textContent=dewasa;
+            const btnMin = document.getElementById('btn-min-dewasa');
+            const btnPlus = document.getElementById('btn-plus-dewasa');
+            if(btnMin) btnMin.disabled = (dewasa <= 0);
+            if(btnPlus) btnPlus.disabled = (dewasa >= 5);
         }
         updateHarga();
     };
@@ -547,6 +588,10 @@
             dewasa=0;
             document.getElementById('valAnak').textContent='0';
             document.getElementById('valDewasaTambahan').textContent='0';
+            const btnMinAnak = document.getElementById('btn-min-anak');
+            const btnMinDewasa = document.getElementById('btn-min-dewasa');
+            if(btnMinAnak) btnMinAnak.disabled = true;
+            if(btnMinDewasa) btnMinDewasa.disabled = true;
         }
         updateHarga();
     });
@@ -566,24 +611,58 @@
         if (akoItem.jenis && (akoItem.jenis === 'Corporate Glamping' || akoItem.jenis === 'Corporate Cabin') && pax) {
             breakdownLabel = `Harga paket ${akoItem.judul} - ${pax} pax (${malam} malam)`;
         }
-        let breakdown = `<div class="ov-price-row font-bold"><span>${breakdownLabel}</span><span>${fmt(totalBasePrice)}</span></div>`;
+        let breakdown = `<div class="flex items-center justify-between text-xs sm:text-sm font-bold text-gray-900 pb-1.5 border-b border-gray-200/60 mb-2"><span>${breakdownLabel}</span><span class="whitespace-nowrap font-bold text-gray-900 ml-2">${fmt(totalBasePrice)}</span></div>`;
         
-        priceBreakdownDetails.forEach((night, index) => {
+        breakdown += `<div class="space-y-1.5 my-2 pl-2 border-l-2 border-emerald-600/30">`;
+        priceBreakdownDetails.forEach((night) => {
             const parts = night.date.split('-');
             const d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
-            const days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
-            const mNames = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
-            const formattedNight = `${d.getDate()} ${mNames[d.getMonth()]} (${night.label})`;
+            const mNamesShort = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+            const formattedDate = `${d.getDate()} ${mNamesShort[d.getMonth()]}`;
             
-            breakdown += `<div class="ov-price-row text-xs text-stone-500 pl-4 py-0.5 border-l-2 border-amber-200/40">
-                <span>- ${formattedNight}</span>
-                <span>${fmt(night.price)}</span>
+            let badgeStyle = 'bg-emerald-50 text-emerald-700 border-emerald-200/70';
+            if (night.label === 'Weekend') {
+                badgeStyle = 'bg-blue-50 text-blue-700 border-blue-200/70';
+            } else if (night.label === 'Highseason') {
+                badgeStyle = 'bg-rose-50 text-rose-700 border-rose-200/70';
+            }
+            
+            breakdown += `
+            <div class="flex items-center justify-between text-xs py-0.5">
+                <div class="flex items-center gap-1.5 min-w-0">
+                    <span class="text-stone-700 font-medium whitespace-nowrap text-[11px] sm:text-xs">${formattedDate}</span>
+                    <span class="text-[10px] px-1.5 py-0.2 rounded border font-semibold ${badgeStyle} shrink-0">${night.label}</span>
+                </div>
+                <span class="text-stone-600 font-semibold whitespace-nowrap text-right ml-2 text-[11px] sm:text-xs">${fmt(night.price)}</span>
             </div>`;
         });
+        breakdown += `</div>`;
 
         let total = totalBasePrice;
-        if(anak>0){total += anak * anakPrice * malam; breakdown += `<div class="ov-price-row"><span>Tambahan anak (di atas 5 tahun) ${anak} orang x ${malam} malam</span><span>${fmt(anak*anakPrice*malam)}</span></div>`;}
-        if(dewasa>0){total += dewasa * dewasaPrice * malam; breakdown += `<div class="ov-price-row"><span>Tambahan dewasa (di atas 17 tahun) ${dewasa} orang x ${malam} malam</span><span>${fmt(dewasa*dewasaPrice*malam)}</span></div>`;}
+        if(anak>0){
+            const subAnak = anak * anakPrice * malam;
+            total += subAnak;
+            breakdown += `
+            <div class="flex items-start justify-between gap-2 text-xs py-1.5 px-2 rounded-lg bg-amber-50/70 border border-amber-200/60 my-1.5">
+                <div class="min-w-0">
+                    <div class="font-semibold text-gray-800 text-xs">Ekstra: Anak (&gt;5 thn)</div>
+                    <div class="text-[10px] text-gray-500">${anak} orang × ${malam} malam</div>
+                </div>
+                <span class="font-bold text-gray-800 whitespace-nowrap text-right shrink-0 text-xs">${fmt(subAnak)}</span>
+            </div>`;
+        }
+        if(dewasa>0){
+            const subDewasa = dewasa * dewasaPrice * malam;
+            total += subDewasa;
+            breakdown += `
+            <div class="flex items-start justify-between gap-2 text-xs py-1.5 px-2 rounded-lg bg-amber-50/70 border border-amber-200/60 my-1.5">
+                <div class="min-w-0">
+                    <div class="font-semibold text-gray-800 text-xs">Ekstra: Dewasa (&gt;17 thn)</div>
+                    <div class="text-[10px] text-gray-500">${dewasa} orang × ${malam} malam</div>
+                </div>
+                <span class="font-bold text-gray-800 whitespace-nowrap text-right shrink-0 text-xs">${fmt(subDewasa)}</span>
+            </div>`;
+        }
         document.getElementById('priceBreakdown').innerHTML=breakdown;
         document.getElementById('totalHarga').textContent=fmt(total);
     }
