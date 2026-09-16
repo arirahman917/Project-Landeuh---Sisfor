@@ -5,9 +5,17 @@
 .pay-page{background:#F8EDD8;min-height:100vh;position:relative;overflow-x:clip;width:100%;max-width:100vw}
 .pay-header{background:rgba(248,237,216,0.97);border-bottom:1px solid rgba(0,0,0,0.08);padding:0.75rem 1rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;transform:translateZ(0);will-change:transform}
 @media(min-width:768px){.pay-header{padding:1rem 1.5rem}}
-.pay-logo{display:flex;align-items:center}
+.pay-logo{display:flex;align-items:center;gap:0.75rem}
 .pay-logo img{height:36px;object-fit:contain}
 @media(min-width:768px){.pay-logo img{height:42px}}
+.pay-header-title-desk{display:none;font-size:1.05rem;font-weight:800;color:#222;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:380px}
+@media(min-width:768px){
+    .pay-header-title-desk{display:block}
+    .pay-service-title{display:none!important}
+}
+@media(min-width:1024px){
+    .pay-header-title-desk{font-size:1.15rem;max-width:520px}
+}
 .pay-steps{display:flex;align-items:center;gap:0.4rem;font-size:0.8rem;font-weight:600}
 @media(min-width:768px){.pay-steps{gap:0.5rem;font-size:0.85rem}}
 .pay-steps .num{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;color:#fff}
@@ -79,15 +87,23 @@
 .sb-identity .details{display:flex;flex-direction:column;gap:0.15rem}
 .pay-bottom-cream{background:#FAF2E4;border-radius:1rem;border:1px solid rgba(223,212,190,0.8);padding:0.85rem 1rem;box-shadow:0 2px 10px rgba(0,0,0,0.04)}
 @media(min-width:768px){.pay-bottom-cream{padding:1.15rem 1.25rem}}
-.pay-bottom-cream .pb-top{display:flex;justify-content:space-between;align-items:center;gap:0.75rem;margin-bottom:1rem}
+.pay-bottom-cream .pb-top{display:flex;justify-content:space-between;align-items:center;gap:0.5rem;margin-bottom:1rem;flex-wrap:wrap}
 .pay-bottom-cream .pay-with{font-size:0.78rem;color:#444;flex:1;min-width:0;line-height:1.35}
 @media(min-width:768px){.pay-bottom-cream .pay-with{font-size:0.88rem}}
-.pay-bottom-cream .pay-amount{font-size:clamp(1rem, 3.8vw, 1.35rem);font-weight:800;color:#c0392b;white-space:nowrap;flex-shrink:0;text-align:right}
+.pay-bottom-cream .pay-amount{font-size:clamp(1rem, 2.5vw, 1.25rem);font-weight:800;color:#c0392b;white-space:nowrap;margin-left:auto;text-align:right}
 .pay-bottom-cream .pay-btn{width:100%;background:#3a523a;color:#fff;border:none;padding:0.85rem;border-radius:0.5rem;font-size:1rem;font-weight:700;cursor:pointer;transition:0.2s}
 .pay-bottom-cream .pay-btn:hover{background:#2c402c}
+.pay-grid-left{flex:1;min-width:0;width:100%}
+.pay-sidebar{width:100%;min-width:0}
+@media(min-width:768px){
+    .pay-sidebar{position:sticky;top:80px;width:340px;min-width:340px;flex-shrink:0}
+}
+@media(min-width:1024px){
+    .pay-sidebar{width:360px;min-width:360px}
+}
 @media(max-width:768px){
     .pay-grid{flex-direction:column!important;align-items:stretch!important;width:100%!important;gap:0!important}
-    .pay-grid > div{width:100%!important;min-width:0!important;max-width:100%!important;position:static!important}
+    .pay-grid-left, .pay-sidebar{width:100%!important;min-width:0!important;max-width:100%!important;position:static!important}
 }
 </style>
 
@@ -98,11 +114,12 @@
 
     <div class="pay-header">
         <div class="pay-logo">
-            <a href="/" class="flex items-center">
+            <a href="/" class="flex items-center shrink-0">
                 <img src="{{ asset('images/logo-landeuh.png') }}" alt="Logo">
             </a>
+            <div class="pay-header-title-desk" id="dynJudulDesk">{{ $judul ?? 'Cabin 1' }}</div>
         </div>
-        <div class="pay-steps">
+        <div class="pay-steps shrink-0">
             <div style="display:flex;align-items:center;gap:0.35rem"><div class="num done">1</div> Review</div>
             <div class="line"></div>
             <div style="display:flex;align-items:center;gap:0.35rem"><div class="num active">2</div> Bayar</div>
@@ -120,7 +137,7 @@
 
         <div class="pay-grid" style="display:flex;gap:1.5rem;align-items:flex-start;width:100%">
             {{-- LEFT --}}
-            <div style="flex:1.4;width:100%;min-width:0">
+            <div class="pay-grid-left">
                 @php
                 $methods = [
                     ['key'=>'va','title'=>'Virtual Account','type'=>'accordion','items'=>[
@@ -225,7 +242,7 @@
             </div>
 
             {{-- RIGHT --}}
-            <div style="flex:0.8;min-width:300px;position:sticky;top:80px">
+            <div class="pay-sidebar">
                 <div class="sidebar-card-cream">
                     <h3>
                         <iconify-icon icon="lucide:clipboard-list" class="text-lg shrink-0"></iconify-icon> <span class="whitespace-nowrap">Rincian Reservasi</span>
@@ -666,7 +683,10 @@ function updateBookingStatus(bookingNo, status, method, result) {
     const dCheckin = sessionStorage.getItem('res_checkin');
     const dCheckout = sessionStorage.getItem('res_checkout');
     
-    if(dJudul) document.getElementById('dynJudul').textContent = dJudul;
+    if(dJudul) {
+        if (document.getElementById('dynJudul')) document.getElementById('dynJudul').textContent = dJudul;
+        if (document.getElementById('dynJudulDesk')) document.getElementById('dynJudulDesk').textContent = dJudul;
+    }
     if(dNama) document.getElementById('dynNama').textContent = dNama;
     if(dHp) document.getElementById('dynHp').textContent = dHp;
     if(dEmail) document.getElementById('dynEmail').textContent = dEmail;

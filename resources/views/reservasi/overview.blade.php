@@ -5,9 +5,17 @@
 .ov-page{background:#F8EDD8;min-height:100vh;position:relative;overflow-x:clip}
 .ov-header{background:rgba(248,237,216,0.97);border-bottom:1px solid rgba(0,0,0,0.08);padding:0.75rem 1rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;transform:translateZ(0);will-change:transform}
 @media(min-width:768px){.ov-header{padding:1rem 1.5rem}}
-.ov-logo{display:flex;align-items:center}
+.ov-logo{display:flex;align-items:center;gap:0.75rem}
 .ov-logo img{height:36px;object-fit:contain}
 @media(min-width:768px){.ov-logo img{height:42px}}
+.ov-header-title-desk{display:none;font-size:1.05rem;font-weight:800;color:#222;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:380px}
+@media(min-width:768px){
+    .ov-header-title-desk{display:block}
+    .ov-service-title{display:none!important}
+}
+@media(min-width:1024px){
+    .ov-header-title-desk{font-size:1.15rem;max-width:520px}
+}
 .ov-steps{display:flex;align-items:center;gap:0.4rem;font-size:0.8rem;font-weight:600}
 @media(min-width:768px){.ov-steps{gap:0.5rem;font-size:0.85rem}}
 .ov-steps .step{display:flex;align-items:center;gap:0.35rem}
@@ -37,8 +45,14 @@
 .ov-catatan .item{display:flex;align-items:flex-start;gap:0.5rem;font-size:0.75rem;color:#666;margin-bottom:0.35rem}
 .ov-btn-simpan{background:#3a523a;color:#fff;border:none;padding:0.8rem 2.5rem;border-radius:0.75rem;font-size:0.95rem;font-weight:700;cursor:pointer;transition:0.2s;display:block;margin:1.5rem auto 0}
 .ov-btn-simpan:hover{background:#2c402c}
-.ov-sidebar{position:static}
-@media(min-width:768px){.ov-sidebar{position:sticky;top:80px}}
+.ov-main-left{flex:1;min-width:0;width:100%}
+.ov-sidebar{width:100%;min-width:0}
+@media(min-width:768px){
+    .ov-sidebar{position:sticky;top:80px;width:340px;min-width:340px;flex-shrink:0}
+}
+@media(min-width:1024px){
+    .ov-sidebar{width:360px;min-width:360px}
+}
 
 /* Left container card */
 .ov-left-container{background:#FAF2E4;border:1px solid rgba(223,212,190,0.8);border-radius:1rem;padding:0.85rem 1rem;box-shadow:0 2px 10px rgba(0,0,0,0.04);margin-bottom:1rem;transform:translateZ(0)}
@@ -72,8 +86,8 @@
 .ov-price-row{display:flex;justify-content:space-between;align-items:center;gap:0.75rem;font-size:0.8rem;color:#555;padding:0.2rem 0}
 .ov-price-row span:last-child{white-space:nowrap;text-align:right;flex-shrink:0}
 .ov-price-total{border-top:2px solid #3a523a;padding-top:0.6rem;margin-top:0.5rem}
-.ov-price-total .amount{font-size:1.15rem;font-weight:800;color:#c0392b;white-space:nowrap}
-@media(min-width:768px){.ov-price-total .amount{font-size:1.35rem}}
+.ov-price-total .amount{font-size:clamp(1.05rem, 2vw, 1.25rem);font-weight:800;color:#c0392b;white-space:nowrap;text-align:right}
+@media(min-width:768px){.ov-price-total .amount{font-size:clamp(1.05rem, 1.8vw, 1.25rem)}}
 .ov-btn-lanjut{width:100%;background:#3a523a;color:#fff;border:none;padding:0.85rem;border-radius:0.75rem;font-size:1rem;font-weight:700;cursor:pointer;transition:0.2s;margin-top:0.75rem}
 .ov-btn-lanjut:hover{background:#2c402c}
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:100;display:none;align-items:center;justify-content:center}
@@ -98,7 +112,7 @@
 .mv-btn{width:100%;border:none;padding:0.8rem;border-radius:0.75rem;font-size:0.95rem;font-weight:700;cursor:pointer;transition:background 0.2s}
 .mv-btn-primary{background:#3a523a;color:#fff}
 .mv-btn-primary:hover{background:#2c402c}
-@media(max-width:768px){.ov-form-row{grid-template-columns:1fr}.ov-main-grid{flex-direction:column!important;gap:0!important}}
+@media(max-width:768px){.ov-form-row{grid-template-columns:1fr}.ov-main-grid{flex-direction:column!important;gap:0!important}.ov-main-left,.ov-sidebar{width:100%!important;min-width:0!important;max-width:100%!important;position:static!important}}
 </style>
 
 <div class="ov-page">
@@ -110,11 +124,12 @@
     {{-- Header --}}
     <div class="ov-header">
         <div class="ov-logo">
-            <a href="/" class="flex items-center">
+            <a href="/" class="flex items-center shrink-0">
                 <img src="{{ asset('images/logo-landeuh.png') }}" alt="Logo">
             </a>
+            <div class="ov-header-title-desk" id="headerTitleDesk">Loading...</div>
         </div>
-        <div class="ov-steps">
+        <div class="ov-steps shrink-0">
             <div class="step"><div class="num active">1</div> Review</div>
             <div class="line"></div>
             <div class="step"><div class="num inactive">2</div> Bayar</div>
@@ -131,7 +146,7 @@
 
         <div class="ov-main-grid" style="display:flex;gap:1.5rem;align-items:flex-start">
             {{-- LEFT: All Content in Single Container --}}
-            <div style="flex:1.4;min-width:0">
+            <div class="ov-main-left">
                 {{-- Data Pemesan & Catatan Section --}}
                 <div class="ov-left-container">
                     <div class="ov-section-title">
@@ -224,20 +239,18 @@
                     </div>
                     
                     {{-- Kebijakan Reservasi --}}
-                    <div class="mt-4 mb-2">
+                    <div class="mt-4 mb-2 flex items-center justify-between flex-wrap gap-2">
                         <label class="flex items-center gap-2.5 cursor-pointer select-none">
                             <input type="checkbox" id="chkKebijakan" class="w-5 h-5 rounded accent-[#3a523a] cursor-pointer shrink-0">
                             <span class="text-sm sm:text-base font-bold text-gray-800 whitespace-nowrap">Setujui Kebijakan Reservasi</span>
                         </label>
-                        <div class="pl-7 pt-1">
-                            <a onclick="document.getElementById('modalKebijakan').classList.add('show')" class="text-xs sm:text-sm text-blue-600 hover:text-blue-800 underline cursor-pointer inline-block font-medium">Klik baca kebijakan</a>
-                        </div>
+                        <a onclick="document.getElementById('modalKebijakan').classList.add('show')" class="text-xs sm:text-sm text-blue-600 hover:text-blue-800 underline cursor-pointer font-medium whitespace-nowrap ml-auto">Klik baca kebijakan</a>
                     </div>
                 </div>
             </div>
 
             {{-- RIGHT: Sidebar --}}
-            <div style="flex:0.8;min-width:300px" class="ov-sidebar">
+            <div class="ov-sidebar">
                 {{-- Validasi Reservasi Card --}}
                 <div class="ov-card">
                     {{-- Red Ribbon --}}
@@ -290,9 +303,9 @@
                             </div>
                             <div class="ov-price-total">
                                 <div class="text-sm font-bold text-gray-900 mb-0.5">Total</div>
-                                <div class="flex items-baseline justify-between gap-2">
+                                <div class="flex items-baseline justify-between gap-2 flex-wrap">
                                     <span id="totalMalamText" class="text-xs text-gray-500 font-medium whitespace-nowrap">1 kamar, 1 malam</span>
-                                    <span class="amount" id="totalHarga">IDR 1.200.000</span>
+                                    <span class="amount ml-auto" id="totalHarga">IDR 1.200.000</span>
                                 </div>
                             </div>
                         </div>
@@ -508,11 +521,11 @@ function closeValidationModal() {
     });
 
     // Update header title with dynamic data
-    if (akoItem.jenis && (akoItem.jenis === 'Corporate Glamping' || akoItem.jenis === 'Corporate Cabin') && pax) {
-        document.getElementById('headerTitle').textContent = `${akoItem.judul} (${pax} pax)`;
-    } else {
-        document.getElementById('headerTitle').textContent = `${akoItem.judul} (${maxOrang} pax)`;
-    }
+    const titleText = (akoItem.jenis && (akoItem.jenis === 'Corporate Glamping' || akoItem.jenis === 'Corporate Cabin') && pax)
+        ? `${akoItem.judul} (${pax} pax)`
+        : `${akoItem.judul} (${maxOrang} pax)`;
+    if (document.getElementById('headerTitle')) document.getElementById('headerTitle').textContent = titleText;
+    if (document.getElementById('headerTitleDesk')) document.getElementById('headerTitleDesk').textContent = titleText;
 
     // Update guest info
     if (akoItem.jenis && (akoItem.jenis === 'Corporate Glamping' || akoItem.jenis === 'Corporate Cabin') && pax) {
@@ -648,7 +661,7 @@ function closeValidationModal() {
         if (akoItem.jenis && (akoItem.jenis === 'Corporate Glamping' || akoItem.jenis === 'Corporate Cabin') && pax) {
             breakdownLabel = `Harga paket ${akoItem.judul} - ${pax} pax (${malam} malam)`;
         }
-        let breakdown = `<div class="flex items-center justify-between text-xs sm:text-sm font-bold text-gray-900 pb-1.5 border-b border-gray-200/60 mb-2"><span>${breakdownLabel}</span><span class="whitespace-nowrap font-bold text-gray-900 ml-2">${fmt(totalBasePrice)}</span></div>`;
+        let breakdown = `<div class="flex items-start justify-between text-xs sm:text-sm font-bold text-gray-900 pb-1.5 border-b border-gray-200/60 mb-2 gap-2"><span class="min-w-0 leading-snug">${breakdownLabel}</span><span class="whitespace-nowrap font-bold text-gray-900 ml-auto shrink-0">${fmt(totalBasePrice)}</span></div>`;
         
         breakdown += `<div class="space-y-1.5 my-2 pl-2 border-l-2 border-emerald-600/30">`;
         priceBreakdownDetails.forEach((night) => {
@@ -665,12 +678,12 @@ function closeValidationModal() {
             }
             
             breakdown += `
-            <div class="flex items-center justify-between text-xs py-0.5">
-                <div class="flex items-center gap-2 min-w-0">
+            <div class="flex items-center justify-between text-xs py-0.5 gap-2">
+                <div class="flex items-center gap-1.5 min-w-0">
                     <span class="text-stone-700 font-medium whitespace-nowrap text-[11px] sm:text-xs">${formattedDate}</span>
                     <span style="color:${fontColor};" class="text-[10px] font-bold shrink-0">${night.label}</span>
                 </div>
-                <span class="text-stone-600 font-semibold whitespace-nowrap text-right ml-2 text-[11px] sm:text-xs">${fmt(night.price)}</span>
+                <span class="text-stone-600 font-semibold whitespace-nowrap text-right ml-auto text-[11px] sm:text-xs shrink-0">${fmt(night.price)}</span>
             </div>`;
         });
         breakdown += `</div>`;
