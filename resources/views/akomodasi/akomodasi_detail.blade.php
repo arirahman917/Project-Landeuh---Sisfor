@@ -240,7 +240,7 @@
     }
 
     function fmt(n){
-        return 'IDR ' + Number(n).toLocaleString('id-ID', {minimumFractionDigits: 0, maximumFractionDigits: 0});
+        return 'IDR\u00A0' + Number(n).toLocaleString('id-ID', {minimumFractionDigits: 0, maximumFractionDigits: 0});
     }
     
     // Helper to get date type
@@ -355,14 +355,14 @@
                 // Hide sarapan from makanan & minuman list
                 makananSarapanItems.forEach(el => el.style.display = 'none');
             } else {
-                // Add breakfast badge if not exists
-                const priceAreaDiv = document.getElementById(`price-val-${item.id}`)?.closest('.flex.flex-col.items-end');
-                if (priceAreaDiv && !document.getElementById(`breakfast-badge-${item.id}`)) {
+                // Add breakfast badge under rate badge if not exists
+                const badgeContainer = document.getElementById(`badge-container-${item.id}`);
+                if (badgeContainer && !document.getElementById(`breakfast-badge-${item.id}`)) {
                     const badge = document.createElement('div');
                     badge.id = `breakfast-badge-${item.id}`;
-                    badge.className = 'flex items-center gap-1 mt-1 px-2 py-0.5 rounded-md bg-amber-50 border border-amber-200/60';
-                    badge.innerHTML = `<span class="text-[10px]">\ud83c\udf73</span><span class="text-[10px] font-semibold text-amber-700">Free Breakfast ${item.maxOrang} pax</span>`;
-                    priceAreaDiv.appendChild(badge);
+                    badge.className = 'inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-amber-50 border border-amber-200/60 whitespace-nowrap';
+                    badge.innerHTML = `<span class="text-[9px]">🍳</span><span class="text-[9px] font-semibold text-amber-700">Free Breakfast</span>`;
+                    badgeContainer.appendChild(badge);
                 }
                 // Show sarapan from makanan & minuman list
                 makananSarapanItems.forEach(el => el.style.display = 'block');
@@ -419,22 +419,36 @@
         if (!footer) {
             footer = document.createElement('div');
             footer.className = 'fp-custom-footer';
-            footer.style.cssText = 'padding: 8px 12px; background: #f8fafc; border-top: 1px solid #e2e8f0; font-size: 11px; color: #334155; font-weight: 600; display: flex; align-items: center; justify-content: space-between; gap: 8px; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; width: 100%; box-sizing: border-box;';
+            footer.style.cssText = 'padding: 8px 10px; background: #f8fafc; border-top: 1px solid #e2e8f0; font-size: clamp(9px, 2.7vw, 11px); color: #334155; font-weight: 600; display: flex; align-items: center; justify-content: space-between; gap: 4px; border-bottom-left-radius: 1.2rem; border-bottom-right-radius: 1.2rem; box-sizing: border-box; white-space: nowrap; flex-wrap: nowrap; overflow: hidden;';
             footer.innerHTML = `
-                <div style="display:flex; align-items:center; gap:4px;"><span style="color:#059669; font-weight:700;">Check-in:</span> <span class="fp-in-val" style="color:#0f172a; font-weight:700;">Belum dipilih</span></div>
-                <div style="display:flex; align-items:center; gap:4px;"><span style="color:#d97706; font-weight:700;">Check-out:</span> <span class="fp-out-val" style="color:#0f172a; font-weight:700;">Belum dipilih</span></div>
+                <div style="display:inline-flex; align-items:center; gap:3px; white-space:nowrap; min-width:0; flex-shrink:1;">
+                    <span style="color:#059669; font-weight:700; flex-shrink:0; white-space:nowrap;">Check-in:</span>
+                    <span class="fp-in-val" style="color:#0f172a; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Belum dipilih</span>
+                </div>
+                <div style="width:1px; height:12px; background:#cbd5e1; flex-shrink:0; margin:0 2px;"></div>
+                <div style="display:inline-flex; align-items:center; gap:3px; white-space:nowrap; min-width:0; flex-shrink:1; justify-content:flex-end;">
+                    <span style="color:#d97706; font-weight:700; flex-shrink:0; white-space:nowrap;">Check-out:</span>
+                    <span class="fp-out-val" style="color:#0f172a; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Belum dipilih</span>
+                </div>
             `;
             instance.calendarContainer.appendChild(footer);
         }
         const inVal = footer.querySelector('.fp-in-val');
         const outVal = footer.querySelector('.fp-out-val');
-        const fmtFull = { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' };
+
+        function formatFpDate(d) {
+            if (!d) return 'Belum dipilih';
+            if (window.innerWidth < 400) {
+                return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+            }
+            return d.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+        }
 
         if (!selectedDates || selectedDates.length === 0) {
             if (inVal) inVal.innerText = 'Belum dipilih';
             if (outVal) outVal.innerText = 'Belum dipilih';
         } else if (selectedDates.length === 1) {
-            if (inVal) inVal.innerText = selectedDates[0].toLocaleDateString('id-ID', fmtFull);
+            if (inVal) inVal.innerText = formatFpDate(selectedDates[0]);
             if (outVal) outVal.innerText = 'Pilih Check-out';
 
             // Actively highlight selected check-in date as blue circle
@@ -456,8 +470,8 @@
                 });
             }, 0);
         } else if (selectedDates.length === 2) {
-            if (inVal) inVal.innerText = selectedDates[0].toLocaleDateString('id-ID', fmtFull);
-            if (outVal) outVal.innerText = selectedDates[1].toLocaleDateString('id-ID', fmtFull);
+            if (inVal) inVal.innerText = formatFpDate(selectedDates[0]);
+            if (outVal) outVal.innerText = formatFpDate(selectedDates[1]);
         }
     };
 
@@ -589,27 +603,27 @@
                     </div>
 
                     <!-- Middle Row: Sesuaikan Tanggal (Left) & Harga (Right) -->
-                    <div class="flex items-start justify-between w-full mt-4">
+                    <div class="flex items-center justify-between w-full mt-3 gap-2">
                         <!-- Kiri: Sesuaikan Tanggal -->
-                        <div class="shrink-0 pt-0.5">
+                        <div class="shrink min-w-0">
                             <div style="display:none"><input type="hidden" id="fp-input-${item.id}"></div>
-                            <button type="button" id="btn-dates-${item.id}" class="bg-white hover:bg-gray-50 border border-gray-300 text-gray-700 text-xs font-bold px-3 py-2 rounded-lg transition shadow-sm flex items-center gap-1.5 whitespace-nowrap">
-                                <iconify-icon icon="lucide:calendar-days" class="text-sm"></iconify-icon>
-                                <span id="btn-dates-text-${item.id}">Sesuaikan Tanggal</span>
+                            <button type="button" id="btn-dates-${item.id}" class="bg-white hover:bg-gray-50 border border-gray-300 text-gray-700 text-[11px] sm:text-xs font-bold px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg transition shadow-sm flex items-center gap-1.5 whitespace-nowrap">
+                                <iconify-icon icon="lucide:calendar-days" class="text-sm shrink-0"></iconify-icon>
+                                <span id="btn-dates-text-${item.id}" class="truncate">Sesuaikan Tanggal</span>
                             </button>
                         </div>
 
                         <!-- Kanan: Harga -->
-                        <div class="flex flex-col items-end text-right">
-                            <div class="mb-1 flex items-center gap-1">
-                                ${getActiveRate(item).label !== 'Weekday' ? `<div id="breakfast-badge-${item.id}" class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-amber-50 border border-amber-200/60"><span class="text-[9px]">🍳</span><span class="text-[9px] font-semibold text-amber-700">Free Breakfast</span></div>` : ''}
-                                <span id="rate-badge-${item.id}" class="text-[9px] font-bold text-white px-1.5 py-0.5 rounded" style="background-color:${getActiveRate(item).color}">${getActiveRate(item).label}</span>
+                        <div class="flex flex-col items-end text-right shrink-0">
+                            <div id="badge-container-${item.id}" class="mb-1 flex flex-col items-end gap-1">
+                                <span id="rate-badge-${item.id}" class="text-[9px] font-bold text-white px-1.5 py-0.5 rounded shadow-xs whitespace-nowrap" style="background-color:${getActiveRate(item).color}">${getActiveRate(item).label}</span>
+                                ${getActiveRate(item).label !== 'Weekday' ? `<div id="breakfast-badge-${item.id}" class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-amber-50 border border-amber-200/60 whitespace-nowrap"><span class="text-[9px]">🍳</span><span class="text-[9px] font-semibold text-amber-700">Free Breakfast</span></div>` : ''}
                             </div>
-                            <div class="flex items-center gap-1.5 mt-0.5">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-gray-400 cursor-pointer hover:text-[#B5793A] transition" fill="currentColor" viewBox="0 0 24 24" onclick="openPriceInfoModal(${item.id})"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
-                                <div id="price-val-${item.id}" class="${item.hargaWeekday.toString().length >= 7 ? 'text-xl md:text-2xl' : 'text-2xl md:text-3xl'} font-extrabold text-[#e53e3e] leading-none">${fmt(calculateDynamicTotal(item, window.akoMalamState[item.id] || 1))}</div>
+                            <div class="flex items-center gap-1 sm:gap-1.5 mt-0.5 whitespace-nowrap">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-gray-400 cursor-pointer hover:text-[#B5793A] transition shrink-0" fill="currentColor" viewBox="0 0 24 24" onclick="openPriceInfoModal(${item.id})"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                                <div id="price-val-${item.id}" class="text-base sm:text-lg md:text-2xl font-extrabold text-[#e53e3e] leading-tight whitespace-nowrap">${fmt(calculateDynamicTotal(item, window.akoMalamState[item.id] || 1))}</div>
                             </div>
-                            <div class="text-[9px] text-gray-400 italic mt-1">Total Harga</div>
+                            <div class="text-[9px] text-gray-400 italic mt-0.5">Total Harga</div>
                         </div>
                     </div>
 

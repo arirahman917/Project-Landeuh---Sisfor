@@ -648,22 +648,36 @@
         if (!footer) {
             footer = document.createElement('div');
             footer.className = 'fp-custom-footer';
-            footer.style.cssText = 'padding: 8px 12px; background: #f8fafc; border-top: 1px solid #e2e8f0; font-size: 11px; color: #334155; font-weight: 600; display: flex; align-items: center; justify-content: space-between; gap: 8px; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; width: 100%; box-sizing: border-box;';
+            footer.style.cssText = 'padding: 8px 10px; background: #f8fafc; border-top: 1px solid #e2e8f0; font-size: clamp(9px, 2.7vw, 11px); color: #334155; font-weight: 600; display: flex; align-items: center; justify-content: space-between; gap: 4px; border-bottom-left-radius: 1.2rem; border-bottom-right-radius: 1.2rem; box-sizing: border-box; white-space: nowrap; flex-wrap: nowrap; overflow: hidden;';
             footer.innerHTML = `
-                <div style="display:flex; align-items:center; gap:4px;"><span style="color:#059669; font-weight:700;">Check-in:</span> <span class="fp-in-val" style="color:#0f172a; font-weight:700;">Belum dipilih</span></div>
-                <div style="display:flex; align-items:center; gap:4px;"><span style="color:#d97706; font-weight:700;">Check-out:</span> <span class="fp-out-val" style="color:#0f172a; font-weight:700;">Belum dipilih</span></div>
+                <div style="display:inline-flex; align-items:center; gap:3px; white-space:nowrap; min-width:0; flex-shrink:1;">
+                    <span style="color:#059669; font-weight:700; flex-shrink:0; white-space:nowrap;">Check-in:</span>
+                    <span class="fp-in-val" style="color:#0f172a; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Belum dipilih</span>
+                </div>
+                <div style="width:1px; height:12px; background:#cbd5e1; flex-shrink:0; margin:0 2px;"></div>
+                <div style="display:inline-flex; align-items:center; gap:3px; white-space:nowrap; min-width:0; flex-shrink:1; justify-content:flex-end;">
+                    <span style="color:#d97706; font-weight:700; flex-shrink:0; white-space:nowrap;">Check-out:</span>
+                    <span class="fp-out-val" style="color:#0f172a; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Belum dipilih</span>
+                </div>
             `;
             instance.calendarContainer.appendChild(footer);
         }
         const inVal = footer.querySelector('.fp-in-val');
         const outVal = footer.querySelector('.fp-out-val');
-        const fmtFull = { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' };
+
+        function formatFpDate(d) {
+            if (!d) return 'Belum dipilih';
+            if (window.innerWidth < 400) {
+                return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+            }
+            return d.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+        }
 
         if (!selectedDates || selectedDates.length === 0) {
             if (inVal) inVal.innerText = 'Belum dipilih';
             if (outVal) outVal.innerText = 'Belum dipilih';
         } else if (selectedDates.length === 1) {
-            if (inVal) inVal.innerText = selectedDates[0].toLocaleDateString('id-ID', fmtFull);
+            if (inVal) inVal.innerText = formatFpDate(selectedDates[0]);
             if (outVal) outVal.innerText = 'Pilih Check-out';
 
             setTimeout(() => {
@@ -684,8 +698,8 @@
                 });
             }, 0);
         } else if (selectedDates.length === 2) {
-            if (inVal) inVal.innerText = selectedDates[0].toLocaleDateString('id-ID', fmtFull);
-            if (outVal) outVal.innerText = selectedDates[1].toLocaleDateString('id-ID', fmtFull);
+            if (inVal) inVal.innerText = formatFpDate(selectedDates[0]);
+            if (outVal) outVal.innerText = formatFpDate(selectedDates[1]);
         }
     };
 
