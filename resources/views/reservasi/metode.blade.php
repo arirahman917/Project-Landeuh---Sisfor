@@ -23,10 +23,10 @@
 .pay-timer-bar{background:#3a523a;color:#fff;padding:0.6rem 0.85rem;border-radius:0.75rem;font-size:clamp(0.75rem, 2.7vw, 0.85rem);margin-bottom:1.2rem;display:flex;align-items:center;justify-content:space-between;gap:0.4rem;white-space:nowrap}
 @media(min-width:640px){.pay-timer-bar{padding:0.6rem 1.2rem;gap:0.6rem;font-size:0.85rem}}
 .pay-timer-bar .timer{background:#c0392b;padding:0.2rem 0.55rem;border-radius:0.4rem;font-weight:700;font-family:monospace;font-size:clamp(0.8rem, 2.8vw, 0.95rem);flex-shrink:0}
-.pay-method-container{background:#f1e5cc;border-radius:0.75rem;border:1px solid #dfd4be;margin-bottom:1rem;overflow:hidden}
-.pm-main-title{display:flex;align-items:center;gap:0.6rem;padding:1rem 1.15rem;font-size:clamp(0.88rem, 3.2vw, 1.05rem);font-weight:800;border-bottom:1px solid #dfd4be;color:#333;white-space:nowrap;text-transform:capitalize}
-@media(min-width:768px){.pm-main-title{gap:0.8rem;padding:1.2rem 1.5rem}}
-.pay-method-row{border-bottom:1px solid #dfd4be;transition:background 0.3s}
+.pay-method-container{background:#FAF2E4;border-radius:1rem;border:1px solid rgba(223,212,190,0.8);margin-bottom:1rem;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,0.04)}
+.pm-main-title{display:flex;align-items:center;gap:0.5rem;padding:1.35rem 1rem 1rem;font-size:1.05rem;font-weight:800;border-bottom:1px solid rgba(223,212,190,0.8);color:#333;white-space:nowrap;text-transform:capitalize}
+@media(min-width:768px){.pm-main-title{gap:0.5rem;padding:1.65rem 1.25rem 1rem}}
+.pay-method-row{border-bottom:1px solid rgba(223,212,190,0.8);transition:background 0.3s}
 .pay-method-row:last-child{border-bottom:none}
 .pay-method-header{display:flex;align-items:center;justify-content:space-between;padding:0 1rem;min-height:65px;cursor:pointer;font-size:0.95rem;font-weight:600;user-select:none}
 .pay-method-header:hover{background:rgba(0,0,0,0.03)}
@@ -53,11 +53,11 @@
 .cc-fields input:focus{border-color:#3a523a}
 .cc-fields .row{display:flex;gap:0.75rem}
 .cc-fields .row input{flex:1}
-.sidebar-card-cream{background:#f1e5cc;border-radius:1rem;border:1px solid #dfd4be;padding:1rem 1.15rem;margin-bottom:1rem;box-shadow:0 10px 25px rgba(0,0,0,0.05);overflow:hidden}
-@media(min-width:768px){.sidebar-card-cream{padding:1.5rem}}
-.sidebar-card-cream h3{font-size:clamp(0.95rem, 3.5vw, 1.15rem);font-weight:800;display:flex;align-items:center;gap:0.5rem;margin-bottom:1rem;color:#222;white-space:nowrap;text-transform:capitalize}
+.sidebar-card-cream{background:#FAF2E4;border-radius:1rem;border:1px solid rgba(223,212,190,0.8);padding:0.85rem 1rem;margin-bottom:1rem;box-shadow:0 2px 10px rgba(0,0,0,0.04);overflow:hidden}
+@media(min-width:768px){.sidebar-card-cream{padding:1.15rem 1.25rem}}
+.sidebar-card-cream h3{font-size:1.05rem;font-weight:800;display:flex;align-items:center;gap:0.5rem;margin-top:0.5rem;margin-bottom:1rem;color:#333;white-space:nowrap;text-transform:capitalize}
 /* Check-in/Check-out highlight — glass with border-radius: 0 */
-.ov-checkin-highlight{background:#ffffff;border:1px solid rgba(223,212,190,0.7);border-radius:0;padding:0.75rem 0.65rem;margin-bottom:0.85rem}
+.ov-checkin-highlight{background:#ffffff;border:none;border-radius:0;padding:0.75rem 0.65rem;margin-bottom:0.85rem}
 @media(min-width:768px){.ov-checkin-highlight{padding:0.85rem 1rem}}
 .ov-checkin-row{display:flex;justify-content:space-between;align-items:center;position:relative;gap:0.25rem}
 .ov-checkin-row .ci-label{font-size:0.65rem;color:#e53e3e;font-weight:700;text-transform:uppercase;letter-spacing:0.5px}
@@ -66,19 +66,19 @@
 .ov-checkin-row .ci-time{font-size:0.65rem;color:#999;margin-top:2px}
 .ov-checkin-row .ci-mid{text-align:center;font-size:0.75rem;color:#666;flex-shrink:0;padding:0 0.25rem}
 .ov-checkin-row .ci-mid .arrow{font-size:1.1rem;color:#999;line-height:1}
-.sb-bed{display:flex;align-items:center;gap:0.8rem;font-size:0.8rem;color:#444;border-bottom:1px solid #dfd4be;padding-bottom:0.85rem;margin-bottom:0.85rem;font-weight:600}
+.sb-bed{display:flex;align-items:center;gap:0.8rem;font-size:0.8rem;color:#444;border-bottom:1px solid rgba(223,212,190,0.8);padding-bottom:0.85rem;margin-bottom:0.85rem;font-weight:600}
 .sb-bed div{display:flex;align-items:center;gap:0.4rem}
 .sb-fasilitas{display:grid;grid-template-columns:1.15fr 1fr;gap:0.75rem;font-size:0.75rem;color:#444;margin-bottom:1rem}
 .sb-fasilitas .col-title{font-weight:700;color:#333;margin-bottom:0.4rem}
 .sb-fasilitas ul{list-style-type:disc;margin-left:1rem}
 .sb-fasilitas ul li{margin-bottom:0.2rem}
-.sb-guest{display:flex;align-items:center;gap:0.5rem;font-size:0.8rem;font-weight:600;color:#444;border-bottom:1px solid #dfd4be;padding-bottom:1rem;margin-bottom:1rem}
+.sb-guest{display:flex;align-items:center;gap:0.5rem;font-size:0.8rem;font-weight:600;color:#444;border-bottom:1px solid rgba(223,212,190,0.8);padding-bottom:1rem;margin-bottom:1rem}
 .sb-identity{display:flex;justify-content:space-between;font-size:0.8rem;color:#333}
 .sb-identity .title{font-size:0.75rem;color:#666;margin-bottom:0.5rem}
 .sb-identity .row{display:flex;align-items:center;gap:0.5rem;font-weight:500}
 .sb-identity .details{display:flex;flex-direction:column;gap:0.15rem}
-.pay-bottom-cream{background:#f1e5cc;border-radius:1rem;border:1px solid #dfd4be;padding:1rem 1.15rem;box-shadow:0 10px 25px rgba(0,0,0,0.05)}
-@media(min-width:768px){.pay-bottom-cream{padding:1.5rem}}
+.pay-bottom-cream{background:#FAF2E4;border-radius:1rem;border:1px solid rgba(223,212,190,0.8);padding:0.85rem 1rem;box-shadow:0 2px 10px rgba(0,0,0,0.04)}
+@media(min-width:768px){.pay-bottom-cream{padding:1.15rem 1.25rem}}
 .pay-bottom-cream .pb-top{display:flex;justify-content:space-between;align-items:center;gap:0.75rem;margin-bottom:1rem}
 .pay-bottom-cream .pay-with{font-size:0.78rem;color:#444;flex:1;min-width:0;line-height:1.35}
 @media(min-width:768px){.pay-bottom-cream .pay-with{font-size:0.88rem}}
@@ -86,8 +86,8 @@
 .pay-bottom-cream .pay-btn{width:100%;background:#3a523a;color:#fff;border:none;padding:0.85rem;border-radius:0.5rem;font-size:1rem;font-weight:700;cursor:pointer;transition:0.2s}
 .pay-bottom-cream .pay-btn:hover{background:#2c402c}
 @media(max-width:768px){
-    .pay-grid{flex-direction:column!important;align-items:stretch!important;width:100%!important}
-    .pay-grid > div{width:100%!important;min-width:0!important;max-width:100%!important}
+    .pay-grid{flex-direction:column!important;align-items:stretch!important;width:100%!important;gap:0!important}
+    .pay-grid > div{width:100%!important;min-width:0!important;max-width:100%!important;position:static!important}
 }
 </style>
 
@@ -156,7 +156,7 @@
 
                 <div class="pay-method-container">
                     <div class="pm-main-title">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="shrink-0"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>
+                        <iconify-icon icon="lucide:wallet" class="text-lg shrink-0"></iconify-icon>
                         <span class="whitespace-nowrap">Pilih Metode Pembayaran Anda</span>
                     </div>
 
@@ -228,7 +228,7 @@
             <div style="flex:0.8;min-width:300px;position:sticky;top:80px">
                 <div class="sidebar-card-cream">
                     <h3>
-                        <iconify-icon icon="lucide:clipboard-list" class="text-xl shrink-0"></iconify-icon> <span class="whitespace-nowrap">Rincian Reservasi</span>
+                        <iconify-icon icon="lucide:clipboard-list" class="text-lg shrink-0"></iconify-icon> <span class="whitespace-nowrap">Rincian Reservasi</span>
                     </h3>
                     
                     {{-- Check-in / Check-out Highlight --}}

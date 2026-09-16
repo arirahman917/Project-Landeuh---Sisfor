@@ -55,7 +55,7 @@
 @media(min-width:768px){.ov-ribbon{padding:0.55rem 1.15rem;font-size:0.78rem}}
 
 /* Check-in/Check-out highlight — clean fast rendering */
-.ov-checkin-highlight{background:#ffffff;border:1px solid rgba(223,212,190,0.7);border-radius:0;padding:0.75rem 0.65rem;margin-bottom:0.75rem}
+.ov-checkin-highlight{background:#ffffff;border:none;border-radius:0;padding:0.75rem 0.65rem;margin-bottom:0.75rem}
 @media(min-width:768px){.ov-checkin-highlight{padding:0.85rem 1rem}}
 .ov-checkin-row{display:flex;justify-content:space-between;align-items:center;position:relative;gap:0.25rem}
 .ov-checkin-row .ci-label{font-size:0.65rem;color:#e53e3e;font-weight:700;text-transform:uppercase;letter-spacing:0.5px}
@@ -67,7 +67,7 @@
 .ov-guest-info{font-size:0.8rem;color:#555;margin:0.6rem 0 0;display:flex;align-items:center;gap:0.4rem}
 
 /* Price highlight — clean fast rendering */
-.ov-price-highlight{background:#ffffff;border:1px solid rgba(223,212,190,0.7);border-radius:0;padding:0.75rem 0.85rem;margin-bottom:0.75rem}
+.ov-price-highlight{background:#ffffff;border:none;border-radius:0;padding:0.75rem 0.85rem;margin-bottom:0.75rem}
 @media(min-width:768px){.ov-price-highlight{padding:1rem}}
 .ov-price-row{display:flex;justify-content:space-between;align-items:center;gap:0.75rem;font-size:0.8rem;color:#555;padding:0.2rem 0}
 .ov-price-row span:last-child{white-space:nowrap;text-align:right;flex-shrink:0}
@@ -86,6 +86,18 @@
 .modal-loading{background:#fdf6e3;border-radius:1rem;padding:2rem;text-align:center;max-width:320px;width:90%}
 .modal-loading h4{font-weight:800;font-size:1rem;margin-bottom:0.5rem}
 .modal-loading p{color:#666;font-size:0.9rem}
+.modal-validate-overlay{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.25s ease}
+.modal-validate-overlay.show{opacity:1;pointer-events:auto}
+.modal-validate-overlay .mv-backdrop{position:absolute;inset:0;background:rgba(0,0,0,0.4)}
+.modal-validate-overlay .mv-card{position:relative;z-index:1;background:#fff;border-radius:1.25rem;box-shadow:0 25px 60px rgba(0,0,0,0.2);width:90%;max-width:360px;padding:2rem 1.5rem 1.5rem;text-align:center;transform:scale(0.92);transition:transform 0.25s cubic-bezier(0.34,1.56,0.64,1)}
+.modal-validate-overlay.show .mv-card{transform:scale(1)}
+.mv-icon{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem}
+.mv-icon.warn{background:#fef3c7;color:#d97706}
+.mv-title{font-size:1.1rem;font-weight:800;color:#1f2937;margin-bottom:0.4rem}
+.mv-msg{font-size:0.88rem;color:#6b7280;line-height:1.5;margin-bottom:1.5rem}
+.mv-btn{width:100%;border:none;padding:0.8rem;border-radius:0.75rem;font-size:0.95rem;font-weight:700;cursor:pointer;transition:background 0.2s}
+.mv-btn-primary{background:#3a523a;color:#fff}
+.mv-btn-primary:hover{background:#2c402c}
 @media(max-width:768px){.ov-form-row{grid-template-columns:1fr}.ov-main-grid{flex-direction:column!important;gap:0!important}}
 </style>
 
@@ -345,12 +357,36 @@
             <p>Kami sedang memproses permintaan anda</p>
         </div>
     </div>
+
+    {{-- Modal Validasi Modern --}}
+    <div class="modal-validate-overlay" id="modalValidasi">
+        <div class="mv-backdrop" onclick="closeValidationModal()"></div>
+        <div class="mv-card">
+            <div class="mv-icon warn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+            </div>
+            <div class="mv-title" id="mvTitle">Perhatian</div>
+            <div class="mv-msg" id="mvMsg">Harap lengkapi data yang diperlukan.</div>
+            <button class="mv-btn mv-btn-primary" onclick="closeValidationModal()">Mengerti</button>
+        </div>
+    </div>
 </div>
 
 @push('scripts')
 <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
 <script src="{{ asset('js/akomodasi-data.js') }}"></script>
 <script>
+function showValidationModal(title, msg) {
+    document.getElementById('mvTitle').textContent = title;
+    document.getElementById('mvMsg').textContent = msg;
+    const modal = document.getElementById('modalValidasi');
+    modal.classList.add('show');
+}
+function closeValidationModal() {
+    document.getElementById('modalValidasi').classList.remove('show');
+}
 (function(){
     // Parse accommodation ID from URL
     const urlParts = window.location.pathname.split('/');
@@ -618,8 +654,8 @@
         priceBreakdownDetails.forEach((night) => {
             const parts = night.date.split('-');
             const d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
-            const mNamesShort = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
-            const formattedDate = `${d.getDate()} ${mNamesShort[d.getMonth()]}`;
+            const mNamesFull = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+            const formattedDate = `${d.getDate()} ${mNamesFull[d.getMonth()]}`;
             
             let fontColor = '#f97316'; // Weekday (Orange)
             if (night.label === 'Weekend') {
@@ -679,11 +715,11 @@
         const untukSiapa = document.getElementById('untukSiapa')?.value?.trim() || '';
         const kebijakan = document.getElementById('chkKebijakan').checked;
 
-        if(!nama){alert('Nama Lengkap wajib diisi');return;}
-        if(!hp){alert('Nomor Handphone wajib diisi');return;}
-        if(!em){alert('Email wajib diisi');return;}
-        if(!chkSaya && !untukSiapa){alert('Untuk Siapa wajib diisi');return;}
-        if(!kebijakan){alert('Harap setujui kebijakan reservasi');return;}
+        if(!nama){showValidationModal('Data Belum Lengkap','Nama Lengkap wajib diisi.');return;}
+        if(!hp){showValidationModal('Data Belum Lengkap','Nomor Handphone (WhatsApp) wajib diisi.');return;}
+        if(!em){showValidationModal('Data Belum Lengkap','Alamat Email wajib diisi.');return;}
+        if(!chkSaya && !untukSiapa){showValidationModal('Data Belum Lengkap','Kolom "Untuk Siapa" wajib diisi.');return;}
+        if(!kebijakan){showValidationModal('Kebijakan Belum Disetujui','Harap setujui Kebijakan Reservasi terlebih dahulu sebelum melanjutkan.');return;}
 
         // Pastikan harga terupdate sebelum lanjut
         updateHarga();
