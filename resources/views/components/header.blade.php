@@ -127,16 +127,19 @@
 
             const TRANSITION = 'transform 0.38s cubic-bezier(0.4,0,0.2,1)';
             header.style.transition = TRANSITION;
+            header.style.willChange = 'transform';
             if (searchBar) {
                 searchBar.style.transition = TRANSITION;
-                // Ensure searchBar sticks right below header
-                searchBar.style.position = 'sticky';
-                searchBar.style.zIndex = '40';
+                searchBar.style.willChange = 'transform';
+                const updateTop = () => {
+                    searchBar.style.top = header.offsetHeight + 'px';
+                };
+                updateTop();
+                window.addEventListener('resize', updateTop);
             }
 
             let lastScrollY = window.scrollY;
             let ticking = false;
-            let headerVisible = true;
 
             window.addEventListener('scroll', () => {
                 if (!ticking) {
@@ -145,29 +148,17 @@
                         const hH = header.offsetHeight;
 
                         if (currentY <= 0) {
-                            // At top
+                            // At top — both visible, searchBar below header
                             header.style.transform = 'translateY(0)';
-                            if (searchBar) {
-                                searchBar.style.top = '0px';
-                                searchBar.style.transform = 'translateY(0)';
-                            }
-                            headerVisible = true;
+                            if (searchBar) searchBar.style.transform = 'translateY(0)';
                         } else if (currentY > lastScrollY) {
-                            // Scroll down — hide header, searchBar sticks to top
+                            // Scroll down — hide header, searchBar slides up to top of screen
                             header.style.transform = 'translateY(-100%)';
-                            if (searchBar) {
-                                searchBar.style.top = '0px';
-                                searchBar.style.transform = 'translateY(0)';
-                            }
-                            headerVisible = false;
+                            if (searchBar) searchBar.style.transform = `translateY(-${hH}px)`;
                         } else {
-                            // Scroll up — show header, searchBar pushes below header
+                            // Scroll up — show header, searchBar slides down right below header
                             header.style.transform = 'translateY(0)';
-                            if (searchBar) {
-                                searchBar.style.top = hH + 'px';
-                                searchBar.style.transform = 'translateY(0)';
-                            }
-                            headerVisible = true;
+                            if (searchBar) searchBar.style.transform = 'translateY(0)';
                         }
 
                         lastScrollY = currentY;
