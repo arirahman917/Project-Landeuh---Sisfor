@@ -51,21 +51,22 @@
 /* ── Top Bar ──────────────────────────────────────────── */
 .cp-topbar{
     background:transparent;
-    padding:1.2rem 2rem;
+    padding:1rem 1.2rem;
     display:flex;align-items:center;justify-content:space-between;
     position:relative;z-index:50;
 }
-.cp-booking-no{font-size:1rem;font-weight:800;color:#333}
-.cp-booking-no span{color:#3a523a;font-weight:800}
+.cp-booking-no{font-size:1.05rem;font-weight:700;color:#333}
+.cp-booking-no span{color:#3a523a;font-weight:800;font-size:1.1rem}
 
 /* ── Email Banner ─────────────────────────────────────── */
 .cp-email-banner{
-    background:#e6a645;color:#fff;
+    background:#FAF2E4;color:#333;
     padding:.75rem 1.2rem;
-    border-radius:.6rem;
-    font-size:.875rem;
+    border-radius:.75rem;
+    font-size:.78rem;
     display:flex;align-items:center;justify-content:space-between;gap:1rem;
-    margin-bottom:2rem;
+    margin-bottom:1rem;
+    border:1px solid rgba(223,212,190,0.8);
 }
 .cp-email-banner strong{font-weight:800}
 .cp-pdf-btn{
@@ -80,11 +81,11 @@
 
 /* ── Main Card ────────────────────────────────────────── */
 .cp-card{
-    background:#f1e5cc;
-    border:1px solid #dfd4be;
-    border-radius:1.25rem;
-    padding:2.5rem 2rem;
-    box-shadow:0 10px 40px rgba(0,0,0,.1), 0 2px 12px rgba(0,0,0,.06);
+    background:#FAF2E4;
+    border:1px solid rgba(223,212,190,0.8);
+    border-radius:1rem;
+    padding:2rem 1.5rem;
+    box-shadow:0 2px 10px rgba(0,0,0,0.04);
     position:relative;z-index:1;
 }
 
@@ -184,8 +185,8 @@
 .cp-left{display:flex;flex-direction:column;gap:1rem;flex:1;min-width:0}
 
 .cp-box{
-    background:#f1e5cc;border-radius:.75rem;
-    border:1px solid #dfd4be;padding:1.2rem 1.4rem;
+    background:#FAF2E4;border-radius:.75rem;
+    border:1px solid rgba(223,212,190,0.8);padding:1.2rem 1.4rem;
 }
 .cp-box-title{font-size:.95rem;font-weight:800;color:#333;margin-bottom:.8rem}
 .cp-policy p{font-size:.82rem;color:#555;line-height:1.6;padding-bottom:.6rem;margin-bottom:.6rem;border-bottom:1px solid #dfd4be}
@@ -199,8 +200,8 @@
 .cp-right{flex:1.2;min-width:0}
 
 .cp-room-card{
-    background:#f1e5cc;border-radius:.75rem;
-    border:1px solid #dfd4be;padding:1.4rem;
+    background:#FAF2E4;border-radius:.75rem;
+    border:1px solid rgba(223,212,190,0.8);padding:1.4rem;
     display:flex;flex-direction:column;gap:1rem;
 }
 .cp-room-header{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem}
@@ -230,17 +231,17 @@
 /* Dates */
 .cp-dates{
     display:flex;justify-content:space-between;align-items:center;
-    background:rgba(255,255,255,.5);border-radius:.5rem;
-    padding:.8rem 1rem;
+    background:#ffffff;border:none;border-radius:0;
+    padding:.75rem .65rem;
 }
-.cp-date-label{font-size:.72rem;font-weight:700;margin-bottom:.15rem}
-.cp-date-label.green{color:#27ae60}
-.cp-date-label.red{color:#c0392b}
-.cp-date-val{font-size:.9rem;font-weight:700;color:#222}
-.cp-date-time{font-size:.65rem;color:#888;margin-top:.1rem}
-.cp-date-center{text-align:center;color:#888}
+.cp-date-label{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:.15rem}
+.cp-date-label.green{color:#e53e3e}
+.cp-date-label.red{color:#e53e3e}
+.cp-date-val{font-size:.78rem;font-weight:700;color:#333;line-height:1.25}
+.cp-date-time{font-size:.65rem;color:#999;margin-top:2px}
+.cp-date-center{text-align:center;font-size:.75rem;color:#666;flex-shrink:0;padding:0 .25rem}
 .cp-nights{font-size:.7rem;font-weight:600}
-.cp-arrow{font-size:1.3rem;line-height:1}
+.cp-arrow{font-size:1.1rem;color:#999;line-height:1}
 
 /* ── Bottom Actions ───────────────────────────────────── */
 .cp-actions{
@@ -312,50 +313,52 @@
 
 /* ── Mobile Responsive ────────────────────────────────── */
 @media(max-width:768px){
+    .cp-content-wrap{padding:.6rem .5rem 1.2rem!important}
     .cp-topbar{padding:.8rem 1rem}
-    .cp-booking-no{font-size:.85rem}
-    .cp-topbar img{height:32px!important}
+    .cp-booking-no{font-size:1.05rem}
+    .cp-topbar img{height:40px!important}
 
     .cp-email-banner{
         flex-direction:column;align-items:stretch;gap:.6rem;
-        text-align:center;font-size:.8rem;padding:.7rem 1rem;
+        text-align:center;font-size:.72rem;padding:.6rem .8rem;
     }
     .cp-pdf-btn{justify-content:center;width:100%}
 
-    .cp-card{padding:1.5rem 1rem;border-radius:1rem}
+    .cp-card{padding:1rem .8rem;border-radius:.85rem}
     .cp-icon-wrap{width:72px;height:72px}
     .cp-icon-wrap svg{width:36px!important;height:36px!important}
-    .cp-status-title{font-size:1.25rem}
-    .cp-status-amount{font-size:1.4rem;margin-bottom:1.5rem}
+    .cp-status-title{font-size:1.15rem}
+    .cp-status-amount{font-size:1.3rem;margin-bottom:1rem}
 
-    .cp-body{flex-direction:column;gap:1rem}
+    .cp-body{flex-direction:column;gap:.6rem}
     .cp-left,.cp-right{flex:1 1 100%!important;width:100%}
 
-    .cp-box{padding:1rem}
-    .cp-room-card{padding:1rem}
+    .cp-box{padding:.75rem .8rem}
+    .cp-room-card{padding:.75rem .8rem}
 
     .cp-fac-grid{grid-template-columns:1fr 1fr!important}
     .cp-room-meta{flex-direction:column;align-items:flex-start;gap:.3rem}
     .cp-room-meta .dot{display:none}
 
-    .cp-dates{flex-direction:row;padding:.6rem .8rem}
-    .cp-date-val{font-size:.8rem}
+    .cp-dates{flex-direction:row;padding:.6rem .5rem}
+    .cp-date-val{font-size:.75rem}
     .cp-date-time{font-size:.6rem}
 
-    .cp-actions{flex-direction:column;gap:.8rem;margin-top:1.5rem}
-    .cp-btn{width:100%;justify-content:center;padding:.7rem 1rem;font-size:.9rem}
+    .cp-actions{flex-direction:column;gap:.6rem;margin-top:1rem}
+    .cp-btn{width:100%;justify-content:center;padding:.65rem 1rem;font-size:.88rem}
 }
 
 @media(max-width:480px){
-    .cp-topbar{padding:.6rem .8rem}
-    .cp-booking-no{font-size:.78rem}
-    .cp-card{padding:1.2rem .8rem}
-    .cp-status-title{font-size:1.1rem}
-    .cp-status-amount{font-size:1.2rem}
+    .cp-content-wrap{padding:.5rem .4rem 1rem!important}
+    .cp-topbar{padding:.7rem .8rem}
+    .cp-booking-no{font-size:.95rem}
+    .cp-card{padding:.85rem .65rem}
+    .cp-status-title{font-size:1.05rem}
+    .cp-status-amount{font-size:1.15rem}
     .cp-id-grid{grid-template-columns:1fr}
     .cp-fac-grid{grid-template-columns:1fr!important}
-    .cp-dates{gap:.3rem;padding:.5rem}
-    .cp-date-val{font-size:.75rem}
+    .cp-dates{gap:.3rem;padding:.5rem .4rem}
+    .cp-date-val{font-size:.72rem}
     .cp-room-img{width:70px;height:55px}
 
     /* Modal Reschedule Fix */
@@ -411,7 +414,7 @@
     </div>
 
     {{-- ── Content ── --}}
-    <div class="max-width:98% lg:max-width:96%"style="margin:0 auto;padding:1.5rem 2rem 3rem;position:relative;z-index:10">
+    <div class="cp-content-wrap" style="margin:0 auto;padding:1rem 1.2rem 2rem;position:relative;z-index:10">
 
         {{-- Email banner --}}
         <div class="cp-email-banner">
@@ -944,12 +947,9 @@
         // Activate continuous pulse after entrance finishes
         setTimeout(() => iconWrap.classList.add('pulse'), 800);
 
-        // Banner text untuk gagal
-        if (fromPesanan) {
-            bannerText.innerHTML = `Pemesanan ini berstatus gagal/dibatalkan.`;
-        } else {
-            bannerText.innerHTML = `Cek emailmu (<strong>${dEmail}</strong>) sekarang untuk detail cara bayar.`;
-        }
+        // Hide email banner for failed status
+        const emailBanner = document.querySelector('.cp-email-banner');
+        if (emailBanner) emailBanner.style.display = 'none';
         
         // Hide reschedule button
         const btnResched = document.getElementById('btnAjukanReschedule');

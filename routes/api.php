@@ -13,6 +13,10 @@ use App\Http\Controllers\WhatsAppWebhookController;
 |
 */
 
-// WhatsApp Cloud API Webhook (Meta)
-Route::get('/webhook/whatsapp', [WhatsAppWebhookController::class, 'verify']);
-Route::post('/webhook/whatsapp', [WhatsAppWebhookController::class, 'handle']);
+// ========================================================
+// [NONAKTIF] WhatsApp Cloud API Webhook (Meta) - Diarsipkan
+// Dinonaktifkan karena beralih ke provider Fonnte (autoreply dikelola di dashboard Fonnte)
+// ========================================================
+// Route::get('/webhook/whatsapp', [WhatsAppWebhookController::class, 'verify']);
+// Route::post('/webhook/whatsapp', [WhatsAppWebhookController::class, 'handle']);
+

@@ -215,12 +215,23 @@ class ReservasiController extends Controller
 
             $booking->save();
 
-            if (auth()->guard('admin')->check()) {
-                if ($validated['status'] === 'rescheduled') {
+            if ($validated['status'] === 'rescheduled') {
+                if (auth()->guard('admin')->check()) {
                     \App\Models\ActivityLog::log("Menyetujui pengajuan reschedule pesanan #" . $booking->no_pesanan);
-                } elseif ($validated['status'] === 'reschedule_rejected') {
+                }
+                // Sesuai PRD Seksi 4.2: Kirim WhatsApp Reschedule Disetujui (booking_reschedule_approved)
+                try {
+                    \App\Services\WhatsAppService::sendRescheduleApproved($booking);
+                } catch (\Exception $waEx) {
+                    \Log::error('Gagal mengirim WhatsApp reschedule untuk pesanan ' . $booking->no_pesanan . ': ' . $waEx->getMessage());
+                }
+            } elseif ($validated['status'] === 'reschedule_rejected') {
+                if (auth()->guard('admin')->check()) {
                     \App\Models\ActivityLog::log("Menolak pengajuan reschedule pesanan #" . $booking->no_pesanan);
-                } else {
+                }
+                // Sesuai PRD Seksi 4.3: Tidak mengirim WhatsApp atau email saat penolakan
+            } else {
+                if (auth()->guard('admin')->check()) {
                     \App\Models\ActivityLog::log("Mengubah status pesanan #" . $booking->no_pesanan . " menjadi " . $validated['status']);
                 }
             }
@@ -245,38 +256,10 @@ class ReservasiController extends Controller
                     \Log::error('Gagal mengirim email E-Ticket untuk pesanan ' . $booking->no_pesanan . ': ' . $mailEx->getMessage());
                 }
 
-                // 3. Kirim Konfirmasi WhatsApp via API Meta
+                // 3. Kirim Konfirmasi WhatsApp via Fonnte (Template: booking_confirmation)
+                // Sesuai PRD Seksi 4.1 & 5.1
                 try {
-                    $checkIn = \Carbon\Carbon::parse($booking->check_in_date)->locale('id')->isoFormat('dddd, D MMMM Y');
-                    $checkOut = \Carbon\Carbon::parse($booking->check_out_date)->locale('id')->isoFormat('dddd, D MMMM Y');
-                    $totalStr = number_format($booking->total, 0, ',', '.');
-                    $invoiceUrl = url('/invoice/' . $booking->no_pesanan . '/download');
-                    $akomodasiJudul = $booking->accommodation ? $booking->accommodation->judul : ($booking->corporatePackage ? $booking->corporatePackage->judul : 'Akomodasi');
-                    $adminNumber = env('WA_ADMIN_NUMBER', '085779012797');
-
-                    $message = "Halo, {$booking->pemesan_nama}!\n\n"
-                             . "Terima kasih telah melakukan pemesanan di *Landeuh Village Riverside*.\n\n"
-                             . "Pembayaran Anda untuk pesanan *{$booking->no_pesanan}* telah BERHASIL diverifikasi.\n\n"
-                             . "Detail Pesanan:\n"
-                             . "🏠 Akomodasi: {$akomodasiJudul}\n"
-                             . "📅 Check-in: {$checkIn}\n"
-                             . "🌙 Durasi: {$booking->malam} Malam\n"
-                             . "📅 Check-out: {$checkOut}\n"
-                             . "💰 Total: IDR {$totalStr}\n"
-                             . "💳 Metode: {$booking->metode_pembayaran}\n\n"
-                             . "Kebijakan\n"
-                             . "- Pemesanan ini tidak dapat diubah\n"
-                             . "- Pemesanan tidak ada refund jika Anda membatalkannya\n\n"
-                             . "Silakan unduh E-Ticket/Invoice Anda melalui link berikut:\n"
-                             . "👉 {$invoiceUrl}\n\n"
-                             . "Tunjukkan Invoice tersebut atau menyebutkan nomor pemesanan saat proses Check-in nanti.\n\n"
-                             . "*(Pesan ini dibuat otomatis oleh sistem)*\n"
-                             . "Jika Anda memiliki pertanyaan lebih lanjut, silakan hubungi kontak Admin Customer Service kami di:\n"
-                             . "wa.me/" . (str_starts_with($adminNumber, '0') ? '62' . substr($adminNumber, 1) : $adminNumber) . "\n\n"
-                             . "Salam hangat,\n"
-                             . "Tim Landeuh Village Riverside";
-
-                    \App\Services\WhatsAppService::sendMessage($booking->pemesan_telp, $message);
+                    \App\Services\WhatsAppService::sendBookingConfirmation($booking);
                 } catch (\Exception $waEx) {
                     \Log::error('Gagal mengirim WhatsApp untuk pesanan ' . $booking->no_pesanan . ': ' . $waEx->getMessage());
                 }

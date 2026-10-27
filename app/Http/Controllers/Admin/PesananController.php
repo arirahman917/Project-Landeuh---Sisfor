@@ -195,6 +195,13 @@ class PesananController extends Controller
                 \Log::error('Failed to regenerate PDF on force reschedule: ' . $pdfEx->getMessage());
             }
 
+            // Kirim notifikasi WhatsApp jadwal terbaru ke tamu (Template: booking_reschedule_approved)
+            try {
+                \App\Services\WhatsAppService::sendRescheduleApproved($booking);
+            } catch (\Exception $waEx) {
+                \Log::error('Failed to send WA on force reschedule: ' . $waEx->getMessage());
+            }
+
             return response()->json([
                 'success' => true,
                 'message' => 'Tanggal booking berhasil diubah oleh Admin.',

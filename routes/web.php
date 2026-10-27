@@ -62,17 +62,35 @@ Route::get('/debug-email', function (\Illuminate\Http\Request $request) {
 });
 
 Route::get('/debug-wa-status', function (\Illuminate\Http\Request $request) {
-    $token = env('WA_ACCESS_TOKEN');
-    $phoneId = env('WA_BUSINESS_PHONE_NUMBER_ID');
-    $wabaId = env('WA_BUSINESS_ACCOUNT_ID');
-    $adminNum = env('WA_ADMIN_NUMBER');
-    $verifyToken = env('WA_WEBHOOK_VERIFY_TOKEN');
+    $provider = env('WA_PROVIDER', 'fonnte');
+    $fonnteToken = env('FONNTE_TOKEN');
+    $senderNum = env('WA_SENDER_NUMBER', '6285692811221');
+    $adminNum = env('WA_ADMIN_NUMBER', '085779012797');
 
+    // Cek koneksi device Fonnte
+    $fonnteCheck = null;
+    if ($fonnteToken) {
+        try {
+            $res = \Illuminate\Support\Facades\Http::asForm()
+                ->withHeaders(['Authorization' => $fonnteToken])
+                ->post('https://api.fonnte.com/device');
+            $fonnteCheck = [
+                'status' => $res->status(),
+                'data' => $res->json(),
+            ];
+        } catch (\Exception $e) {
+            $fonnteCheck = 'Exception: ' . $e->getMessage();
+        }
+    }
+
+    // [ARSIP] Cek Meta jika sewaktu-waktu diaktifkan kembali
     $metaCheck = null;
-    if ($token && $phoneId) {
+    $metaToken = env('WA_ACCESS_TOKEN');
+    $phoneId = env('WA_BUSINESS_PHONE_NUMBER_ID');
+    if ($metaToken && $phoneId) {
         try {
             $res = \Illuminate\Support\Facades\Http::withHeaders([
-                'Authorization' => 'Bearer ' . $token,
+                'Authorization' => 'Bearer ' . $metaToken,
             ])->get("https://graph.facebook.com/v20.0/{$phoneId}");
             $metaCheck = [
                 'status' => $res->status(),
@@ -91,16 +109,18 @@ Route::get('/debug-wa-status', function (\Illuminate\Http\Request $request) {
     }
 
     return response()->json([
-        'env_status' => [
-            'has_token' => !empty($token),
-            'token_length' => strlen($token ?? ''),
-            'token_preview' => $token ? substr($token, 0, 10) . '...' . substr($token, -6) : null,
-            'phone_id' => $phoneId,
-            'waba_id' => $wabaId,
+        'active_provider' => $provider,
+        'fonnte_status' => [
+            'has_token' => !empty($fonnteToken),
+            'token_preview' => $fonnteToken ? substr($fonnteToken, 0, 4) . '...' . substr($fonnteToken, -4) : null,
+            'sender_number' => $senderNum,
             'admin_number' => $adminNum,
-            'verify_token' => $verifyToken,
+            'device_check' => $fonnteCheck,
         ],
-        'meta_graph_api_check' => $metaCheck,
+        'meta_archived_status' => [
+            'is_active' => ($provider === 'meta'),
+            'meta_graph_api_check' => $metaCheck,
+        ],
         'recent_logs' => $logs,
     ]);
 });
@@ -426,12 +446,12 @@ Route::prefix('superadmin')->group(function () {
     });
 });
 
-// ─── WhatsApp Webhook (Meta Cloud API) ─────────────────────────────
-// Diletakkan di web.php agar pasti ter-load di semua environment.
-// withoutMiddleware ValidateCsrfToken agar Meta bisa POST tanpa CSRF token.
-Route::get('/api/webhook/whatsapp', [\App\Http\Controllers\WhatsAppWebhookController::class, 'verify']);
-Route::post('/api/webhook/whatsapp', [\App\Http\Controllers\WhatsAppWebhookController::class, 'handle'])
-    ->withoutMiddleware([
-        \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,
-        \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class,
-    ]);
+// ─── [NONAKTIF] WhatsApp Webhook (Meta Cloud API) - Diarsipkan ──────
+// Dinonaktifkan karena beralih ke provider Fonnte (autoreply dikelola di dashboard Fonnte)
+// Route::get('/api/webhook/whatsapp', [\App\Http\Controllers\WhatsAppWebhookController::class, 'verify']);
+// Route::post('/api/webhook/whatsapp', [\App\Http\Controllers\WhatsAppWebhookController::class, 'handle'])
+//     ->withoutMiddleware([
+//         \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,
+//         \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class,
+//     ]);
+

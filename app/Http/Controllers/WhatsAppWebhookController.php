@@ -6,14 +6,26 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Services\WhatsAppService;
 
+/**
+ * [NONAKTIF] WhatsAppWebhookController (Meta Cloud API)
+ * 
+ * Controller ini dinonaktifkan karena proyek telah beralih ke provider Fonnte.
+ * Seluruh kode asli Meta Webhook tetap dipertahankan di bawah ini sebagai arsip referensi.
+ */
 class WhatsAppWebhookController extends Controller
 {
     /**
-     * Handle Webhook Verification from Meta
+     * Handle Webhook Verification from Meta [NONAKTIF]
      * This is called by Meta when you set up the Webhook URL in the Dashboard.
      */
     public function verify(Request $request)
     {
+        // Guard: Meta Webhook dinonaktifkan demi Fonnte
+        if (env('WA_PROVIDER', 'fonnte') !== 'meta') {
+            Log::info("[Meta Webhook Inactive] Verifikasi webhook diakses tetapi provider saat ini adalah Fonnte.");
+            return response('Webhook Meta dinonaktifkan (aktif: Fonnte)', 200);
+        }
+
         $mode = $request->query('hub_mode') ?? $request->query('hub.mode') ?? $request->input('hub_mode') ?? $request->input('hub.mode');
         $token = $request->query('hub_verify_token') ?? $request->query('hub.verify_token') ?? $request->input('hub_verify_token') ?? $request->input('hub.verify_token');
         $challenge = $request->query('hub_challenge') ?? $request->query('hub.challenge') ?? $request->input('hub_challenge') ?? $request->input('hub.challenge');
@@ -37,10 +49,19 @@ class WhatsAppWebhookController extends Controller
     }
 
     /**
-     * Handle incoming Webhook events from Meta (messages, status updates, etc)
+     * Handle incoming Webhook events from Meta [NONAKTIF]
      */
     public function handle(Request $request)
     {
+        // Guard: Meta Webhook dinonaktifkan demi Fonnte
+        if (env('WA_PROVIDER', 'fonnte') !== 'meta') {
+            Log::info("[Meta Webhook Inactive] Event webhook masuk tetapi provider saat ini adalah Fonnte.");
+            return response()->json([
+                'status' => 'inactive',
+                'message' => 'Meta webhook is deactivated. System uses Fonnte with provider-side autoreply.'
+            ], 200);
+        }
+
         $payload = $request->all();
         Log::info("WhatsApp Webhook payload received: " . json_encode($payload));
 
