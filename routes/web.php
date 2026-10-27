@@ -208,23 +208,47 @@ Route::get('/reservasi/metode-pembayaran/{id}', function (Illuminate\Http\Reques
     if ($bookingNo) {
         $booking = \App\Models\Booking::where('no_pesanan', $bookingNo)->with(['accommodation', 'corporatePackage'])->first();
     }
-    return view('reservasi.metode', ['id' => $id, 'booking' => $booking]);
+    return response()
+        ->view('reservasi.metode', ['id' => $id, 'booking' => $booking])
+        ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+        ->header('Pragma', 'no-cache')
+        ->header('Expires', '0');
 })->name('reservasi.metode');
 
-Route::get('/payment/virtual-account', function () {
-    return view('payment.virtual-account');
+Route::get('/payment/virtual-account', function (Illuminate\Http\Request $request) {
+    $booking = null;
+    $bookingNo = $request->query('booking_no') ?? $request->query('order_id');
+    if ($bookingNo) {
+        $booking = \App\Models\Booking::where('no_pesanan', $bookingNo)->with(['accommodation', 'corporatePackage'])->first();
+    }
+    return view('payment.virtual-account', compact('booking'));
 })->name('payment.virtual-account');
 
-Route::get('/payment/atm', function () {
-    return view('payment.atm');
+Route::get('/payment/atm', function (Illuminate\Http\Request $request) {
+    $booking = null;
+    $bookingNo = $request->query('booking_no') ?? $request->query('order_id');
+    if ($bookingNo) {
+        $booking = \App\Models\Booking::where('no_pesanan', $bookingNo)->with(['accommodation', 'corporatePackage'])->first();
+    }
+    return view('payment.atm', compact('booking'));
 })->name('payment.atm');
 
-Route::get('/payment/minimarket', function () {
-    return view('payment.minimarket');
+Route::get('/payment/minimarket', function (Illuminate\Http\Request $request) {
+    $booking = null;
+    $bookingNo = $request->query('booking_no') ?? $request->query('order_id');
+    if ($bookingNo) {
+        $booking = \App\Models\Booking::where('no_pesanan', $bookingNo)->with(['accommodation', 'corporatePackage'])->first();
+    }
+    return view('payment.minimarket', compact('booking'));
 })->name('payment.minimarket');
 
-Route::get('/payment/qris', function () {
-    return view('payment.qris');
+Route::get('/payment/qris', function (Illuminate\Http\Request $request) {
+    $booking = null;
+    $bookingNo = $request->query('booking_no') ?? $request->query('order_id');
+    if ($bookingNo) {
+        $booking = \App\Models\Booking::where('no_pesanan', $bookingNo)->with(['accommodation', 'corporatePackage'])->first();
+    }
+    return view('payment.qris', compact('booking'));
 })->name('payment.qris');
 
 Route::get('/reservasi/konfirmasi', function (Illuminate\Http\Request $request) {
@@ -233,6 +257,24 @@ Route::get('/reservasi/konfirmasi', function (Illuminate\Http\Request $request) 
     if ($bookingNo) {
         $booking = \App\Models\Booking::where('no_pesanan', $bookingNo)->with(['accommodation', 'corporatePackage'])->first();
     }
+
+    // Jika status masih pending dan metodenya adalah salah satu dari 4 metode khusus, arahkan langsung ke halaman instruksinya
+    if ($booking && ($booking->status === 'pending' || $request->query('status') === 'pending')) {
+        $mLower = strtolower(trim($booking->metode_pembayaran ?? $request->query('payment_method') ?? ''));
+        if (str_contains($mLower, 'atm')) {
+            return redirect()->to('/payment/atm?booking_no=' . $booking->no_pesanan);
+        }
+        if (str_contains($mLower, 'qris')) {
+            return redirect()->to('/payment/qris?booking_no=' . $booking->no_pesanan);
+        }
+        if (str_contains($mLower, 'virtual account') || str_contains($mLower, 'va') || str_contains($mLower, 'bca') || str_contains($mLower, 'bri') || str_contains($mLower, 'bni') || str_contains($mLower, 'mandiri') || str_contains($mLower, 'bsi')) {
+            return redirect()->to('/payment/virtual-account?booking_no=' . $booking->no_pesanan . '&va=' . urlencode($booking->metode_pembayaran ?? 'BRI'));
+        }
+        if (str_contains($mLower, 'alfamart') || str_contains($mLower, 'indomaret') || str_contains($mLower, 'minimarket')) {
+            return redirect()->to('/payment/minimarket?booking_no=' . $booking->no_pesanan . '&market=' . urlencode($booking->metode_pembayaran ?? 'Alfamart'));
+        }
+    }
+
     return view('reservasi.konfirmasi', compact('booking'));
 })->name('reservasi.konfirmasi');
 

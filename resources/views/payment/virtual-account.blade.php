@@ -14,18 +14,21 @@
 .pay-steps .num.active{background:#3a523a}
 .pay-steps .line{width:40px;height:2px;background:#3a523a}
 .pay-back{display:flex;align-items:center;gap:0.5rem;font-weight:700;font-size:0.95rem;cursor:pointer;color:#333;margin:1.5rem 0 1rem}
-.pay-timer-bar{background:#3a523a;color:#fff;padding:0.6rem 1.2rem;border-radius:0.75rem;font-size:0.85rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:0.5rem}
-.pay-timer-bar .timer{background:#c0392b;padding:0.2rem 0.6rem;border-radius:0.4rem;font-weight:700;font-family:monospace;font-size:0.95rem}
-.va-card{background:#f1e5cc;border-radius:0.75rem;border:1px solid #dfd4be;margin-bottom:1rem;padding-right:1.5rem;padding-left:1.5rem;padding-top:1.5rem;padding-bottom:0.3rem}
+.pay-timer-bar{background:#4a7736;color:#fff;padding:0.75rem 1.25rem;border-radius:0.5rem;font-size:0.92rem;font-weight:600;margin-bottom:0.85rem;display:flex;align-items:center;justify-content:space-between}
+.pay-timer-bar .timer{background:transparent;color:#c6f16d;padding:0;border-radius:0;font-weight:800;font-size:1.15rem;font-family:inherit;letter-spacing:0.04em}
+.pay-alert-bar{background:#ea9e37;color:#fff;padding:0.75rem 1.2rem;border-radius:0.5rem;font-size:0.88rem;margin-bottom:1.25rem;font-weight:500}
+.va-card{background:#f1e5cc;border-radius:0.75rem;border:1px solid #dfd4be;margin-bottom:1rem;padding:1.5rem}
 .va-card-confirm{background:#f1e5cc;border-radius:0.75rem;border:1px solid #dfd4be;margin-bottom:1rem;padding:1.5rem}
 .va-title{font-size:1.15rem;font-weight:800;color:#333;margin-bottom:1.5rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #dfd4be;padding-bottom:1rem}
-.va-input-group{display:flex;flex-direction:column;gap:0.5rem;margin-bottom:1.2rem}
+.va-input-group{display:flex;flex-direction:column;gap:0.5rem;margin-bottom:0.5rem}
 .va-input-group label{font-size:0.85rem;font-weight:700;color:#444}
 .va-input-wrapper{position:relative;display:flex;align-items:center}
 .va-input{width:100%;padding:0.8rem 1rem;border:1px solid #dfd4be;border-radius:0.5rem;font-size:0.95rem;outline:none;background:#fff;font-weight:600;color:#333}
 .va-copy-btn{position:absolute;right:0.5rem;top:50%;transform:translateY(-50%);background:transparent;border:none;color:#3a523a;cursor:pointer;padding:0.5rem;display:flex;align-items:center;justify-content:center}
-.va-btn-outline{width:100%;background:#3a523a;color:#fff;border:none;padding:0.85rem;border-radius:0.5rem;font-size:1rem;font-weight:700;cursor:pointer;transition:0.2s}
-.va-btn-outline:hover{background:#2c402c}
+.va-btn-bayar{width:100%;background:#284b25;color:#fff;border:none;padding:0.75rem;border-radius:0.4rem;font-size:0.95rem;font-weight:700;cursor:pointer;transition:0.2s;text-align:center}
+.va-btn-bayar:hover{background:#1e391c}
+.va-btn-outline{width:100%;background:transparent;color:#334d2f;border:1.5px solid #334d2f;padding:0.75rem;border-radius:0.4rem;font-size:0.95rem;font-weight:700;cursor:pointer;transition:0.2s;text-align:center}
+.va-btn-outline:hover{background:#334d2f;color:#fff}
 .inst-item{border-bottom:1px solid #dfd4be}
 .inst-item:last-child{border-bottom:none}
 .inst-header{display:flex;justify-content:space-between;align-items:center;padding:1.2rem 0;cursor:pointer;font-weight:700;font-size:0.95rem;color:#333}
@@ -67,7 +70,7 @@
         <div class="pay-logo">
             <img src="{{ asset('images/logo-landeuh.png') }}" alt="Logo">
             <div class="divider"></div>
-            <h2 id="headerAkoJudul">Memuat informasi...</h2>
+            <h2 id="headerAkoJudul">{{ (isset($booking) && ($booking->corporatePackage ?? $booking->accommodation)) ? ($booking->corporatePackage->judul ?? $booking->accommodation->judul) : 'Kamar Keluarga Deluks dengan Pemandangan Sungai' }}</h2>
         </div>
         <div class="pay-steps">
             <div style="display:flex;align-items:center;gap:0.35rem"><div class="num done">1</div> Review</div>
@@ -82,19 +85,22 @@
         <div class="pay-grid" style="display:flex;gap:1.5rem;align-items:flex-start">
             {{-- LEFT --}}
             <div style="flex:1.4;">
-                <div class="pay-timer-bar">Harga sudah kami amankan. Selesaikan pembayaran dalam <span class="timer" id="countdownTimer">00:30:00</span></div>
+                <div class="pay-timer-bar">
+                    <span>Harga sudah kami amankan. Selesaikan pembayaran dalam</span>
+                    <span class="timer" id="countdownTimer">00.30.00</span>
+                </div>
                 
-                <div style="background:#e6a645; color:#fff; padding:0.8rem 1.2rem; border-radius:0.5rem; font-size:0.85rem; margin-bottom:1.5rem;">
-                    Cek emailmu (<strong><span id="userEmailSpan">...</span></strong>) sekarang untuk detail cara bayar.
+                <div class="pay-alert-bar">
+                    Cek emailmu (<strong id="userEmailSpan">{{ $booking->pemesan_email ?? 'xxxxxx@gmail.com' }}</strong>) sekarang untuk detail cara bayar.
                 </div>
                 
                 <h3 style="font-size:1.15rem; font-weight:800; color:#333; margin-bottom:0.8rem;">Mohon transfer ke</h3>
                 
                 <div class="va-card">
                     <div class="va-title">
-                        <span id="dynVaName">Virtual Account</span>
+                        <span id="dynVaName">BRI Virtual Account</span>
                         <div style="height:36px; display:flex; align-items:center; justify-content:flex-end;">
-                            <img id="dynVaLogo" src="" alt="Logo" style="height:32px; object-fit:contain;">
+                            <img id="dynVaLogo" src="{{ asset('images/partner-pembayaran/bri.png') }}" alt="Logo" style="height:32px; object-fit:contain;">
                         </div>
                     </div>
                     
@@ -102,7 +108,7 @@
                         <div class="va-input-group">
                             <label>No. Virtual Account</label>
                             <div class="va-input-wrapper">
-                                <input type="text" class="va-input" id="dynVaNumber" value="" readonly>
+                                <input type="text" class="va-input" id="dynVaNumber" value="xxxxxxxxxxxxxxxxxx" readonly>
                                 <button type="button" class="va-copy-btn" onclick="copyText('dynVaNumber')">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75" /></svg>
                                 </button>
@@ -110,14 +116,19 @@
                         </div>
                         <div class="va-input-group">
                             <label>Nama Penerima</label>
-                            <input type="text" class="va-input" id="dynNamaPenerima" value="Landeuh Village" readonly>
+                            <input type="text" class="va-input" id="dynNamaPenerima" value="ABC DEFGHIJKLMN" readonly>
                         </div>
                     </div>
-                    
-                    <div style="margin-top:0.5rem; margin-bottom:1.5rem; text-align:center;">
-                        <label style="font-size:0.85rem; font-weight:700; color:#444; display:block; margin-bottom:0.5rem;">Jumlah Transfer</label>
-                        <input type="text" class="va-input" id="dynTransferAmount" value="" readonly style="width:auto; display:inline-block; font-size:1.4rem; font-weight:800; color:##333333; text-align:center; padding:0.8rem 1.5rem;">
+                </div>
+
+                <div class="va-card" style="padding:1.2rem 1.5rem; margin-bottom:1.5rem;">
+                    <div style="display:flex; align-items:center; justify-content:space-between; gap:1.5rem; margin-bottom:1rem;">
+                        <label style="font-size:0.95rem; font-weight:700; color:#333; margin:0; white-space:nowrap;">Jumlah Transfer</label>
+                        <div style="flex:1; max-width:380px;">
+                            <input type="text" class="va-input" id="dynTransferAmount" value="{{ isset($booking) ? number_format($booking->total, 0, ',', '.') : '921.609' }}" readonly style="font-size:1.05rem; font-weight:700; color:#333; padding:0.65rem 1rem;">
+                        </div>
                     </div>
+                    <button type="button" class="va-btn-bayar" onclick="goToKonfirmasi('success')">Bayar</button>
                 </div>
                 
                 <h3 style="font-size:1.15rem; font-weight:800; color:#333; margin-bottom:0.8rem;">Bagaimana Cara Transfer</h3>
@@ -383,6 +394,12 @@ const VA_DATA = {
 };
 
 (function(){
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlVa = urlParams.get('va');
+    if (urlVa) sessionStorage.setItem('res_va', urlVa);
+    const urlBookingNo = urlParams.get('booking_no');
+    if (urlBookingNo) sessionStorage.setItem('res_booking_no', urlBookingNo);
+
     // Countdown timer
     let seconds=30*60;
     const el=document.getElementById('countdownTimer');
@@ -391,7 +408,7 @@ const VA_DATA = {
         seconds--;
         const m=String(Math.floor(seconds/60)).padStart(2,'0');
         const s=String(seconds%60).padStart(2,'0');
-        el.textContent='00:'+m+':'+s;
+        el.textContent='00.'+m+'.'+s;
     },1000);
     
     // Load dynamic user data from sessionStorage
@@ -399,12 +416,12 @@ const VA_DATA = {
     const dHp = sessionStorage.getItem('res_hp') || '081512345678';
     const dEmail = sessionStorage.getItem('res_email') || 'arirahman@gmail.com';
     const dTamu = sessionStorage.getItem('res_tamu') || 'M. Akbar R.';
-    const dGuest = sessionStorage.getItem('res_guest') || '4 Dewasa + 1 Anak + 2 Dewasa';
-    const dTotal = sessionStorage.getItem('res_total') || '1.475.000';
-    const dMalam = sessionStorage.getItem('res_malam');
-    const dJudul = sessionStorage.getItem('res_judul');
-    const dCheckin = sessionStorage.getItem('res_checkin');
-    const dCheckout = sessionStorage.getItem('res_checkout');
+    const dGuest = sessionStorage.getItem('res_guest') || '4 Dewasa + 1 Anak (di atas 5 tahun) + 2 Dewasa (di atas 17 tahun)';
+    const dTotal = sessionStorage.getItem('res_total') || '921.609';
+    const dMalam = sessionStorage.getItem('res_malam') || '1';
+    const dJudul = sessionStorage.getItem('res_judul') || 'Kamar Keluarga Deluks dengan Pemandangan Sungai';
+    const dCheckin = sessionStorage.getItem('res_checkin') || 'Selasa, 28 April 2026';
+    const dCheckout = sessionStorage.getItem('res_checkout') || 'Rabu, 29 April 2026';
     
     if(dJudul) document.getElementById('headerAkoJudul').textContent = dJudul;
     
@@ -434,14 +451,12 @@ const VA_DATA = {
     }
 
     // Parse accommodation ID from URL or sessionStorage
-    // Since we are in virtual account page, we can't get ID from URL easily, let's use a stored ID or just 1
     const akoId = parseInt(sessionStorage.getItem('res_akoId')) || 1;
     const akoItem = AKOMODASI_DATA.find(d => d.id === akoId) || AKOMODASI_DATA[0];
     
     if(akoItem) {
-        document.getElementById('headerAkoJudul').textContent = akoItem.judul;
-        document.getElementById('dynBed').innerHTML = `<iconify-icon icon="lucide:bed-double" class="text-lg"></iconify-icon> ${akoItem.kasur}`;
-        document.getElementById('dynSmoking').innerHTML = `<iconify-icon icon="${akoItem.merokok ? 'lucide:cigarette' : 'lucide:cigarette-off'}" class="text-lg"></iconify-icon> ${akoItem.merokok ? 'Boleh merokok di kamar' : 'Dilarang merokok'}`;
+        document.getElementById('dynBed').innerHTML = `<iconify-icon icon="lucide:bed-double" class="text-lg"></iconify-icon> ${akoItem.kasur || 'Queen Bed (160x200)'}`;
+        document.getElementById('dynSmoking').innerHTML = `<iconify-icon icon="${akoItem.merokok ? 'lucide:cigarette' : 'lucide:cigarette-off'}" class="text-lg"></iconify-icon> ${akoItem.merokok ? 'Boleh merokok di kamar' : 'Boleh merokok di kamar'}`;
         
         const fasLen = Math.ceil(akoItem.fasilitas.length / 2);
         document.getElementById('dynFasilitas1').innerHTML = akoItem.fasilitas.slice(0, fasLen).map(f => `<li>${f}</li>`).join('');
@@ -451,20 +466,19 @@ const VA_DATA = {
 
     // Load VA Data
     const selectedVa = sessionStorage.getItem('res_va') || 'BRI Virtual Account';
-    const vaInfo = VA_DATA[selectedVa] || VA_DATA['Virtual Account Lainnya'];
+    const vaInfo = VA_DATA[selectedVa] || VA_DATA['BRI Virtual Account'] || VA_DATA['Virtual Account Lainnya'];
 
     document.getElementById('dynVaName').textContent = vaInfo.name;
     const logoEl = document.getElementById('dynVaLogo');
     logoEl.src = "{{ asset('images/partner-pembayaran') }}/" + vaInfo.logo;
 
-    // Per-bank logo sizing: BNI & BCA lebih kecil, sisanya default
     const logoSizes = {
         'BNI Virtual Account': '28px',
         'BCA Virtual Account': '28px',
-        'BRI Virtual Account': '60px',
-        'Mandiri Virtual Account': '80px',
-        'BSI Virtual Account': '80px',
-        'Virtual Account Lainnya': '80px'
+        'BRI Virtual Account': '36px',
+        'Mandiri Virtual Account': '45px',
+        'BSI Virtual Account': '45px',
+        'Virtual Account Lainnya': '40px'
     };
     logoEl.style.height = logoSizes[selectedVa] || '32px';
 
@@ -494,7 +508,7 @@ const VA_DATA = {
 
 function goToKonfirmasi(status) {
     sessionStorage.setItem('res_payment_status', status);
-    const bookingNo = sessionStorage.getItem('res_booking_no');
+    const bookingNo = sessionStorage.getItem('res_booking_no') || '{{ $booking->no_pesanan ?? "" }}';
     const method = sessionStorage.getItem('res_payment_method') || sessionStorage.getItem('res_va') || 'Virtual Account';
 
     if (bookingNo) {
@@ -502,7 +516,7 @@ function goToKonfirmasi(status) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
             },
             body: JSON.stringify({
                 no_pesanan: bookingNo,
@@ -510,10 +524,10 @@ function goToKonfirmasi(status) {
                 metode_pembayaran: method
             })
         }).finally(() => {
-            window.location.href = '/reservasi/konfirmasi';
+            window.location.href = `/reservasi/konfirmasi?booking_no=${encodeURIComponent(bookingNo)}&status=success`;
         });
     } else {
-        window.location.href = '/reservasi/konfirmasi';
+        window.location.href = '/reservasi/konfirmasi?status=success';
     }
 }
 </script>

@@ -14,43 +14,26 @@
 .pay-steps .num.active{background:#3a523a}
 .pay-steps .line{width:40px;height:2px;background:#3a523a}
 .pay-back{display:flex;align-items:center;gap:0.5rem;font-weight:700;font-size:0.95rem;cursor:pointer;color:#333;margin:1.5rem 0 1rem}
-.pay-timer-bar{background:#3a523a;color:#fff;padding:0.6rem 1.2rem;border-radius:0.75rem;font-size:0.85rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:0.5rem}
-.pay-timer-bar .timer{background:#c0392b;padding:0.2rem 0.6rem;border-radius:0.4rem;font-weight:700;font-family:monospace;font-size:0.95rem}
-/* Card utama mirip va-card */
-.mm-card{background:#f1e5cc;border-radius:0.75rem;border:1px solid #dfd4be;margin-bottom:1rem;overflow:hidden}
-.mm-card-inner{padding:1.5rem}
-.mm-card-confirm{background:#f1e5cc;border-radius:0.75rem;border:1px solid #dfd4be;margin-bottom:1rem;padding:1.5rem}
-/* Header kartu minimarket (nama minimarket + logo bank) */
+.pay-timer-bar{background:#4a7736;color:#fff;padding:0.75rem 1.25rem;border-radius:0.5rem;font-size:0.92rem;font-weight:600;margin-bottom:0.85rem;display:flex;align-items:center;justify-content:space-between}
+.pay-timer-bar .timer{background:transparent;color:#c6f16d;padding:0;border-radius:0;font-weight:800;font-size:1.15rem;font-family:inherit;letter-spacing:0.04em}
+.pay-alert-bar{background:#ea9e37;color:#fff;padding:0.75rem 1.2rem;border-radius:0.5rem;font-size:0.88rem;margin-bottom:1.25rem;font-weight:500}
+.mm-card{background:#f1e5cc;border-radius:0.75rem;border:1px solid #dfd4be;margin-bottom:1.5rem;overflow:hidden}
+.mm-card-confirm{background:#f1e5cc;border-radius:0.75rem;border:1px solid #dfd4be;margin-bottom:1.5rem;padding:1.5rem}
 .mm-card-header{display:flex;justify-content:space-between;align-items:center;padding:1rem 1.5rem;border-bottom:1px solid #dfd4be}
-.mm-card-header .mm-name{font-size:1.15rem;font-weight:700;color:#333}
-/* Kode bayar besar di tengah */
+.mm-card-header .mm-name{font-size:1.15rem;font-weight:800;color:#333}
 .mm-code-section{text-align:center;padding:1.2rem 1.5rem 0.5rem}
-.mm-code-label{font-size:0.8rem;font-weight:600;color:#666;margin-bottom:0.5rem}
-.mm-code-value{font-size:2rem;font-weight:800;color:#c0392b;letter-spacing:0.15em;font-family:monospace;margin-bottom:0.2rem}
-.mm-copy-row{display:flex;justify-content:center;margin-top:0.5rem;margin-bottom:1rem}
-.mm-copy-btn{display:flex;align-items:center;gap:0.4rem;background:transparent;border:1.5px solid #3a523a;color:#3a523a;padding:0.35rem 1rem;border-radius:0.4rem;font-size:0.8rem;font-weight:700;cursor:pointer;transition:0.2s}
-.mm-copy-btn:hover{background:#3a523a;color:#fff}
-/* Cara bayar list */
-.mm-howto{padding:1.2rem 1.5rem}
-.mm-howto-title{font-size:0.9rem;font-weight:800;color:#333;margin-bottom:0.75rem}
+.mm-code-label{font-size:0.82rem;font-weight:600;color:#666;margin-bottom:0.4rem}
+.mm-code-value{font-size:2.2rem;font-weight:800;color:#d32f2f;letter-spacing:0.12em;font-family:monospace;margin-bottom:0.5rem}
+.mm-howto{padding:1rem 1.5rem 1.2rem}
+.mm-howto-title{font-size:0.92rem;font-weight:800;color:#333;margin-bottom:0.6rem}
 .mm-howto ol{padding-left:1.2rem;margin:0}
 .mm-howto ol li{font-size:0.85rem;color:#444;line-height:1.6;margin-bottom:0.35rem}
-/* Divider dalam kartu */
 .mm-divider{height:1px;background:#dfd4be;margin:0}
-/* Harga sebelum admin */
-.mm-price-row{display:flex;justify-content:space-between;align-items:center;padding:0.9rem 1.5rem;font-size:0.9rem;color:#444}
+.mm-price-row{display:flex;justify-content:space-between;align-items:center;padding:1rem 1.5rem;font-size:0.92rem;color:#444}
 .mm-price-row .price-label{color:#555}
-.mm-price-row .price-val{font-weight:700;color:#333;font-size:1.2rem}
-/* Tab minimarket */
-.mm-tabs{display:flex;border-bottom:1px solid #dfd4be;background:#fff}
-.mm-tab-btn{flex:1;background:none;border:none;border-bottom:3px solid transparent;padding:0.75rem 1rem;font-size:0.9rem;font-weight:600;color:#888;cursor:pointer;transition:0.2s}
-.mm-tab-btn.active{border-bottom-color:#3a523a;color:#3a523a;font-weight:800}
-.mm-tab-content{display:none}
-.mm-tab-content.active{display:block}
-/* Konfirmasi */
-.va-btn-outline{width:100%;background:#3a523a;color:#fff;border:none;padding:0.85rem;border-radius:0.5rem;font-size:1rem;font-weight:700;cursor:pointer;transition:0.2s}
-.va-btn-outline:hover{background:#2c402c}
-/* Sidebar (identik dengan VA) */
+.mm-price-row .price-val{font-weight:800;color:#333;font-size:1.15rem}
+.va-btn-outline{width:100%;background:transparent;color:#334d2f;border:1.5px solid #334d2f;padding:0.75rem;border-radius:0.4rem;font-size:0.95rem;font-weight:700;cursor:pointer;transition:0.2s;text-align:center}
+.va-btn-outline:hover{background:#334d2f;color:#fff}
 .sidebar-card-cream{background:#f1e5cc;border-radius:1rem;border:1px solid #dfd4be;padding:1.5rem;margin-bottom:1rem;box-shadow:0 10px 25px rgba(0,0,0,0.05);overflow:hidden}
 .sidebar-card-cream h3{font-size:1.15rem;font-weight:800;display:flex;align-items:center;gap:0.5rem;margin-bottom:1.2rem;color:#222}
 .sb-checkin{display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.4);backdrop-filter:blur(5px);margin:0 -1.5rem 1rem -1.5rem;padding:1rem 1.5rem;border-bottom:1px solid #dfd4be;border-top:1px solid #dfd4be}
@@ -83,7 +66,7 @@
         <div class="pay-logo">
             <img src="{{ asset('images/logo-landeuh.png') }}" alt="Logo">
             <div class="divider"></div>
-            <h2 id="headerAkoJudul">Memuat informasi...</h2>
+            <h2 id="headerAkoJudul">{{ (isset($booking) && ($booking->corporatePackage ?? $booking->accommodation)) ? ($booking->corporatePackage->judul ?? $booking->accommodation->judul) : 'Kamar Keluarga Deluks dengan Pemandangan Sungai' }}</h2>
         </div>
         <div class="pay-steps">
             <div style="display:flex;align-items:center;gap:0.35rem"><div class="num done">1</div> Review</div>
@@ -100,12 +83,12 @@
             {{-- LEFT --}}
             <div style="flex:1.4;">
                 <div class="pay-timer-bar">
-                    Harga sudah kami amankan. Selesaikan pembayaran dalam
-                    <span class="timer" id="countdownTimer">00:30:00</span>
+                    <span>Harga sudah kami amankan. Selesaikan pembayaran dalam</span>
+                    <span class="timer" id="countdownTimer">00.30.00</span>
                 </div>
 
-                <div style="background:#e6a645;color:#fff;padding:0.8rem 1.2rem;border-radius:0.5rem;font-size:0.85rem;margin-bottom:1.5rem;">
-                    Cek emailmu (<strong><span id="userEmailSpan">...</span></strong>) sekarang untuk detail cara bayar.
+                <div class="pay-alert-bar">
+                    Cek emailmu (<strong id="userEmailSpan">{{ $booking->pemesan_email ?? 'xxxxxx@gmail.com' }}</strong>) sekarang untuk detail cara bayar.
                 </div>
 
                 {{-- Judul section --}}
@@ -113,43 +96,39 @@
                     Tunjukkan Kode Bayar di Kasir Alfamart
                 </h3>
 
-                {{-- Kartu kode bayar (single, dynamic) --}}
+                {{-- Kartu kode bayar --}}
                 <div class="mm-card">
-
                     <div class="mm-card-header">
-                        <span class="mm-name" id="dynMmName">Memuat...</span>
-                        <img id="dynMmLogo" src="" alt="" style="height:28px;object-fit:contain;display:none;">
+                        <span class="mm-name" id="dynMmName">Alfamart/Alfamidi</span>
+                        <div style="height:32px; display:flex; align-items:center; justify-content:flex-end;">
+                            <img id="dynMmLogo" src="{{ asset('images/partner-pembayaran/bni.png') }}" alt="" style="height:26px;object-fit:contain;">
+                        </div>
                     </div>
 
                     <div class="mm-code-section">
-                        <div class="mm-code-label" id="dynMmCodeLabel">Kode Pembayaran</div>
+                        <div class="mm-code-label" id="dynMmCodeLabel">Kode Pembayaran di Alfamart</div>
                         <div class="mm-code-value" id="dynMmCode">XXXXXX</div>
                     </div>
-                    <div class="mm-copy-row">
-                        <button class="mm-copy-btn" onclick="copyCode('dynMmCode', this)">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="15" height="15"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75"/></svg>
-                            Salin Kode
-                        </button>
-                    </div>
-
-                    <div class="mm-divider"></div>
 
                     <div class="mm-howto">
-                        <div class="mm-howto-title" id="dynMmHowtoTitle">Cara Bayar</div>
-                        <ol id="dynMmSteps"></ol>
+                        <div class="mm-howto-title" id="dynMmHowtoTitle">Cara Bayar di Alfamart</div>
+                        <ol id="dynMmSteps">
+                            <li>Sampaikan pada kasir Alfamart bahwa Anda hendak membayar transaksi Traveloka.</li>
+                            <li>Tunjukkan Kode Pembayaran Anda (bukan No. Pesanan Traveloka) ke kasir.</li>
+                            <li>Biaya tambahan sebesar Rp2.500/transaksi di luar harga total, akan dikenakan oleh pihak Alfamart.</li>
+                        </ol>
                     </div>
 
                     <div class="mm-divider"></div>
 
                     <div class="mm-price-row">
                         <span class="price-label">Harga sebelum biaya admin</span>
-                        <span class="price-val" id="dynMmHarga">IDR 1.475.000</span>
+                        <span class="price-val" id="dynMmHarga">{{ isset($booking) ? 'IDR ' . number_format($booking->total, 0, ',', '.') : 'IDR 921.609' }}</span>
                     </div>
-
                 </div>
 
                 {{-- Sudah selesai bayar --}}
-                <h3 style="font-size:1.15rem;font-weight:800;color:#333;margin-bottom:0.8rem;margin-top:2rem;">
+                <h3 style="font-size:1.15rem;font-weight:800;color:#333;margin-bottom:0.8rem;margin-top:1.5rem;">
                     Sudah selesai bayar?
                 </h3>
                 <div class="mm-card-confirm">
@@ -163,7 +142,7 @@
 
             </div>
 
-            {{-- RIGHT: Rincian Reservasi (identik dengan VA) --}}
+            {{-- RIGHT: Rincian Reservasi --}}
             <div style="flex:0.8;min-width:300px;position:sticky;top:80px">
                 <div class="sidebar-card-cream">
                     <h3>
@@ -177,7 +156,7 @@
                             <div class="time">Dari 14.00</div>
                         </div>
                         <div style="text-align:center;color:#888">
-                            <div id="dynMalam" style="font-size:0.7rem;font-weight:600">1 malam</div>
+                            <div id="dynMalam" style="font-size:0.75rem;font-weight:600">1 malam</div>
                             <div style="font-size:1.2rem;margin-top:-4px">→</div>
                         </div>
                         <div style="text-align:right">
@@ -188,28 +167,41 @@
                     </div>
 
                     <div class="sb-bed">
-                        <div id="dynBed"><iconify-icon icon="lucide:bed-double" class="text-lg"></iconify-icon> Memuat...</div>
+                        <div id="dynBed"><iconify-icon icon="lucide:bed-double" class="text-lg"></iconify-icon> Queen Bed (160x200)</div>
                         <div class="divider"></div>
-                        <div id="dynSmoking"><iconify-icon icon="lucide:cigarette" class="text-lg"></iconify-icon> Memuat...</div>
+                        <div id="dynSmoking"><iconify-icon icon="lucide:cigarette" class="text-lg"></iconify-icon> Boleh merokok di kamar</div>
                     </div>
 
                     <div class="sb-fasilitas">
                         <div>
                             <div class="col-title">Fasilitas Kamar:</div>
-                            <ul id="dynFasilitas1"></ul>
+                            <ul id="dynFasilitas1">
+                                <li>TV kabel</li>
+                                <li>Meja</li>
+                                <li>Lemari es</li>
+                                <li>TV</li>
+                            </ul>
                         </div>
                         <div style="padding-top:1.4rem">
-                            <ul id="dynFasilitas2"></ul>
+                            <ul id="dynFasilitas2">
+                                <li>Ruang tamu</li>
+                                <li>Balkon</li>
+                                <li>Dapur</li>
+                                <li>Kipas angin</li>
+                            </ul>
                         </div>
                         <div>
                             <div class="col-title">Makanan & Minuman:</div>
-                            <ul id="dynMakanan"></ul>
+                            <ul id="dynMakanan">
+                                <li>Fasilitas Membuat Kopi/Teh</li>
+                                <li>Air Minum Gratis</li>
+                            </ul>
                         </div>
                     </div>
 
                     <div class="sb-guest">
                         <iconify-icon icon="lucide:user" class="text-lg"></iconify-icon>
-                        <span id="dynGuestInfo">Memuat...</span>
+                        <span id="dynGuestInfo">4 Dewasa + 1 Anak (di atas 5 tahun) + 2 Dewasa (di atas 17 tahun)</span>
                     </div>
 
                     <div class="sb-identity">
@@ -218,9 +210,9 @@
                             <div class="row">
                                 <iconify-icon icon="lucide:user-check" class="text-base mt-1"></iconify-icon>
                                 <div class="details">
-                                    <div id="dynNama">Memuat...</div>
-                                    <div id="dynHp">Memuat...</div>
-                                    <div id="dynEmail">Memuat...</div>
+                                    <div id="dynNama">Ari Rahman</div>
+                                    <div id="dynHp">081512345678</div>
+                                    <div id="dynEmail">arirahman@gmail.com</div>
                                 </div>
                             </div>
                         </div>
@@ -229,7 +221,7 @@
                             <div class="row" style="justify-content:flex-end">
                                 <iconify-icon icon="lucide:book-user" class="text-base mt-0.5"></iconify-icon>
                                 <div class="details">
-                                    <div id="dynTamu">Memuat...</div>
+                                    <div id="dynTamu">M. Akbar R.</div>
                                 </div>
                             </div>
                         </div>
@@ -245,88 +237,77 @@
 <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
 <script src="{{ asset('js/akomodasi-data.js') }}"></script>
 <script>
-
-/* ── Salin kode ── */
-function copyCode(elId, btn) {
-    const text = document.getElementById(elId).textContent.trim();
-    navigator.clipboard.writeText(text).then(() => {
-        const orig = btn.innerHTML;
-        btn.textContent = '✓ Tersalin!';
-        setTimeout(() => { btn.innerHTML = orig; }, 2000);
-    });
-}
-
-/* ── Data minimarket ── */
 const MM_DATA = {
     alfamart: {
-        name: 'Alfamart / Alfamidi',
-        logo: '{{ asset("images/partner-pembayaran/alfamart.png") }}',
+        name: 'Alfamart/Alfamidi',
+        logo: '{{ asset("images/partner-pembayaran/bni.png") }}',
         codeLabel: 'Kode Pembayaran di Alfamart',
+        codeValue: 'XXXXXX',
         howtoTitle: 'Cara Bayar di Alfamart',
         sectionTitle: 'Tunjukkan Kode Bayar di Kasir Alfamart',
         steps: [
-            'Sampaikan pada kasir Alfamart bahwa Anda hendak membayar transaksi <strong>Landeuh Village</strong>.',
-            'Tunjukkan <strong>Kode Pembayaran</strong> Anda (bukan No. Pesanan) ke kasir.',
-            'Biaya tambahan sebesar <strong>Rp2.500/transaksi</strong> di luar harga total, akan dikenakan oleh pihak Alfamart.'
+            'Sampaikan pada kasir Alfamart bahwa Anda hendak membayar transaksi Traveloka.',
+            'Tunjukkan Kode Pembayaran Anda (bukan No. Pesanan Traveloka) ke kasir.',
+            'Biaya tambahan sebesar Rp2.500/transaksi di luar harga total, akan dikenakan oleh pihak Alfamart.'
         ]
     },
     indomaret: {
         name: 'Indomaret',
-        logo: '{{ asset("images/partner-pembayaran/indomaret.png") }}',
+        logo: '{{ asset("images/partner-pembayaran/bni.png") }}',
         codeLabel: 'Kode Pembayaran di Indomaret',
+        codeValue: 'XXXXXX',
         howtoTitle: 'Cara Bayar di Indomaret',
         sectionTitle: 'Tunjukkan Kode Bayar di Kasir Indomaret',
         steps: [
-            'Sampaikan pada kasir Indomaret bahwa Anda hendak membayar transaksi <strong>Landeuh Village</strong>.',
-            'Tunjukkan <strong>Kode Pembayaran</strong> Anda (bukan No. Pesanan) ke kasir.',
-            'Biaya tambahan sebesar <strong>Rp2.500/transaksi</strong> di luar harga total, akan dikenakan oleh pihak Indomaret.'
+            'Sampaikan pada kasir Indomaret bahwa Anda hendak membayar transaksi Traveloka.',
+            'Tunjukkan Kode Pembayaran Anda (bukan No. Pesanan Traveloka) ke kasir.',
+            'Biaya tambahan sebesar Rp2.500/transaksi di luar harga total, akan dikenakan oleh pihak Indomaret.'
         ]
     }
 };
 
 (function () {
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlMarket = urlParams.get('market');
+    if (urlMarket) sessionStorage.setItem('res_market', urlMarket);
+    const urlBookingNo = urlParams.get('booking_no');
+    if (urlBookingNo) sessionStorage.setItem('res_booking_no', urlBookingNo);
 
-    /* Tentukan minimarket dari sessionStorage */
-    const selectedMm = sessionStorage.getItem('res_minimarket') || '';
+    const selectedMm = sessionStorage.getItem('res_market') || '';
     const isIndomaret = selectedMm.toLowerCase().includes('indomaret');
     const mm = isIndomaret ? MM_DATA.indomaret : MM_DATA.alfamart;
 
-    /* Populate card */
     document.getElementById('dynSectionTitle').textContent = mm.sectionTitle;
     document.getElementById('dynMmName').textContent = mm.name;
     const logoEl = document.getElementById('dynMmLogo');
     logoEl.src = mm.logo;
-    logoEl.alt = mm.name;
-    logoEl.style.display = 'inline-block';
-    logoEl.onerror = function(){ this.style.display='none'; };
     document.getElementById('dynMmCodeLabel').textContent = mm.codeLabel;
+    document.getElementById('dynMmCode').textContent = mm.codeValue;
     document.getElementById('dynMmHowtoTitle').textContent = mm.howtoTitle;
     document.getElementById('dynMmSteps').innerHTML = mm.steps.map(s => `<li>${s}</li>`).join('');
 
-    /* Countdown */
-    const stored = sessionStorage.getItem('res_timer');
-    let seconds = stored ? parseInt(stored) : 30 * 60;
+    // Countdown
+    let seconds = 30 * 60;
     const el = document.getElementById('countdownTimer');
-    const iv = setInterval(() => {
-        if (seconds <= 0) { clearInterval(iv); el.textContent = '00:00:00'; return; }
+    setInterval(() => {
+        if (seconds <= 0) return;
         seconds--;
-        sessionStorage.setItem('res_timer', seconds);
         const m = String(Math.floor(seconds / 60)).padStart(2, '0');
         const s = String(seconds % 60).padStart(2, '0');
-        el.textContent = '00:' + m + ':' + s;
+        el.textContent = '00.' + m + '.' + s;
     }, 1000);
 
-    /* Data pemesan */
+    // Data pemesan
     const dNama  = sessionStorage.getItem('res_nama')  || 'Ari Rahman';
     const dHp    = sessionStorage.getItem('res_hp')    || '081512345678';
     const dEmail = sessionStorage.getItem('res_email') || 'arirahman@gmail.com';
     const dTamu  = sessionStorage.getItem('res_tamu')  || 'M. Akbar R.';
-    const dGuest = sessionStorage.getItem('res_guest') || '4 Dewasa + 1 Anak + 2 Dewasa';
-    const dTotal = sessionStorage.getItem('res_total') || 'IDR 1.475.000';
-    const dMalam = sessionStorage.getItem('res_malam');
-    const dJudul = sessionStorage.getItem('res_judul');
-    const dCheckin = sessionStorage.getItem('res_checkin');
-    const dCheckout = sessionStorage.getItem('res_checkout');
+    const dGuest = sessionStorage.getItem('res_guest') || '4 Dewasa + 1 Anak (di atas 5 tahun) + 2 Dewasa (di atas 17 tahun)';
+    const dTotal = sessionStorage.getItem('res_total') || 'IDR 921.609';
+    const dMalam = sessionStorage.getItem('res_malam') || '1';
+    const dJudul = sessionStorage.getItem('res_judul') || 'Kamar Keluarga Deluks dengan Pemandangan Sungai';
+    const dCheckin = sessionStorage.getItem('res_checkin') || 'Selasa, 28 April 2026';
+    const dCheckout = sessionStorage.getItem('res_checkout') || 'Rabu, 29 April 2026';
 
     document.getElementById('dynNama').textContent  = dNama;
     document.getElementById('dynHp').textContent    = dHp;
@@ -335,7 +316,6 @@ const MM_DATA = {
     document.getElementById('dynTamu').textContent  = dTamu;
     document.getElementById('dynGuestInfo').textContent = dGuest;
 
-    /* Harga */
     const totalFormatted = dTotal.startsWith('IDR') ? dTotal : 'IDR ' + dTotal;
     document.getElementById('dynMmHarga').textContent = totalFormatted;
     
@@ -355,49 +335,31 @@ const MM_DATA = {
         if(coEl) coEl.textContent = dCheckout;
     }
 
-    /* Kode pembayaran dummy */
-    const storedCode = sessionStorage.getItem('res_mm_code') || String(Math.floor(100000 + Math.random() * 900000));
-    sessionStorage.setItem('res_mm_code', storedCode);
-    document.getElementById('dynMmCode').textContent = storedCode;
-
-    /* Akomodasi */
-    const akoId   = parseInt(sessionStorage.getItem('res_akoId')) || 1;
-    const akoItem = (typeof AKOMODASI_DATA !== 'undefined')
-                  ? (AKOMODASI_DATA.find(d => d.id === akoId) || AKOMODASI_DATA[0])
-                  : null;
+    const akoId = parseInt(sessionStorage.getItem('res_akoId')) || 1;
+    const akoItem = AKOMODASI_DATA.find(d => d.id === akoId) || AKOMODASI_DATA[0];
 
     if (akoItem) {
-        document.getElementById('headerAkoJudul').textContent = akoItem.judul;
-        document.getElementById('dynBed').innerHTML =
-            `<iconify-icon icon="lucide:bed-double" class="text-lg"></iconify-icon> ${akoItem.kasur}`;
-        document.getElementById('dynSmoking').innerHTML =
-            `<iconify-icon icon="${akoItem.merokok ? 'lucide:cigarette' : 'lucide:cigarette-off'}" class="text-lg"></iconify-icon>
-             ${akoItem.merokok ? 'Boleh merokok di kamar' : 'Dilarang merokok'}`;
+        document.getElementById('dynBed').innerHTML = `<iconify-icon icon="lucide:bed-double" class="text-lg"></iconify-icon> ${akoItem.kasur || 'Queen Bed (160x200)'}`;
+        document.getElementById('dynSmoking').innerHTML = `<iconify-icon icon="${akoItem.merokok ? 'lucide:cigarette' : 'lucide:cigarette-off'}" class="text-lg"></iconify-icon> ${akoItem.merokok ? 'Boleh merokok di kamar' : 'Boleh merokok di kamar'}`;
 
         const fasLen = Math.ceil(akoItem.fasilitas.length / 2);
-        document.getElementById('dynFasilitas1').innerHTML =
-            akoItem.fasilitas.slice(0, fasLen).map(f => `<li>${f}</li>`).join('');
-        document.getElementById('dynFasilitas2').innerHTML =
-            akoItem.fasilitas.slice(fasLen).map(f => `<li>${f}</li>`).join('');
-        document.getElementById('dynMakanan').innerHTML =
-            akoItem.makanan.map(m => `<li>${m}</li>`).join('');
-    } else {
-        document.getElementById('headerAkoJudul').textContent = 'Kamar Keluarga Deluks dengan Pemandangan Sungai';
+        document.getElementById('dynFasilitas1').innerHTML = akoItem.fasilitas.slice(0, fasLen).map(f => `<li>${f}</li>`).join('');
+        document.getElementById('dynFasilitas2').innerHTML = akoItem.fasilitas.slice(fasLen).map(f => `<li>${f}</li>`).join('');
+        document.getElementById('dynMakanan').innerHTML = akoItem.makanan.map(m => `<li>${m}</li>`).join('');
     }
-
 })();
 
 function goToKonfirmasi(status) {
     sessionStorage.setItem('res_payment_status', status);
-    const bookingNo = sessionStorage.getItem('res_booking_no');
-    const method = sessionStorage.getItem('res_payment_method') || sessionStorage.getItem('res_minimarket') || 'Minimarket';
+    const bookingNo = sessionStorage.getItem('res_booking_no') || '{{ $booking->no_pesanan ?? "" }}';
+    const method = sessionStorage.getItem('res_payment_method') || sessionStorage.getItem('res_market') || 'Minimarket';
 
     if (bookingNo) {
         fetch('/reservasi/update-status', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
             },
             body: JSON.stringify({
                 no_pesanan: bookingNo,
@@ -405,13 +367,12 @@ function goToKonfirmasi(status) {
                 metode_pembayaran: method
             })
         }).finally(() => {
-            window.location.href = '/reservasi/konfirmasi';
+            window.location.href = `/reservasi/konfirmasi?booking_no=${encodeURIComponent(bookingNo)}&status=success`;
         });
     } else {
-        window.location.href = '/reservasi/konfirmasi';
+        window.location.href = '/reservasi/konfirmasi?status=success';
     }
 }
-
 </script>
 @endpush
 @endsection

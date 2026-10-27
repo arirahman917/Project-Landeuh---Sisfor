@@ -14,50 +14,19 @@
 .pay-steps .num.active{background:#3a523a}
 .pay-steps .line{width:40px;height:2px;background:#3a523a}
 .pay-back{display:flex;align-items:center;gap:0.5rem;font-weight:700;font-size:0.95rem;cursor:pointer;color:#333;margin:1.5rem 0 1rem}
-.pay-timer-bar{background:#3a523a;color:#fff;padding:0.6rem 1.2rem;border-radius:0.75rem;font-size:0.85rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:0.5rem}
-.pay-timer-bar .timer{background:#c0392b;padding:0.2rem 0.6rem;border-radius:0.4rem;font-weight:700;font-family:monospace;font-size:0.95rem}
-.va-card{background:#f1e5cc;border-radius:0.75rem;border:1px solid #dfd4be;margin-bottom:1rem;padding-right:1.5rem;padding-left:1.5rem;padding-top:1.5rem;padding-bottom:0.3rem}
+.pay-timer-bar{background:#4a7736;color:#fff;padding:0.75rem 1.25rem;border-radius:0.5rem;font-size:0.92rem;font-weight:600;margin-bottom:0.85rem;display:flex;align-items:center;justify-content:space-between}
+.pay-timer-bar .timer{background:transparent;color:#c6f16d;padding:0;border-radius:0;font-weight:800;font-size:1.15rem;font-family:inherit;letter-spacing:0.04em}
+.pay-alert-bar{background:#ea9e37;color:#fff;padding:0.75rem 1.2rem;border-radius:0.5rem;font-size:0.88rem;margin-bottom:1.25rem;font-weight:500}
+.va-card{background:#f1e5cc;border-radius:0.75rem;border:1px solid #dfd4be;margin-bottom:1rem;padding:1.5rem}
 .va-card-confirm{background:#f1e5cc;border-radius:0.75rem;border:1px solid #dfd4be;margin-bottom:1.5rem;padding:1.5rem}
 .va-title{font-size:1.15rem;font-weight:800;color:#333;margin-bottom:1.5rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #dfd4be;padding-bottom:1rem}
-.va-input-group{display:flex;flex-direction:column;gap:0.5rem;margin-bottom:1.2rem}
+.va-input-group{display:flex;flex-direction:column;gap:0.5rem;margin-bottom:0.5rem}
 .va-input-group label{font-size:0.85rem;font-weight:700;color:#444}
 .va-input-wrapper{position:relative;display:flex;align-items:center}
 .va-input{width:100%;padding:0.8rem 1rem;border:1px solid #dfd4be;border-radius:0.5rem;font-size:0.95rem;outline:none;background:#fff;font-weight:600;color:#333}
 .va-copy-btn{position:absolute;right:0.5rem;top:50%;transform:translateY(-50%);background:transparent;border:none;color:#3a523a;cursor:pointer;padding:0.5rem;display:flex;align-items:center;justify-content:center}
-.va-btn{width:100%;background:#3a523a;color:#fff;border:none;padding:0.85rem;border-radius:0.5rem;font-size:1rem;font-weight:700;cursor:pointer;transition:0.2s}
-.va-btn:hover{background:#2c402c}
-.va-btn-outline{width:100%;background:#3a523a;color:#fff;border:none;padding:0.85rem;border-radius:0.5rem;font-size:1rem;font-weight:700;cursor:pointer;transition:0.2s}
-.va-btn-outline:hover{background:#2c402c}
-.code-section{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem}
-.code-section .code-label{font-size:0.75rem;color:#888;margin-bottom:0.3rem}
-.code-section .code-value{font-size:1.5rem;font-weight:800;color:#3a523a;letter-spacing:0.12em;font-family:monospace}
-.code-section .copy-btn{background:#3a523a;color:#fff;border:none;padding:0.45rem 1rem;border-radius:0.5rem;font-size:0.8rem;font-weight:700;cursor:pointer;transition:0.2s;white-space:nowrap}
-.code-section .copy-btn:hover{background:#2c402c}
-.code-note{font-size:0.75rem;color:#888;margin-bottom:1.5rem;border-bottom:1px solid #dfd4be;padding-bottom:1.2rem}
-.tab-nav{display:flex;border-bottom:1px solid #dfd4be;margin-bottom:0}
-.tab-btn{background:none;border:none;border-bottom:2.5px solid transparent;padding:0.6rem 1rem 0.5rem;font-size:0.85rem;font-weight:600;color:#888;cursor:pointer;margin-right:0.5rem;transition:0.2s}
-.tab-btn.active{border-bottom-color:#3a523a;color:#3a523a;font-weight:700}
-.tab-content{display:none}
-.tab-content.active{display:flex;flex-direction:column}
-.steps-list{padding:1.2rem 0 0.5rem;display:flex;flex-direction:column;gap:0.75rem}
-.step-item{display:flex;gap:1rem;align-items:flex-start}
-.step-num{min-width:28px;height:28px;border-radius:50%;background:#3a523a;color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:700;margin-top:2px;flex-shrink:0}
-.step-body{flex:1}
-.step-title{font-size:0.9rem;font-weight:700;color:#333;margin-bottom:0.2rem}
-.step-desc{font-size:0.8rem;color:#666;line-height:1.5}
-.step-code{display:inline-block;background:#fff;border:1px dashed #b5a48a;border-radius:0.4rem;padding:0.25rem 0.6rem;font-family:monospace;font-size:0.85rem;font-weight:700;color:#3a523a;margin-top:0.3rem;letter-spacing:0.05em}
-.info-box{background:#fff;border:1px solid #e8d8bf;border-radius:0.75rem;padding:0.9rem 1.1rem;font-size:0.78rem;color:#666;margin-top:0.75rem;line-height:1.6}
-.info-box ul{margin:0.3rem 0 0 1rem;list-style:disc}
-.info-box ul li{margin-bottom:0.25rem}
-.inst-item{border-bottom:1px solid #dfd4be}
-.inst-item:last-child{border-bottom:none}
-.inst-header{display:flex;justify-content:space-between;align-items:center;padding:1.2rem 0;cursor:pointer;font-weight:700;font-size:0.95rem;color:#333}
-.inst-header .chevron{transition:transform 0.3s}
-.inst-item.open .chevron{transform:rotate(180deg)}
-.inst-content{display:none;padding:0 0 1.2rem 0;font-size:0.85rem;color:#444;line-height:1.6}
-.inst-item.open .inst-content{display:block}
-.inst-content ol{padding-left:1.2rem;margin-bottom:0}
-.inst-content ol li{margin-bottom:0.4rem}
+.va-btn-outline{width:100%;background:transparent;color:#334d2f;border:1.5px solid #334d2f;padding:0.75rem;border-radius:0.4rem;font-size:0.95rem;font-weight:700;cursor:pointer;transition:0.2s;text-align:center}
+.va-btn-outline:hover{background:#334d2f;color:#fff}
 .sidebar-card-cream{background:#f1e5cc;border-radius:1rem;border:1px solid #dfd4be;padding:1.5rem;margin-bottom:1rem;box-shadow:0 10px 25px rgba(0,0,0,0.05);overflow:hidden}
 .sidebar-card-cream h3{font-size:1.15rem;font-weight:800;display:flex;align-items:center;gap:0.5rem;margin-bottom:1.2rem;color:#222}
 .sb-checkin{display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.4);backdrop-filter:blur(5px);margin:0 -1.5rem 1rem -1.5rem;padding:1rem 1.5rem;border-bottom:1px solid #dfd4be;border-top:1px solid #dfd4be}
@@ -90,7 +59,7 @@
         <div class="pay-logo">
             <img src="{{ asset('images/logo-landeuh.png') }}" alt="Logo">
             <div class="divider"></div>
-            <h2 id="headerAkoJudul">Memuat informasi...</h2>
+            <h2 id="headerAkoJudul">{{ (isset($booking) && ($booking->corporatePackage ?? $booking->accommodation)) ? ($booking->corporatePackage->judul ?? $booking->accommodation->judul) : 'Kamar Keluarga Deluks dengan Pemandangan Sungai' }}</h2>
         </div>
         <div class="pay-steps">
             <div style="display:flex;align-items:center;gap:0.35rem"><div class="num done">1</div> Review</div>
@@ -105,102 +74,52 @@
         <div class="pay-grid" style="display:flex;gap:1.5rem;align-items:flex-start">
             {{-- LEFT --}}
             <div style="flex:1.4;">
-                <div class="pay-timer-bar">Harga sudah kami amankan. Selesaikan pembayaran dalam <span class="timer" id="countdownTimer">00:30:00</span></div>
-                
-                <div style="background:#e6a645; color:#fff; padding:0.8rem 1.2rem; border-radius:0.5rem; font-size:0.85rem; margin-bottom:1.5rem;">
-                    Cek emailmu (<strong><span id="userEmailSpan">...</span></strong>) sekarang untuk detail cara bayar.
+                <div class="pay-timer-bar">
+                    <span>Harga sudah kami amankan. Selesaikan pembayaran dalam</span>
+                    <span class="timer" id="countdownTimer">00.30.00</span>
                 </div>
                 
-                <h3 style="font-size:1.15rem; font-weight:800; color:#333; margin-bottom:0.8rem;">Kode Pembayaran ATM</h3>
+                <div class="pay-alert-bar">
+                    Cek emailmu (<strong id="userEmailSpan">{{ $booking->pemesan_email ?? 'xxxxxx@gmail.com' }}</strong>) sekarang untuk detail cara bayar.
+                </div>
+                
+                <h3 style="font-size:1.15rem; font-weight:800; color:#333; margin-bottom:0.8rem;">Mohon transfer ke</h3>
                 
                 <div class="va-card">
                     <div class="va-title">
-                        <span>ATM Bersama / Prima</span>
-                        <div style="height:36px; display:flex; align-items:center; justify-content:flex-end; gap:0.75rem;">
-                            <img src="{{ asset('images/partner-pembayaran/atm_bersama.png') }}" alt="ATM Bersama" style="height:28px; object-fit:contain;">
-                            <img src="{{ asset('images/partner-pembayaran/linkaja.png') }}" alt="Link" style="height:28px; object-fit:contain;">
+                        <span>BNI</span>
+                        <div style="height:36px; display:flex; align-items:center; justify-content:flex-end;">
+                            <img src="{{ asset('images/partner-pembayaran/bni.png') }}" alt="BNI" style="height:28px; object-fit:contain;">
                         </div>
                     </div>
                     
                     <div style="display:grid; grid-template-columns:1.5fr 1fr; gap:1rem;">
                         <div class="va-input-group">
-                            <label>Nomor Kode Bayar ATM</label>
+                            <label>No. Rekening</label>
                             <div class="va-input-wrapper">
-                                <input type="text" class="va-input" id="atmCode" value="7002 4812 3456" readonly>
-                                <button type="button" class="va-copy-btn" onclick="copyCode()">
+                                <input type="text" class="va-input" id="atmCode" value="xxxxxxxxxxxxxxxxxx" readonly>
+                                <button type="button" class="va-copy-btn" onclick="copyText('atmCode')" title="Salin">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75" /></svg>
                                 </button>
                             </div>
                         </div>
                         <div class="va-input-group">
                             <label>Nama Penerima</label>
-                            <input type="text" class="va-input" id="dynNamaPenerima" value="Landeuh Village" readonly>
-                        </div>
-                    </div>
-                    
-                    <div style="margin-top:0.5rem; margin-bottom:1.5rem; text-align:center;">
-                        <label style="font-size:0.85rem; font-weight:700; color:#444; display:block; margin-bottom:0.5rem;">Jumlah Transfer</label>
-                        <input type="text" class="va-input" id="dynTransferAmount" value="IDR 1.475.000" readonly style="width:auto; display:inline-block; font-size:1.4rem; font-weight:800; color:#333; text-align:center; padding:0.8rem 1.5rem;">
-                    </div>
-                </div>
-                
-                <h3 style="font-size:1.15rem; font-weight:800; color:#333; margin-bottom:0.8rem;">Bagaimana Cara Pembayaran</h3>
-                <div class="va-card" style="padding: 0.5rem 1.5rem">
-                    <div class="inst-item open">
-                        <div class="inst-header" onclick="toggleInst(this)">
-                            ATM Bersama / Prima
-                            <svg class="chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
-                        </div>
-                        <div class="inst-content">
-                            <ol>
-                                <li>Masukkan kartu ATM Anda, lalu masukkan nomor PIN dengan benar.</li>
-                                <li>Pilih <strong>Transaksi Lain</strong> → <strong>Transfer</strong> → <strong>Ke Rekening Bank Lain</strong>.</li>
-                                <li>Masukkan kode bank <strong>Permata (013)</strong> diikuti nomor kode bayar: <strong>7002 4812 3456</strong>.</li>
-                                <li>Masukkan nominal tepat sesuai tagihan. Pembayaran dengan nominal berbeda tidak akan diverifikasi otomatis.</li>
-                                <li>Periksa detail transaksi, konfirmasi, dan simpan struk sebagai bukti pembayaran.</li>
-                            </ol>
-                        </div>
-                    </div>
-                    <div class="inst-item">
-                        <div class="inst-header" onclick="toggleInst(this)">
-                            Mobile Banking
-                            <svg class="chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
-                        </div>
-                        <div class="inst-content">
-                            <ol>
-                                <li>Login ke aplikasi Mobile Banking bank Anda menggunakan username dan PIN / password.</li>
-                                <li>Pilih menu <strong>Pembayaran</strong> atau <strong>Transfer</strong>, lalu pilih <strong>Bank Lain</strong>.</li>
-                                <li>Pilih bank tujuan <strong>Permata</strong>, lalu masukkan nomor kode bayar: <strong>7002 4812 3456</strong>.</li>
-                                <li>Pastikan nominal sesuai, lalu ikuti instruksi otorisasi (PIN / OTP) untuk menyelesaikan pembayaran.</li>
-                            </ol>
-                        </div>
-                    </div>
-                    <div class="inst-item">
-                        <div class="inst-header" onclick="toggleInst(this)">
-                            Internet Banking
-                            <svg class="chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
-                        </div>
-                        <div class="inst-content">
-                            <ol>
-                                <li>Buka situs Internet Banking bank Anda dan login menggunakan user ID dan password.</li>
-                                <li>Pilih menu <strong>Transfer</strong> → <strong>Transfer ke Bank Lain</strong>.</li>
-                                <li>Pilih bank tujuan <strong>Permata</strong> dan masukkan nomor kode bayar: <strong>7002 4812 3456</strong>.</li>
-                                <li>Masukkan nominal tepat, lalu otorisasi menggunakan token / OTP.</li>
-                            </ol>
+                            <input type="text" class="va-input" id="dynNamaPenerima" value="ABC DEFGHIJKLMN" readonly>
                         </div>
                     </div>
                 </div>
 
-                <div class="info-box" style="margin-bottom:1.5rem">
-                    <strong style="color:#555">Perhatian:</strong>
-                    <ul>
-                        <li>Pembayaran hanya dapat dilakukan melalui transfer online secara realtime.</li>
-                        <li>Transfer melalui RTGS, SKN, atau BI Fast tidak dapat diproses untuk verifikasi otomatis.</li>
-                        <li>Pastikan nominal pembayaran sesuai dengan total tagihan.</li>
-                    </ul>
+                <div class="va-card" style="padding:1.2rem 1.5rem; margin-bottom:1.5rem;">
+                    <div style="display:flex; align-items:center; justify-content:space-between; gap:1.5rem;">
+                        <label style="font-size:0.95rem; font-weight:700; color:#333; margin:0; white-space:nowrap;">Jumlah Transfer</label>
+                        <div style="flex:1; max-width:380px;">
+                            <input type="text" class="va-input" id="dynTransferAmount" value="{{ isset($booking) ? number_format($booking->total, 0, ',', '.') : '921.609' }}" readonly style="font-size:1.05rem; font-weight:700; color:#333; padding:0.65rem 1rem;">
+                        </div>
+                    </div>
                 </div>
                 
-                <h3 style="font-size:1.15rem; font-weight:800; color:#333; margin-bottom:0.8rem; margin-top:2rem;">Sudah selesai bayar?</h3>
+                <h3 style="font-size:1.15rem; font-weight:800; color:#333; margin-bottom:0.8rem; margin-top:1.5rem;">Sudah selesai bayar?</h3>
                 <div class="va-card-confirm">
                     <p style="font-size:0.9rem; color:#555; margin-bottom:1.5rem;">Setelah pembayaran berhasil terverifikasi, e-ticket dan bukti pembayaran akan kami kirimkan ke email Anda.</p>
                     <button class="va-btn-outline" onclick="goToKonfirmasi('success')">Cek Status Pembayaran</button>
@@ -216,32 +135,45 @@
                     
                     <div class="sb-checkin">
                         <div><div class="label green">Check-in</div><div class="date" id="dynCheckin">Selasa, 28 April 2026</div><div class="time">Dari 14.00</div></div>
-                        <div style="text-align:center;color:#888"><div id="dynMalam" style="font-size:0.7rem;font-weight:600">1 malam</div><div style="font-size:1.2rem;margin-top:-4px">→</div></div>
+                        <div style="text-align:center;color:#888"><div id="dynMalam" style="font-size:0.75rem;font-weight:600">1 malam</div><div style="font-size:1.2rem;margin-top:-4px">→</div></div>
                         <div style="text-align:right"><div class="label red">Check-out</div><div class="date" id="dynCheckout">Rabu, 29 April 2026</div><div class="time">Hingga 12.00</div></div>
                     </div>
                     
                     <div class="sb-bed">
-                        <div id="dynBed"><iconify-icon icon="lucide:bed-double" class="text-lg"></iconify-icon> Memuat...</div>
+                        <div id="dynBed"><iconify-icon icon="lucide:bed-double" class="text-lg"></iconify-icon> Queen Bed (160x200)</div>
                         <div class="divider"></div>
-                        <div id="dynSmoking"><iconify-icon icon="lucide:cigarette" class="text-lg"></iconify-icon> Memuat...</div>
+                        <div id="dynSmoking"><iconify-icon icon="lucide:cigarette" class="text-lg"></iconify-icon> Boleh merokok di kamar</div>
                     </div>
                     
                     <div class="sb-fasilitas">
                         <div>
                             <div class="col-title">Fasilitas Kamar:</div>
-                            <ul id="dynFasilitas1"></ul>
+                            <ul id="dynFasilitas1">
+                                <li>TV kabel</li>
+                                <li>Meja</li>
+                                <li>Lemari es</li>
+                                <li>TV</li>
+                            </ul>
                         </div>
                         <div style="padding-top:1.4rem">
-                            <ul id="dynFasilitas2"></ul>
+                            <ul id="dynFasilitas2">
+                                <li>Ruang tamu</li>
+                                <li>Balkon</li>
+                                <li>Dapur</li>
+                                <li>Kipas angin</li>
+                            </ul>
                         </div>
                         <div>
                             <div class="col-title">Makanan & Minuman:</div>
-                            <ul id="dynMakanan"></ul>
+                            <ul id="dynMakanan">
+                                <li>Fasilitas Membuat Kopi/Teh</li>
+                                <li>Air Minum Gratis</li>
+                            </ul>
                         </div>
                     </div>
                     
                     <div class="sb-guest">
-                        <iconify-icon icon="lucide:user" class="text-lg"></iconify-icon> <span id="dynGuestInfo">Memuat...</span>
+                        <iconify-icon icon="lucide:user" class="text-lg"></iconify-icon> <span id="dynGuestInfo">4 Dewasa + 1 Anak (di atas 5 tahun) + 2 Dewasa (di atas 17 tahun)</span>
                     </div>
                     
                     <div class="sb-identity">
@@ -250,9 +182,9 @@
                             <div class="row">
                                 <iconify-icon icon="lucide:user-check" class="text-base mt-1"></iconify-icon>
                                 <div class="details">
-                                    <div id="dynNama">Memuat...</div>
-                                    <div id="dynHp">Memuat...</div>
-                                    <div id="dynEmail">Memuat...</div>
+                                    <div id="dynNama">Ari Rahman</div>
+                                    <div id="dynHp">081512345678</div>
+                                    <div id="dynEmail">arirahman@gmail.com</div>
                                 </div>
                             </div>
                         </div>
@@ -261,7 +193,7 @@
                             <div class="row" style="justify-content:flex-end">
                                 <iconify-icon icon="lucide:book-user" class="text-base mt-0.5"></iconify-icon>
                                 <div class="details">
-                                    <div id="dynTamu">Memuat...</div>
+                                    <div id="dynTamu">M. Akbar R.</div>
                                 </div>
                             </div>
                         </div>
@@ -276,21 +208,20 @@
 <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
 <script src="{{ asset('js/akomodasi-data.js') }}"></script>
 <script>
-function toggleInst(el) {
-    el.closest('.inst-item').classList.toggle('open');
-}
-
-function copyCode() {
-    const code = document.getElementById('atmCode').value.replace(/\s/g, '');
-    navigator.clipboard.writeText(code).then(() => {
-        const btn = document.getElementById('copyBtn');
-        const orig = btn.textContent;
-        btn.textContent = '✓ Tersalin';
-        setTimeout(() => btn.textContent = orig, 2000);
-    });
+function copyText(id) {
+    const el = document.getElementById(id);
+    if(el) {
+        navigator.clipboard.writeText(el.value).then(() => {
+            alert('Berhasil disalin: ' + el.value);
+        });
+    }
 }
 
 (function(){
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlBookingNo = urlParams.get('booking_no');
+    if (urlBookingNo) sessionStorage.setItem('res_booking_no', urlBookingNo);
+
     // Countdown timer
     let seconds=30*60;
     const el=document.getElementById('countdownTimer');
@@ -299,7 +230,7 @@ function copyCode() {
         seconds--;
         const m=String(Math.floor(seconds/60)).padStart(2,'0');
         const s=String(seconds%60).padStart(2,'0');
-        el.textContent='00:'+m+':'+s;
+        el.textContent='00.'+m+'.'+s;
     },1000);
     
     // Load dynamic user data from sessionStorage
@@ -307,12 +238,12 @@ function copyCode() {
     const dHp = sessionStorage.getItem('res_hp') || '081512345678';
     const dEmail = sessionStorage.getItem('res_email') || 'arirahman@gmail.com';
     const dTamu = sessionStorage.getItem('res_tamu') || 'M. Akbar R.';
-    const dGuest = sessionStorage.getItem('res_guest') || '4 Dewasa + 1 Anak + 2 Dewasa';
-    const dTotal = sessionStorage.getItem('res_total') || 'IDR 1.475.000';
-    const dMalam = sessionStorage.getItem('res_malam');
-    const dJudul = sessionStorage.getItem('res_judul');
-    const dCheckin = sessionStorage.getItem('res_checkin');
-    const dCheckout = sessionStorage.getItem('res_checkout');
+    const dGuest = sessionStorage.getItem('res_guest') || '4 Dewasa + 1 Anak (di atas 5 tahun) + 2 Dewasa (di atas 17 tahun)';
+    const dTotal = sessionStorage.getItem('res_total') || '921.609';
+    const dMalam = sessionStorage.getItem('res_malam') || '1';
+    const dJudul = sessionStorage.getItem('res_judul') || 'Kamar Keluarga Deluks dengan Pemandangan Sungai';
+    const dCheckin = sessionStorage.getItem('res_checkin') || 'Selasa, 28 April 2026';
+    const dCheckout = sessionStorage.getItem('res_checkout') || 'Rabu, 29 April 2026';
     
     if(dJudul) document.getElementById('headerAkoJudul').textContent = dJudul;
     
@@ -346,9 +277,8 @@ function copyCode() {
     const akoItem = AKOMODASI_DATA.find(d => d.id === akoId) || AKOMODASI_DATA[0];
     
     if(akoItem) {
-        document.getElementById('headerAkoJudul').textContent = akoItem.judul;
-        document.getElementById('dynBed').innerHTML = `<iconify-icon icon="lucide:bed-double" class="text-lg"></iconify-icon> ${akoItem.kasur}`;
-        document.getElementById('dynSmoking').innerHTML = `<iconify-icon icon="${akoItem.merokok ? 'lucide:cigarette' : 'lucide:cigarette-off'}" class="text-lg"></iconify-icon> ${akoItem.merokok ? 'Boleh merokok di kamar' : 'Dilarang merokok'}`;
+        document.getElementById('dynBed').innerHTML = `<iconify-icon icon="lucide:bed-double" class="text-lg"></iconify-icon> ${akoItem.kasur || 'Queen Bed (160x200)'}`;
+        document.getElementById('dynSmoking').innerHTML = `<iconify-icon icon="${akoItem.merokok ? 'lucide:cigarette' : 'lucide:cigarette-off'}" class="text-lg"></iconify-icon> ${akoItem.merokok ? 'Boleh merokok di kamar' : 'Boleh merokok di kamar'}`;
         
         const fasLen = Math.ceil(akoItem.fasilitas.length / 2);
         document.getElementById('dynFasilitas1').innerHTML = akoItem.fasilitas.slice(0, fasLen).map(f => `<li>${f}</li>`).join('');
@@ -359,7 +289,7 @@ function copyCode() {
 
 function goToKonfirmasi(status) {
     sessionStorage.setItem('res_payment_status', status);
-    const bookingNo = sessionStorage.getItem('res_booking_no');
+    const bookingNo = sessionStorage.getItem('res_booking_no') || '{{ $booking->no_pesanan ?? "" }}';
     const method = sessionStorage.getItem('res_payment_method') || 'ATM';
 
     if (bookingNo) {
@@ -367,7 +297,7 @@ function goToKonfirmasi(status) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
             },
             body: JSON.stringify({
                 no_pesanan: bookingNo,
@@ -375,10 +305,10 @@ function goToKonfirmasi(status) {
                 metode_pembayaran: method
             })
         }).finally(() => {
-            window.location.href = '/reservasi/konfirmasi';
+            window.location.href = `/reservasi/konfirmasi?booking_no=${encodeURIComponent(bookingNo)}&status=success`;
         });
     } else {
-        window.location.href = '/reservasi/konfirmasi';
+        window.location.href = '/reservasi/konfirmasi?status=success';
     }
 }
 </script>

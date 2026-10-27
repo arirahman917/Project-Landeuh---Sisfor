@@ -351,7 +351,7 @@
 @push('scripts')
 <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
 <script src="{{ asset('js/akomodasi-data.js') }}"></script>
-<script type="text/javascript" src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('services.midtrans.client_key') }}"></script>
+<script type="text/javascript" src="{{ config('services.midtrans.is_production') ? 'https://app.midtrans.com/snap/snap.js' : 'https://app.sandbox.midtrans.com/snap/snap.js' }}" data-client-key="{{ config('services.midtrans.client_key') }}"></script>
 <script>
 function toggleAccordion(key) {
     const row = document.getElementById('row-' + key);
@@ -392,7 +392,7 @@ function processPayment() {
     sessionStorage.setItem('res_akoId', akoId);
 
     // Ambil No Pesanan yang tersimpan dari database MySQL
-    const bookingNo = sessionStorage.getItem('res_booking_no');
+    const bookingNo = sessionStorage.getItem('res_booking_no') || '{{ $booking->no_pesanan ?? "" }}';
     
     if(!bookingNo) {
         alert("Terjadi kesalahan. Nomor pesanan tidak ditemukan.");
@@ -413,6 +413,52 @@ function processPayment() {
         btn.style.opacity = '1';
     }
 
+    // Periksa metode pembayaran kustom (VA Bank, ATM, QRIS, Minimarket)
+    const methodClean = (method || '').trim();
+    const methodLower = methodClean.toLowerCase();
+    const isVa = methodLower.includes('virtual account') || methodLower.includes('va') || methodLower.includes('bca') || methodLower.includes('bri') || methodLower.includes('bni') || methodLower.includes('mandiri') || methodLower.includes('bsi');
+    const isAtm = methodLower.includes('atm');
+    const isQris = methodLower.includes('qris');
+    const isMinimarket = methodLower.includes('alfamart') || methodLower.includes('indomaret') || methodLower.includes('minimarket') || methodLower.includes('alfamidi');
+
+    if (isVa || isAtm || isQris || isMinimarket) {
+        sessionStorage.setItem('res_payment_method', methodClean);
+        
+        let targetUrl = '';
+        if (isVa) {
+            sessionStorage.setItem('res_va', methodClean);
+            targetUrl = `/payment/virtual-account?booking_no=${encodeURIComponent(bookingNo)}&va=${encodeURIComponent(methodClean)}`;
+        } else if (isAtm) {
+            targetUrl = `/payment/atm?booking_no=${encodeURIComponent(bookingNo)}`;
+        } else if (isQris) {
+            targetUrl = `/payment/qris?booking_no=${encodeURIComponent(bookingNo)}`;
+        } else if (isMinimarket) {
+            sessionStorage.setItem('res_market', methodClean);
+            targetUrl = `/payment/minimarket?booking_no=${encodeURIComponent(bookingNo)}&market=${encodeURIComponent(methodClean)}`;
+        }
+
+        // Update status pending ke backend
+        try {
+            fetch('/reservasi/update-status', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({
+                    no_pesanan: bookingNo,
+                    status: 'pending',
+                    metode_pembayaran: methodClean
+                }),
+                keepalive: true
+            }).catch(() => {});
+        } catch(e) {}
+
+        // Langsung redirect ke halaman instruksi tanpa menunggu
+        window.location.href = targetUrl;
+        return;
+    }
+
     // Fetch Snap Token ke Backend
     fetch('/reservasi/get-snap-token', {
         method: 'POST',
@@ -427,6 +473,18 @@ function processPayment() {
     })
     .then(res => res.json())
     .then(data => {
+        if (data.custom_redirect) {
+            window.location.href = data.custom_redirect;
+            return;
+        }
+
+        const mLower = (method || '').toLowerCase();
+        let fallbackUrl = null;
+        if(mLower.includes('atm')) fallbackUrl = `/payment/atm?booking_no=${encodeURIComponent(bookingNo)}`;
+        else if(mLower.includes('qris')) fallbackUrl = `/payment/qris?booking_no=${encodeURIComponent(bookingNo)}`;
+        else if(mLower.includes('va') || mLower.includes('virtual account')) fallbackUrl = `/payment/virtual-account?booking_no=${encodeURIComponent(bookingNo)}&va=${encodeURIComponent(method)}`;
+        else if(mLower.includes('alfamart') || mLower.includes('indomaret') || mLower.includes('minimarket')) fallbackUrl = `/payment/minimarket?booking_no=${encodeURIComponent(bookingNo)}&market=${encodeURIComponent(method)}`;
+
         if(data.success && data.snap_token) {
             // Panggil Popup Midtrans Snap
             try {
@@ -451,10 +509,17 @@ function processPayment() {
             } catch (snapErr) {
                 console.warn("Snap pay error:", snapErr);
                 resetBtn();
+                if (fallbackUrl) {
+                    window.location.href = fallbackUrl;
+                }
             }
         } else {
             resetBtn();
-            // Jika gagal mendapatkan token (Misal key Midtrans belum diset / salah)
+            if (fallbackUrl) {
+                window.location.href = fallbackUrl;
+                return;
+            }
+            // Jika metode pembayaran lain yang memang butuh Midtrans
             if (confirm("Gagal terhubung ke Midtrans Simulator!\n\nKemungkinan API Key Midtrans (Server/Client Key) di pengaturan (.env) Anda belum terkonfigurasi atau salah.\n\nPesan Error: " + (data.message || "Unknown error") + "\n\nApakah Anda ingin diarahkan ke halaman Konfirmasi dengan status 'pending'?")) {
                 window.location.href = `/reservasi/konfirmasi?booking_no=${bookingNo}&status=pending`;
             }
@@ -462,6 +527,12 @@ function processPayment() {
     })
     .catch(err => {
         resetBtn();
+        const mLower = (method || '').toLowerCase();
+        if(mLower.includes('atm')) { window.location.href = `/payment/atm?booking_no=${encodeURIComponent(bookingNo)}`; return; }
+        if(mLower.includes('qris')) { window.location.href = `/payment/qris?booking_no=${encodeURIComponent(bookingNo)}`; return; }
+        if(mLower.includes('va') || mLower.includes('virtual account')) { window.location.href = `/payment/virtual-account?booking_no=${encodeURIComponent(bookingNo)}&va=${encodeURIComponent(method)}`; return; }
+        if(mLower.includes('alfamart') || mLower.includes('indomaret') || mLower.includes('minimarket')) { window.location.href = `/payment/minimarket?booking_no=${encodeURIComponent(bookingNo)}&market=${encodeURIComponent(method)}`; return; }
+
         if (confirm("Terjadi kesalahan sistem saat menghubungi server Midtrans: " + err.message + "\n\nApakah Anda ingin diarahkan ke halaman Konfirmasi dengan status 'pending'?")) {
              window.location.href = `/reservasi/konfirmasi?booking_no=${bookingNo}&status=pending`;
         }
