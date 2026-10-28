@@ -1,4 +1,19 @@
-﻿# ----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# MIME TYPES (Ensures CSS and JS are served with strict correct types)
+# ----------------------------------------------------------------------
+<IfModule mod_mime.c>
+    AddType text/css .css
+    AddType application/javascript .js .mjs
+    AddType image/webp .webp
+    AddType image/avif .avif
+    AddType image/svg+xml .svg .svgz
+    AddType font/woff .woff
+    AddType font/woff2 .woff2
+    AddType font/ttf .ttf
+    AddType font/otf .otf
+</IfModule>
+
+# ----------------------------------------------------------------------
 # GZIP / DEFLATE COMPRESSION (Improves Document Latency & Payload Size)
 # ----------------------------------------------------------------------
 <IfModule mod_deflate.c>
@@ -66,9 +81,8 @@
     # No cache for dynamic HTML / PHP
     <FilesMatch "\.(html|htm|php)$">
         Header set Cache-Control "no-cache, no-store, must-revalidate"
+        Header set X-Content-Type-Options "nosniff"
     </FilesMatch>
-
-    Header set X-Content-Type-Options "nosniff"
 </IfModule>
 
 <IfModule mod_rewrite.c>
@@ -90,6 +104,9 @@
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_URI} (.+)/$
     RewriteRule ^ %1 [L,R=301]
+
+    # Fix for Vite assets path on Hostinger
+    RewriteRule ^build/(.*)$ /$1 [L]
 
     # Send Requests To Front Controller...
     RewriteCond %{REQUEST_FILENAME} !-d
