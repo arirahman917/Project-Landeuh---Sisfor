@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id" class="overflow-x-clip w-full">
 <head>
     <link rel="icon" type="image/png" href="{{ asset('images/logo-landeuh.png') }}">

@@ -1,4 +1,4 @@
-﻿<!-- Partner Pembayaran Section -->
+<!-- Partner Pembayaran Section -->
 <section id="partner-pembayaran" class="partner-pembayaran-section relative py-16 overflow-hidden" style="background-color: #F8EDD8;">
     <div class="relative z-10 max-w-6xl mx-auto px-6">
 

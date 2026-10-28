@@ -1,4 +1,4 @@
-﻿<header class="sticky top-0 z-50 w-full bg-white/40 backdrop-blur-xl border-b border-white/30 shadow-sm transition-all" id="mainHeader">
+<header class="sticky top-0 z-50 w-full bg-white/40 backdrop-blur-xl border-b border-white/30 shadow-sm transition-all" id="mainHeader">
 
     <div class="w-full px-4 sm:px-6 py-2.5 flex justify-between items-center max-w-7xl mx-auto relative">
         <!-- Left Side: Logo -->

@@ -1,4 +1,4 @@
-﻿document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
     // Only run this script on the landing/home page (where the hero carousel exists)
     if (!document.getElementById('hero-carousel')) {
         return;

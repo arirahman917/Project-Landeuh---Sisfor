@@ -1,4 +1,4 @@
-﻿@extends('layouts.booking')
+@extends('layouts.booking')
 @section('content')
     <!-- Payment: e-wallet -->
     @include('components.payment-timer')

@@ -1,4 +1,4 @@
-﻿{{-- Section FAQ --}}
+{{-- Section FAQ --}}
 <section class="faq-section relative py-16 md:py-20" id="faq" style="background-color: #F5EDD8;">
 
     {{-- Batik Ornaments --}}

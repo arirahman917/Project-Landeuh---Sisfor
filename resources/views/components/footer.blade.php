@@ -1,4 +1,4 @@
-﻿<footer class="footer-root relative" style="background-color: #F5EDD8;">
+<footer class="footer-root relative" style="background-color: #F5EDD8;">
 
     {{-- ══ Batik ornaments ══ --}}
     <div class="absolute inset-0 pointer-events-none select-none z-0" aria-hidden="true">

@@ -1,4 +1,4 @@
-﻿<!-- Tentang Section (Scroll-based) -->
+<!-- Tentang Section (Scroll-based) -->
 <section id="tentang-container" class="relative w-full h-[400vh] bg-[#F8EDD8]">
     <!-- Sticky Wrapper -->
     <div class="sticky top-0 h-screen w-full overflow-hidden flex flex-col justify-center py-16 md:py-24">

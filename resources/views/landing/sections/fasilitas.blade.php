@@ -1,4 +1,4 @@
-﻿<!-- Fasilitas Section -->
+<!-- Fasilitas Section -->
 <section id="fasilitas" class="fasilitas-section relative py-20" style="background-color: #F5EDD8;">
 
     <!-- Batik Ornament: Top Right -->

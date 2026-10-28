@@ -1,4 +1,4 @@
-﻿{{-- Section Jelajahi --}}
+{{-- Section Jelajahi --}}
 <section class="jelajahi-section relative py-20" style="background-color: #F5EDD8;">
 
     {{-- Batik Background Ornaments --}}
