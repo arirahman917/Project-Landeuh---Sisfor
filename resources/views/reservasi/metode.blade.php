@@ -421,7 +421,22 @@ function processPayment() {
     const isQris = methodLower.includes('qris');
     const isMinimarket = methodLower.includes('alfamart') || methodLower.includes('indomaret') || methodLower.includes('minimarket') || methodLower.includes('alfamidi');
 
-    if (isVa || isAtm || isQris || isMinimarket) {
+    /*
+     * =========================================================================
+     * DUAL MODE: PRODUCTION vs SANDBOX
+     * =========================================================================
+     * 1. MODE PRODUCTION (isProductionMode = true):
+     *    Sistem langsung me-redirect ke halaman instruksi pembayaran kustom
+     *    (Virtual Account, ATM, QRIS, Minimarket) persis seperti pada screenshot.
+     * 
+     * 2. MODE SANDBOX (isProductionMode = false):
+     *    Blok redirect kustom ini dilewati, sehingga alur memanggil API Snap Midtrans
+     *    dan memunculkan popup modal Midtrans Snap Sandbox Simulator secara interaktif.
+     * =========================================================================
+     */
+    const isProductionMode = {{ config('services.midtrans.is_production', false) ? 'true' : 'false' }};
+
+    if (isProductionMode && (isVa || isAtm || isQris || isMinimarket)) {
         sessionStorage.setItem('res_payment_method', methodClean);
         
         let targetUrl = '';
@@ -454,7 +469,7 @@ function processPayment() {
             }).catch(() => {});
         } catch(e) {}
 
-        // Langsung redirect ke halaman instruksi tanpa menunggu
+        // Langsung redirect ke halaman instruksi mockup kustom
         window.location.href = targetUrl;
         return;
     }
@@ -486,7 +501,7 @@ function processPayment() {
         else if(mLower.includes('alfamart') || mLower.includes('indomaret') || mLower.includes('minimarket')) fallbackUrl = `/payment/minimarket?booking_no=${encodeURIComponent(bookingNo)}&market=${encodeURIComponent(method)}`;
 
         if(data.success && data.snap_token) {
-            // Panggil Popup Midtrans Snap
+            // Panggil Popup Midtrans Snap (Sandbox Simulator atau Production)
             try {
                 window.snap.pay(data.snap_token, {
                     onSuccess: function(result){
@@ -503,37 +518,40 @@ function processPayment() {
                     },
                     onClose: function(){
                         resetBtn();
-                        alert('Anda menutup halaman pembayaran sebelum menyelesaikannya.');
+                        alert('Anda menutup popup pembayaran sebelum menyelesaikannya.');
                     }
                 });
             } catch (snapErr) {
                 console.warn("Snap pay error:", snapErr);
                 resetBtn();
-                if (fallbackUrl) {
+                if (isProductionMode && fallbackUrl) {
                     window.location.href = fallbackUrl;
+                } else {
+                    alert('Gagal membuka popup Midtrans Snap. Silakan pastikan browser Anda mengizinkan popup atau koneksi internet stabil.');
                 }
             }
         } else {
             resetBtn();
-            if (fallbackUrl) {
+            if (isProductionMode && fallbackUrl) {
                 window.location.href = fallbackUrl;
                 return;
             }
-            // Jika metode pembayaran lain yang memang butuh Midtrans
-            if (confirm("Gagal terhubung ke Midtrans Simulator!\n\nKemungkinan API Key Midtrans (Server/Client Key) di pengaturan (.env) Anda belum terkonfigurasi atau salah.\n\nPesan Error: " + (data.message || "Unknown error") + "\n\nApakah Anda ingin diarahkan ke halaman Konfirmasi dengan status 'pending'?")) {
+            if (confirm("Gagal terhubung ke Midtrans Simulator!\n\nPesan: " + (data.message || "Unknown error") + "\n\nApakah Anda ingin diarahkan ke halaman Konfirmasi dengan status 'pending'?")) {
                 window.location.href = `/reservasi/konfirmasi?booking_no=${bookingNo}&status=pending`;
             }
         }
     })
     .catch(err => {
         resetBtn();
-        const mLower = (method || '').toLowerCase();
-        if(mLower.includes('atm')) { window.location.href = `/payment/atm?booking_no=${encodeURIComponent(bookingNo)}`; return; }
-        if(mLower.includes('qris')) { window.location.href = `/payment/qris?booking_no=${encodeURIComponent(bookingNo)}`; return; }
-        if(mLower.includes('va') || mLower.includes('virtual account')) { window.location.href = `/payment/virtual-account?booking_no=${encodeURIComponent(bookingNo)}&va=${encodeURIComponent(method)}`; return; }
-        if(mLower.includes('alfamart') || mLower.includes('indomaret') || mLower.includes('minimarket')) { window.location.href = `/payment/minimarket?booking_no=${encodeURIComponent(bookingNo)}&market=${encodeURIComponent(method)}`; return; }
+        if (isProductionMode) {
+            const mLower = (method || '').toLowerCase();
+            if(mLower.includes('atm')) { window.location.href = `/payment/atm?booking_no=${encodeURIComponent(bookingNo)}`; return; }
+            if(mLower.includes('qris')) { window.location.href = `/payment/qris?booking_no=${encodeURIComponent(bookingNo)}`; return; }
+            if(mLower.includes('va') || mLower.includes('virtual account')) { window.location.href = `/payment/virtual-account?booking_no=${encodeURIComponent(bookingNo)}&va=${encodeURIComponent(method)}`; return; }
+            if(mLower.includes('alfamart') || mLower.includes('indomaret') || mLower.includes('minimarket')) { window.location.href = `/payment/minimarket?booking_no=${encodeURIComponent(bookingNo)}&market=${encodeURIComponent(method)}`; return; }
+        }
 
-        if (confirm("Terjadi kesalahan sistem saat menghubungi server Midtrans: " + err.message + "\n\nApakah Anda ingin diarahkan ke halaman Konfirmasi dengan status 'pending'?")) {
+        if (confirm("Terjadi kesalahan saat memanggil server Midtrans: " + err.message + "\n\nApakah Anda ingin diarahkan ke halaman Konfirmasi dengan status 'pending'?")) {
              window.location.href = `/reservasi/konfirmasi?booking_no=${bookingNo}&status=pending`;
         }
     });

@@ -306,52 +306,70 @@ class ReservasiController extends Controller
             $booking->metode_pembayaran = $validated['metode_pembayaran'];
             $booking->save();
 
-            // Intercept jika metode pembayaran adalah salah satu tampilan kustom (ATM, QRIS, VA, Minimarket)
             $methodLower = strtolower(trim($validated['metode_pembayaran']));
             $booking->status = 'pending';
             $booking->save();
 
-            if (str_contains($methodLower, 'atm')) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Klik OK untuk membuka petunjuk transfer ATM.',
-                    'custom_redirect' => url('/payment/atm?booking_no=' . $booking->no_pesanan)
-                ]);
-            }
-            if (str_contains($methodLower, 'qris')) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Klik OK untuk membuka kode QRIS.',
-                    'custom_redirect' => url('/payment/qris?booking_no=' . $booking->no_pesanan)
-                ]);
-            }
-            if (str_contains($methodLower, 'virtual account') || str_contains($methodLower, 'va') || str_contains($methodLower, 'bca') || str_contains($methodLower, 'bri') || str_contains($methodLower, 'bni') || str_contains($methodLower, 'mandiri') || str_contains($methodLower, 'bsi')) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Klik OK untuk membuka nomor Virtual Account.',
-                    'custom_redirect' => url('/payment/virtual-account?booking_no=' . $booking->no_pesanan . '&va=' . urlencode($validated['metode_pembayaran']))
-                ]);
-            }
-            if (str_contains($methodLower, 'alfamart') || str_contains($methodLower, 'indomaret') || str_contains($methodLower, 'minimarket')) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Klik OK untuk membuka kode pembayaran kasir.',
-                    'custom_redirect' => url('/payment/minimarket?booking_no=' . $booking->no_pesanan . '&market=' . urlencode($validated['metode_pembayaran']))
-                ]);
+            /*
+             * =========================================================================
+             * DUAL MODE: PRODUCTION vs SANDBOX
+             * =========================================================================
+             * 1. MODE PRODUCTION (MIDTRANS_IS_PRODUCTION=true):
+             *    Mengarahkan langsung ke halaman instruksi kustom (Virtual Account,
+             *    ATM, QRIS, Minimarket) persis seperti tampilan di mockup / screenshot.
+             * 
+             * 2. MODE SANDBOX (MIDTRANS_IS_PRODUCTION=false):
+             *    Blok redirect kustom ini dilewati agar token Midtrans Snap dibuat,
+             *    sehingga popup modal Midtrans Snap Sandbox Simulator muncul untuk testing.
+             * =========================================================================
+             */
+            $isProduction = (bool) config('services.midtrans.is_production', false);
+
+            if ($isProduction) {
+                // --- MODE PRODUCTION (Tampilan Custom Mockup / Screenshot) ---
+                if (str_contains($methodLower, 'atm')) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Klik OK untuk membuka petunjuk transfer ATM.',
+                        'custom_redirect' => url('/payment/atm?booking_no=' . $booking->no_pesanan)
+                    ]);
+                }
+                if (str_contains($methodLower, 'qris')) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Klik OK untuk membuka kode QRIS.',
+                        'custom_redirect' => url('/payment/qris?booking_no=' . $booking->no_pesanan)
+                    ]);
+                }
+                if (str_contains($methodLower, 'virtual account') || str_contains($methodLower, 'va') || str_contains($methodLower, 'bca') || str_contains($methodLower, 'bri') || str_contains($methodLower, 'bni') || str_contains($methodLower, 'mandiri') || str_contains($methodLower, 'bsi')) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Klik OK untuk membuka nomor Virtual Account.',
+                        'custom_redirect' => url('/payment/virtual-account?booking_no=' . $booking->no_pesanan . '&va=' . urlencode($validated['metode_pembayaran']))
+                    ]);
+                }
+                if (str_contains($methodLower, 'alfamart') || str_contains($methodLower, 'indomaret') || str_contains($methodLower, 'minimarket')) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Klik OK untuk membuka kode pembayaran kasir.',
+                        'custom_redirect' => url('/payment/minimarket?booking_no=' . $booking->no_pesanan . '&market=' . urlencode($validated['metode_pembayaran']))
+                    ]);
+                }
             }
 
+            /*
+             * =========================================================================
+             * MODE SANDBOX / MIDTRANS SNAP TOKEN GENERATION
+             * =========================================================================
+             * Menghasilkan Snap Token resmi Midtrans untuk memunculkan popup Simulator.
+             * =========================================================================
+             */
             $serverKey = config('services.midtrans.server_key');
             $snapToken = null;
             $midtransError = null;
 
             if (!empty($serverKey) && $serverKey !== 'SB-Mid-server-YOUR_SERVER_KEY') {
                 \Midtrans\Config::$serverKey = $serverKey;
-                $isProduction = config('services.midtrans.is_production', false);
-                if (str_starts_with($serverKey, 'Mid-server-')) {
-                    $isProduction = true;
-                } elseif (str_starts_with($serverKey, 'SB-Mid-server-')) {
-                    $isProduction = false;
-                }
                 \Midtrans\Config::$isProduction = $isProduction;
                 \Midtrans\Config::$isSanitized = config('services.midtrans.is_sanitized', true);
                 \Midtrans\Config::$is3ds = config('services.midtrans.is_3ds', true);

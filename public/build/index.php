@@ -18,7 +18,7 @@ require __DIR__.'/../laravel/vendor/autoload.php';
 $app = require_once __DIR__.'/../laravel/bootstrap/app.php';
 
 // Force clear all caches on Hostinger to ensure new routes & config take effect
-$cacheFlag = __DIR__.'/../laravel/storage/framework/views/.cleared_v6';
+$cacheFlag = __DIR__.'/../laravel/storage/framework/views/.cleared_v7';
 if (!file_exists($cacheFlag)) {
     // Clear view cache
     $views = glob(__DIR__.'/../laravel/storage/framework/views/*.php');
