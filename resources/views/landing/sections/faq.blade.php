@@ -28,32 +28,28 @@
         @php
             $faqs = [
                 [
-                    'q' => 'Kapan waktu check-in dan check-out di Landeuh Village Riverside?',
-                    'a' => 'Check-in dimulai pukul 14.00 – 21.00 WIB dan check-out maksimal pukul 12.00 WIB. Informasi lebih lanjut mengenai reservasi dapat dikonfirmasi melalui admin kami.',
+                    'q' => 'Di mana lokasi Landeuh Village Riverside dan kapan waktu check-in?',
+                    'a' => 'Landeuh Village Riverside berlokasi di Karang Tengah, Babakan Madang, Kabupaten Bogor. Lokasi glamping dan villa di pinggir sungai ini sangat asri dan sejuk. Waktu check-in dimulai pukul 14.00 – 21.00 WIB dan check-out maksimal pukul 12.00 WIB.',
                 ],
                 [
-                    'q' => 'Jenis akomodasi apa saja yang tersedia di Landeuh Village Riverside?',
-                    'a' => 'Landeuh Village Riverside menawarkan pilihan akomodasi berupa cabin villa dan glamping bernuansa alami yang berada di area tepi sungai dengan suasana sejuk dan menenangkan.',
+                    'q' => 'Jenis penginapan apa saja yang tersedia di Landeuh Village Riverside Glamping & Villa?',
+                    'a' => 'Kami menyediakan pilihan penginapan glamping mewah, glamping kayu tepi sungai, cabin bogor bernuansa alam, serta rumah industrial modern yang nyaman. Setiap unit dirancang dekat aliran sungai alami dengan fasilitas lengkap.',
                 ],
                 [
-                    'q' => 'Apakah Landeuh Village Riverside cocok untuk keluarga dan rombongan?',
-                    'a' => 'Tentu. Area yang luas, suasana alam yang asri, serta beragam pilihan akomodasi menjadikan Landeuh Village Riverside cocok untuk liburan keluarga, rombongan, maupun quality time bersama orang terdekat.',
+                    'q' => 'Apakah Landeuh Village cocok untuk glamping keluarga dan tempat acara keluarga di Bogor?',
+                    'a' => 'Sangat cocok! Landeuh Village merupakan arena glamping keluarga di Bogor yang ramah anak dan aman untuk bermain air di sungai. Area yang luas menjadikannya tempat acara keluarga di Bogor yang favorit untuk liburan santai, arisan, maupun staycation.',
                 ],
                 [
-                    'q' => 'Apakah tersedia paket untuk gathering perusahaan atau komunitas?',
-                    'a' => 'TTentu. Landeuh Village Riverside menyediakan paket corporate yang cocok untuk perusahaan, instansi, komunitas, maupun acara keluarga, lengkap dengan akomodasi, tiga kali makan, dan suasana alam yang nyaman.',
+                    'q' => 'Apakah tersedia paket gathering kantor, outbound, atau paket corporate?',
+                    'a' => 'Tentu. Landeuh Village Riverside menyediakan paket corporate dan paket glamping khusus tempat kegiatan gathering kantor, outing perusahaan, komunitas, dan retret. Paket sudah lengkap dengan akomodasi, konsumsi 3 kali makan, perlengkapan BBQ, dan area api unggun di pinggir sungai.',
                 ],
                 [
-                    'q' => 'Apakah tersedia area untuk bersantai atau berkumpul bersama?',
-                    'a' => 'Tersedia berbagai area santai yang nyaman untuk berkumpul bersama keluarga, pasangan, maupun teman sambil menikmati suasana sungai dan udara alam yang sejuk.',
+                    'q' => 'Apa saja daya tarik dan fasilitas penginapan tepi sungai di sini?',
+                    'a' => 'Daya tarik utama adalah penginapan di pinggir sungai dengan suasana alam sejuk dan udara pegunungan. Fasilitas yang tersedia meliputi akses langsung bermain air di sungai, perlengkapan BBQ, area api unggun, area bermain anak, Kedai Wangun, dan area parkir gratis.',
                 ],
                 [
-                    'q' => 'Apakah tersedia tempat makan di area Landeuh Village Riverside?',
-                    'a' => 'Tersedia Kedai Wangun yang dapat dinikmati pengunjung untuk bersantai dan menikmati hidangan selama menginap di Landeuh Village Riverside.',
-                ],
-                [
-                    'q' => 'Bagaimana cara melakukan reservasi di Landeuh Village Riverside?',
-                    'a' => 'Reservasi dapat dilakukan langsung melalui website dengan proses booking yang mudah dan pembayaran yang aman. Ketersediaan cabin villa dan glamping akan terupdate secara realtime sesuai unit yang masih tersedia.',
+                    'q' => 'Bagaimana cara glamping booking di Landeuh Village Riverside?',
+                    'a' => 'Proses glamping booking dapat dilakukan langsung secara online melalui website resmi landeuhvillage.com. Anda dapat mengecek jadwal ketersediaan unit glamping keren dan cabin secara realtime dengan proses reservasi yang mudah dan aman.',
                 ],
             ];
         @endphp

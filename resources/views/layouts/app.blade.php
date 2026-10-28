@@ -8,7 +8,7 @@
 
     <title>@yield('title', 'Landeuh Village Riverside - Glamping & Villa Tepi Sungai di Bogor')</title>
     <meta name="description" content="@yield('meta_description', 'Nikmati glamping tepi sungai di Bogor dengan kabin industrial asri. Tempat liburan keluarga, api unggun, & paket gathering kantor. Cek jadwal & reservasi online sekarang!')">
-    <meta name="keywords" content="@yield('meta_keywords', 'glamping bogor, glamping tepi sungai, landeuh village riverside, villa tepi sungai bogor, cabin bogor, penginapan tepi sungai bogor, glamping keluarga bogor, paket gathering kantor bogor')">
+    <meta name="keywords" content="@yield('meta_keywords', 'glamping bogor, glamping booking, glamping di bogor, arena glamping, landeuh village riverside, landeuh village riverside glamping & villa, glamping terdekat, glamping tepi sungai, glamping sungai, glamping dekat sungai, penginapan tepi sungai, penginapan di tepi sungai, vila di pinggir sungai bogor, villa di pinggir sungai, penginapan di pinggir sungai bogor, glamping keluarga, glamping keluarga di bogor, glamping keren di bogor, villa glamping di bogor, penginapan glamping bogor, villa glamping bogor, tempat glamping, lokasi glamping, penginapan glamping, glamping mewah, glamping kayu, kemah mewah, paket glamping, paket corporate, cabin bogor, rumah industrial bogor, tempat acara keluarga di bogor, tempat kegiatan gathering')">
     <meta name="robots" content="@yield('meta_robots', 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1')">
     <meta name="author" content="Landeuh Village Riverside">
 

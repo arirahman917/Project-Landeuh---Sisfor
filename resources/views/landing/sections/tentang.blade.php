@@ -33,37 +33,37 @@
                     <div class="relative h-36 md:h-40 lg:h-44 w-full">
                         <!-- State 1: Tepi Sungai -->
                         <div class="tentang-text-item absolute inset-0 transition-all duration-700 opacity-100 translate-y-0" id="tentang-text-1">
-                            <h3 class="text-xl md:text-2xl font-bold text-gray-800 mb-2 md:mb-3">Tepi Sungai</h3>
+                            <h3 class="text-xl md:text-2xl font-bold text-gray-800 mb-2 md:mb-3">Vila & Penginapan di Pinggir Sungai</h3>
                             <p class="text-sm md:text-base text-gray-700 leading-relaxed max-w-lg font-medium">
-                                Landeuh Village Riverside menghadirkan pengalaman menginap yang nyaman dan menenangkan di tepi sungai, berlokasi di kawasan Karang Tengah, Bogor.
+                                Landeuh Village Riverside menghadirkan pengalaman menginap tepi sungai dan vila di pinggir sungai Bogor yang tenang, asri, dan sejuk di kawasan Babakan Madang, dekat dengan alam pegunungan.
                             </p>
                         </div>
                         <!-- State 2: Cabin & Rumah Industrial -->
                         <div class="tentang-text-item absolute inset-0 transition-all duration-700 opacity-0 translate-y-6 pointer-events-none" id="tentang-text-2">
-                            <h3 class="text-xl md:text-2xl font-bold text-gray-800 mb-2 md:mb-3">Cabin & Rumah Industrial</h3>
+                            <h3 class="text-xl md:text-2xl font-bold text-gray-800 mb-2 md:mb-3">Cabin Kayu & Rumah Industrial Bogor</h3>
                             <p class="text-sm md:text-base text-gray-700 leading-relaxed max-w-lg font-medium">
-                                Nikmati pengalaman menginap di cabin kayu estetik atau rumah industrial modern kami, sangat cocok untuk bersantai bersama keluarga tercinta.
+                                Pilihan cabin bogor berkonsep kayu alami estetik dan rumah industrial modern yang luas. Sangat ideal untuk staycation, liburan santai, dan tempat acara keluarga di Bogor.
                             </p>
                         </div>
                         <!-- State 3: Glamping -->
                         <div class="tentang-text-item absolute inset-0 transition-all duration-700 opacity-0 translate-y-6 pointer-events-none" id="tentang-text-3">
-                            <h3 class="text-xl md:text-2xl font-bold text-gray-800 mb-2 md:mb-3">Glamping</h3>
+                            <h3 class="text-xl md:text-2xl font-bold text-gray-800 mb-2 md:mb-3">Glamping Mewah & Kemah Tepi Sungai</h3>
                             <p class="text-sm md:text-base text-gray-700 leading-relaxed max-w-lg font-medium">
-                                Rasakan sensasi berkemah mewah dengan fasilitas lengkap. Menyatu dengan alam tanpa harus mengorbankan kenyamanan dan kemewahan.
+                                Nikmati sensasi arena glamping keluarga dan kemah mewah dengan fasilitas lengkap di pinggir aliran sungai jernih. Tempat glamping di Bogor yang nyaman, aman, dan ramah anak.
                             </p>
                         </div>
                         <!-- State 4: Paket Corporate -->
                         <div class="tentang-text-item absolute inset-0 transition-all duration-700 opacity-0 translate-y-6 pointer-events-none" id="tentang-text-4">
-                            <h3 class="text-xl md:text-2xl font-bold text-gray-800 mb-2 md:mb-3">Paket Corporate</h3>
+                            <h3 class="text-xl md:text-2xl font-bold text-gray-800 mb-2 md:mb-3">Paket Corporate & Gathering Kantor</h3>
                             <p class="text-sm md:text-base text-gray-700 leading-relaxed max-w-lg font-medium">
-                                Nikmati paket khusus untuk gathering perusahaan, instansi, komunitas, maupun acara keluarga, lengkap dengan akomodasi, konsumsi, dan suasana alam yang mendukung kebersamaan.
+                                Tersedia paket glamping dan paket corporate khusus tempat kegiatan gathering kantor, outing instansi, komunitas, maupun reuni, lengkap dengan akomodasi, konsumsi 3x makan, dan area api unggun outdoor.
                             </p>
                         </div>
                         <!-- State 5: Kedai -->
                         <div class="tentang-text-item absolute inset-0 transition-all duration-700 opacity-0 translate-y-6 pointer-events-none" id="tentang-text-5">
-                            <h3 class="text-xl md:text-2xl font-bold text-gray-800 mb-2 md:mb-3">Kedai</h3>
+                            <h3 class="text-xl md:text-2xl font-bold text-gray-800 mb-2 md:mb-3">Kedai Wangun Tepi Sungai</h3>
                             <p class="text-sm md:text-base text-gray-700 leading-relaxed max-w-lg font-medium">
-                                Nikmati berbagai hidangan lezat dan kopi hangat di kedai kami, dengan pemandangan indah yang langsung menghadap ke arah sungai yang asri.
+                                Bersantai menikmati sajian hidangan lezat dan kopi hangat di pinggir aliran sungai yang asri dengan gemercik suara air pegunungan yang menenangkan.
                             </p>
                         </div>
                     </div>
