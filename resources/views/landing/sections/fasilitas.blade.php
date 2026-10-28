@@ -1,9 +1,9 @@
-<!-- Fasilitas Section -->
+﻿<!-- Fasilitas Section -->
 <section id="fasilitas" class="fasilitas-section relative py-20" style="background-color: #F5EDD8;">
 
     <!-- Batik Ornament: Top Right -->
     <div class="absolute top-0 right-0 pointer-events-none select-none z-0" aria-hidden="true">
-        <img loading="lazy" src="{{ asset('images/assets_lain/batik.png') }}"
+        <img loading="lazy" decoding="async" width="256" height="130" src="{{ asset('images/assets_lain/batik.png') }}"
              alt=""
              class="w-48 md:w-64 opacity-40 translate-x-6 -translate-y-6 rotate-[15deg] scale-x-[-1]"
              draggable="false">

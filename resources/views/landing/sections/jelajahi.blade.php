@@ -1,15 +1,15 @@
-{{-- Section Jelajahi --}}
+﻿{{-- Section Jelajahi --}}
 <section class="jelajahi-section relative py-20" style="background-color: #F5EDD8;">
 
     {{-- Batik Background Ornaments --}}
     <div class="absolute inset-0 pointer-events-none select-none z-0" aria-hidden="true">
-        <img loading="lazy" decoding="async" src="{{ asset('images/assets_lain/batik.png') }}" alt=""
+        <img loading="lazy" decoding="async" width="208" height="106" src="{{ asset('images/assets_lain/batik.png') }}" alt=""
              class="absolute top-0 left-0 w-52 opacity-40 -translate-x-6 -translate-y-6 rotate-[-12deg]">
-        <img loading="lazy" decoding="async" src="{{ asset('images/assets_lain/batik.png') }}" alt=""
+        <img loading="lazy" decoding="async" width="208" height="106" src="{{ asset('images/assets_lain/batik.png') }}" alt=""
              class="absolute bottom-0 left-0 w-48 opacity-40 -translate-x-4 translate-y-4 rotate-[8deg]">
-        <img loading="lazy" decoding="async" src="{{ asset('images/assets_lain/batik.png') }}" alt=""
+        <img loading="lazy" decoding="async" width="208" height="106" src="{{ asset('images/assets_lain/batik.png') }}" alt=""
              class="absolute top-0 right-0 w-52 opacity-40 translate-x-6 -translate-y-6 rotate-[12deg] scale-x-[-1]">
-        <img loading="lazy" decoding="async" src="{{ asset('images/assets_lain/batik.png') }}" alt=""
+        <img loading="lazy" decoding="async" width="208" height="106" src="{{ asset('images/assets_lain/batik.png') }}" alt=""
              class="absolute bottom-0 right-0 w-48 opacity-40 translate-x-4 translate-y-4 rotate-[-8deg] scale-x-[-1]">
     </div>
 
@@ -68,7 +68,7 @@
                            data-jelajahi-card>
 
                             {{-- Image --}}
-                            <img loading="lazy" decoding="async" src="{{ $item['image'] }}"
+                            <img loading="lazy" decoding="async" width="240" height="220" src="{{ $item['image'] }}"
                                  alt="{{ $item['label'] }}"
                                  class="absolute inset-0 w-full h-full object-cover
                                         scale-100 group-hover:scale-105

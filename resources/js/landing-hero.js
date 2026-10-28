@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+﻿document.addEventListener('DOMContentLoaded', () => {
     // Only run this script on the landing/home page (where the hero carousel exists)
     if (!document.getElementById('hero-carousel')) {
         return;
@@ -86,7 +86,12 @@ document.addEventListener('DOMContentLoaded', () => {
             return dates[0].toLocaleDateString('id-ID', fmt) + ' - ' + dates[1].toLocaleDateString('id-ID', fmt);
         }
 
-        const fp = flatpickr(dateInput, {
+                function initHeroFp() {
+            if (typeof flatpickr === 'undefined') {
+                setTimeout(initHeroFp, 30);
+                return;
+            }
+            const fp = flatpickr(dateInput, {
             mode: 'range',
             minDate: 'today',
             dateFormat: 'D, d M Y',
@@ -151,6 +156,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         });
+        }
+        initHeroFp();
     }
 
     // ---------------------------------------------------------

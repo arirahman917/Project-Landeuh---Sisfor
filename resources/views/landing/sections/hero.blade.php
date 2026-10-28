@@ -1,10 +1,10 @@
-<section id="hero" class="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4" style="margin-bottom: 1rem;">
+﻿<section id="hero" class="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4" style="margin-bottom: 1rem;">
     <!-- Ornamen Batik -->
     <div class="absolute -top-6 -left-6 opacity-50 pointer-events-none w-32 md:w-48 rotate-12 z-0">
-        <img src="{{ asset('images/assets_lain/batik.png') }}" alt="Ornamen Batik">
+        <img loading="lazy" decoding="async" width="192" height="98" src="{{ asset('images/assets_lain/batik.png') }}" alt="Ornamen Batik">
     </div>
     <div class="absolute top-100 -right-8 opacity-40 pointer-events-none w-32 md:w-52 -rotate-12 scale-x-[-1] z-0">
-        <img src="{{ asset('images/assets_lain/batik.png') }}" alt="Ornamen Batik">
+        <img loading="lazy" decoding="async" width="192" height="98" src="{{ asset('images/assets_lain/batik.png') }}" alt="Ornamen Batik">
     </div>
 
     <!-- Hero Content Wrapper -->
@@ -13,9 +13,9 @@
         <div class="relative w-full h-[400px] md:h-[420px] md:rounded-[1.8rem] rounded-[1rem] overflow-hidden shadow-2xl group z-10">
             <!-- Carousel Images -->
             <div id="hero-carousel" class="relative w-full h-full bg-gray-200">
-                <img src="{{ asset('images/akomodasi/carousel/a.webp') }}" alt="Slide 1" class="absolute inset-0 w-full h-full object-cover object-bottom transition-opacity duration-1000 opacity-100 slide-item">
-                <img src="{{ asset('images/akomodasi/carousel/b.webp') }}" alt="Slide 3" class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 opacity-0 slide-item">
-                <img src="{{ asset('images/akomodasi/carousel/c.webp') }}" alt="Slide 4" class="absolute inset-0 w-full h-full object-cover object-bottom transition-opacity duration-1000 opacity-0 slide-item">
+                <img src="{{ asset('images/akomodasi/carousel/a.webp') }}" alt="Slide 1" width="1280" height="420" fetchpriority="high" decoding="sync" class="absolute inset-0 w-full h-full object-cover object-bottom transition-opacity duration-1000 opacity-100 slide-item">
+                <img loading="lazy" decoding="async" src="{{ asset('images/akomodasi/carousel/b.webp') }}" alt="Slide 2" width="1280" height="420" class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 opacity-0 slide-item">
+                <img loading="lazy" decoding="async" src="{{ asset('images/akomodasi/carousel/c.webp') }}" alt="Slide 3" width="1280" height="420" class="absolute inset-0 w-full h-full object-cover object-bottom transition-opacity duration-1000 opacity-0 slide-item">
             </div>
 
             <!-- Overlay for text readability -->

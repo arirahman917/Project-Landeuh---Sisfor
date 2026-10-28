@@ -1,9 +1,9 @@
-<header class="sticky top-0 z-50 w-full bg-white/40 backdrop-blur-xl border-b border-white/30 shadow-sm transition-all" id="mainHeader">
+﻿<header class="sticky top-0 z-50 w-full bg-white/40 backdrop-blur-xl border-b border-white/30 shadow-sm transition-all" id="mainHeader">
 
     <div class="w-full px-4 sm:px-6 py-2.5 flex justify-between items-center max-w-7xl mx-auto relative">
         <!-- Left Side: Logo -->
         <a href="{{ url('/') }}" class="flex items-center z-50">
-            <img src="{{ asset('images/logo-landeuh.png') }}" alt="Landeuh Village Riverside Logo" class="h-10 md:h-12 object-contain" loading="eager" decoding="async" onerror="this.src='https://placehold.co/150x50?text=Logo+Landeuh'">
+            <img src="{{ asset('images/logo-landeuh.png') }}" alt="Landeuh Village Riverside Logo" width="136" height="48" class="h-10 md:h-12 w-auto object-contain" fetchpriority="high" loading="eager" decoding="async">
         </a>
 
         <!-- Right Side: Navigation & Auth -->
