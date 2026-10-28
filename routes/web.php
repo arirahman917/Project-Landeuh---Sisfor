@@ -12,11 +12,54 @@ Route::get('/akomodasi', [LandingController::class, 'akomodasi'])->name('akomoda
 Route::get('/paket-corporate', [LandingController::class, 'corporate'])->name('akomodasi.corporate');
 
 Route::get('/sitemap.xml', function () {
-    $path = public_path('sitemap.xml');
-    if (file_exists($path)) {
-        return response(file_get_contents($path), 200, ['Content-Type' => 'application/xml; charset=utf-8']);
+    $candidates = [
+        public_path('sitemap.xml'),
+        base_path('public/sitemap.xml'),
+        base_path('public_html/sitemap.xml'),
+    ];
+    foreach ($candidates as $path) {
+        if (file_exists($path)) {
+            return response(file_get_contents($path), 200, ['Content-Type' => 'application/xml; charset=utf-8']);
+        }
     }
-    abort(404);
+
+    $xml = '<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+    <url>
+        <loc>https://landeuhvillage.com/</loc>
+        <lastmod>2026-10-28</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>1.0</priority>
+        <image:image>
+            <image:loc>https://landeuhvillage.com/images/akomodasi/carousel/a.webp</image:loc>
+            <image:title>Landeuh Village Riverside - Glamping &amp; Villa Tepi Sungai Bogor</image:title>
+            <image:caption>Suasana asri glamping dan kabin tepi sungai di Landeuh Village Riverside Bogor</image:caption>
+        </image:image>
+    </url>
+    <url>
+        <loc>https://landeuhvillage.com/akomodasi</loc>
+        <lastmod>2026-10-28</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+        <image:image>
+            <image:loc>https://landeuhvillage.com/images/akomodasi/glamping_vip/c.webp</image:loc>
+            <image:title>Akomodasi Glamping dan Kabin Landeuh Village Riverside</image:title>
+        </image:image>
+    </url>
+    <url>
+        <loc>https://landeuhvillage.com/paket-corporate</loc>
+        <lastmod>2026-10-28</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+        <image:image>
+            <image:loc>https://landeuhvillage.com/images/akomodasi/paket_corporate/a.webp</image:loc>
+            <image:title>Paket Gathering Kantor dan Outbound Landeuh Village Riverside</image:title>
+        </image:image>
+    </url>
+</urlset>';
+
+    return response($xml, 200, ['Content-Type' => 'application/xml; charset=utf-8']);
 });
 
 Route::get('/debug-session-set', function () {
