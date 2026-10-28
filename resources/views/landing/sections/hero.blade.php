@@ -13,9 +13,9 @@
         <div class="relative w-full h-[400px] md:h-[420px] md:rounded-[1.8rem] rounded-[1rem] overflow-hidden shadow-2xl group z-10">
             <!-- Carousel Images -->
             <div id="hero-carousel" class="relative w-full h-full bg-gray-200">
-                <img src="{{ asset('images/akomodasi/carousel/a.webp') }}" alt="Slide 1" width="1280" height="420" fetchpriority="high" decoding="sync" class="absolute inset-0 w-full h-full object-cover object-bottom transition-opacity duration-1000 opacity-100 slide-item">
-                <img loading="lazy" decoding="async" src="{{ asset('images/akomodasi/carousel/b.webp') }}" alt="Slide 2" width="1280" height="420" class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 opacity-0 slide-item">
-                <img loading="lazy" decoding="async" src="{{ asset('images/akomodasi/carousel/c.webp') }}" alt="Slide 3" width="1280" height="420" class="absolute inset-0 w-full h-full object-cover object-bottom transition-opacity duration-1000 opacity-0 slide-item">
+                <img src="{{ asset('images/akomodasi/carousel/a.webp') }}" alt="Glamping Tepi Sungai Landeuh Village Riverside Bogor - Pemandangan Alam Asri" width="1280" height="420" fetchpriority="high" decoding="sync" class="absolute inset-0 w-full h-full object-cover object-bottom transition-opacity duration-1000 opacity-100 slide-item">
+                <img loading="lazy" decoding="async" src="{{ asset('images/akomodasi/carousel/b.webp') }}" alt="Kabin Kayu dan Villa Industrial Tepi Sungai Landeuh Village Bogor" width="1280" height="420" class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 opacity-0 slide-item">
+                <img loading="lazy" decoding="async" src="{{ asset('images/akomodasi/carousel/c.webp') }}" alt="Suasana Penginapan Riverside dan Area Api Unggun Landeuh Village Bogor" width="1280" height="420" class="absolute inset-0 w-full h-full object-cover object-bottom transition-opacity duration-1000 opacity-0 slide-item">
             </div>
 
             <!-- Overlay for text readability -->
@@ -23,8 +23,8 @@
 
             <!-- Text Content -->
             <div class="absolute bottom-20 md:bottom-24 left-0 w-full px-6 md:px-14 text-white">
-                <h1 class="text-3xl md:text-[2.8rem] font-bold mb-3 md:mb-4 max-w-4xl leading-tight">Bangun pagi ditemani suara sungai dan udara pegunungan yang sejuk</h1>
-                <p class="text-base md:text-xl text-gray-100 font-medium tracking-wide">Cari akomodasi yang nyaman & tenang di Landeuh Village Riverside</p>
+                <h1 class="text-3xl md:text-[2.8rem] font-bold mb-3 md:mb-4 max-w-4xl leading-tight">Glamping Tepi Sungai di Bogor: Udara Sejuk & Suasana Asri Pegunungan</h1>
+                <p class="text-base md:text-xl text-gray-100 font-medium tracking-wide">Penginapan kabin kayu & villa industrial yang nyaman di Landeuh Village Riverside</p>
             </div>
         </div>
 

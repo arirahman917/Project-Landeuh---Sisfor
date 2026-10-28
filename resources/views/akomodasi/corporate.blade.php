@@ -1,5 +1,8 @@
 @extends('layouts.app')
-@section('title', 'Paket Corporate - Landeuh Village Riverside')
+@section('title', 'Paket Corporate & Gathering Kantor di Bogor - Landeuh Village')
+@section('meta_description', 'Paket gathering kantor, outing perusahaan, dan outbound tepi sungai di Landeuh Village Bogor. Fasilitas lengkap 3x makan, api unggun, kapasitas besar, & suasana alam asri.')
+@section('meta_keywords', 'paket gathering kantor bogor, tempat outing bogor, outbound tepi sungai bogor, family gathering bogor, paket corporate landeuh village')
+@section('canonical_url', url('/paket-corporate'))
 @section('hide_footer', true)
 @section('content')
 

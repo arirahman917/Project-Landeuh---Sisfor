@@ -1,5 +1,8 @@
 @extends('layouts.app')
-@section('title', 'Akomodasi - Landeuh Village Riverside')
+@section('title', 'Pilihan Akomodasi & Glamping Tepi Sungai Bogor - Landeuh Village')
+@section('meta_description', 'Pilihan lengkap glamping, kabin kayu, dan rumah industrial tepi sungai di Landeuh Village Bogor. Dilengkapi fasilitas nyaman, api unggun, & akses langsung ke sungai.')
+@section('meta_keywords', 'glamping bogor, kabin kayu bogor, rumah industrial bogor, penginapan tepi sungai bogor, sewa villa bogor, akomodasi landeuh village')
+@section('canonical_url', url('/akomodasi'))
 
 {{-- Hide footer on this page --}}
 @section('hide_footer', true)

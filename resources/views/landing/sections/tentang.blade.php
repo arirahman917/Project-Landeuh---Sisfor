@@ -71,11 +71,11 @@
 
                 <!-- Kanan: Gambar -->
                 <div class="relative h-[240px] md:h-[300px] lg:h-[380px] w-full rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl group">
-                    <img loading="lazy" decoding="async" width="600" height="380" id="tentang-img-1" src="{{ asset('images/akomodasi/glamping_vip/c.webp') }}" class="tentang-img-item absolute inset-0 w-full h-full object-cover transition-all duration-1000 opacity-100 scale-100">
-                    <img loading="lazy" decoding="async" width="600" height="380" id="tentang-img-2" src="{{ asset('images/akomodasi/cabin5/a.webp') }}" class="tentang-img-item absolute inset-0 w-full h-full object-cover transition-all duration-1000 opacity-0 scale-105">
-                    <img loading="lazy" decoding="async" width="600" height="380" id="tentang-img-3" src="{{ asset('images/akomodasi/glamping_vip/d-tentang.webp') }}" class="tentang-img-item absolute inset-0 w-full h-full object-cover transition-all duration-1000 opacity-0 scale-105">
-                    <img loading="lazy" decoding="async" width="600" height="380" id="tentang-img-4" src="{{ asset('images/akomodasi/paket_corporate/a.webp') }}" class="tentang-img-item absolute inset-0 w-full h-full object-cover transition-all duration-1000 opacity-0 scale-105">
-                    <img loading="lazy" decoding="async" width="600" height="380" id="tentang-img-5" src="{{ asset('images/akomodasi/kedai/a.webp') }}" class="tentang-img-item absolute inset-0 w-full h-full object-cover transition-all duration-1000 opacity-0 scale-105">
+                    <img loading="lazy" decoding="async" width="600" height="380" id="tentang-img-1" src="{{ asset('images/akomodasi/glamping_vip/c.webp') }}" alt="Penginapan Tepi Sungai Asri Landeuh Village Riverside Bogor" class="tentang-img-item absolute inset-0 w-full h-full object-cover transition-all duration-1000 opacity-100 scale-100">
+                    <img loading="lazy" decoding="async" width="600" height="380" id="tentang-img-2" src="{{ asset('images/akomodasi/cabin5/a.webp') }}" alt="Kabin Kayu dan Rumah Industrial Landeuh Village Bogor" class="tentang-img-item absolute inset-0 w-full h-full object-cover transition-all duration-1000 opacity-0 scale-105">
+                    <img loading="lazy" decoding="async" width="600" height="380" id="tentang-img-3" src="{{ asset('images/akomodasi/glamping_vip/d-tentang.webp') }}" alt="Tenda Glamping VIP Mewah Tepi Sungai Bogor" class="tentang-img-item absolute inset-0 w-full h-full object-cover transition-all duration-1000 opacity-0 scale-105">
+                    <img loading="lazy" decoding="async" width="600" height="380" id="tentang-img-4" src="{{ asset('images/akomodasi/paket_corporate/a.webp') }}" alt="Paket Gathering Corporate Kantor dan Outbound Landeuh Village" class="tentang-img-item absolute inset-0 w-full h-full object-cover transition-all duration-1000 opacity-0 scale-105">
+                    <img loading="lazy" decoding="async" width="600" height="380" id="tentang-img-5" src="{{ asset('images/akomodasi/kedai/a.webp') }}" alt="Kedai Wangun Suasana Santai Tepi Sungai Landeuh Village" class="tentang-img-item absolute inset-0 w-full h-full object-cover transition-all duration-1000 opacity-0 scale-105">
                 </div>
                 </div> <!-- END GRID -->
                 

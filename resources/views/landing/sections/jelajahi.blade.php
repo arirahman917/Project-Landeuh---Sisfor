@@ -69,7 +69,7 @@
 
                             {{-- Image --}}
                             <img loading="lazy" decoding="async" width="240" height="220" src="{{ $item['image'] }}"
-                                 alt="{{ $item['label'] }}"
+                                 alt="{{ $item['label'] }} Landeuh Village Riverside - Glamping Tepi Sungai Bogor"
                                  class="absolute inset-0 w-full h-full object-cover
                                         scale-100 group-hover:scale-105
                                         transition-transform duration-500 ease-out">
