@@ -327,7 +327,8 @@ class ReservasiController extends Controller
              *    sehingga popup modal Midtrans Snap Sandbox Simulator muncul untuk testing.
              * =========================================================================
              */
-            $isProduction = (bool) config('services.midtrans.is_production', false);
+            $rawIsProd = config('services.midtrans.is_production') ?? (env('MIDTRANS_IS_PRODUCTION') ?? ($_ENV['MIDTRANS_IS_PRODUCTION'] ?? ($_SERVER['MIDTRANS_IS_PRODUCTION'] ?? false)));
+            $isProduction = filter_var($rawIsProd, FILTER_VALIDATE_BOOLEAN);
 
             if ($isProduction) {
                 // --- MODE PRODUCTION (Tampilan Custom Mockup / Screenshot) ---
@@ -363,17 +364,18 @@ class ReservasiController extends Controller
 
             /*
              * =========================================================================
-             * MODE SANDBOX / MIDTRANS SNAP TOKEN GENERATION (AUTO-RECOVERY & FALLBACK)
+             * MODE SANDBOX / MIDTRANS SNAP TOKEN GENERATION (ROBUST DIRECT CURL)
              * =========================================================================
-             * Menghasilkan Snap Token resmi Midtrans untuk memunculkan popup Simulator.
-             * Dilengkapi deteksi otomatis key tertukar, pembersihan quote/spasi, serta
-             * auto-recovery bila ada ketidakcocokan environment (401 Unauthorized).
+             * Menggunakan direct cURL dengan pembersihan regex ketat terhadap non-ASCII/NBSP,
+             * auto-detection key tertukar, dan auto-fallback Sandbox <-> Production.
              * =========================================================================
              */
-            $rawServerKey = config('services.midtrans.server_key') ?: env('MIDTRANS_SERVER_KEY', '');
-            $rawClientKey = config('services.midtrans.client_key') ?: env('MIDTRANS_CLIENT_KEY', '');
-            $serverKey = trim(trim((string)$rawServerKey), "'\"");
-            $clientKey = trim(trim((string)$rawClientKey), "'\"");
+            $rawServerKey = config('services.midtrans.server_key') ?: (env('MIDTRANS_SERVER_KEY') ?: ($_ENV['MIDTRANS_SERVER_KEY'] ?? ($_SERVER['MIDTRANS_SERVER_KEY'] ?? (getenv('MIDTRANS_SERVER_KEY') ?: ''))));
+            $rawClientKey = config('services.midtrans.client_key') ?: (env('MIDTRANS_CLIENT_KEY') ?: ($_ENV['MIDTRANS_CLIENT_KEY'] ?? ($_SERVER['MIDTRANS_CLIENT_KEY'] ?? (getenv('MIDTRANS_CLIENT_KEY') ?: ''))));
+
+            // Bersihkan total dari spasi, tanda petik, non-breaking space (NBSP), enter, atau karakter tersembunyi
+            $serverKey = preg_replace('/[^A-Za-z0-9_-]/', '', (string)$rawServerKey);
+            $clientKey = preg_replace('/[^A-Za-z0-9_-]/', '', (string)$rawClientKey);
 
             // Deteksi jika user tidak sengaja menukar Server Key dengan Client Key
             if ((str_starts_with($serverKey, 'Mid-client-') || str_starts_with($serverKey, 'SB-Mid-client-')) &&
@@ -391,15 +393,8 @@ class ReservasiController extends Controller
                 str_contains($serverKeyLower, 'example')) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Server Key Midtrans belum diisi atau masih berupa teks contoh (placeholder) di .env Hostinger. Harap isi MIDTRANS_SERVER_KEY dengan Server Key asli Anda.'
+                    'message' => 'Server Key Midtrans belum diisi atau masih berupa teks contoh (placeholder) di Hostinger. Harap isi MIDTRANS_SERVER_KEY dengan Server Key asli Anda dari dashboard.midtrans.com.'
                 ], 400);
-            }
-
-            // Tentukan preferensi environment awal
-            if (str_starts_with($serverKey, 'SB-Mid-')) {
-                $preferredProduction = false;
-            } else {
-                $preferredProduction = $isProduction;
             }
 
             $itemTitle = $booking->corporatePackage 
@@ -437,57 +432,100 @@ class ReservasiController extends Controller
                 $params['enabled_payments'] = $enabledPayments;
             }
 
-            \Midtrans\Config::$serverKey = $serverKey;
-            \Midtrans\Config::$isProduction = $preferredProduction;
-            \Midtrans\Config::$isSanitized = config('services.midtrans.is_sanitized', true);
-            \Midtrans\Config::$is3ds = config('services.midtrans.is_3ds', true);
-            \Midtrans\Config::$curlOptions = [
-                CURLOPT_HTTPHEADER => [],
-                CURLOPT_SSL_VERIFYPEER => false,
-                CURLOPT_SSL_VERIFYHOST => 0,
-            ];
-
-            $snapToken = null;
-            $activeEnvironment = $preferredProduction ? 'production' : 'sandbox';
-
-            try {
-                $snapToken = \Midtrans\Snap::getSnapToken($params);
-            } catch (\Exception $e) {
-                $firstError = $e->getMessage();
-
-                // Jika error 401 Unauthorized, coba switch environment secara otomatis (Sandbox <-> Production)
-                if (str_contains($firstError, '401') || str_contains($firstError, 'Unauthorized')) {
-                    try {
-                        $fallbackProduction = !$preferredProduction;
-                        \Midtrans\Config::$isProduction = $fallbackProduction;
-                        $snapToken = \Midtrans\Snap::getSnapToken($params);
-                        $activeEnvironment = $fallbackProduction ? 'production' : 'sandbox';
-                    } catch (\Exception $e2) {
-                        $maskedKey = strlen($serverKey) > 12 
-                            ? substr($serverKey, 0, 10) . '...' . substr($serverKey, -4) 
-                            : '***';
-
-                        return response()->json([
-                            'success' => false,
-                            'message' => 'Midtrans menolak Server Key (HTTP 401 Unauthorized baik di Sandbox maupun Production). ' .
-                                         'Pastikan Server Key di file .env Hostinger benar dan sesuai dengan akun Midtrans Anda. ' .
-                                         '(Key yang terbaca saat ini: ' . $maskedKey . ')'
-                        ], 400);
-                    }
-                } else {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Gagal mendapatkan Snap Token: ' . $firstError
-                    ], 400);
-                }
+            // Tentukan endpoint awal (Sandbox vs Production)
+            $primaryIsProd = $isProduction;
+            if (str_starts_with($serverKey, 'SB-Mid-')) {
+                $primaryIsProd = false;
             }
 
+            // Helper eksekusi API Snap ke Midtrans via cURL langsung
+            $callMidtransApi = function($targetIsProd) use ($serverKey, $params) {
+                $url = $targetIsProd 
+                    ? 'https://app.midtrans.com/snap/v1/transactions' 
+                    : 'https://app.sandbox.midtrans.com/snap/v1/transactions';
+
+                $payload = json_encode($params);
+
+                $ch = curl_init($url);
+                curl_setopt($ch, CURLOPT_POST, 1);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
+                curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                    'Content-Type: application/json',
+                    'Accept: application/json',
+                    'User-Agent: LandeuhVillage/1.0',
+                    'Authorization: Basic ' . base64_encode($serverKey . ':')
+                ]);
+
+                $body = curl_exec($ch);
+                $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                $curlErr = curl_error($ch);
+
+                $json = json_decode($body, true);
+
+                return [
+                    'url' => $url,
+                    'http_code' => $httpCode,
+                    'curl_error' => $curlErr,
+                    'raw_body' => $body,
+                    'json' => $json,
+                    'is_prod' => $targetIsProd
+                ];
+            };
+
+            // Percobaan 1: Coba endpoint yang dikonfigurasi
+            $res = $callMidtransApi($primaryIsProd);
+
+            // Jika sukses, langsung kembalikan snap token
+            if ($res['http_code'] >= 200 && $res['http_code'] < 300 && !empty($res['json']['token'])) {
+                return response()->json([
+                    'success' => true,
+                    'snap_token' => $res['json']['token'],
+                    'redirect_url' => $res['json']['redirect_url'] ?? null,
+                    'environment' => $primaryIsProd ? 'production' : 'sandbox',
+                    'client_key' => $clientKey,
+                ]);
+            }
+
+            // Percobaan 2: Jika gagal (termasuk 401 Unauthorized), coba endpoint sebaliknya sebagai fallback otomatis
+            $fallbackIsProd = !$primaryIsProd;
+            $resFallback = $callMidtransApi($fallbackIsProd);
+
+            if ($resFallback['http_code'] >= 200 && $resFallback['http_code'] < 300 && !empty($resFallback['json']['token'])) {
+                return response()->json([
+                    'success' => true,
+                    'snap_token' => $resFallback['json']['token'],
+                    'redirect_url' => $resFallback['json']['redirect_url'] ?? null,
+                    'environment' => $fallbackIsProd ? 'production' : 'sandbox',
+                    'client_key' => $clientKey,
+                ]);
+            }
+
+            // Jika kedua endpoint gagal, tampilkan detail diagnostik transparan
+            $maskedKey = strlen($serverKey) > 14 
+                ? substr($serverKey, 0, 11) . '...' . substr($serverKey, -4) 
+                : $serverKey;
+
+            $errorMsg = sprintf(
+                "Midtrans menolak Server Key.\n- Percobaan 1 (%s, HTTP %s): %s\n- Percobaan 2 (%s, HTTP %s): %s\n(Key terbaca: %s, panjang: %d char)",
+                $primaryIsProd ? 'Production' : 'Sandbox',
+                $res['http_code'],
+                $res['raw_body'] ?: ($res['curl_error'] ?: 'No response'),
+                $fallbackIsProd ? 'Production' : 'Sandbox',
+                $resFallback['http_code'],
+                $resFallback['raw_body'] ?: ($resFallback['curl_error'] ?: 'No response'),
+                $maskedKey,
+                strlen($serverKey)
+            );
+
             return response()->json([
-                'success' => true,
-                'snap_token' => $snapToken,
-                'environment' => $activeEnvironment,
-                'client_key' => $clientKey,
-            ]);
+                'success' => false,
+                'message' => $errorMsg
+            ], 400);
 
         } catch (\Exception $e) {
             return response()->json([
