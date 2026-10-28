@@ -41,51 +41,51 @@
 
     <!-- Schema.org JSON-LD Structured Data for LodgingBusiness -->
     <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "LodgingBusiness",
-      "@id": "https://landeuhvillage.com/#lodging",
-      "name": "Landeuh Village Riverside",
-      "alternateName": ["Landeuh Village", "Landeuh Riverside Glamping"],
-      "description": "Penginapan glamping tepi sungai, kabin kayu alami, dan villa industrial asri di Babakan Madang, Kabupaten Bogor.",
-      "url": "https://landeuhvillage.com",
-      "telephone": "+6282114640277",
-      "email": "landeuhvillage@gmail.com",
-      "image": [
-        "{{ asset('images/akomodasi/carousel/a.webp') }}",
-        "{{ asset('images/akomodasi/glamping_vip/c.webp') }}",
-        "{{ asset('images/akomodasi/cabin5/a.webp') }}"
+    {!! json_encode([
+      '@context' => 'https://schema.org',
+      '@type' => 'LodgingBusiness',
+      '@id' => 'https://landeuhvillage.com/#lodging',
+      'name' => 'Landeuh Village Riverside',
+      'alternateName' => ['Landeuh Village', 'Landeuh Riverside Glamping'],
+      'description' => 'Penginapan glamping tepi sungai, kabin kayu alami, dan villa industrial asri di Babakan Madang, Kabupaten Bogor.',
+      'url' => 'https://landeuhvillage.com',
+      'telephone' => '+6282114640277',
+      'email' => 'landeuhvillage@gmail.com',
+      'image' => [
+        asset('images/akomodasi/carousel/a.webp'),
+        asset('images/akomodasi/glamping_vip/c.webp'),
+        asset('images/akomodasi/cabin5/a.webp'),
       ],
-      "address": {
-        "@type": "PostalAddress",
-        "streetAddress": "Kp. Wangun Landeuh, Karang Tengah",
-        "addressLocality": "Babakan Madang",
-        "addressRegion": "Jawa Barat",
-        "postalCode": "16810",
-        "addressCountry": "ID"
-      },
-      "geo": {
-        "@type": "GeoCoordinates",
-        "latitude": -6.587150,
-        "longitude": 106.927528
-      },
-      "hasMap": "https://maps.google.com/?cid=11001886129881104457",
-      "priceRange": "Rp 350.000 - Rp 2.500.000",
-      "amenityFeature": [
-        {"@type": "LocationFeatureSpecification", "name": "Aliran Sungai Alami", "value": true},
-        {"@type": "LocationFeatureSpecification", "name": "Area Api Unggun", "value": true},
-        {"@type": "LocationFeatureSpecification", "name": "Fasilitas BBQ", "value": true},
-        {"@type": "LocationFeatureSpecification", "name": "Kedai Makan & Kopi", "value": true},
-        {"@type": "LocationFeatureSpecification", "name": "Area Bermain Anak", "value": true},
-        {"@type": "LocationFeatureSpecification", "name": "Parkir Gratis", "value": true}
+      'address' => [
+        '@type' => 'PostalAddress',
+        'streetAddress' => 'Kp. Wangun Landeuh, Karang Tengah',
+        'addressLocality' => 'Babakan Madang',
+        'addressRegion' => 'Jawa Barat',
+        'postalCode' => '16810',
+        'addressCountry' => 'ID',
       ],
-      "checkinTime": "14:00",
-      "checkoutTime": "12:00",
-      "sameAs": [
-        "https://instagram.com/landeuhvillageriverside",
-        "https://tiktok.com/@landeuh"
-      ]
-    }
+      'geo' => [
+        '@type' => 'GeoCoordinates',
+        'latitude' => -6.587150,
+        'longitude' => 106.927528,
+      ],
+      'hasMap' => 'https://maps.google.com/?cid=11001886129881104457',
+      'priceRange' => 'Rp 350.000 - Rp 2.500.000',
+      'amenityFeature' => [
+        ['@type' => 'LocationFeatureSpecification', 'name' => 'Aliran Sungai Alami', 'value' => true],
+        ['@type' => 'LocationFeatureSpecification', 'name' => 'Area Api Unggun', 'value' => true],
+        ['@type' => 'LocationFeatureSpecification', 'name' => 'Fasilitas BBQ', 'value' => true],
+        ['@type' => 'LocationFeatureSpecification', 'name' => 'Kedai Makan & Kopi', 'value' => true],
+        ['@type' => 'LocationFeatureSpecification', 'name' => 'Area Bermain Anak', 'value' => true],
+        ['@type' => 'LocationFeatureSpecification', 'name' => 'Parkir Gratis', 'value' => true],
+      ],
+      'checkinTime' => '14:00',
+      'checkoutTime' => '12:00',
+      'sameAs' => [
+        'https://instagram.com/landeuhvillageriverside',
+        'https://tiktok.com/@landeuh',
+      ],
+    ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
     </script>
     @stack('schema')
 
