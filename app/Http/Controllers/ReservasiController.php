@@ -296,16 +296,20 @@ class ReservasiController extends Controller
     {
         try {
             $validated = $request->validate([
-                'no_pesanan' => 'required|string|exists:bookings,no_pesanan',
+                'no_pesanan' => 'required|string',
                 'metode_pembayaran' => 'required|string',
             ]);
 
-            $booking = Booking::with(['accommodation', 'corporatePackage'])->where('no_pesanan', $validated['no_pesanan'])->firstOrFail();
-            
-            // Simpan metode pembayaran pilihan terbaru ke database
-            $booking->metode_pembayaran = $validated['metode_pembayaran'];
-            $booking->save();
+            $booking = Booking::where('no_pesanan', $validated['no_pesanan'])->first();
 
+            if (!$booking) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Pesanan tidak ditemukan.'
+                ], 404);
+            }
+
+            $booking->metode_pembayaran = $validated['metode_pembayaran'];
             $methodLower = strtolower(trim($validated['metode_pembayaran']));
             $booking->status = 'pending';
             $booking->save();
@@ -359,71 +363,133 @@ class ReservasiController extends Controller
 
             /*
              * =========================================================================
-             * MODE SANDBOX / MIDTRANS SNAP TOKEN GENERATION
+             * MODE SANDBOX / MIDTRANS SNAP TOKEN GENERATION (AUTO-RECOVERY & FALLBACK)
              * =========================================================================
              * Menghasilkan Snap Token resmi Midtrans untuk memunculkan popup Simulator.
+             * Dilengkapi deteksi otomatis key tertukar, pembersihan quote/spasi, serta
+             * auto-recovery bila ada ketidakcocokan environment (401 Unauthorized).
              * =========================================================================
              */
-            $serverKey = config('services.midtrans.server_key');
+            $rawServerKey = config('services.midtrans.server_key') ?: env('MIDTRANS_SERVER_KEY', '');
+            $rawClientKey = config('services.midtrans.client_key') ?: env('MIDTRANS_CLIENT_KEY', '');
+            $serverKey = trim(trim((string)$rawServerKey), "'\"");
+            $clientKey = trim(trim((string)$rawClientKey), "'\"");
+
+            // Deteksi jika user tidak sengaja menukar Server Key dengan Client Key
+            if ((str_starts_with($serverKey, 'Mid-client-') || str_starts_with($serverKey, 'SB-Mid-client-')) &&
+                (str_starts_with($clientKey, 'Mid-server-') || str_starts_with($clientKey, 'SB-Mid-server-'))) {
+                $temp = $serverKey;
+                $serverKey = $clientKey;
+                $clientKey = $temp;
+            }
+
+            // Validasi Server Key bukan teks contoh / placeholder
+            $serverKeyLower = strtolower($serverKey);
+            if (empty($serverKey) || 
+                str_contains($serverKeyLower, 'your_') || 
+                str_contains($serverKeyLower, 'placeholder') || 
+                str_contains($serverKeyLower, 'example')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Server Key Midtrans belum diisi atau masih berupa teks contoh (placeholder) di .env Hostinger. Harap isi MIDTRANS_SERVER_KEY dengan Server Key asli Anda.'
+                ], 400);
+            }
+
+            // Tentukan preferensi environment awal
+            if (str_starts_with($serverKey, 'SB-Mid-')) {
+                $preferredProduction = false;
+            } else {
+                $preferredProduction = $isProduction;
+            }
+
+            $itemTitle = $booking->corporatePackage 
+                ? $booking->corporatePackage->judul 
+                : ($booking->accommodation ? $booking->accommodation->judul : 'Akomodasi Landeuh');
+
+            $finishUrl = url('/reservasi/konfirmasi?booking_no=' . $booking->no_pesanan . '&from=midtrans');
+
+            $params = [
+                'transaction_details' => [
+                    'order_id' => $booking->no_pesanan . '-' . time(),
+                    'gross_amount' => (int) $booking->total,
+                ],
+                'item_details' => [
+                    [
+                        'id' => 'BOOKING-' . $booking->id,
+                        'price' => (int) $booking->total,
+                        'quantity' => 1,
+                        'name' => mb_strimwidth($itemTitle, 0, 50, '...'),
+                    ]
+                ],
+                'customer_details' => [
+                    'first_name' => $booking->pemesan_nama,
+                    'email' => $booking->pemesan_email,
+                    'phone' => $booking->pemesan_telp,
+                ],
+                'callbacks' => [
+                    'finish' => $finishUrl,
+                ],
+            ];
+
+            // Pasang filter Enabled Payments khusus berdasarkan input metode dari frontend
+            $enabledPayments = $this->getMidtransEnabledPayments($validated['metode_pembayaran']);
+            if (!empty($enabledPayments)) {
+                $params['enabled_payments'] = $enabledPayments;
+            }
+
+            \Midtrans\Config::$serverKey = $serverKey;
+            \Midtrans\Config::$isProduction = $preferredProduction;
+            \Midtrans\Config::$isSanitized = config('services.midtrans.is_sanitized', true);
+            \Midtrans\Config::$is3ds = config('services.midtrans.is_3ds', true);
+            \Midtrans\Config::$curlOptions = [
+                CURLOPT_HTTPHEADER => [],
+                CURLOPT_SSL_VERIFYPEER => false,
+                CURLOPT_SSL_VERIFYHOST => 0,
+            ];
+
             $snapToken = null;
-            $midtransError = null;
+            $activeEnvironment = $preferredProduction ? 'production' : 'sandbox';
 
-            if (!empty($serverKey) && $serverKey !== 'SB-Mid-server-YOUR_SERVER_KEY') {
-                \Midtrans\Config::$serverKey = $serverKey;
-                \Midtrans\Config::$isProduction = $isProduction;
-                \Midtrans\Config::$isSanitized = config('services.midtrans.is_sanitized', true);
-                \Midtrans\Config::$is3ds = config('services.midtrans.is_3ds', true);
-                \Midtrans\Config::$curlOptions = [
-                    CURLOPT_HTTPHEADER => [],
-                    CURLOPT_SSL_VERIFYPEER => false,
-                    CURLOPT_SSL_VERIFYHOST => 0,
-                ];
-
-                $itemTitle = $booking->corporatePackage 
-                    ? $booking->corporatePackage->judul 
-                    : ($booking->accommodation ? $booking->accommodation->judul : 'Akomodasi Landeuh');
-
-                $finishUrl = url('/reservasi/konfirmasi?booking_no=' . $booking->no_pesanan . '&from=midtrans');
-
-                $params = [
-                    'transaction_details' => [
-                        'order_id' => $booking->no_pesanan . '-' . time(),
-                        'gross_amount' => (int) $booking->total,
-                    ],
-                    'item_details' => [
-                        [
-                            'id' => 'BOOKING-' . $booking->id,
-                            'price' => (int) $booking->total,
-                            'quantity' => 1,
-                            'name' => mb_strimwidth($itemTitle, 0, 50, '...'),
-                        ]
-                    ],
-                    'customer_details' => [
-                        'first_name' => $booking->pemesan_nama,
-                        'email' => $booking->pemesan_email,
-                        'phone' => $booking->pemesan_telp,
-                    ],
-                    'callbacks' => [
-                        'finish' => $finishUrl,
-                    ],
-                ];
-
-                // Pasang filter Enabled Payments khusus berdasarkan input metode dari frontend
-                $enabledPayments = $this->getMidtransEnabledPayments($validated['metode_pembayaran']);
-                if (!empty($enabledPayments)) {
-                    $params['enabled_payments'] = $enabledPayments;
-                }
-
+            try {
                 $snapToken = \Midtrans\Snap::getSnapToken($params);
+            } catch (\Exception $e) {
+                $firstError = $e->getMessage();
+
+                // Jika error 401 Unauthorized, coba switch environment secara otomatis (Sandbox <-> Production)
+                if (str_contains($firstError, '401') || str_contains($firstError, 'Unauthorized')) {
+                    try {
+                        $fallbackProduction = !$preferredProduction;
+                        \Midtrans\Config::$isProduction = $fallbackProduction;
+                        $snapToken = \Midtrans\Snap::getSnapToken($params);
+                        $activeEnvironment = $fallbackProduction ? 'production' : 'sandbox';
+                    } catch (\Exception $e2) {
+                        $maskedKey = strlen($serverKey) > 12 
+                            ? substr($serverKey, 0, 10) . '...' . substr($serverKey, -4) 
+                            : '***';
+
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'Midtrans menolak Server Key (HTTP 401 Unauthorized baik di Sandbox maupun Production). ' .
+                                         'Pastikan Server Key di file .env Hostinger benar dan sesuai dengan akun Midtrans Anda. ' .
+                                         '(Key yang terbaca saat ini: ' . $maskedKey . ')'
+                        ], 400);
+                    }
+                } else {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Gagal mendapatkan Snap Token: ' . $firstError
+                    ], 400);
+                }
             }
 
             return response()->json([
                 'success' => true,
                 'snap_token' => $snapToken,
-                'midtrans_error' => $midtransError,
+                'environment' => $activeEnvironment,
+                'client_key' => $clientKey,
             ]);
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal mendapatkan Snap Token: ' . $e->getMessage()

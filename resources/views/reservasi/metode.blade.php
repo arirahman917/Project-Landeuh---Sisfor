@@ -502,33 +502,62 @@ function processPayment() {
 
         if(data.success && data.snap_token) {
             // Panggil Popup Midtrans Snap (Sandbox Simulator atau Production)
-            try {
-                window.snap.pay(data.snap_token, {
-                    onSuccess: function(result){
-                        resetBtn();
-                        updateBookingStatus(bookingNo, 'success', method, result);
-                    },
-                    onPending: function(result){
-                        resetBtn();
-                        updateBookingStatus(bookingNo, 'pending', method, result);
-                    },
-                    onError: function(result){
-                        resetBtn();
-                        updateBookingStatus(bookingNo, 'failed', method, result);
-                    },
-                    onClose: function(){
-                        resetBtn();
-                        alert('Anda menutup popup pembayaran sebelum menyelesaikannya.');
+            const isProd = (data.environment === 'production');
+            const targetScriptSrc = isProd ? 'https://app.midtrans.com/snap/snap.js' : 'https://app.sandbox.midtrans.com/snap/snap.js';
+            const clientKey = data.client_key || '{{ config("services.midtrans.client_key") }}';
+
+            function openSnapModal() {
+                try {
+                    window.snap.pay(data.snap_token, {
+                        onSuccess: function(result){
+                            resetBtn();
+                            updateBookingStatus(bookingNo, 'success', method, result);
+                        },
+                        onPending: function(result){
+                            resetBtn();
+                            updateBookingStatus(bookingNo, 'pending', method, result);
+                        },
+                        onError: function(result){
+                            resetBtn();
+                            updateBookingStatus(bookingNo, 'failed', method, result);
+                        },
+                        onClose: function(){
+                            resetBtn();
+                            alert('Anda menutup popup pembayaran sebelum menyelesaikannya.');
+                        }
+                    });
+                } catch (snapErr) {
+                    console.warn("Snap pay error:", snapErr);
+                    resetBtn();
+                    if (isProductionMode && fallbackUrl) {
+                        window.location.href = fallbackUrl;
+                    } else {
+                        alert('Gagal membuka popup Midtrans Snap: ' + (snapErr.message || 'Silakan pastikan browser mengizinkan popup.'));
                     }
-                });
-            } catch (snapErr) {
-                console.warn("Snap pay error:", snapErr);
-                resetBtn();
-                if (isProductionMode && fallbackUrl) {
-                    window.location.href = fallbackUrl;
-                } else {
-                    alert('Gagal membuka popup Midtrans Snap. Silakan pastikan browser Anda mengizinkan popup atau koneksi internet stabil.');
                 }
+            }
+
+            // Pastikan script snap sesuai dengan environment token yang dihasilkan
+            const existingScript = document.querySelector('script[src*="midtrans.com/snap/snap.js"]');
+            const scriptMatches = existingScript && existingScript.src.includes(isProd ? 'app.midtrans.com' : 'app.sandbox.midtrans.com');
+
+            if (window.snap && scriptMatches) {
+                openSnapModal();
+            } else {
+                if (existingScript) existingScript.remove();
+                delete window.snap;
+
+                const newScript = document.createElement('script');
+                newScript.src = targetScriptSrc;
+                if (clientKey) newScript.setAttribute('data-client-key', clientKey);
+                newScript.onload = function() {
+                    openSnapModal();
+                };
+                newScript.onerror = function() {
+                    resetBtn();
+                    alert('Gagal memuat script Midtrans Snap (' + targetScriptSrc + '). Periksa koneksi internet Anda.');
+                };
+                document.head.appendChild(newScript);
             }
         } else {
             resetBtn();
