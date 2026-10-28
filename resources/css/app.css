@@ -263,3 +263,9 @@ body {
 .flatpickr-day {
     border-radius: 9999px !important; /* fully rounded */
 }
+
+/* Ensure Main Navbar sits flush at the very top on all viewports */
+#mainHeader {
+    top: 0 !important;
+    margin-top: 0 !important;
+}
