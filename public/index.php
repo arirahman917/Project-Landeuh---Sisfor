@@ -16,7 +16,7 @@ require __DIR__.'/../vendor/autoload.php';
 // Bootstrap Laravel and handle the request...
 /** @var Application $app */
 // Force clear all caches on Hostinger to ensure new routes & config take effect
-$cacheFlag = __DIR__.'/../storage/framework/views/.cleared_v9';
+$cacheFlag = __DIR__.'/../storage/framework/views/.cleared_v10';
 if (!file_exists($cacheFlag)) {
     // Clear view cache
     $views = glob(__DIR__.'/../storage/framework/views/*.php');
