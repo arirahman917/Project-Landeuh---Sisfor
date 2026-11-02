@@ -162,48 +162,54 @@ function renderCorpList(data) {
             <div class="corp-img-thumb">
                 <img src="${thumb}" alt="${pkg.judul}" onerror="this.src='https://placehold.co/200x120/3a523a/fff?text=No+Image'">
             </div>
-            <div class="flex-1 flex flex-col justify-between gap-2 min-w-0">
+            <div class="flex-1 flex flex-col justify-between gap-3 min-w-0">
                 <div>
-                    <div class="flex flex-col md:flex-row md:items-start justify-between gap-3">
-                        <div>
+                    <div class="flex items-start justify-between gap-3">
+                        <div class="min-w-0 flex-1">
                             <h3 class="text-base font-bold text-stone-800 leading-tight">${pkg.judul}</h3>
-                            <div class="flex items-center gap-2 mt-1 flex-wrap">
+                            <div class="flex items-center gap-2 mt-1.5 flex-wrap">
                                 <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-[#3a523a]/10 text-[#3a523a]">${pkg.jenis}</span>
                                 <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">
                                     ${pkg.slot} unit terkait
                                 </span>
                                 <span class="text-[11px] text-stone-500">Maks. ${pkg.max_orang} pax</span>
                                 ${checkIsCurrentlyLiburCorp(pkg) ? `
-                                    <span class="inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-1 rounded-lg bg-red-50 text-red-700 border border-red-200 shadow-sm whitespace-nowrap">
+                                    <span class="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md bg-red-50 text-red-700 border border-red-200 shadow-xs whitespace-nowrap">
                                         <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>Libur / Blokir
                                     </span>
                                 ` : ''}
                             </div>
                         </div>
-                        <div class="flex flex-wrap gap-2 shrink-0">
-                            <button onclick="openModalEditCorp(${pkg.id})" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-blue-700 bg-blue-50 border border-blue-200 hover:bg-blue-100 transition shadow-sm">
-                                <iconify-icon icon="lucide:pencil" class="text-xs"></iconify-icon> Edit
-                            </button>
-                            ${hasBlockedPeriodsCorp(pkg) ? `
-                                <button onclick="openModalListLiburCorp(${pkg.id})" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-rose-700 bg-rose-50 border border-rose-200 hover:bg-rose-100 transition shadow-sm">
+                        ${hasBlockedPeriodsCorp(pkg) ? `
+                            <div class="shrink-0">
+                                <button onclick="openModalListLiburCorp(${pkg.id})"
+                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-rose-700 bg-rose-50 border border-rose-200 hover:bg-rose-100 transition shadow-xs whitespace-nowrap active:scale-95 cursor-pointer">
                                     <iconify-icon icon="lucide:calendar-off" class="text-xs"></iconify-icon> Tanggal Libur/Blokir
                                 </button>
-                            ` : ''}
-                            <button onclick="openModalDeleteCorp(${pkg.id}, '${pkg.judul.replace(/'/g,"\\'")}' )"
-                                class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-red-700 bg-red-50 border border-red-200 hover:bg-red-100 transition shadow-sm">
-                                <iconify-icon icon="lucide:trash-2" class="text-xs"></iconify-icon> Hapus
-                            </button>
-                        </div>
+                            </div>
+                        ` : ''}
                     </div>
                     <div class="mt-2 text-xs text-stone-500">
                         <span class="font-semibold text-stone-600">Unit:</span> ${accNames}
                     </div>
                     ${fas.length ? `<div class="mt-1.5 flex flex-wrap gap-1">${fas.slice(0,4).map(f=>`<span class="text-[10px] px-2 py-0.5 rounded-full bg-stone-100 text-stone-600 border border-stone-200">${f}</span>`).join('')}${fas.length>4?`<span class="text-[10px] text-stone-400">+${fas.length-4} lainnya</span>`:''}</div>` : ''}
                 </div>
-                <div class="flex flex-wrap gap-3 pt-2 border-t border-stone-200/60 text-xs font-semibold text-stone-600">
-                    <span>Weekday: <span class="text-[#3a523a] font-bold">${fmtRp(pkg.harga_weekday)}/pax</span></span>
-                    <span>Weekend: <span class="text-amber-700 font-bold">${fmtRp(pkg.harga_weekend)}/pax</span></span>
-                    <span>Highseason: <span class="text-red-700 font-bold">${fmtRp(pkg.harga_highseason)}/pax</span></span>
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pt-3 border-t border-stone-200/60">
+                    <div class="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs font-semibold text-stone-600">
+                        <span>Weekday: <span class="text-[#3a523a] font-bold">${fmtRp(pkg.harga_weekday)}/pax</span></span>
+                        <span>Weekend: <span class="text-amber-700 font-bold">${fmtRp(pkg.harga_weekend)}/pax</span></span>
+                        <span>Highseason: <span class="text-red-700 font-bold">${fmtRp(pkg.harga_highseason)}/pax</span></span>
+                    </div>
+                    <div class="flex items-center gap-2.5 w-full md:w-auto md:shrink-0 md:ml-auto">
+                        <button onclick="openModalEditCorp(${pkg.id})"
+                            class="flex-1 md:flex-initial inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold text-white bg-[#1447e6] hover:bg-[#103bc0] transition shadow-xs active:scale-[0.97] cursor-pointer">
+                            <iconify-icon icon="lucide:pencil" class="text-sm"></iconify-icon> Edit
+                        </button>
+                        <button onclick="openModalDeleteCorp(${pkg.id}, '${pkg.judul.replace(/'/g,"\\'")}')"
+                            class="flex-1 md:flex-initial inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold text-white bg-[#dc2626] hover:bg-[#b91c1c] transition shadow-xs active:scale-[0.97] cursor-pointer">
+                            <iconify-icon icon="lucide:trash-2" class="text-sm"></iconify-icon> Hapus
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>`;

@@ -358,6 +358,24 @@
     }
     window.showToast = showToast;
 
+    window.toggleCollapseUnit = function(id) {
+        const content = document.getElementById('collapse-content-' + id);
+        const fade = document.getElementById('collapse-fade-' + id);
+        const btn = document.getElementById('btn-collapse-' + id);
+        if (!content || !btn) return;
+
+        if (content.style.maxHeight === '2000px') {
+            content.style.maxHeight = ''; // reset to class default (140px)
+            if (fade) fade.style.opacity = '1';
+            btn.innerHTML = 'Lihat selengkapnya <iconify-icon icon="lucide:chevron-down"></iconify-icon>';
+        } else {
+            content.style.maxHeight = '2000px';
+            if (fade) fade.style.opacity = '0';
+            btn.innerHTML = 'Sembunyikan <iconify-icon icon="lucide:chevron-up"></iconify-icon>';
+        }
+    };
+    window.toggleCollapse = window.toggleCollapseUnit;
+
     function renderCard(item, no) {
         const today = parseToLocalDate(new Date());
         const todayTime = today.getTime();
@@ -553,30 +571,34 @@
                     ${currentAndFutureBookings.length > 0 ? `<div class="flex flex-col gap-2">${bookedBadgesHtml}</div>` : ''}
                 </div>
 
-                {{-- Detail table --}}
-                <div class="overflow-x-auto">
-                    <table class="w-full min-w-[280px]">${tableRows}</table>
+                {{-- Detail table with collapse on mobile --}}
+                <div class="relative overflow-hidden transition-[max-height] duration-500 ease-in-out max-h-[140px] md:max-h-none" id="collapse-content-${item.id}">
+                    <div class="overflow-x-auto">
+                        <table class="w-full min-w-[280px]">${tableRows}</table>
+                    </div>
+                    <div class="absolute bottom-0 left-0 w-full h-16 bg-gradient-to-t from-[#fbf3e0] via-[#fbf3e0]/80 to-transparent md:hidden pointer-events-none transition-opacity duration-300" id="collapse-fade-${item.id}"></div>
                 </div>
+                <button type="button" class="md:hidden flex items-center justify-center w-full gap-1 text-xs font-bold text-[#3a523a] mt-1 py-2 bg-[#fbf3e0] hover:bg-[#f4ebd0] rounded-lg transition-colors border border-gray-200 active:scale-[0.99] cursor-pointer shadow-2xs" id="btn-collapse-${item.id}" onclick="toggleCollapseUnit(${item.id})">Lihat selengkapnya <iconify-icon icon="lucide:chevron-down"></iconify-icon></button>
 
                 {{-- Actions --}}
-                <div class="flex items-center gap-2 pt-1">
+                <div class="flex items-center gap-2 pt-1 w-full">
                     <button onclick="openKalenderModal(${item.id})"
-                        class="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold
-                               text-white bg-[#3a523a] hover:bg-[#2c402c] transition shadow-sm active:scale-[0.97]">
-                        <iconify-icon icon="lucide:calendar-search" class="text-sm"></iconify-icon>
-                        Lihat Kalender
+                        class="flex-1 md:flex-initial inline-flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs font-bold
+                               text-gray-700 bg-white hover:bg-gray-50 border border-gray-300 transition shadow-sm active:scale-[0.97] cursor-pointer whitespace-nowrap">
+                        <iconify-icon icon="lucide:calendar-days" class="text-sm text-gray-600 shrink-0"></iconify-icon>
+                        <span>Kalender</span>
                     </button>
                     <button onclick="openModalEdit(${item.id})"
-                        class="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold
-                               text-white bg-amber-500 hover:bg-amber-600 transition shadow-sm active:scale-[0.97]">
-                        <iconify-icon icon="lucide:pencil" class="text-sm"></iconify-icon>
-                        Edit Info
+                        class="flex-1 md:flex-initial inline-flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs font-bold
+                               text-white bg-blue-500 hover:bg-blue-600 transition shadow-sm active:scale-[0.97] cursor-pointer whitespace-nowrap">
+                        <iconify-icon icon="lucide:pencil" class="text-sm shrink-0"></iconify-icon>
+                        <span>Edit</span>
                     </button>
                     <button onclick="openDeleteModal(${item.id}, '${item.judul.replace(/'/g, "\\'")}')"
-                        class="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold
-                               text-white bg-red-500 hover:bg-red-600 transition shadow-sm active:scale-[0.97]">
-                        <iconify-icon icon="lucide:trash-2" class="text-sm"></iconify-icon>
-                        Hapus Kamar
+                        class="flex-1 md:flex-initial inline-flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs font-bold
+                               text-white bg-red-500 hover:bg-red-600 transition shadow-sm active:scale-[0.97] cursor-pointer whitespace-nowrap">
+                        <iconify-icon icon="lucide:trash-2" class="text-sm shrink-0"></iconify-icon>
+                        <span>Hapus</span>
                     </button>
                 </div>
             </div>

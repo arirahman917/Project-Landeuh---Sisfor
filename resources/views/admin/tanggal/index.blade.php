@@ -159,7 +159,7 @@
     <div class="px-5 sm:px-8 py-6 border-t border-amber-200/40">
         <div class="flex justify-between items-center mb-5">
             <span class="inline-flex items-center px-4 py-2 rounded-lg text-sm font-bold text-white bg-stone-600 shadow-sm">
-                Libur Landeuh (Global)
+                Libur Global
             </span>
             <button onclick="addLiburLandeuh()"
                 class="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold text-[#fdf6e3]

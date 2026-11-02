@@ -18,10 +18,6 @@
     position:relative;
     overflow:hidden;
 }
-.corp-hero::before {
-    content:''; position:absolute; inset:0;
-    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E");
-}
 .corp-badge {
     display:inline-flex; align-items:center; gap:.4rem;
     background:rgba(255,255,255,.15); border:1px solid rgba(255,255,255,.25);
@@ -42,25 +38,65 @@
 }
 
 /* ── Pax Bar ──────────────────────────────────────── */
-.pax-bar { max-width:860px; margin:-2.25rem auto 0; padding:0 1rem; position:relative; z-index:20; }
+.pax-bar {
+    max-width:860px;
+    margin:-2.25rem auto 0;
+    padding:0 1rem;
+    position:relative;
+    z-index:20;
+}
 .pax-card {
-    background:#fff; border-radius:1.25rem;
-    box-shadow:0 20px 60px -10px rgba(0,0,0,.2);
+    background:#fff;
+    border-radius:1.25rem;
+    box-shadow:0 20px 60px -10px rgba(0,0,0,.15);
     padding:1.1rem 1.5rem;
-    display:flex; align-items:center; gap:1.25rem; flex-wrap:wrap;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:1.25rem;
+}
+.pax-info {
+    display:flex;
+    align-items:center;
+    gap:.85rem;
+}
+.pax-icon {
+    font-size:1.6rem;
+    color:#3a523a;
+    flex-shrink:0;
 }
 .pax-label-col { display:flex; flex-direction:column; }
-.pax-label { font-size:.72rem; font-weight:800; color:#444; text-transform:uppercase; letter-spacing:.06em; }
-.pax-hint { font-size:.66rem; color:#aaa; margin-top:.1rem; }
+.pax-label { font-size:.74rem; font-weight:800; color:#333; text-transform:uppercase; letter-spacing:.06em; }
+.pax-hint { font-size:.66rem; color:#888; margin-top:.1rem; }
+.pax-action-group {
+    display:flex;
+    align-items:center;
+    gap:1.25rem;
+    margin-left:auto;
+}
 .pax-ctrl {
-    display:flex; align-items:center; gap:.65rem;
-    background:#f8f9fa; border:1.5px solid #e9ecef;
-    border-radius:.75rem; padding:.45rem .75rem;
+    display:flex;
+    align-items:center;
+    gap:.5rem;
+    background:#f8f9fa;
+    border:1.5px solid #e9ecef;
+    border-radius:.75rem;
+    padding:.4rem .65rem;
+    flex-shrink:0;
 }
 .pax-btn {
-    width:30px; height:30px; border-radius:50%; border:none;
-    font-size:1rem; font-weight:700; cursor:pointer;
-    display:flex; align-items:center; justify-content:center; transition:.2s; flex-shrink:0;
+    width:30px;
+    height:30px;
+    border-radius:50%;
+    border:none;
+    font-size:1rem;
+    font-weight:700;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition:.2s;
+    flex-shrink:0;
 }
 .pax-btn.dec { background:#e9ecef; color:#555; }
 .pax-btn.inc { background:#3a523a; color:#fff; }
@@ -68,13 +104,86 @@
 .pax-btn.inc:hover { background:#2c402c; }
 /* Typeable pax input */
 .pax-val-input {
-    font-size:1.5rem; font-weight:900; color:#3a523a;
-    width:56px; text-align:center; border:none; background:transparent;
-    outline:none; -moz-appearance:textfield;
+    font-size:1.45rem;
+    font-weight:900;
+    color:#3a523a;
+    width:48px;
+    text-align:center;
+    border:none;
+    background:transparent;
+    outline:none;
+    -moz-appearance:textfield;
 }
 .pax-val-input::-webkit-inner-spin-button,
 .pax-val-input::-webkit-outer-spin-button { -webkit-appearance:none; margin:0; }
-.pax-note { font-size:.72rem; color:#888; font-style:italic; margin-left:auto; }
+.pax-note {
+    font-size:.72rem;
+    color:#888;
+    font-style:italic;
+    text-align:right;
+    line-height:1.35;
+    white-space:nowrap;
+}
+
+@media (max-width: 640px) {
+    .corp-hero {
+        padding:3rem 1rem 4.5rem;
+    }
+    .pax-bar {
+        margin:-2rem auto 0;
+        padding:0 .85rem;
+    }
+    .pax-card {
+        padding:.95rem 1.1rem;
+        flex-direction:column;
+        align-items:stretch;
+        gap:.85rem;
+        border-radius:1.15rem;
+    }
+    .pax-info {
+        display:flex;
+        align-items:center;
+        gap:.75rem;
+        width:100%;
+    }
+    .pax-icon {
+        font-size:1.45rem;
+    }
+    .pax-label {
+        font-size:.72rem;
+    }
+    .pax-hint {
+        font-size:.64rem;
+    }
+    .pax-action-group {
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:.5rem;
+        width:100%;
+        margin-left:0;
+    }
+    .pax-ctrl {
+        padding:.35rem .5rem;
+        gap:.35rem;
+        border-radius:.65rem;
+    }
+    .pax-btn {
+        width:28px;
+        height:28px;
+    }
+    .pax-val-input {
+        font-size:1.3rem;
+        width:42px;
+    }
+    .pax-note {
+        font-size:.67rem;
+        line-height:1.3;
+        white-space:normal;
+        text-align:right;
+        flex:1;
+    }
+}
 
 /* ── Cards ────────────────────────────────────────── */
 .corp-grid {
@@ -230,7 +339,6 @@
 
     {{-- Hero --}}
     <div class="corp-hero">
-        <div class="corp-badge"><iconify-icon icon="lucide:star" style="font-size:.9rem"></iconify-icon> Corporate &amp; Event Package</div>
         <h1>Paket Corporate<br>Landeuh Village Riverside</h1>
         <p>Dirancang khusus untuk perusahaan, instansi, dan komunitas. Nikmati pengalaman alam eksklusif bersama seluruh tim.</p>
         <div class="corp-pills">
@@ -244,17 +352,21 @@
     {{-- Pax Bar --}}
     <div class="pax-bar">
         <div class="pax-card">
-            <iconify-icon icon="lucide:users" style="font-size:1.6rem;color:#3a523a;flex-shrink:0"></iconify-icon>
-            <div class="pax-label-col">
-                <div class="pax-label">Jumlah Peserta</div>
-                <div class="pax-hint">Min 25 pax · Maks 150 pax</div>
+            <div class="pax-info">
+                <iconify-icon icon="lucide:users" class="pax-icon"></iconify-icon>
+                <div class="pax-label-col">
+                    <div class="pax-label">Jumlah Peserta</div>
+                    <div class="pax-hint">Min 25 pax · Maks 150 pax</div>
+                </div>
             </div>
-            <div class="pax-ctrl">
-                <button class="pax-btn dec" id="btnPaxDec"><iconify-icon icon="lucide:minus" style="font-size:.9rem"></iconify-icon></button>
-                <input type="number" class="pax-val-input" id="paxVal" min="25" max="150" value="25">
-                <button class="pax-btn inc" id="btnPaxInc"><iconify-icon icon="lucide:plus" style="font-size:.9rem"></iconify-icon></button>
+            <div class="pax-action-group">
+                <div class="pax-ctrl">
+                    <button type="button" class="pax-btn dec" id="btnPaxDec" aria-label="Kurangi peserta"><iconify-icon icon="lucide:minus" style="font-size:.9rem"></iconify-icon></button>
+                    <input type="number" class="pax-val-input" id="paxVal" min="25" max="150" value="25" aria-label="Jumlah peserta">
+                    <button type="button" class="pax-btn inc" id="btnPaxInc" aria-label="Tambah peserta"><iconify-icon icon="lucide:plus" style="font-size:.9rem"></iconify-icon></button>
+                </div>
+                <div class="pax-note">Pax mempengaruhi<br>estimasi total harga</div>
             </div>
-            <div class="pax-note">Pax mempengaruhi<br>estimasi total harga</div>
         </div>
     </div>
 
@@ -321,7 +433,7 @@
                 @endif
                 <div id="booked-{{ $k }}" style="display:none" class="booked-banner"><iconify-icon icon="lucide:alert-circle"></iconify-icon> Tanggal ini sudah penuh — pilih tanggal lain</div>
                 <button class="corp-btn green" id="btn-pilih-{{ $k }}" onclick="pilihPaket({{ $pkg->id }}, '{{ $k }}')">
-                    <iconify-icon icon="lucide:check-circle-2" style="font-size:1rem"></iconify-icon> Pilih Paket
+                    Pilih Paket
                 </button>
             </div>
         </div>

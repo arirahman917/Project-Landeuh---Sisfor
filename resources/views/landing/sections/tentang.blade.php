@@ -28,6 +28,10 @@
                     <h2 class="text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-900 mb-4 md:mb-6 lg:mb-8 tracking-tight">
                         Tentang Akomodasi
                     </h2>
+                    <div class="mt-4 flex items-center gap-2 justify-center md:justify-start">
+                        <span class="jelajahi-line block h-0.5 w-10 bg-[#B5793A] origin-left"></span>
+                        <span class="text-[#B5793A] text-base">✦</span>
+                    </div>
                     
                     <!-- Text container -->
                     <div class="relative h-36 md:h-40 lg:h-44 w-full">
