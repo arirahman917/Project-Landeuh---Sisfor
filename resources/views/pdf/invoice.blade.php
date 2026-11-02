@@ -17,6 +17,20 @@
             margin: 0 auto;
             padding: 25px 40px;
         }
+        /* INVOICE MAIN TITLE (CENTER) */
+        .invoice-main-title {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .invoice-main-title h1 {
+            margin: 0;
+            font-size: 20px;
+            color: #3a523a;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: 800;
+        }
+
         /* HEADER */
         .header {
             width: 100%;
@@ -31,27 +45,64 @@
             width: 90px;
             height: auto;
         }
-        .invoice-title {
+        .invoice-meta {
             text-align: right;
             vertical-align: middle;
         }
-        .invoice-title h1 {
-            margin: 0;
-            font-size: 18px;
-            color: #3a523a;
-            letter-spacing: 1px;
-            text-transform: uppercase;
+        .invoice-meta .no-pesanan {
+            font-size: 15px;
+            font-weight: bold;
+            color: #111;
+            letter-spacing: 0.3px;
         }
-        .invoice-title .no-pesanan {
-            font-size: 12px;
-            color: #555;
+        .invoice-meta .no-pesanan strong {
+            font-weight: 900;
+            color: #111;
+        }
+        .invoice-meta .unit-pax {
+            font-size: 13px;
             margin-top: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        /* BREAKDOWN HARGA TANGGAL (SEPERTI SS2) */
+        .breakdown-box {
+            margin-top: 8px;
+            margin-bottom: 4px;
+            padding-left: 10px;
+            border-left: 2.5px solid #2e7d32;
+        }
+        .breakdown-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .breakdown-table td {
+            padding: 2.5px 0 !important;
+            border: none !important;
+            font-size: 11px;
+            vertical-align: middle;
+        }
+        .breakdown-date {
+            color: #333;
+            font-weight: 500;
+            display: inline-block;
+            min-width: 85px;
+        }
+        .breakdown-label {
+            font-weight: bold;
+            font-size: 10.5px;
+            margin-left: 8px;
+        }
+        .breakdown-price {
+            text-align: right;
+            font-weight: bold;
+            color: #333;
         }
 
         /* CARD RENCANA MENGINAP */
         .card {
             background: #f8f6f0;
-            border-radius: 8px;
             margin-bottom: 25px;
             padding: 20px;
         }
@@ -246,25 +297,102 @@
         $judul = $unit ? $unit->judul : 'Akomodasi';
         $maxOrang = ($isCorporate && !empty($booking->jumlah_pax)) ? $booking->jumlah_pax : ($unit ? $unit->max_orang : '-');
         $slot = $isCorporate ? ($unit->slot ?? 1) : 1;
+
+        // Ambil data DateSetting untuk breakdown malam
+        $dateSettings = \App\Models\DateSetting::all();
+        $daysIndo = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jum\'at', 'Sabtu'];
+        $weekdaySetting = $dateSettings->firstWhere('type', 'weekday');
+        $weekendSetting = $dateSettings->firstWhere('type', 'weekend');
+        $highseasonSettings = $dateSettings->where('type', 'highseason');
+
+        $weekdayDates = $weekdaySetting && $weekdaySetting->dates ? array_map('trim', explode(',', $weekdaySetting->dates)) : [];
+        $weekendDates = $weekendSetting && $weekendSetting->dates ? array_map('trim', explode(',', $weekendSetting->dates)) : [];
+        $highseasonDates = [];
+        foreach ($highseasonSettings as $hs) {
+            if ($hs->dates) {
+                foreach (explode(',', $hs->dates) as $dStr) {
+                    $trimmed = trim($dStr);
+                    if ($trimmed && !in_array($trimmed, $highseasonDates)) {
+                        $highseasonDates[] = $trimmed;
+                    }
+                }
+            }
+        }
+
+        $nightsBreakdown = [];
+        $currentDate = \Carbon\Carbon::parse($booking->check_in_date);
+        $hargaWeekday = $unit ? floatval($unit->harga_weekday) : 0;
+        $hargaWeekend = $unit ? floatval($unit->harga_weekend) : 0;
+        $hargaHighseason = $unit ? floatval($unit->harga_highseason) : 0;
+
+        for ($i = 0; $i < $malam; $i++) {
+            $dateStr = $currentDate->format('Y-m-d');
+            $dayName = $daysIndo[$currentDate->dayOfWeek];
+            
+            $price = $hargaWeekday;
+            $typeLabel = 'Weekday';
+            $color = '#ea580c'; // Orange
+
+            if (in_array($dateStr, $highseasonDates)) {
+                $price = $hargaHighseason;
+                $typeLabel = 'Highseason';
+                $color = '#dc2626'; // Merah
+            } elseif (in_array($dateStr, $weekendDates) || in_array($dayName, $weekendDates)) {
+                $price = $hargaWeekend;
+                $typeLabel = 'Weekend';
+                $color = '#2563eb'; // Biru
+            } elseif (in_array($dateStr, $weekdayDates) || in_array($dayName, $weekdayDates)) {
+                $price = $hargaWeekday;
+                $typeLabel = 'Weekday';
+                $color = '#ea580c';
+            } else {
+                if ($currentDate->dayOfWeek === 5 || $currentDate->dayOfWeek === 6) {
+                    $price = $hargaWeekend;
+                    $typeLabel = 'Weekend';
+                    $color = '#2563eb';
+                } else {
+                    $price = $hargaWeekday;
+                    $typeLabel = 'Weekday';
+                    $color = '#ea580c';
+                }
+            }
+
+            if ($isCorporate && !empty($booking->jumlah_pax)) {
+                $price = $price * $booking->jumlah_pax;
+            }
+
+            $nightsBreakdown[] = [
+                'date_formatted' => $currentDate->locale('id')->isoFormat('D MMMM'),
+                'label' => $typeLabel,
+                'color' => $color,
+                'price' => $price
+            ];
+
+            $currentDate->addDay();
+        }
     ?>
 
     <div class="container">
         
+        <!-- JUDUL ATAS CENTER -->
+        <div class="invoice-main-title">
+            <h1>INVOICE RESERVASI</h1>
+        </div>
+
         <!-- HEADER -->
         <div class="header">
             <table>
                 <tr>
-                    <td style="width: 50%;">
+                    <td style="width: 50%; vertical-align: middle;">
                         @if($logoSrc)
                             <img src="{{ $logoSrc }}" class="logo" alt="Landeuh Logo">
                         @else
                             <h2 style="color:#3a523a; margin:0;">LANDEUH VILLAGE</h2>
                         @endif
                     </td>
-                    <td class="invoice-title">
-                        <h1>Invoice RESERVASI</h1>
+                    <td class="invoice-meta">
                         <div class="no-pesanan">No. Pemesanan: <strong>{{ $booking->no_pesanan }}</strong></div>
-                        <div style="font-size: 13px; margin-top: 5px; font-weight: bold; color: #333;">
+                        <div class="unit-pax">
                             {{ $judul }} ({{ $maxOrang }} Pax)
                         </div>
                     </td>
@@ -326,11 +454,38 @@
             <table class="payment-box">
                 <!-- Harga Kamar Dasar -->
                 <tr>
-                    <td>
-                        <div class="payment-title">{{ $judul }} ({{ $maxOrang }} Pax)</div>
-                        <div class="payment-desc">{{ $slot }} Unit &times; {{ $malam }} Malam</div>
+                    <td colspan="2" style="padding-bottom: 10px;">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <tr>
+                                <td style="vertical-align: top; border: none; padding: 0;">
+                                    <div class="payment-title">{{ $judul }} ({{ $maxOrang }} Pax)</div>
+                                    <div class="payment-desc">{{ $slot }} Unit &times; {{ $malam }} Malam</div>
+                                </td>
+                                <td class="payment-amount" style="vertical-align: top; text-align: right; border: none; padding: 0;">
+                                    {{ rp($total_kamar) }}
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- Breakdown Tanggal Booking (seperti SS2) -->
+                        @if(!empty($nightsBreakdown))
+                        <div class="breakdown-box">
+                            <table class="breakdown-table">
+                                @foreach($nightsBreakdown as $night)
+                                <tr>
+                                    <td>
+                                        <span class="breakdown-date">{{ $night['date_formatted'] }}</span>
+                                        <span class="breakdown-label" style="color: {{ $night['color'] }};">{{ $night['label'] }}</span>
+                                    </td>
+                                    <td class="breakdown-price">
+                                        {{ rp($night['price']) }}
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </table>
+                        </div>
+                        @endif
                     </td>
-                    <td class="payment-amount">{{ rp($total_kamar) }}</td>
                 </tr>
 
                 <!-- Tambahan Anak -->
@@ -419,7 +574,7 @@
         </div>
         
         <!-- FOOTER ADDRESS BLOCK -->
-        <div style="background: #f1e5cc; padding: 15px; text-align: center; color: #555; font-size: 11px; margin-top: 40px; border-radius: 6px;">
+        <div style="background: #f1e5cc; padding: 15px; text-align: center; color: #555; font-size: 11px; margin-top: 40px">
             <strong style="color: #3a523a; font-size: 12px;">Landeuh Village Riverside</strong><br>
             <div style="margin-top: 4px; line-height: 1.5;">
                 Kp. Wangun Landeuh, Karang Tengah, Kec. Babakan Madang, Kabupaten Bogor<br>
