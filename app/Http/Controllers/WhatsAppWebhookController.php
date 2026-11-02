@@ -4,16 +4,86 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
 use App\Services\WhatsAppService;
 
 /**
- * [NONAKTIF] WhatsAppWebhookController (Meta Cloud API)
- * 
- * Controller ini dinonaktifkan karena proyek telah beralih ke provider Fonnte.
- * Seluruh kode asli Meta Webhook tetap dipertahankan di bawah ini sebagai arsip referensi.
+ * Controller untuk menangani Webhook WhatsApp
+ * - Fonnte Gateway: Menangani pesan masuk dengan Anti-Spam Rate Limiting (Maks 1x per jam per nomor).
+ * - Meta Cloud API: [Arsip Nonaktif].
  */
 class WhatsAppWebhookController extends Controller
 {
+    /**
+     * Handle Webhook pesan masuk dari Fonnte API dengan Anti-Spam Rate Limit (1 jam sekali per nomor).
+     * Sesuai PRD Seksi 5.3.
+     */
+    public function handleFonnte(Request $request)
+    {
+        $sender = $request->input('sender');
+        $message = $request->input('message');
+        $member = $request->input('member');
+
+        Log::info("[Fonnte Webhook Received]", [
+            'sender' => $sender,
+            'message' => $message,
+        ]);
+
+        if (empty($sender)) {
+            return response()->json(['status' => 'ignored_no_sender'], 200);
+        }
+
+        // Abaikan pesan dari grup WhatsApp agar tidak spam di grup
+        if (str_contains($sender, '@g.us') || !empty($member)) {
+            Log::info("[Fonnte Webhook] Pesan dari grup WhatsApp diabaikan ({$sender}).");
+            return response()->json(['status' => 'ignored_group_message'], 200);
+        }
+
+        // Bersihkan nomor pengirim
+        $cleanSender = preg_replace('/[^0-9]/', '', $sender);
+
+        // Jangan balas jika pesan berasal dari nomor bot sendiri
+        $botNumber = config('services.whatsapp.sender') ?: env('WA_SENDER_NUMBER', '6285692811221');
+        $cleanBot = preg_replace('/[^0-9]/', '', $botNumber);
+        if ($cleanSender === $cleanBot) {
+            return response()->json(['status' => 'ignored_self_message'], 200);
+        }
+
+        // KUNCI RATE LIMITING: Cooldown 1 jam (60 menit) per nomor pengirim
+        $cooldownMinutes = (int) (env('WA_AUTOREPLY_COOLDOWN_MINUTES', 60));
+        $cacheKey = 'wa_autoreply_cooldown_' . $cleanSender;
+
+        if (Cache::has($cacheKey)) {
+            $lastSentAt = Cache::get($cacheKey);
+            Log::info("[Fonnte Webhook] Pesan dari {$cleanSender} TIDAK dibalas karena masih dalam masa cooldown 1 jam. Terakhir dibalas: {$lastSentAt}. Kuota aman!");
+            return response()->json([
+                'status' => 'rate_limited',
+                'message' => 'Autoreply ignored to prevent spam/token drain'
+            ], 200);
+        }
+
+        // Simpan penanda di Cache selama 1 jam (60 menit)
+        Cache::put($cacheKey, now()->toDateTimeString(), now()->addMinutes($cooldownMinutes));
+
+        $adminNumber = config('services.whatsapp.admin') ?: env('WA_ADMIN_NUMBER', '085779012797');
+        $adminWaLink = 'https://wa.me/' . (str_starts_with($adminNumber, '0') ? '62' . substr($adminNumber, 1) : $adminNumber);
+
+        // Pesan Auto-Reply resmi sesuai PRD Seksi 5.3
+        $replyText = "Halo, terima kasih telah menghubungi Landeuh Village Riverside.\n\n"
+                   . "Nomor ini adalah sistem notifikasi otomatis (noreply) dan tidak melayani balasan chat.\n\n"
+                   . "Jika Anda memiliki pertanyaan, konfirmasi, atau membutuhkan bantuan lebih lanjut, silakan langsung menghubungi Admin Customer Service kami di:\n"
+                   . "👉 {$adminWaLink}\n\n"
+                   . "Terima kasih.\n"
+                   . "Tim Landeuh Village Riverside";
+
+        Log::info("[Fonnte Webhook] Mengirim autoreply ke {$cleanSender}. Nomor ini tidak akan dibalas lagi selama {$cooldownMinutes} menit ke depan.");
+        WhatsAppService::sendMessage($cleanSender, $replyText);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Autoreply sent successfully'
+        ], 200);
+    }
     /**
      * Handle Webhook Verification from Meta [NONAKTIF]
      * This is called by Meta when you set up the Webhook URL in the Dashboard.

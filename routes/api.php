@@ -14,9 +14,9 @@ use App\Http\Controllers\WhatsAppWebhookController;
 */
 
 // ========================================================
-// [NONAKTIF] WhatsApp Cloud API Webhook (Meta) - Diarsipkan
-// Dinonaktifkan karena beralih ke provider Fonnte (autoreply dikelola di dashboard Fonnte)
+// Webhook Fonnte API (Pesan Masuk + Anti-Spam Rate Limit 1 Jam)
+// URL: https://landeuhvillage.com/api/webhook/fonnte
 // ========================================================
-// Route::get('/webhook/whatsapp', [WhatsAppWebhookController::class, 'verify']);
-// Route::post('/webhook/whatsapp', [WhatsAppWebhookController::class, 'handle']);
+Route::post('/webhook/fonnte', [WhatsAppWebhookController::class, 'handleFonnte']);
+
 
