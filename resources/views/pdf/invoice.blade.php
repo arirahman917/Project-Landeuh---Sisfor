@@ -583,7 +583,7 @@
                             <div style="height: 80px;"></div> <!-- Spacer if no signature image -->
                         @endif
 
-                        <div class="signature-name">Aldi</div>
+                        <div class="signature-name">Ovy Resiyana</div>
                         <div class="signature-title">Owner Landeuh Village</div>
                     </td>
                 </tr>
