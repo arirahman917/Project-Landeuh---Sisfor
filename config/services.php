@@ -53,4 +53,14 @@ return [
         'is_3ds' => env('MIDTRANS_IS_3DS', true),
     ],
 
+    'fonnte' => [
+        'token' => env('FONNTE_TOKEN'),
+    ],
+
+    'whatsapp' => [
+        'provider' => env('WA_PROVIDER', 'fonnte'),
+        'sender' => env('WA_SENDER_NUMBER', '6285692811221'),
+        'admin' => env('WA_ADMIN_NUMBER', '085779012797'),
+    ],
+
 ];

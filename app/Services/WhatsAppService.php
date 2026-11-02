@@ -18,7 +18,7 @@ class WhatsAppService
      */
     public static function sendMessage(string $target, string $message): bool
     {
-        $provider = env('WA_PROVIDER', 'fonnte');
+        $provider = config('services.whatsapp.provider') ?: env('WA_PROVIDER', 'fonnte');
 
         if ($provider === 'meta') {
             return self::sendViaMeta($target, $message);
@@ -37,7 +37,9 @@ class WhatsAppService
      */
     public static function sendViaFonnte(string $target, string $message): bool
     {
-        $token = env('FONNTE_TOKEN');
+        $token = config('services.fonnte.token') 
+            ?: (env('FONNTE_TOKEN') 
+            ?: ($_ENV['FONNTE_TOKEN'] ?? ($_SERVER['FONNTE_TOKEN'] ?? (getenv('FONNTE_TOKEN') ?: ''))));
 
         if (empty($token)) {
             Log::warning("[Fonnte] API Token belum diset di .env (FONNTE_TOKEN). Pesan tidak dapat dikirim ke {$target}");
@@ -99,7 +101,7 @@ class WhatsAppService
         $invoiceUrl = url('/invoice/' . $booking->no_pesanan . '/download');
         $akomodasiJudul = $booking->accommodation ? $booking->accommodation->judul : ($booking->corporatePackage ? $booking->corporatePackage->judul : 'Akomodasi');
         
-        $adminNumber = env('WA_ADMIN_NUMBER', '085779012797');
+        $adminNumber = config('services.whatsapp.admin') ?: env('WA_ADMIN_NUMBER', '085779012797');
         $adminWaLink = 'https://wa.me/' . (str_starts_with($adminNumber, '0') ? '62' . substr($adminNumber, 1) : $adminNumber);
 
         $message = "Halo, {$booking->pemesan_nama}!\n\n"
@@ -145,7 +147,7 @@ class WhatsAppService
         $invoiceUrl = url('/invoice/' . $booking->no_pesanan . '/download');
         $akomodasiJudul = $booking->accommodation ? $booking->accommodation->judul : ($booking->corporatePackage ? $booking->corporatePackage->judul : 'Akomodasi');
         
-        $adminNumber = env('WA_ADMIN_NUMBER', '085779012797');
+        $adminNumber = config('services.whatsapp.admin') ?: env('WA_ADMIN_NUMBER', '085779012797');
         $adminWaLink = 'https://wa.me/' . (str_starts_with($adminNumber, '0') ? '62' . substr($adminNumber, 1) : $adminNumber);
 
         $message = "Halo, {$booking->pemesan_nama}!\n\n"

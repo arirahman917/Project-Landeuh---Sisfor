@@ -113,10 +113,12 @@ Route::get('/debug-email', function (\Illuminate\Http\Request $request) {
 });
 
 Route::get('/debug-wa-status', function (\Illuminate\Http\Request $request) {
-    $provider = env('WA_PROVIDER', 'fonnte');
-    $fonnteToken = env('FONNTE_TOKEN');
-    $senderNum = env('WA_SENDER_NUMBER', '6285692811221');
-    $adminNum = env('WA_ADMIN_NUMBER', '085779012797');
+    $provider = config('services.whatsapp.provider') ?: env('WA_PROVIDER', 'fonnte');
+    $fonnteToken = config('services.fonnte.token') 
+        ?: (env('FONNTE_TOKEN') 
+        ?: ($_ENV['FONNTE_TOKEN'] ?? ($_SERVER['FONNTE_TOKEN'] ?? (getenv('FONNTE_TOKEN') ?: ''))));
+    $senderNum = config('services.whatsapp.sender') ?: env('WA_SENDER_NUMBER', '6285692811221');
+    $adminNum = config('services.whatsapp.admin') ?: env('WA_ADMIN_NUMBER', '085779012797');
 
     // Cek koneksi device Fonnte
     $fonnteCheck = null;
@@ -134,21 +136,22 @@ Route::get('/debug-wa-status', function (\Illuminate\Http\Request $request) {
         }
     }
 
-    // [ARSIP] Cek Meta jika sewaktu-waktu diaktifkan kembali
-    $metaCheck = null;
-    $metaToken = env('WA_ACCESS_TOKEN');
-    $phoneId = env('WA_BUSINESS_PHONE_NUMBER_ID');
-    if ($metaToken && $phoneId) {
+    // Fitur Live Test Kirim Pesan: ?kirim_tes=08xxxx
+    $testResult = null;
+    $targetTest = $request->query('kirim_tes') ?? $request->query('to') ?? $request->query('test');
+    if ($targetTest) {
         try {
-            $res = \Illuminate\Support\Facades\Http::withHeaders([
-                'Authorization' => 'Bearer ' . $metaToken,
-            ])->get("https://graph.facebook.com/v20.0/{$phoneId}");
-            $metaCheck = [
-                'status' => $res->status(),
-                'data' => $res->json(),
+            $testMsg = "Halo! Ini adalah pesan uji coba resmi dari Bot Landeuh Village Riverside via Fonnte Gateway.\n\nKoneksi antara server website Anda dan WhatsApp Bot telah BERHASIL 100%! 🎉";
+            $success = \App\Services\WhatsAppService::sendMessage($targetTest, $testMsg);
+            $testResult = [
+                'target' => $targetTest,
+                'sent_status' => $success ? 'BERHASIL TERKIRIM' : 'GAGAL TERKIRIM (Cek logs)',
             ];
         } catch (\Exception $e) {
-            $metaCheck = 'Exception: ' . $e->getMessage();
+            $testResult = [
+                'target' => $targetTest,
+                'sent_status' => 'ERROR: ' . $e->getMessage(),
+            ];
         }
     }
 
@@ -156,7 +159,7 @@ Route::get('/debug-wa-status', function (\Illuminate\Http\Request $request) {
     $logs = [];
     if (file_exists($logPath)) {
         $all = file($logPath);
-        $logs = array_slice($all, -80);
+        $logs = array_slice($all, -40);
     }
 
     return response()->json([
@@ -168,10 +171,7 @@ Route::get('/debug-wa-status', function (\Illuminate\Http\Request $request) {
             'admin_number' => $adminNum,
             'device_check' => $fonnteCheck,
         ],
-        'meta_archived_status' => [
-            'is_active' => ($provider === 'meta'),
-            'meta_graph_api_check' => $metaCheck,
-        ],
+        'live_test_send' => $testResult ?? 'Untuk tes kirim pesan instan ke WA Anda, tambahkan parameter di URL: ?kirim_tes=08xxxxxxxxx',
         'recent_logs' => $logs,
     ]);
 });
