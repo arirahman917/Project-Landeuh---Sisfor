@@ -6,10 +6,10 @@
     <style>
         @page {
             /* MARGIN HALAMAN PDF (Berlaku untuk SEMUA halaman: halaman 1, halaman 2, dst) */
-            margin-top: 50px;       /* Jarak atas kertas — ubah nilai ini jika ingin margin atas hal 2 lebih besar/kecil */
+            margin-top: 60px;       /* Jarak atas kertas — ubah nilai ini jika ingin margin atas hal 2 lebih besar/kecil */
             margin-bottom: 35px;    /* Jarak bawah kertas */
-            margin-left: 35px;      /* Jarak kiri kertas */
-            margin-right: 35px;     /* Jarak kanan kertas */
+            margin-left: 45px;      /* Jarak kiri kertas */
+            margin-right: 50px;     /* Jarak kanan kertas */
         }
 
         /* Seluruh elemen PDF menggunakan Sans-Serif standar (Helvetica / Arial) */
