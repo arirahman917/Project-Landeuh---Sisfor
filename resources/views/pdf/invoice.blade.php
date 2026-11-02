@@ -4,8 +4,19 @@
     <meta charset="utf-8">
     <title>Invoice Reservasi - {{ $booking->no_pesanan }}</title>
     <style>
+        @page {
+            /* MARGIN HALAMAN PDF (Berlaku untuk SEMUA halaman: halaman 1, halaman 2, dst) */
+            margin-top: 50px;       /* Jarak atas kertas — ubah nilai ini jika ingin margin atas hal 2 lebih besar/kecil */
+            margin-bottom: 35px;    /* Jarak bawah kertas */
+            margin-left: 35px;      /* Jarak kiri kertas */
+            margin-right: 35px;     /* Jarak kanan kertas */
+        }
+
+        /* Seluruh elemen PDF menggunakan Sans-Serif standar (Helvetica / Arial) */
+        *, body, table, td, th, div, span, p, h1, h2, h3, h4 {
+            font-family: Helvetica, Arial, sans-serif;
+        }
         body {
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
             background: #ffffff;
             color: #333;
             margin: 0;
@@ -13,9 +24,9 @@
             font-size: 12px;
         }
         .container {
-            max-width: 700px;
+            width: 100%;
             margin: 0 auto;
-            padding: 25px 40px;
+            padding: 0 5px;
         }
         /* INVOICE MAIN TITLE (CENTER) */
         .invoice-main-title {
@@ -50,7 +61,7 @@
             vertical-align: middle;
         }
         .invoice-meta .no-pesanan {
-            font-size: 15px;
+            font-size: 18px;
             font-weight: bold;
             color: #111;
             letter-spacing: 0.3px;
@@ -72,32 +83,38 @@
             margin-bottom: 4px;
             padding-left: 10px;
             border-left: 2.5px solid #2e7d32;
+            font-family: Helvetica, Arial, sans-serif;
         }
         .breakdown-table {
             width: 100%;
             border-collapse: collapse;
+            font-family: Helvetica, Arial, sans-serif;
         }
         .breakdown-table td {
             padding: 2.5px 0 !important;
             border: none !important;
             font-size: 11px;
             vertical-align: middle;
+            font-family: Helvetica, Arial, sans-serif;
         }
         .breakdown-date {
             color: #333;
             font-weight: 500;
             display: inline-block;
             min-width: 85px;
+            font-family: Helvetica, Arial, sans-serif;
         }
         .breakdown-label {
             font-weight: bold;
             font-size: 10.5px;
             margin-left: 8px;
+            font-family: Helvetica, Arial, sans-serif;
         }
         .breakdown-price {
             text-align: right;
             font-weight: bold;
             color: #333;
+            font-family: Helvetica, Arial, sans-serif;
         }
 
         /* CARD RENCANA MENGINAP */
@@ -201,7 +218,7 @@
         }
         .payment-total-amount {
             font-weight: bold;
-            color: #3a523a;
+            color: #a31616ff;
             text-align: right;
             font-size: 16px;
         }
@@ -235,7 +252,7 @@
             font-size: 14px;
             font-weight: bold;
             /* Untuk mengganti warna nama Aldi, ubah hex color di bawah ini */
-            color: #d32f2f; 
+            color: #000000ff; 
         }
         .signature-title {
             font-size: 11px;
