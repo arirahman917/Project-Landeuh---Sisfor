@@ -219,7 +219,35 @@ class ReservasiController extends Controller
                 if (auth()->guard('admin')->check()) {
                     \App\Models\ActivityLog::log("Menyetujui pengajuan reschedule pesanan #" . $booking->no_pesanan);
                 }
-                // Sesuai PRD Seksi 4.2: Kirim WhatsApp Reschedule Disetujui (booking_reschedule_approved)
+
+                // 1. Generate PDF invoice reschedule terbaru
+                $pdfContent = null;
+                try {
+                    $booking->loadMissing(['accommodation', 'corporatePackage']);
+                    $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.invoice', ['booking' => $booking])->setPaper('a4', 'portrait');
+                    $pdfContent = $pdf->output();
+
+                    $invoicesDir = public_path('invoices');
+                    if (!file_exists($invoicesDir)) {
+                        @mkdir($invoicesDir, 0755, true);
+                    }
+                    @file_put_contents($invoicesDir . '/Invoice_' . $booking->no_pesanan . '.pdf', $pdfContent);
+                    \Log::info('PDF Invoice reschedule generated for #' . $booking->no_pesanan);
+                } catch (\Exception $pdfEx) {
+                    \Log::error('Gagal membuat PDF reschedule untuk pesanan ' . $booking->no_pesanan . ': ' . $pdfEx->getMessage());
+                }
+
+                // 2. Kirim ulang email konfirmasi dengan rincian jadwal dan lampiran invoice terbaru
+                if (!empty($booking->pemesan_email)) {
+                    try {
+                        Mail::to($booking->pemesan_email)->send(new BookingSuccessMail($booking, $pdfContent, true));
+                        \Log::info('Email konfirmasi reschedule BERHASIL dikirim ke ' . $booking->pemesan_email . ' untuk pesanan #' . $booking->no_pesanan);
+                    } catch (\Exception $mailEx) {
+                        \Log::error('Gagal mengirim email konfirmasi reschedule untuk pesanan ' . $booking->no_pesanan . ': ' . $mailEx->getMessage());
+                    }
+                }
+
+                // 3. Sesuai PRD Seksi 4.2: Kirim WhatsApp Reschedule Disetujui (booking_reschedule_approved)
                 try {
                     \App\Services\WhatsAppService::sendRescheduleApproved($booking);
                 } catch (\Exception $waEx) {

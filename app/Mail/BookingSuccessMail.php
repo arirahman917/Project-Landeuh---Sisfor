@@ -18,14 +18,16 @@ class BookingSuccessMail extends Mailable
      */
     public $booking;
     public $pdfContent;
+    public $isReschedule;
 
     /**
      * Create a new message instance.
      */
-    public function __construct(Booking $booking, $pdfContent = null)
+    public function __construct(Booking $booking, $pdfContent = null, bool $isReschedule = false)
     {
         $this->booking = $booking;
         $this->pdfContent = $pdfContent;
+        $this->isReschedule = $isReschedule || $booking->status === 'rescheduled';
     }
 
     /**
@@ -33,8 +35,12 @@ class BookingSuccessMail extends Mailable
      */
     public function envelope(): Envelope
     {
+        $subject = $this->isReschedule
+            ? 'E-Ticket Konfirmasi Perubahan Jadwal (Reschedule) - Landeuh Village Riverside [' . $this->booking->no_pesanan . ']'
+            : 'E-Ticket Konfirmasi Reservasi - Landeuh Village Riverside [' . $this->booking->no_pesanan . ']';
+
         return new Envelope(
-            subject: 'E-Ticket Konfirmasi Reservasi - Landeuh Village Riverside [' . $this->booking->no_pesanan . ']',
+            subject: $subject,
         );
     }
 
@@ -45,6 +51,10 @@ class BookingSuccessMail extends Mailable
     {
         return new Content(
             view: 'emails.booking_success',
+            with: [
+                'booking' => $this->booking,
+                'isReschedule' => $this->isReschedule,
+            ],
         );
     }
 

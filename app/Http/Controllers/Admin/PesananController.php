@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use Illuminate\Http\Request;
+use App\Mail\BookingSuccessMail;
+use Illuminate\Support\Facades\Mail;
 
 class PesananController extends Controller
 {
@@ -179,23 +181,41 @@ class PesananController extends Controller
             $booking->check_in_date = $bIn->format('Y-m-d');
             $booking->check_out_date = $bOut->format('Y-m-d');
             $booking->malam = $nights;
+            $booking->status = 'rescheduled';
             $booking->save();
 
             \App\Models\ActivityLog::log("Melakukan Force Reschedule pesanan #" . $booking->no_pesanan . " ke tanggal " . $booking->check_in_date . " s/d " . $booking->check_out_date);
 
-            // Regenerate PDF invoice
+            // 1. Regenerate PDF invoice
+            $pdfContent = null;
             try {
                 $invoiceName = 'Invoice_' . $booking->no_pesanan . '.pdf';
-                $pdfPath = public_path('invoices/' . $invoiceName);
+                $invoicesDir = public_path('invoices');
+                if (!file_exists($invoicesDir)) {
+                    @mkdir($invoicesDir, 0755, true);
+                }
+                $pdfPath = $invoicesDir . '/' . $invoiceName;
                 if (class_exists('\Barryvdh\DomPDF\Facade\Pdf')) {
+                    $booking->loadMissing(['accommodation', 'corporatePackage']);
                     $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.invoice', ['booking' => $booking])->setPaper('a4', 'portrait');
-                    $pdf->save($pdfPath);
+                    $pdfContent = $pdf->output();
+                    file_put_contents($pdfPath, $pdfContent);
                 }
             } catch (\Exception $pdfEx) {
                 \Log::error('Failed to regenerate PDF on force reschedule: ' . $pdfEx->getMessage());
             }
 
-            // Kirim notifikasi WhatsApp jadwal terbaru ke tamu (Template: booking_reschedule_approved)
+            // 2. Kirim ulang email konfirmasi dengan lampiran invoice terbaru
+            if (!empty($booking->pemesan_email)) {
+                try {
+                    Mail::to($booking->pemesan_email)->send(new BookingSuccessMail($booking, $pdfContent, true));
+                    \Log::info('Email konfirmasi reschedule berhasil dikirim ke ' . $booking->pemesan_email . ' untuk pesanan #' . $booking->no_pesanan);
+                } catch (\Exception $mailEx) {
+                    \Log::error('Failed to send email on force reschedule: ' . $mailEx->getMessage());
+                }
+            }
+
+            // 3. Kirim notifikasi WhatsApp jadwal terbaru ke tamu (Template: booking_reschedule_approved)
             try {
                 \App\Services\WhatsAppService::sendRescheduleApproved($booking);
             } catch (\Exception $waEx) {
