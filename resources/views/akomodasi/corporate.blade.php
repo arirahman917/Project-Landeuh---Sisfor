@@ -13,28 +13,37 @@
 /* ── Hero ──────────────────────────────────────────── */
 .corp-hero {
     background: linear-gradient(135deg,#2c3e2d 0%,#3a523a 60%,#4a6741 100%);
-    padding: 3.5rem 1.5rem 5rem;
+    padding: 3.5rem 1.5rem 5.5rem;
     text-align:center;
     position:relative;
     overflow:hidden;
 }
 .corp-badge {
     display:inline-flex; align-items:center; gap:.4rem;
-    background:rgba(255,255,255,.15); border:1px solid rgba(255,255,255,.25);
-    color:#fff; font-size:.7rem; font-weight:700; letter-spacing:.1em;
+    background:rgba(255,255,255,.18); border:1px solid rgba(255,255,255,.3);
+    color:#ffffff; font-size:.7rem; font-weight:700; letter-spacing:.1em;
     text-transform:uppercase; padding:.35rem 1rem; border-radius:99px; margin-bottom:1rem;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
 }
 .corp-hero h1 {
     font-size:clamp(1.8rem,5vw,3rem); font-weight:900; color:#fff;
     margin:0 0 .75rem; line-height:1.15;
 }
-.corp-hero p { color:rgba(255,255,255,.75); font-size:.95rem; max-width:520px; margin:0 auto; line-height:1.6; }
-.corp-pills { display:flex; align-items:center; justify-content:center; gap:.6rem; flex-wrap:wrap; margin-top:1.5rem; }
+.corp-hero p { color:rgba(255,255,255,.8); font-size:.95rem; max-width:520px; margin:0 auto; line-height:1.6; }
+.corp-pills { 
+    display:flex; align-items:center; justify-content:center; gap:.65rem; flex-wrap:wrap; 
+    margin-top:1.5rem; margin-bottom:1rem;
+}
 .corp-pill {
-    display:flex; align-items:center; gap:.4rem;
-    background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.2);
-    color:rgba(255,255,255,.9); font-size:.75rem; font-weight:600;
-    padding:.4rem .9rem; border-radius:99px;
+    display:inline-flex; align-items:center; gap:.45rem;
+    background:rgba(255,255,255,.15); border:1px solid rgba(255,255,255,.25);
+    color:#ffffff; font-size:.78rem; font-weight:600;
+    padding:.45rem 1rem; border-radius:99px;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    transition: background .2s;
 }
 
 /* ── Pax Bar ──────────────────────────────────────── */
@@ -127,11 +136,20 @@
 
 @media (max-width: 640px) {
     .corp-hero {
-        padding:3rem 1rem 4.5rem;
+        padding: 3rem 1rem 4.75rem;
+    }
+    .corp-pills {
+        gap: .5rem;
+        margin-top: 1.25rem;
+        margin-bottom: .75rem;
+    }
+    .corp-pill {
+        font-size: .74rem;
+        padding: .4rem .85rem;
     }
     .pax-bar {
-        margin:-2rem auto 0;
-        padding:0 .85rem;
+        margin: -1.75rem auto 0;
+        padding: 0 .85rem;
     }
     .pax-card {
         padding:.95rem 1.1rem;
@@ -418,8 +436,8 @@
                 <div class="corp-price-box">
                     <div class="corp-per-pax" style="margin-bottom: 0.1rem;">Rp {{ number_format($pkg->harga_weekday,0,',','.') }}/pax/malam</div>
                     <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <div class="corp-total-price" id="price-{{ $k }}">Rp 0</div>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-400 cursor-pointer hover:text-[#3a523a] transition" fill="currentColor" viewBox="0 0 24 24" onclick="openCorpPriceInfo('{{ addslashes($pkg->judul) }}', {{ $pkg->harga_weekday }}, {{ $pkg->harga_weekend }}, {{ $pkg->harga_highseason }})"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                        <div class="corp-total-price" id="price-{{ $k }}">Rp {{ number_format(($pkg->harga_weekday ?? 0) * 25, 0, ',', '.') }}</div>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-400 cursor-pointer hover:text-[#3a523a] transition" fill="currentColor" viewBox="0 0 24 24" onclick="openCorpPriceInfo('{{ addslashes($pkg->judul) }}', {{ $pkg->harga_weekday ?? 0 }}, {{ $pkg->harga_weekend ?? 0 }}, {{ $pkg->harga_highseason ?? 0 }})"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
                     </div>
                     <div class="corp-est">Estimasi total</div>
                     <div class="corp-formula" id="formula-{{ $k }}">25 pax × 1 malam × Rp {{ number_format($pkg->harga_weekday,0,',','.') }}</div>
@@ -504,12 +522,15 @@
 
 @push('scripts')
 <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://npmcdn.com/flatpickr/dist/l10n/id.js"></script>
 <script>
 (function(){
     @php
         $liburLandeuh = \App\Models\DateSetting::where('type', 'libur_landeuh')->get();
     @endphp
-    var LIBUR_LANDEUH = @json($liburLandeuh);
+    var LIBUR_LANDEUH = @json($liburLandeuh ?? []);
+    var DATE_SETTINGS = @json($dateSettings ?? []);
 
     /* ── Backend data ─────────────────────────────── */
     var CORP = {};
@@ -531,6 +552,10 @@
     @endphp
     CORP['{{ $k }}'] = {
         id: {{ $pkg->id }},
+        judul: "{{ addslashes($pkg->judul) }}",
+        hargaWeekday: {{ $pkg->harga_weekday ?? 0 }},
+        hargaWeekend: {{ $pkg->harga_weekend ?? 0 }},
+        hargaHighseason: {{ $pkg->harga_highseason ?? 0 }},
         harga: {{ $pkg->harga_weekday ?? 0 }},
         slot: {{ $pkg->slot ?? 0 }},
         jenisName: "{{ $jenisName }}",
@@ -546,19 +571,95 @@
     var pax = 25;
     var dateState  = {};
     var nightState = {};
+    var fpInstances = {};
     for (var key in CORP) {
         dateState[key] = null;
         nightState[key] = 1;
     }
 
     /* ── Utils ────────────────────────────────────── */
-    function fmtRp(n){ return 'Rp '+Math.round(n).toLocaleString('id-ID'); }
+    function fmtRp(n){ return 'Rp ' + Math.round(n).toLocaleString('id-ID'); }
+
+    function getDateType(dateObj) {
+        var year = dateObj.getFullYear();
+        var month = String(dateObj.getMonth() + 1).padStart(2, '0');
+        var day = String(dateObj.getDate()).padStart(2, '0');
+        var dateString = year + '-' + month + '-' + day;
+        
+        var daysIndo = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', "Jum'at", 'Sabtu'];
+        var dayName = daysIndo[dateObj.getDay()];
+
+        // 1. Check Highseason
+        for (var i = 0; i < DATE_SETTINGS.length; i++) {
+            var s = DATE_SETTINGS[i];
+            if (s.type === 'highseason' && s.dates) {
+                var dArr = s.dates.split(',').map(function(x){ return x.trim(); });
+                if (dArr.indexOf(dateString) !== -1) return 'highseason';
+            }
+        }
+
+        // 2. Check Weekend
+        for (var j = 0; j < DATE_SETTINGS.length; j++) {
+            var w = DATE_SETTINGS[j];
+            if (w.type === 'weekend' && w.dates) {
+                var wArr = w.dates.split(',').map(function(x){ return x.trim(); });
+                if (wArr.indexOf(dateString) !== -1 || wArr.indexOf(dayName) !== -1) return 'weekend';
+            }
+        }
+
+        // Fallback weekend: Friday (5) & Saturday (6)
+        if (dateObj.getDay() === 5 || dateObj.getDay() === 6) return 'weekend';
+
+        return 'weekday';
+    }
+
+    function calculateTotal(t) {
+        var pkg = CORP[t];
+        if (!pkg) return { total: 0, formula: '0 pax \u00d7 1 malam \u00d7 Rp 0' };
+
+        var dates = dateState[t];
+        var nights = nightState[t] || 1;
+
+        if (!dates || dates.length < 2) {
+            var rate = pkg.hargaWeekday || pkg.harga || 0;
+            return {
+                total: rate * pax * nights,
+                formula: pax + ' pax \u00d7 ' + nights + ' malam \u00d7 ' + fmtRp(rate)
+            };
+        }
+
+        var s = new Date(dates[0]); s.setHours(12, 0, 0, 0);
+        var e = new Date(dates[1]); e.setHours(12, 0, 0, 0);
+        var sumRatePerPax = 0;
+        var nightCount = 0;
+
+        for (var dt = new Date(s); dt < e; dt.setDate(dt.getDate() + 1)) {
+            var dtType = getDateType(dt);
+            var nRate = pkg.hargaWeekday || pkg.harga;
+            if (dtType === 'highseason' && pkg.hargaHighseason) nRate = pkg.hargaHighseason;
+            else if (dtType === 'weekend' && pkg.hargaWeekend) nRate = pkg.hargaWeekend;
+
+            sumRatePerPax += nRate;
+            nightCount++;
+        }
+
+        if (nightCount === 0) nightCount = nights;
+        var grandTotal = sumRatePerPax * pax;
+        var avgRate = Math.round(sumRatePerPax / nightCount);
+
+        return {
+            total: grandTotal,
+            formula: pax + ' pax \u00d7 ' + nightCount + ' malam \u00d7 ' + fmtRp(avgRate)
+        };
+    }
 
     function updatePrice(t){
-        var total = CORP[t].harga * pax * nightState[t];
-        document.getElementById('price-'+t).textContent = fmtRp(total);
-        document.getElementById('formula-'+t).textContent =
-            pax+' pax \u00d7 '+nightState[t]+' malam \u00d7 '+fmtRp(CORP[t].harga);
+        if (!CORP[t]) return;
+        var calc = calculateTotal(t);
+        var priceEl = document.getElementById('price-' + t);
+        var formulaEl = document.getElementById('formula-' + t);
+        if (priceEl) priceEl.textContent = fmtRp(calc.total);
+        if (formulaEl) formulaEl.textContent = calc.formula;
     }
 
     function isBooked(t, dates){
@@ -692,74 +793,284 @@
         if(val < 25) val = 25;
         if(val > 150) val = 150;
         pax = val;
-        paxInput.value = pax;
+        if (paxInput) paxInput.value = pax;
         for (var key in CORP) { updatePrice(key); }
     }
 
-    document.getElementById('btnPaxDec').addEventListener('click',function(){
-        setPax(pax - 1);
-    });
-    document.getElementById('btnPaxInc').addEventListener('click',function(){
-        setPax(pax + 1);
-    });
-    paxInput.addEventListener('input', function(){
-        // Hanya update harga saat mengetik, jangan clamp nilai agar tidak mengganggu input
-        var val = parseInt(this.value);
-        if (!isNaN(val) && val >= 25 && val <= 150) {
-            pax = val;
-            for (var key in CORP) { updatePrice(key); }
-        }
-    });
-    paxInput.addEventListener('blur', function(){
-        // Baru clamp saat selesai mengetik
-        setPax(parseInt(this.value) || 25);
-    });
-    paxInput.addEventListener('keydown', function(e){
-        if(e.key === 'Enter') { this.blur(); }
-    });
+    var btnDec = document.getElementById('btnPaxDec');
+    if (btnDec) {
+        btnDec.addEventListener('click',function(){
+            setPax(pax - 1);
+        });
+    }
+    var btnInc = document.getElementById('btnPaxInc');
+    if (btnInc) {
+        btnInc.addEventListener('click',function(){
+            setPax(pax + 1);
+        });
+    }
+    if (paxInput) {
+        paxInput.addEventListener('input', function(){
+            var val = parseInt(this.value);
+            if (!isNaN(val) && val >= 25 && val <= 150) {
+                pax = val;
+                for (var key in CORP) { updatePrice(key); }
+            }
+        });
+        paxInput.addEventListener('blur', function(){
+            setPax(parseInt(this.value) || 25);
+        });
+        paxInput.addEventListener('keydown', function(e){
+            if(e.key === 'Enter') { this.blur(); }
+        });
+    }
 
     window.openCorpPriceInfo = function(name, hw, hwe, hhs) {
-        document.getElementById('corpPriceModalTitle').textContent = `(${name})`;
-        document.getElementById('corpPriceInfoContent').innerHTML = `
-            <div class="flex items-center gap-3 py-2.5 border-b border-gray-100">
-                <div class="w-2 h-2 rounded-full shrink-0 bg-orange-500"></div>
-                <div class="font-semibold text-sm w-24 text-orange-600">Weekday</div>
-                <div class="font-bold text-sm flex-1 text-right text-gray-800">${fmtRp(hw)}</div>
-            </div>
-            <div class="flex items-center gap-3 py-2.5 border-b border-gray-100">
-                <div class="w-2 h-2 rounded-full shrink-0 bg-blue-500"></div>
-                <div class="font-semibold text-sm w-24 text-blue-600">Weekend</div>
-                <div class="font-bold text-sm flex-1 text-right text-gray-800">${fmtRp(hwe)}</div>
-            </div>
-            <div class="flex items-center gap-3 py-2.5">
-                <div class="w-2 h-2 rounded-full shrink-0 bg-red-500"></div>
-                <div class="font-semibold text-sm w-24 text-red-600">Highseason</div>
-                <div class="font-bold text-sm flex-1 text-right text-gray-800">${fmtRp(hhs)}</div>
-            </div>
-        `;
-        const overlay = document.getElementById('corpPriceInfoOverlay');
-        const modal = document.getElementById('corpPriceInfoModal');
-        overlay.classList.remove('opacity-0', 'pointer-events-none');
-        overlay.classList.add('opacity-100');
-        modal.classList.remove('scale-95');
-        modal.classList.add('scale-100');
-        document.body.style.overflow = 'hidden';
+        var elTitle = document.getElementById('corpPriceModalTitle');
+        var elContent = document.getElementById('corpPriceInfoContent');
+        if (elTitle) elTitle.textContent = '(' + name + ')';
+        if (elContent) {
+            elContent.innerHTML = `
+                <div class="flex items-center gap-3 py-2.5 border-b border-gray-100">
+                    <div class="w-2 h-2 rounded-full shrink-0 bg-orange-500"></div>
+                    <div class="font-semibold text-sm w-24 text-orange-600">Weekday</div>
+                    <div class="font-bold text-sm flex-1 text-right text-gray-800">${fmtRp(hw)}</div>
+                </div>
+                <div class="flex items-center gap-3 py-2.5 border-b border-gray-100">
+                    <div class="w-2 h-2 rounded-full shrink-0 bg-blue-500"></div>
+                    <div class="font-semibold text-sm w-24 text-blue-600">Weekend</div>
+                    <div class="font-bold text-sm flex-1 text-right text-gray-800">${fmtRp(hwe)}</div>
+                </div>
+                <div class="flex items-center gap-3 py-2.5">
+                    <div class="w-2 h-2 rounded-full shrink-0 bg-red-500"></div>
+                    <div class="font-semibold text-sm w-24 text-red-600">Highseason</div>
+                    <div class="font-bold text-sm flex-1 text-right text-gray-800">${fmtRp(hhs)}</div>
+                </div>
+            `;
+        }
+        var overlay = document.getElementById('corpPriceInfoOverlay');
+        var modal = document.getElementById('corpPriceInfoModal');
+        if (overlay && modal) {
+            overlay.classList.remove('opacity-0', 'pointer-events-none');
+            overlay.classList.add('opacity-100');
+            modal.classList.remove('scale-95');
+            modal.classList.add('scale-100');
+            document.body.style.overflow = 'hidden';
+        }
     };
 
     window.closeCorpPriceInfo = function() {
-        const overlay = document.getElementById('corpPriceInfoOverlay');
-        const modal = document.getElementById('corpPriceInfoModal');
-        overlay.classList.add('opacity-0', 'pointer-events-none');
-        overlay.classList.remove('opacity-100');
-        modal.classList.add('scale-95');
-        modal.classList.remove('scale-100');
-        document.body.style.overflow = '';
+        var overlay = document.getElementById('corpPriceInfoOverlay');
+        var modal = document.getElementById('corpPriceInfoModal');
+        if (overlay && modal) {
+            overlay.classList.add('opacity-0', 'pointer-events-none');
+            overlay.classList.remove('opacity-100');
+            modal.classList.add('scale-95');
+            modal.classList.remove('scale-100');
+            document.body.style.overflow = '';
+        }
     };
+
+    /* ── Custom Modal Helper ────────────────────── */
+    window.openCustomModal = function(options) {
+        return new Promise(function(resolve) {
+            var modal = document.getElementById('customConfirmModal');
+            var box = document.getElementById('customConfirmBox');
+            var header = document.getElementById('customConfirmHeader');
+            var iconWrap = document.getElementById('customConfirmIconWrap');
+            var icon = document.getElementById('customConfirmIcon');
+            var title = document.getElementById('customConfirmTitle');
+            var badge = document.getElementById('customConfirmBadge');
+            var msg = document.getElementById('customConfirmMessage');
+            var subtext = document.getElementById('customConfirmSubtext');
+            var btnCancel = document.getElementById('btnCustomConfirmCancel');
+            var btnOk = document.getElementById('btnCustomConfirmOk');
+
+            if (!modal) {
+                alert(options.message || options.title || 'Pemberitahuan');
+                resolve(true);
+                return;
+            }
+
+            var isAlertOnly = options.isAlert || false;
+
+            if (title) title.textContent = options.title || 'Informasi';
+            if (badge) badge.textContent = options.badge || 'Pemberitahuan';
+            if (msg) msg.textContent = options.message || '';
+            
+            if (subtext) {
+                if (options.subtext) {
+                    subtext.textContent = options.subtext;
+                    subtext.style.display = 'block';
+                } else {
+                    subtext.style.display = 'none';
+                }
+            }
+
+            if (options.type === 'error') {
+                if (header) header.className = 'p-6 text-center border-b border-gray-100 bg-red-50/70';
+                if (iconWrap) iconWrap.className = 'w-14 h-14 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-3 shadow-inner';
+                if (icon) icon.setAttribute('icon', 'lucide:x-circle');
+                if (badge) badge.className = 'inline-block bg-red-100 text-red-800 text-xs font-extrabold px-3 py-1 rounded-full';
+                if (btnOk) {
+                    btnOk.className = 'w-full py-2.5 px-4 bg-red-600 hover:bg-red-700 text-white font-bold text-sm rounded-xl transition shadow cursor-pointer';
+                    btnOk.textContent = options.okText || 'Tutup';
+                }
+            } else if (options.type === 'info') {
+                if (header) header.className = 'p-6 text-center border-b border-gray-100 bg-blue-50/70';
+                if (iconWrap) iconWrap.className = 'w-14 h-14 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-3 shadow-inner';
+                if (icon) icon.setAttribute('icon', 'lucide:info');
+                if (badge) badge.className = 'inline-block bg-blue-100 text-blue-800 text-xs font-extrabold px-3 py-1 rounded-full';
+                if (btnOk) {
+                    btnOk.className = 'w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-xl transition shadow cursor-pointer';
+                    btnOk.textContent = options.okText || 'Mengerti';
+                }
+            } else {
+                // Default Warning / Confirm
+                if (header) header.className = 'p-6 text-center border-b border-gray-100 bg-amber-50/70';
+                if (iconWrap) iconWrap.className = 'w-14 h-14 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-3 shadow-inner';
+                if (icon) icon.setAttribute('icon', 'lucide:alert-triangle');
+                if (badge) badge.className = 'inline-block bg-amber-100 text-amber-800 text-xs font-extrabold px-3 py-1 rounded-full';
+                if (btnOk) {
+                    btnOk.className = 'w-1/2 py-2.5 px-4 bg-[#3a523a] hover:bg-[#2c402c] text-white font-bold text-sm rounded-xl transition shadow cursor-pointer';
+                    btnOk.textContent = options.okText || 'Ya, Lanjutkan';
+                }
+            }
+
+            if (btnCancel && btnOk) {
+                if (isAlertOnly) {
+                    btnCancel.style.display = 'none';
+                    btnOk.classList.remove('w-1/2');
+                    btnOk.classList.add('w-full');
+                } else {
+                    btnCancel.style.display = 'block';
+                    btnOk.classList.remove('w-full');
+                    btnOk.classList.add('w-1/2');
+                }
+            }
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.body.style.overflow = 'hidden';
+
+            setTimeout(function() {
+                if (box) {
+                    box.classList.remove('scale-90', 'opacity-0');
+                    box.classList.add('scale-100', 'opacity-100');
+                }
+            }, 10);
+
+            function close(res) {
+                if (box) {
+                    box.classList.remove('scale-100', 'opacity-100');
+                    box.classList.add('scale-90', 'opacity-0');
+                }
+                setTimeout(function() {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                    document.body.style.overflow = '';
+                    if (btnCancel) btnCancel.onclick = null;
+                    if (btnOk) btnOk.onclick = null;
+                    resolve(res);
+                }, 150);
+            }
+
+            if (btnCancel) btnCancel.onclick = function() { close(false); };
+            if (btnOk) btnOk.onclick = function() { close(true); };
+        });
+    };
+
+    /* ── Pilih Paket ──────────────────────────────── */
+    window.pilihPaket = function(id, t) {
+        var dates = dateState[t];
+        if (!dates || dates.length < 2) {
+            if (fpInstances[t]) {
+                fpInstances[t].open();
+            } else {
+                var btn = document.getElementById('btn-date-' + t);
+                if (btn) btn.click();
+            }
+            openCustomModal({
+                type: 'info',
+                isAlert: true,
+                title: 'Pilih Tanggal',
+                badge: 'Tanggal Belum Dipilih',
+                message: 'Silakan tentukan tanggal Check-in dan Check-out pada kalender terlebih dahulu untuk melanjutkan pemesanan.'
+            });
+            return;
+        }
+
+        if (isBooked(t, dates)) {
+            openCustomModal({
+                type: 'error',
+                isAlert: true,
+                title: 'Tanggal Tidak Tersedia',
+                badge: 'Sudah Penuh',
+                message: 'Tanggal yang Anda pilih sudah dipesan oleh rombongan Corporate lain. Silakan pilih tanggal lain.'
+            });
+            return;
+        }
+        
+        var maxUnits = CORP[t].maxUnits;
+        var avail = getAvailableUnits(t, dates);
+        var unitName = CORP[t].jenisName;
+        
+        if (avail === 0) {
+            openCustomModal({
+                type: 'error',
+                isAlert: true,
+                title: 'Pemesanan Gagal',
+                badge: 'Seluruh Unit Dipesan',
+                message: 'Seluruh unit ' + unitName + ' di tanggal ini sudah dipesan oleh tamu reguler sehingga tidak tersedia untuk Paket Corporate. Silakan pilih tanggal lain.'
+            });
+            return;
+        } else if (avail < maxUnits) {
+            openCustomModal({
+                type: 'warning',
+                isAlert: false,
+                title: 'Konfirmasi Ketersediaan Unit',
+                badge: 'Peringatan Unit Terbatas',
+                message: 'Jumlah unit ' + unitName + ' yang tersedia di tanggal ini hanya tersisa ' + avail + ' unit (dari total ' + maxUnits + ' unit) karena sebagian sudah dipesan oleh tamu reguler.',
+                subtext: 'Apakah Anda yakin ingin tetap melanjutkan pemesanan Paket Corporate ini dengan harga yang sama?'
+            }).then(function(confirmed){
+                if (confirmed) {
+                    proceedCorporateBooking(id, t, dates);
+                }
+            });
+            return;
+        }
+
+        proceedCorporateBooking(id, t, dates);
+    };
+
+    function proceedCorporateBooking(id, t, dates) {
+        var malam = nightState[t] || 1;
+        var d = dates[0];
+        var ci = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+        var url = '/reservasi/overview/' + id + '?malam=' + malam + '&pax=' + pax + '&checkin=' + ci + '&is_corporate=1';
+        var loggedIn = {{ Auth::check() ? 'true' : 'false' }};
+        if (loggedIn) {
+            window.location.href = url;
+        } else {
+            sessionStorage.setItem('pending_redirect', url);
+            if (typeof openLoginModal === 'function') {
+                openLoginModal();
+            } else {
+                openCustomModal({
+                    type: 'info',
+                    isAlert: true,
+                    title: 'Login Diperlukan',
+                    badge: 'Autentikasi Pengguna',
+                    message: 'Silakan log in terlebih dahulu untuk melanjutkan proses pemesanan.'
+                });
+            }
+        }
+    }
 
     /* ── Init flatpickr ───────────────────────────── */
     window.updateFpPopupFooter = function(instance, selectedDates) {
         if (!instance || !instance.calendarContainer) return;
-        let footer = instance.calendarContainer.querySelector('.fp-custom-footer');
+        var footer = instance.calendarContainer.querySelector('.fp-custom-footer');
         if (!footer) {
             footer = document.createElement('div');
             footer.className = 'fp-custom-footer';
@@ -777,8 +1088,8 @@
             `;
             instance.calendarContainer.appendChild(footer);
         }
-        const inVal = footer.querySelector('.fp-in-val');
-        const outVal = footer.querySelector('.fp-out-val');
+        var inVal = footer.querySelector('.fp-in-val');
+        var outVal = footer.querySelector('.fp-out-val');
 
         function formatFpDate(d) {
             if (!d) return 'Belum dipilih';
@@ -795,13 +1106,13 @@
             if (inVal) inVal.innerText = formatFpDate(selectedDates[0]);
             if (outVal) outVal.innerText = 'Pilih Check-out';
 
-            setTimeout(() => {
-                const days = instance.calendarContainer.querySelectorAll('.flatpickr-day');
-                days.forEach(day => {
+            setTimeout(function() {
+                var days = instance.calendarContainer.querySelectorAll('.flatpickr-day');
+                days.forEach(function(day) {
                     if (day.dateObj) {
-                        const dObj = new Date(day.dateObj);
+                        var dObj = new Date(day.dateObj);
                         dObj.setHours(0,0,0,0);
-                        const sObj = new Date(selectedDates[0]);
+                        var sObj = new Date(selectedDates[0]);
                         sObj.setHours(0,0,0,0);
                         if (dObj.getTime() === sObj.getTime()) {
                             day.classList.add('selected', 'startRange');
@@ -826,15 +1137,19 @@
         var bkEl =document.getElementById('booked-'+t);
         var ctaEl=document.getElementById('btn-pilih-'+t);
         var availEl=document.getElementById('avail-'+t);
+        if(!input||!btn||typeof flatpickr === 'undefined') return;
+
         var maxUnits=CORP[t].maxUnits;
         var unitName=CORP[t].jenisName;
-        if(!input||!btn) return;
 
         var fp;
         fp = flatpickr(input,{
-            mode:'range', minDate:'today',
+            mode:'range',
+            minDate:'today',
+            positionElement: btn,
+            position: window.innerWidth > 768 ? 'top left' : 'auto',
             showMonths: window.innerWidth>768?2:1,
-            locale: typeof flatpickr.l10ns !== 'undefined' && flatpickr.l10ns.id ? 'id' : 'default',
+            locale: (typeof flatpickr.l10ns !== 'undefined' && flatpickr.l10ns.id) ? 'id' : 'default',
             disable:[function(d){ 
                 var selected = (fp && fp.selectedDates) ? fp.selectedDates : (this && this.selectedDates ? this.selectedDates : []);
                 if (selected && selected.length === 1) {
@@ -876,35 +1191,20 @@
                 if (window.updateFpPopupFooter) {
                     window.updateFpPopupFooter(instance, sel);
                 }
-                var badge = document.getElementById('date-info-badge-' + t);
-                var inTxt = document.getElementById('checkin-txt-' + t);
-                var outTxt = document.getElementById('checkout-txt-' + t);
-                var fmtFull = { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' };
 
                 if (sel.length === 1) {
-                    var inStr = sel[0].toLocaleDateString('id-ID', fmtFull);
-                    if (badge) badge.style.display = 'block';
-                    if (inTxt) inTxt.textContent = inStr;
-                    if (outTxt) outTxt.textContent = 'Pilih Tanggal Check-out';
-
                     if (txtEl) txtEl.textContent = 'In: ' + sel[0].toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
                 } else if (sel.length === 2) {
-                    var inStr = sel[0].toLocaleDateString('id-ID', fmtFull);
-                    var outStr = sel[1].toLocaleDateString('id-ID', fmtFull);
-                    if (badge) badge.style.display = 'block';
-                    if (inTxt) inTxt.textContent = inStr;
-                    if (outTxt) outTxt.textContent = outStr;
-
                     dateState[t]=sel;
                     var diff=Math.abs(sel[1]-sel[0]);
                     var nights=Math.max(1,Math.ceil(diff/86400000));
                     nightState[t]=nights;
                     var opts={day:'numeric',month:'short',year:'2-digit'};
-                    txtEl.textContent=sel[0].toLocaleDateString('id-ID',opts)+' \u2013 '+sel[1].toLocaleDateString('id-ID',opts);
-                    nEl.innerHTML='<iconify-icon icon="lucide:moon" style="font-size:.8rem"></iconify-icon> '+nights+' Malam';
+                    if (txtEl) txtEl.textContent=sel[0].toLocaleDateString('id-ID',opts)+' \u2013 '+sel[1].toLocaleDateString('id-ID',opts);
+                    if (nEl) nEl.innerHTML='<iconify-icon icon="lucide:moon" style="font-size:.8rem"></iconify-icon> '+nights+' Malam';
                     var booked=isBooked(t,sel);
-                    bkEl.style.display=booked?'block':'none';
-                    ctaEl.className='corp-btn '+(booked?'dis':'green');
+                    if (bkEl) bkEl.style.display=booked?'block':'none';
+                    if (ctaEl) ctaEl.className='corp-btn '+(booked?'dis':'green');
                     
                     if(availEl){
                         if(booked){
@@ -937,173 +1237,33 @@
                 }
             }
         });
+
+        fpInstances[t] = fp;
         btn.addEventListener('click',function(e){ e.stopPropagation(); fp.toggle(); });
     }
 
-    for (var key in CORP) {
-        initFp(key);
-        updatePrice(key);
+    /* ── Bootstrap Initialization ───────────────── */
+    function initCorporateApp() {
+        for (var key in CORP) {
+            initFp(key);
+            updatePrice(key);
+        }
     }
 
-    /* ── Custom Modal Helper ────────────────────── */
-    window.openCustomModal = function(options) {
-        return new Promise((resolve) => {
-            const modal = document.getElementById('customConfirmModal');
-            const box = document.getElementById('customConfirmBox');
-            const header = document.getElementById('customConfirmHeader');
-            const iconWrap = document.getElementById('customConfirmIconWrap');
-            const icon = document.getElementById('customConfirmIcon');
-            const title = document.getElementById('customConfirmTitle');
-            const badge = document.getElementById('customConfirmBadge');
-            const msg = document.getElementById('customConfirmMessage');
-            const subtext = document.getElementById('customConfirmSubtext');
-            const btnCancel = document.getElementById('btnCustomConfirmCancel');
-            const btnOk = document.getElementById('btnCustomConfirmOk');
-
-            const isAlertOnly = options.isAlert || false;
-
-            title.textContent = options.title || 'Informasi';
-            badge.textContent = options.badge || 'Pemberitahuan';
-            msg.textContent = options.message || '';
-            
-            if (options.subtext) {
-                subtext.textContent = options.subtext;
-                subtext.style.display = 'block';
-            } else {
-                subtext.style.display = 'none';
+    if (typeof flatpickr !== 'undefined') {
+        initCorporateApp();
+    } else {
+        var checkCount = 0;
+        var checkFp = setInterval(function() {
+            checkCount++;
+            if (typeof flatpickr !== 'undefined') {
+                clearInterval(checkFp);
+                initCorporateApp();
+            } else if (checkCount > 50) {
+                clearInterval(checkFp);
+                console.error('Flatpickr failed to load.');
             }
-
-            if (options.type === 'error') {
-                header.className = 'p-6 text-center border-b border-gray-100 bg-red-50/70';
-                iconWrap.className = 'w-14 h-14 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-3 shadow-inner';
-                icon.setAttribute('icon', 'lucide:x-circle');
-                badge.className = 'inline-block bg-red-100 text-red-800 text-xs font-extrabold px-3 py-1 rounded-full';
-                btnOk.className = 'w-full py-2.5 px-4 bg-red-600 hover:bg-red-700 text-white font-bold text-sm rounded-xl transition shadow cursor-pointer';
-                btnOk.textContent = options.okText || 'Tutup';
-            } else if (options.type === 'info') {
-                header.className = 'p-6 text-center border-b border-gray-100 bg-blue-50/70';
-                iconWrap.className = 'w-14 h-14 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-3 shadow-inner';
-                icon.setAttribute('icon', 'lucide:info');
-                badge.className = 'inline-block bg-blue-100 text-blue-800 text-xs font-extrabold px-3 py-1 rounded-full';
-                btnOk.className = 'w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-xl transition shadow cursor-pointer';
-                btnOk.textContent = options.okText || 'Mengerti';
-            } else {
-                // Default Warning / Confirm
-                header.className = 'p-6 text-center border-b border-gray-100 bg-amber-50/70';
-                iconWrap.className = 'w-14 h-14 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-3 shadow-inner';
-                icon.setAttribute('icon', 'lucide:alert-triangle');
-                badge.className = 'inline-block bg-amber-100 text-amber-800 text-xs font-extrabold px-3 py-1 rounded-full';
-                btnOk.className = 'w-1/2 py-2.5 px-4 bg-[#3a523a] hover:bg-[#2c402c] text-white font-bold text-sm rounded-xl transition shadow cursor-pointer';
-                btnOk.textContent = options.okText || 'Ya, Lanjutkan';
-            }
-
-            if (isAlertOnly) {
-                btnCancel.style.display = 'none';
-                btnOk.classList.remove('w-1/2');
-                btnOk.classList.add('w-full');
-            } else {
-                btnCancel.style.display = 'block';
-                btnOk.classList.remove('w-full');
-                btnOk.classList.add('w-1/2');
-            }
-
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            document.body.style.overflow = 'hidden';
-
-            setTimeout(() => {
-                box.classList.remove('scale-90', 'opacity-0');
-                box.classList.add('scale-100', 'opacity-100');
-            }, 10);
-
-            function close(res) {
-                box.classList.remove('scale-100', 'opacity-100');
-                box.classList.add('scale-90', 'opacity-0');
-                setTimeout(() => {
-                    modal.classList.add('hidden');
-                    modal.classList.remove('flex');
-                    document.body.style.overflow = '';
-                    btnCancel.onclick = null;
-                    btnOk.onclick = null;
-                    resolve(res);
-                }, 150);
-            }
-
-            btnCancel.onclick = function() { close(false); };
-            btnOk.onclick = function() { close(true); };
-        });
-    };
-
-    /* ── Pilih Paket ──────────────────────────────── */
-    window.pilihPaket=function(id,t){
-        var dates=dateState[t];
-        if(!dates||dates.length<2){
-            document.getElementById('btn-date-'+t).click();
-            return;
-        }
-        if(isBooked(t,dates)){
-            openCustomModal({
-                type: 'error',
-                isAlert: true,
-                title: 'Tanggal Tidak Tersedia',
-                badge: 'Sudah Penuh',
-                message: 'Tanggal yang Anda pilih sudah dipesan oleh rombongan Corporate lain. Silakan pilih tanggal lain.'
-            });
-            return;
-        }
-        
-        var maxUnits = CORP[t].maxUnits;
-        var avail = getAvailableUnits(t, dates);
-        var unitName = CORP[t].jenisName;
-        
-        if (avail === 0) {
-            openCustomModal({
-                type: 'error',
-                isAlert: true,
-                title: 'Pemesanan Gagal',
-                badge: 'Seluruh Unit Dipesan',
-                message: 'Seluruh unit ' + unitName + ' di tanggal ini sudah dipesan oleh tamu reguler sehingga tidak tersedia untuk Paket Corporate. Silakan pilih tanggal lain.'
-            });
-            return;
-        } else if (avail < maxUnits) {
-            openCustomModal({
-                type: 'warning',
-                isAlert: false,
-                title: 'Konfirmasi Ketersediaan Unit',
-                badge: 'Peringatan Unit Terbatas',
-                message: 'Jumlah unit ' + unitName + ' yang tersedia di tanggal ini hanya tersisa ' + avail + ' unit (dari total ' + maxUnits + ' unit) karena sebagian sudah dipesan oleh tamu reguler.',
-                subtext: 'Apakah Anda yakin ingin tetap melanjutkan pemesanan Paket Corporate ini dengan harga yang sama?'
-            }).then(function(confirmed){
-                if(confirmed){
-                    proceedCorporateBooking(id, t, dates);
-                }
-            });
-            return;
-        }
-
-        proceedCorporateBooking(id, t, dates);
-    };
-
-    function proceedCorporateBooking(id, t, dates){
-        var malam=nightState[t];
-        var d=dates[0];
-        var ci=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-        var url='/reservasi/overview/'+id+'?malam='+malam+'&pax='+pax+'&checkin='+ci+'&is_corporate=1';
-        var loggedIn={{ Auth::check() ? 'true' : 'false' }};
-        if(loggedIn){ window.location.href=url; }
-        else{
-            sessionStorage.setItem('pending_redirect',url);
-            if(typeof openLoginModal==='function') openLoginModal();
-            else {
-                openCustomModal({
-                    type: 'info',
-                    isAlert: true,
-                    title: 'Login Diperlukan',
-                    badge: 'Autentikasi Pengguna',
-                    message: 'Silakan log in terlebih dahulu untuk melanjutkan proses pemesanan.'
-                });
-            }
-        }
+        }, 50);
     }
 
     /* ── Lightbox ─────────────────────────────────── */

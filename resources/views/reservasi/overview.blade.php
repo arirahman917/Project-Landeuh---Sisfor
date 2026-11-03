@@ -321,24 +321,24 @@
         <div class="modal-box">
             <h4>Syarat & Ketentuan Layanan</h4>
             <div style="font-size: 0.85rem; color: #333; line-height: 1.6; text-align: left; margin: 1rem 0 1.5rem 0;">
-                <p>Syarat & ketentuan berikut mengatur penggunaan sistem pemesanan online dan aturan menginap di Landeuh Village Riverside. Dengan melakukan reservasi, Anda dianggap telah menyetujui seluruh ketentuan ini.</p>
+                <p style="font-size: 0.85rem; color: #374151; margin-bottom: 1rem;">Syarat & ketentuan berikut mengatur penggunaan sistem pemesanan online dan aturan menginap di Landeuh Village Riverside. Dengan melakukan reservasi, Anda dianggap telah menyetujui seluruh ketentuan ini.</p>
                 
-                <div style="padding: 1rem; background-color: #FFFDF6; border: 1px solid #EEDC9A; border-radius: 0.75rem; margin: 1rem 0;">
-                    <h5 style="font-weight: 800; color: #8B4A1A; display: flex; align-items: center; gap: 0.5rem; margin-top: 0; margin-bottom: 0.5rem; font-size: 0.8rem;">
-                        <span>⚠️</span> INFORMASI PENTING (Reschedule & Pembatalan)
+                <div style="border-left: 3.5px solid #165b40; padding-left: 1rem; margin: 1.25rem 0;">
+                    <h5 style="font-weight: 700; color: #1c1917; font-size: 0.88rem; margin-top: 0; margin-bottom: 0.5rem; letter-spacing: -0.2px;">
+                        Kebijakan reschedule dan pembatalan
                     </h5>
-                    <ul style="list-style-type: disc; padding-left: 1.25rem; font-size: 0.75rem; color: #1c1917; margin: 0;">
-                        <li style="font-weight: 600; margin-bottom: 0.25rem;">Seluruh pesanan yang telah dikonfirmasi dan dibayar bersifat <span style="color: #dc2626; font-weight: 800;">TIDAK DAPAT DIBATALKAN / DI-REFUND</span> dengan alasan apa pun.</li>
-                        <li style="margin-bottom: 0.25rem;">Pelanggan <span style="color: #047857; font-weight: 800;">DAPAT mengajukan reschedule</span> tanggal menginap.</li>
-                        <li style="margin-bottom: 0.25rem;">Pengajuan reschedule wajib diajukan oleh pelanggan <strong>minimal H-3</strong> sebelum tanggal check-in.</li>
-                        <li style="margin-bottom: 0.25rem;">Persetujuan reschedule didasarkan pada ketersediaan akomodasi di tanggal baru serta memerlukan persetujuan resmi dari pihak Admin.</li>
-                        <li style="margin-bottom: 0;">Reschedule hanya berlaku dengan <strong>durasi menginap (jumlah malam) yang sama</strong> dengan pemesanan awal.</li>
+                    <ul style="list-style-type: disc; padding-left: 1.25rem; font-size: 0.85rem; color: #374151; line-height: 1.6; margin: 0; display: flex; flex-direction: column; gap: 0.4rem;">
+                        <li>Seluruh pesanan yang telah dikonfirmasi dan dibayar bersifat <strong style="color: #111827; font-weight: 700;">tidak dapat dibatalkan atau di-refund</strong> dengan alasan apa pun.</li>
+                        <li>Pelanggan <strong style="color: #111827; font-weight: 700;">dapat mengajukan reschedule</strong> tanggal menginap.</li>
+                        <li>Pengajuan reschedule wajib diajukan oleh pelanggan <strong style="color: #111827; font-weight: 700;">minimal H-3</strong> sebelum tanggal check-in.</li>
+                        <li>Persetujuan reschedule didasarkan pada <strong style="color: #111827; font-weight: 700;">ketersediaan kamar</strong> di tanggal baru serta persetujuan resmi dari pihak Admin.</li>
+                        <li>Reschedule hanya berlaku dengan <strong style="color: #111827; font-weight: 700;">durasi menginap (jumlah malam) yang sama</strong> dengan pemesanan awal.</li>
                     </ul>
                 </div>
 
                 <div style="margin-bottom: 1rem;">
-                    <h5 style="font-weight: 700; color: #000; margin-bottom: 0.25rem; font-size: 0.8rem;">1. Ketentuan Check-In & Check-Out</h5>
-                    <ul style="list-style-type: disc; padding-left: 1.25rem; font-size: 0.75rem; color: #444; margin: 0;">
+                    <h5 style="font-weight: 700; color: #1c1917; margin-bottom: 0.35rem; font-size: 0.88rem;">1. Ketentuan Check-In & Check-Out</h5>
+                    <ul style="list-style-type: disc; padding-left: 1.25rem; font-size: 0.85rem; color: #374151; line-height: 1.6; margin: 0;">
                         <li>Waktu Check-In resmi: pukul 14.00 – 21.00 WIB.</li>
                         <li>Waktu Check-Out maksimal: pukul 12.00 WIB.</li>
                         <li>Check-in di luar jam operasional standar wajib diinformasikan terlebih dahulu ke pihak pengelola.</li>
@@ -346,8 +346,8 @@
                 </div>
 
                 <div style="margin-bottom: 1rem;">
-                    <h5 style="font-weight: 700; color: #000; margin-bottom: 0.25rem; font-size: 0.8rem;">2. Aturan Umum Penginapan</h5>
-                    <ul style="list-style-type: disc; padding-left: 1.25rem; font-size: 0.75rem; color: #444; margin: 0;">
+                    <h5 style="font-weight: 700; color: #1c1917; margin-bottom: 0.35rem; font-size: 0.88rem;">2. Aturan Umum Penginapan</h5>
+                    <ul style="list-style-type: disc; padding-left: 1.25rem; font-size: 0.85rem; color: #374151; line-height: 1.6; margin: 0;">
                         <li>Dilarang keras membawa senjata tajam, senjata api, narkoba, bahan kimia berbahaya, dan hewan peliharaan ke dalam area Landeuh Village.</li>
                         <li>Tamu berkewajiban menjaga kebersihan, ketertiban, dan ketenangan demi kenyamanan bersama.</li>
                         <li>Kerusakan fasilitas akibat kelalaian tamu akan dikenakan denda sesuai dengan nilai kerusakan.</li>
@@ -355,8 +355,8 @@
                 </div>
 
                 <div style="margin-bottom: 0;">
-                    <h5 style="font-weight: 700; color: #000; margin-bottom: 0.25rem; font-size: 0.8rem;">3. Pembayaran & Konfirmasi</h5>
-                    <p style="font-size: 0.75rem; color: #444; margin: 0;">Reservasi Anda hanya dianggap sah setelah pembayaran diverifikasi oleh sistem kami. Segala bentuk keterlambatan pembayaran dapat menyebabkan reservasi dibatalkan otomatis.</p>
+                    <h5 style="font-weight: 700; color: #1c1917; margin-bottom: 0.35rem; font-size: 0.88rem;">3. Pembayaran & Konfirmasi</h5>
+                    <p style="font-size: 0.85rem; color: #374151; line-height: 1.6; margin: 0;">Reservasi Anda hanya dianggap sah setelah pembayaran diverifikasi oleh sistem kami. Segala bentuk keterlambatan pembayaran dapat menyebabkan reservasi dibatalkan otomatis.</p>
                 </div>
             </div>
             <div class="close"><button onclick="document.getElementById('modalKebijakan').classList.remove('show')">Tutup</button></div>
@@ -413,6 +413,7 @@ function closeValidationModal() {
     const params = new URLSearchParams(window.location.search);
     const malam = parseInt(params.get('malam')) || 1;
     const pax = parseInt(params.get('pax')) || null;
+    const isCorp = {{ isset($isCorporate) && $isCorporate ? 'true' : 'false' }};
 
     // Parse checkin date parameter (menghindari pergeseran timezone UTC)
     const checkinParam = params.get('checkin');
@@ -516,7 +517,7 @@ function closeValidationModal() {
             }
         }
         
-        if (akoItem.jenis && (akoItem.jenis === 'Corporate Glamping' || akoItem.jenis === 'Corporate Cabin') && pax) {
+        if ((isCorp || (akoItem.jenis && (akoItem.jenis === 'Corporate Glamping' || akoItem.jenis === 'Corporate Cabin'))) && pax) {
             price = price * pax;
         }
         
@@ -525,14 +526,14 @@ function closeValidationModal() {
     });
 
     // Update header title with dynamic data
-    const titleText = (akoItem.jenis && (akoItem.jenis === 'Corporate Glamping' || akoItem.jenis === 'Corporate Cabin') && pax)
+    const titleText = (isCorp || (akoItem.jenis && (akoItem.jenis === 'Corporate Glamping' || akoItem.jenis === 'Corporate Cabin'))) && pax
         ? `${akoItem.judul} (${pax} pax)`
         : `${akoItem.judul} (${maxOrang} pax)`;
     if (document.getElementById('headerTitle')) document.getElementById('headerTitle').textContent = titleText;
     if (document.getElementById('headerTitleDesk')) document.getElementById('headerTitleDesk').textContent = titleText;
 
     // Update guest info
-    if (akoItem.jenis && (akoItem.jenis === 'Corporate Glamping' || akoItem.jenis === 'Corporate Cabin') && pax) {
+    if ((isCorp || (akoItem.jenis && (akoItem.jenis === 'Corporate Glamping' || akoItem.jenis === 'Corporate Cabin'))) && pax) {
         document.getElementById('guestInfoText').textContent = `${pax} Pax`;
         const chkTambahanLabel = document.getElementById('chkTambahan')?.closest('label');
         if (chkTambahanLabel) chkTambahanLabel.style.display = 'none';
@@ -565,7 +566,7 @@ function closeValidationModal() {
 
     // Update price labels
     function fmt(n){ return 'IDR ' + n.toLocaleString('id-ID'); }
-    if (akoItem.jenis && (akoItem.jenis === 'Corporate Glamping' || akoItem.jenis === 'Corporate Cabin') && pax) {
+    if ((isCorp || (akoItem.jenis && (akoItem.jenis === 'Corporate Glamping' || akoItem.jenis === 'Corporate Cabin'))) && pax) {
         document.getElementById('priceLabel').textContent = `Harga paket ${akoItem.judul} - ${pax} pax (${malam} malam)`;
     } else {
         document.getElementById('priceLabel').textContent = `Harga kamar ${akoItem.judul} - ${maxOrang} pax (${malam} malam)`;
@@ -653,7 +654,7 @@ function closeValidationModal() {
     // Fungsi update harga
     function updateHarga() {
         let info = `${maxOrang} Dewasa`;
-        if (akoItem.jenis && (akoItem.jenis === 'Corporate Glamping' || akoItem.jenis === 'Corporate Cabin') && pax) {
+        if ((isCorp || (akoItem.jenis && (akoItem.jenis === 'Corporate Glamping' || akoItem.jenis === 'Corporate Cabin'))) && pax) {
             info = `${pax} Pax`;
         } else {
             if(anak>0)info+=` + ${anak} Anak (di atas 5 tahun)`;
@@ -662,7 +663,7 @@ function closeValidationModal() {
         document.getElementById('guestInfoText').textContent=info;
 
         let breakdownLabel = `Harga kamar ${akoItem.judul} - ${maxOrang} pax (${malam} malam)`;
-        if (akoItem.jenis && (akoItem.jenis === 'Corporate Glamping' || akoItem.jenis === 'Corporate Cabin') && pax) {
+        if ((isCorp || (akoItem.jenis && (akoItem.jenis === 'Corporate Glamping' || akoItem.jenis === 'Corporate Cabin'))) && pax) {
             breakdownLabel = `Harga paket ${akoItem.judul} - ${pax} pax (${malam} malam)`;
         }
         let breakdown = `<div class="flex items-start justify-between text-xs sm:text-sm font-bold text-gray-900 pb-1.5 border-b border-gray-200/60 mb-2 gap-2"><span class="min-w-0 leading-snug">${breakdownLabel}</span><span class="whitespace-nowrap font-bold text-gray-900 ml-auto shrink-0">${fmt(totalBasePrice)}</span></div>`;
@@ -755,7 +756,6 @@ function closeValidationModal() {
         const guestName = chkSaya ? nama : untukSiapa;
 
         // Siapkan data untuk dikirim ke backend MySQL
-        const isCorp = {{ isset($isCorporate) && $isCorporate ? 'true' : 'false' }};
         const payload = {
             pemesan_nama: nama,
             pemesan_telp: hp,
@@ -793,7 +793,7 @@ function closeValidationModal() {
         .then(data => {
             if (data.success) {
                 // Simpan data ke sessionStorage untuk dibaca di halaman pembayaran mockup
-                const finalJudul = (akoItem.jenis && (akoItem.jenis === 'Corporate Glamping' || akoItem.jenis === 'Corporate Cabin') && pax)
+                const finalJudul = ((isCorp || (akoItem.jenis && (akoItem.jenis === 'Corporate Glamping' || akoItem.jenis === 'Corporate Cabin'))) && pax)
                     ? `${akoItem.judul} (${pax} pax)`
                     : akoItem.judul;
                 sessionStorage.setItem('res_judul', finalJudul);

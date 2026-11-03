@@ -25,12 +25,14 @@
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-10 lg:gap-16 items-center w-full">
                 <!-- Kiri: Teks -->
                 <div class="flex flex-col justify-center">
-                    <h2 class="text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-900 mb-4 md:mb-6 lg:mb-8 tracking-tight">
+                    <h2 class="text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-900 mb-2 md:mb-3 tracking-tight leading-tight">
                         Tentang Akomodasi
                     </h2>
-                    <div class="mt-4 flex items-center gap-2 justify-center md:justify-start">
-                        <span class="jelajahi-line block h-0.5 w-10 bg-[#B5793A] origin-left"></span>
-                        <span class="text-[#B5793A] text-base">✦</span>
+                    <div class="flex items-center gap-2 mb-5 md:mb-7 justify-start" aria-hidden="true">
+                        <span class="block h-0.5 w-10 bg-[#B5793A] rounded-full"></span>
+                        <svg class="w-3 h-3 shrink-0 select-none" viewBox="0 0 24 24" fill="#B5793A" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z"/>
+                        </svg>
                     </div>
                     
                     <!-- Text container -->

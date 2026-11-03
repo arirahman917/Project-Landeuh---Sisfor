@@ -120,9 +120,9 @@
     @include('components.modal-login')
     @include('components.modal-register')
 
-    <!-- Deferred Flatpickr JS & Locale -->
-    <script defer src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script defer src="https://npmcdn.com/flatpickr/dist/l10n/id.js"></script>
+    <!-- Flatpickr JS & Locale -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/id.js"></script>
     
     @stack('scripts')
 </body>
